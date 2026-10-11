@@ -100,10 +100,21 @@ create policy block_update on public.sl_blocks for update to authenticated using
 
 -- Enforce delivered module registry and DB limits even via direct REST writes.
 create function sl_private.validate_block() returns trigger language plpgsql security definer set search_path='' as $$
- declare max_images integer;
+ declare max_images integer;field text;val jsonb;item jsonb;item_field text;item_val jsonb;
  begin
  if new.module not in ('identity','social_links','whatsapp','contact_details','vcard','gallery','pdf_catalog','opening_hours','booking_link','restaurant_menu','reviews_link','event_program','product_listing') then raise exception 'Module unavailable'; end if;
  if octet_length(new.content::text)>32000 then raise exception 'Content too large'; end if;
+ for field,val in select * from jsonb_each(new.content) loop
+ if field='items' then
+ if jsonb_typeof(val)<>'array' or jsonb_array_length(val)>100 then raise exception 'Invalid items';end if;
+ for item in select * from jsonb_array_elements(val) loop
+ if jsonb_typeof(item)<>'object' then raise exception 'Invalid item';end if;
+ for item_field,item_val in select * from jsonb_each(item) loop
+ if jsonb_typeof(item_val)<>'string' or char_length(item_val#>>'{}')>2000 then raise exception 'Invalid item field';end if;
+ end loop;
+ end loop;
+ elsif jsonb_typeof(val)<>'string' or char_length(val#>>'{}')>4000 then raise exception 'Invalid field';end if;
+ end loop;
  if new.module='gallery' then
  select p.gallery_limit into max_images from public.sl_access a join public.sl_plans p on p.code=a.plan_code where a.card_id=new.card_id;
  if jsonb_typeof(new.content->'items') is distinct from 'array' or jsonb_array_length(new.content->'items')>max_images then raise exception 'Gallery limit exceeded'; end if;

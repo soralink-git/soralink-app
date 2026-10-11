@@ -15,12 +15,12 @@ export async function onRequestGet({request,params,env}) {
  const card=cards[0],url=config.canonicalOrigin+'/c/'+card.id;
  const shell=await env.ASSETS.fetch(new Request(new URL('/index.html',request.url)));if(!shell.ok)throw Error('Shell unavailable');
  let html=await shell.text();
- html=html.replace(/<title>.*?<\/title>/,`<title>${e(card.name)} · SoraLink</title>`)
- .replace(/<meta name="description"[^>]*>/,`<meta name="description" content="${e(card.bio.slice(0,160))}">`)
- .replace(/<meta property="og:title"[^>]*>/,`<meta property="og:title" content="${e(card.name)} · SoraLink">`)
- .replace(/<meta property="og:description"[^>]*>/,`<meta property="og:description" content="${e(card.title)}">`)
- .replace('</head>',`<meta property="og:url" content="${e(url)}"><meta property="og:type" content="profile"><link rel="canonical" href="${e(url)}"></head>`)
- .replace(/<main id="main">[\s\S]*?<\/main>/,`<main id="main" data-card="${e(JSON.stringify({card,blocks}))}">${renderProfile(card,blocks)}</main>`);
+ html=html.replace(/<title>.*?<\/title>/,()=>`<title>${e(card.name)} · SoraLink</title>`)
+ .replace(/<meta name="description"[^>]*>/,()=>`<meta name="description" content="${e(card.bio.slice(0,160))}">`)
+ .replace(/<meta property="og:title"[^>]*>/,()=>`<meta property="og:title" content="${e(card.name)} · SoraLink">`)
+ .replace(/<meta property="og:description"[^>]*>/,()=>`<meta property="og:description" content="${e(card.title)}">`)
+ .replace('</head>',()=>`<meta property="og:url" content="${e(url)}"><meta property="og:type" content="profile"><link rel="canonical" href="${e(url)}"></head>`)
+ .replace(/<main id="main">[\s\S]*?<\/main>/,()=>`<main id="main" data-card="${e(JSON.stringify({card,blocks}))}">${renderProfile(card,blocks)}</main>`);
  return new Response(html,{headers});
  } catch {return new Response('<h1>Service momentanément indisponible</h1><p>Réessayez dans un instant.</p><a href="/">SoraLink</a>',{status:503,headers});}
 }
