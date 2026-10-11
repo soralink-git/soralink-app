@@ -8,8 +8,8 @@ export function renderProfile(card,blocks=[],lang='fr') {
  const title=ar?(card.title_ar||''):card.title;
  const bio=ar?(card.bio_ar||''):card.bio;
  const link=(label,url)=>safeUrl(url)?`<a class="profile-link" href="${e(safeUrl(url))}" target="_blank" rel="noopener noreferrer">${e(label)}</a>`:'';
- let html=`<section class="profile-wrap"><article class="profile"><div class="cover">SoraLink</div><div class="profile-content"><div class="avatar">${e(name?.slice(0,1)||'S')}</div><h1>${e(name)}</h1><p class="subtitle">${e(title)}</p><p class="bio">${e(bio)}</p>`;
- if(safeUrl(b.identity?.image))html+=`<img src="${e(safeUrl(b.identity.image))}" alt="${e(name)}" width="100" height="100" loading="lazy">`;
+ let html=`<section class="profile-wrap"><article class="profile"><div class="cover">SoraLink</div><div class="profile-content"><div class="avatar">${safeUrl(b.identity?.image)?`<img src="${e(safeUrl(b.identity.image))}" alt="${e(name)}" width="84" height="84">`:e(name?.slice(0,1)||'S')}</div><h1>${e(name)}</h1><p class="subtitle">${e(title)}</p><p class="bio">${e(bio)}</p>`;
+
  if(b.vcard)html+=`<button class="button lime" id="vcard">${tr('Enregistrer le contact','سجّل الكونتاكت')}</button>`;
  const c=b.contact_details||{};
  if(c.phone&&/^\+?[0-9 ()-]{6,25}$/.test(c.phone))html+=`<a class="profile-link" href="tel:${e(c.phone.replace(/[^+0-9]/g,''))}">${tr('Appeler','اتصال')} · ${e(c.phone)}</a>`;
