@@ -1,3 +1,4 @@
+import {mediaPath} from './media.js';
 export const MODULES = {
  identity:['Identité','المعلومات'], social_links:['Réseaux sociaux','مواقع التواصل'], whatsapp:['WhatsApp','واتساب'],
  contact_details:['Coordonnées','معلومات الاتصال'], vcard:['Export contact','تسجيل الكونتاكت'], gallery:['Galerie','الصور'],
@@ -18,6 +19,7 @@ export function resolveModules(plan, mode='profile', overrides={}) {
  return Object.keys(MODULES).filter(m=>overrides[m]===false?false:overrides[m]===true||base.includes(m));
 }
 export function safeUrl(value) {
+ if(mediaPath(value))return value;
  try { const url=new URL(value);return url.protocol==='https:'&&!url.username&&!url.password?url.href:null; } catch { return null; }
 }
 export function validId(value) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value||''); }

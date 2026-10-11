@@ -12,13 +12,13 @@ La sortie est `dist/`. Les Pages Functions restent dans `functions/`.
 - Site commercial responsive, FR/Darija, devis WhatsApp et cinq forfaits.
 - Démonstration, profils /c/<UUID>, QR généré localement, vCard échappée et métadonnées serveur.
 - Inscription, confirmation e-mail, connexion, récupération, espace client et aperçu privé.
-- Modules identité, réseaux, WhatsApp, coordonnées, vCard, galerie par URLs, PDF par URL, horaires, lien RDV, menu, avis Google sans filtrage, programme et fiche produit.
+- Modules identité, réseaux, WhatsApp, coordonnées, vCard, galerie par envoi de photos ou URLs, PDF par envoi de fichier ou URL, horaires, lien RDV, menu, avis Google sans filtrage, programme et fiche produit.
 - Administration des droits/forfaits/modes/publication avec MFA TOTP.
 - Migration additive et tests PostgreSQL : brouillons privés, isolation de deux clients, contrôle de formule, restrictions admin.
 
 ## Ce qui reste à livrer avant exploitation commerciale
 
-Upload et validation des fichiers dans Storage, commandes et paiements manuels, formulaire de devis interne anti-abus, domaines clients, synchronisation calendrier, albums invités, équipe et multi-cartes. Les PDF sont pour le moment ouverts par lien HTTPS ; le lecteur intégré viendra avec le contrôle Storage. Le lien permanent fonctionne ; l’ancien lien de démonstration card.html?u=demo est conservé via un alias. Toute nouvelle carte doit conserver ses alias avant changement de nom. Le pilote limite chaque client à une carte.
+Analyse antivirus des documents, nettoyage des anciens fichiers remplacés, commandes et paiements manuels, formulaire de devis interne anti-abus, domaines clients, synchronisation calendrier, albums invités, équipe et multi-cartes. Les images JPG, PNG et WebP sont envoyées dans un bucket privé (4 Mo par fichier), les PDF peuvent atteindre 10 Mo. Les fichiers publiés sont servis par une route contrôlée, sans cache public, qui vérifie les droits Storage courants. Les brouillons sont prévisualisés avec des URLs locales après téléchargement authentifié. Les PDF sont proposés au téléchargement ; le lecteur intégré et l’analyse antivirus restent à ajouter. Une carte est limitée à 40 objets de stockage, anciens fichiers remplacés compris. Le lien permanent fonctionne ; l’ancien lien de démonstration card.html?u=demo est conservé via un alias. Toute nouvelle carte doit conserver ses alias avant changement de nom. Le pilote limite chaque client à une carte.
 
 ## État de mise en service
 
@@ -37,3 +37,5 @@ Les droits sont séparés du contenu public. Les clients ont des permissions SQL
 L’ancienne table cards ne doit être retirée de l’API qu’après migration et vérification des anciens liens ; cette branche ne modifie pas ses permissions.
 
 Les dépendances sont épinglées et le lockfile est suivi. `npm test` couvre logique de forfait, URLs, injection HTML, vCard, serveur et droits PostgreSQL. Les tests Auth, DNS, livraison e-mail et appareils réels restent nécessaires.
+
+Les icônes de réseaux proviennent de Font Awesome Free Brands 7.3.1 ; la licence est fournie dans public/brand-icons-license.txt. Elles sont identifiées par le domaine du lien, jamais par le texte libre fourni par un client.

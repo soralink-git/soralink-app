@@ -1,6 +1,7 @@
 import {createClient} from '@supabase/supabase-js';
 import QRCode from 'qrcode';
 import {pagePath} from './routing.js';
+import {MEDIA_BUCKET,mediaPath,validateFile} from './media.js';
 import {renderWorkspace,renderAdmin,workspaceFrame,icon} from './workspace-ui.js';
 import {languageContent,saveLanguageContent} from './content-language.js';
 import {PLAN_LABELS,MODE_LABELS,STATUS_LABELS,FIELD_LABELS,localized,errorText,localError} from './locale.js';
@@ -14,7 +15,7 @@ const planLabel=code=>localized(PLAN_LABELS,code,lang);
 const statusLabel=code=>localized(STATUS_LABELS,code,lang);
 const modeLabel=code=>localized(MODE_LABELS,code,lang);
 const friendlyError=error=>errorText(error,lang);
-const main=document.querySelector('#main');let activeCard=null,activeBlocks=[],rights=null;
+const main=document.querySelector('#main');let activeCard=null,activeBlocks=[],rights=null;const mediaOverrides={};
 const labels={offers:['Les offres','العروض'],demo:['Découvrir une carte','شوف البطاقة'],account:['Mon espace','المساحة ديالي'],footer:['Créé pour vos rencontres. Pensé pour votre activité.','بطاقة وحدة، تواصل ساهل.'],privacy:['Confidentialité','الخصوصية'],share:['Partager la carte','مشاركة البطاقة'],copy:['Copier le lien','نسخ الرابط']};
 function updateLang(){document.querySelector('.skip').textContent=t('Aller au contenu','دوز للمحتوى');document.querySelector('.header .brand').setAttribute('aria-label',t('SoraLink accueil','الصفحة الرئيسية ديال SoraLink'));document.querySelector('nav').setAttribute('aria-label',t('Navigation principale','التنقل الرئيسي'));document.querySelector('#share .close').setAttribute('aria-label',t('Fermer','سدّ'));document.title=t('SoraLink · Votre activité, à portée de main','SoraLink · النشاط ديالك، قريب ليك');document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';document.querySelector('#language').textContent=t('Langue : français','اللغة: الدارجة');document.querySelectorAll('[data-i18n]').forEach(x=>{const pair=labels[x.dataset.i18n];if(pair)x.textContent=pair[lang==='ar'?1:0];});}
 function toast(message){const el=document.querySelector('#toast');el.textContent=message;el.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.style.display='none',5000);}
@@ -52,12 +53,12 @@ async function dashboard(){
  // Admin's own workspace may include other clients via RLS; choose a card explicitly.
  const target=new URLSearchParams(location.search).get('card')||accesses[0].card_id;
  activeCard=await checked(db.from('sl_cards').select('*').eq('id',target).single());
- rights=await checked(db.rpc('sl_my_rights',{target}));activeBlocks=await checked(db.from('sl_blocks').select('*').eq('card_id',target));
+ rights=await checked(db.rpc('sl_my_rights',{target}));const plan=await checked(db.from('sl_plans').select('gallery_limit').eq('code',rights.plan).single());rights.gallery_limit=plan.gallery_limit;activeBlocks=await checked(db.from('sl_blocks').select('*').eq('card_id',target));
  main.innerHTML=renderWorkspace(activeCard,activeBlocks,rights,lang,config.canonicalOrigin);
  document.querySelector('#logout').onclick=async()=>{await db.auth.signOut();location.href='/dashboard.html';};
  document.querySelector('#identity-form').onsubmit=async ev=>{ev.preventDefault();const btn=ev.target.querySelector('button');btn.disabled=true;try{const update=Object.fromEntries(new FormData(ev.target));await checked(db.from('sl_cards').update(update).eq('id',target).select('id').single());activeCard={...activeCard,...update};refreshWorkspacePreview();toast(t('Profil enregistré.','تسجّل البروفيل.'));}catch(err){toast(friendlyError(err));}finally{btn.disabled=false;}};
  renderEditors();
- setupWorkspacePreview();
+ setupWorkspacePreview();await hydrateMedia();
 }
 function refreshWorkspacePreview(){
  const root=document.querySelector('#preview-content');if(!root)return;
@@ -69,7 +70,7 @@ function refreshWorkspacePreview(){
   const previous=blocks.find(x=>x.module===module),content=saveLanguageContent(previous?.content||{},input,lang,module);
   const value={module,enabled:fields.has('enabled'),content};const index=blocks.findIndex(x=>x.module===module);if(index<0)blocks.push(value);else blocks[index]=value;
  });
- root.innerHTML=renderProfile(draft,blocks,lang);attachProfile(draft,blocks);const prefix=lang==='ar'?'_ar':'';const readiness=[!!draft['name'+prefix],!!draft['title'+prefix],!!draft['bio'+prefix],blocks.some(x=>x.enabled)];const percent=Math.round(readiness.filter(Boolean).length/4*100);document.querySelector('.progress-label').textContent=percent+'%';document.querySelector('.progress-track span').style.width=percent+'%';document.querySelectorAll('.preparation-steps>span').forEach((step,i)=>{step.classList.toggle('done',readiness[i]);const marker=step.querySelector('svg,i');if(marker)marker.outerHTML=readiness[i]?icon('check'):`<i>${i+1}</i>`;});
+ root.innerHTML=renderProfile(draft,blocks,lang,mediaOverrides);attachProfile(draft,blocks);const prefix=lang==='ar'?'_ar':'';const readiness=[!!draft['name'+prefix],!!draft['title'+prefix],!!draft['bio'+prefix],blocks.some(x=>x.enabled)];const percent=Math.round(readiness.filter(Boolean).length/4*100);document.querySelector('.progress-label').textContent=percent+'%';document.querySelector('.progress-track span').style.width=percent+'%';document.querySelectorAll('.preparation-steps>span').forEach((step,i)=>{step.classList.toggle('done',readiness[i]);const marker=step.querySelector('svg,i');if(marker)marker.outerHTML=readiness[i]?icon('check'):`<i>${i+1}</i>`;});
 }
 function setupWorkspacePreview(){
  refreshWorkspacePreview();document.querySelector('.studio-editor').addEventListener('input',refreshWorkspacePreview);
@@ -87,13 +88,43 @@ function renderEditors(){
  const values=collection?(content.items||[]).map(x=>module==='restaurant_menu'?[x.category,x.name,x.price].join(' | '):[x.label||'',x.url].join(' | ')).join('\n'):'';
  return `<details class="module-card"><summary>${e(localized(MODULES,module,lang))} <span class="badge">${block?.enabled?t('Actif','مفعّل'):t('À configurer','خصو الإعداد')}</span></summary><form data-module="${module}"><label class="inline"><input type="checkbox" name="enabled" ${block?.enabled?'checked':''}>${t('Afficher ce module','نبين هاد الميزة')}</label>${collection?`<label>${module==='restaurant_menu'?t('Catégorie | Plat | Prix en dirhams','الصنف | الطبق | الثمن بالدرهم'):t('Nom | Lien sécurisé','الاسم | رابط آمن')}<textarea name="items" placeholder="${module==='restaurant_menu'?t('Boissons | Café | 15','مشروبات | قهوة | 15'):t('Instagram | https://instagram.com/…','إنستغرام | https://instagram.com/…')}">${e(values)}</textarea></label>`:(FIELDS[module]||[]).map(key=>`<label>${e(localized(FIELD_LABELS,key,lang))}${key==='theme'?`<select name="theme">${[['sage',t('Sauge · naturel','المريمية · طبيعي')],['ocean',t('Océan · professionnel','البحر · مهني')],['terre',t('Terre · chaleureux','الأرض · دافي')]].map(([value,label])=>`<option value="${value}" ${content.theme===value?'selected':''}>${label}</option>`).join('')}</select>`:['text','description'].includes(key)?`<textarea name="${key}">${e(content[key]||'')}</textarea>`:`<input name="${key}" value="${e(content[key]||'')}" maxlength="2000">`}</label>`).join('')}<button type="submit" class="button secondary">${t('Enregistrer','نسجّل')}</button></form></details>`;
  }).join('');
- setupCollections(root);
+ setupCollections(root);setupUploads(root);
  root.querySelectorAll('form').forEach(form=>form.onsubmit=async ev=>{ev.preventDefault();const module=form.dataset.module;const btn=form.querySelector('button[type=submit]');btn.disabled=true;try{
  const f=new FormData(form);let content={};for(const [k,v] of f){if(k==='enabled')continue;if(k==='items')content.items=String(v).split('\n').filter(x=>x.trim()).map(line=>{const parts=line.split('|').map(x=>x.trim());return module==='restaurant_menu'?{category:parts[0],name:parts[1]||'',price:parts[2]||''}:{label:parts[0],url:parts[1]||''};});else content[k]=v;}
  for(const [key,value] of Object.entries(content))if((key==='url'||key.endsWith('_url'))&&value&&!safeUrl(value))throw localError(t('Utilisez un lien sécurisé valide (https://).','دخل رابط آمن صحيح (https://).'));
  if(content.items&&module!=='restaurant_menu'&&content.items.some(x=>!safeUrl(x.url)))throw localError(t('Chaque ligne doit contenir un lien sécurisé (https://).','كل سطر خاصو رابط آمن (https://).'));
  content=saveLanguageContent(activeBlocks.find(x=>x.module===module)?.content||{},content,lang,module);const row={card_id:activeCard.id,module,enabled:f.has('enabled'),content};await checked(db.from('sl_blocks').upsert(row).select().single());activeBlocks=activeBlocks.filter(x=>x.module!==module).concat(row);form.closest('details').querySelector('.badge').textContent=row.enabled?t('Actif','مفعّل'):t('À configurer','خصو الإعداد');refreshWorkspacePreview();document.querySelector('#enabled-count').textContent=activeBlocks.filter(x=>x.enabled&&rights.modules.includes(x.module)).length;toast(t('Module enregistré.','تسجّلات الميزة.'));
  }catch(err){toast(friendlyError(err));}finally{btn.disabled=false;}});
+}
+async function hydrateMedia(){
+ const paths=new Set();for(const block of activeBlocks){for(const value of [block.content?.image,block.content?.url,...(block.content?.items||[]).map(x=>x.url)])if(mediaPath(value))paths.add(value);}
+ await Promise.all([...paths].map(async url=>{if(mediaOverrides[url])return;const {data,error}=await db.storage.from(MEDIA_BUCKET).download(mediaPath(url));if(!error)mediaOverrides[url]=URL.createObjectURL(data);}));refreshWorkspacePreview();
+}
+function setupUploads(root){
+ for(const module of ['identity','gallery','pdf_catalog']){
+  const form=root.querySelector(`form[data-module="${module}"]`);if(!form)continue;
+  const pdf=module==='pdf_catalog';const box=document.createElement('div');box.className='upload-box';box.innerHTML=`<div class="heading-icon">${icon(pdf?'card':'plus')}</div><strong>${pdf?t('Votre catalogue PDF','الكتالوج PDF ديالك'):module==='identity'?t('Votre photo ou votre logo','الصورة ولا الشعار ديالك'):t('Vos photos de réalisations','الصور ديال الخدمة')}</strong><p>${pdf?t('PDF · 10 Mo maximum','PDF · حتى لـ 10 ميغا'):t('JPG, PNG ou WebP · 4 Mo par image','JPG، PNG ولا WebP · حتى لـ 4 ميغا للصورة')}</p><button type="button" class="button secondary choose-file">${icon('plus')}${pdf?t('Choisir un PDF','نختار PDF'):module==='gallery'?t('Ajouter des photos','نزيد الصور'):t('Choisir une image','نختار صورة')}</button><input type="file" class="hidden" accept="${pdf?'application/pdf':'image/jpeg,image/png,image/webp'}" ${module==='gallery'?'multiple':''}><span class="upload-status" role="status"></span>`;
+  form.querySelector('.inline').after(box);const picker=box.querySelector('[type=file]'),button=box.querySelector('button'),status=box.querySelector('.upload-status');button.onclick=()=>picker.click();
+  picker.onchange=async()=>{
+   const files=[...picker.files];if(!files.length)return;if(location.pathname.startsWith('/demo')){status.textContent=t('Démonstration : connectez-vous à votre espace pour envoyer vos fichiers.','تجربة: دخل للمساحة ديالك باش تصيفط الملفات.');picker.value='';return;}
+   button.disabled=true;try{
+    const existing=activeBlocks.find(x=>x.module===module)?.content||{};
+    if(module==='gallery'&&(existing.items?.length||0)+files.length>(rights.gallery_limit||0))throw localError(t('La limite de photos de votre forfait serait dépassée.','هاد الصور غادي يفوتو الحد ديال الفورفي.'));
+    for(let i=0;i<files.length;i++){
+     const file=files[i],validation=await validateFile(file,module);if(validation.error)throw localError(validation.error==='size'?t('Le fichier est vide ou dépasse la taille autorisée.','الملف خاوي ولا كبير على الحد المسموح.'):t('Choisissez une image JPG, PNG, WebP ou un PDF conforme au module.','اختار صورة JPG، PNG، WebP ولا PDF مناسب للميزة.'));
+     status.textContent=t('Envoi en cours…','كنصيفطو الملف…')+' '+(i+1)+' / '+files.length;
+     const path=activeCard.id+'/'+module+'/'+crypto.randomUUID()+'.'+validation.ext;
+     const {error}=await db.storage.from(MEDIA_BUCKET).upload(path,file,{contentType:validation.type,upsert:false});if(error)throw error;
+     const url='/media/'+path;mediaOverrides[url]=URL.createObjectURL(new Blob([file],{type:validation.type}));
+     const latest=activeBlocks.find(x=>x.module===module)?.content||{};let content={...latest};
+     if(module==='identity')content.theme=form.querySelector('[name=theme]').value;
+     if(module==='gallery')content.items=[...(latest.items||[]),{label:lang==='fr'?file.name:'',label_ar:lang==='ar'?t('Photo','صورة'):'',url}];else content[module==='identity'?'image':'url']=url;
+     const row={card_id:activeCard.id,module,enabled:true,content};await checked(db.from('sl_blocks').upsert(row).select().single());activeBlocks=activeBlocks.filter(x=>x.module!==module).concat(row);
+    }
+    renderEditors();await hydrateMedia();document.querySelector('#enabled-count').textContent=activeBlocks.filter(x=>x.enabled&&rights.modules.includes(x.module)).length;toast(t('Fichiers envoyés et enregistrés.','تصيفطو وتسجلو الملفات.'));
+   }catch(error){status.textContent=friendlyError(error);}finally{button.disabled=false;picker.value='';}
+  };
+ }
 }
 function setupCollections(root){
  root.querySelectorAll('textarea[name=items]').forEach(textarea=>{
