@@ -14,7 +14,7 @@ export function renderProfile(card,blocks=[],lang='fr',mediaOverrides={}) {
  const theme=['sage','ocean','terre'].includes(b.identity?.theme)?b.identity.theme:'sage';
  let html=`<section class="profile-wrap"><article class="profile theme-${theme}"><div class="cover">SoraLink</div><div class="profile-content"><div class="avatar">${resource(b.identity?.image)?`<img src="${e(resource(b.identity.image))}" alt="${e(name)}" width="84" height="84">`:e(name?.slice(0,1)||'S')}</div><h1>${e(name)}</h1><p class="subtitle">${e(title)}</p><p class="bio">${e(bio)}</p>`;
 
- html+='<div class="profile-action-list">';if(b.vcard)html+=`<button class="profile-action accent" id="vcard" title="${tr('Enregistrer le contact','سجّل الكونتاكت')}" aria-label="${tr('Enregistrer le contact','سجّل الكونتاكت')}">${actionIcon('contact')}</button>`;
+ html+='<div class="profile-action-list">';if(b.vcard)html+=`<button class="button lime profile-text-action" id="vcard" title="${tr('Enregistrer le contact','سجّل الكونتاكت')}" aria-label="${tr('Enregistrer le contact','سجّل الكونتاكت')}"><strong>${tr('Enregistrer le contact','سجّل الكونتاكت')}</strong></button>`;
  const c=b.contact_details||{};
  if(c.phone&&/^\+?[0-9 ()-]{6,25}$/.test(c.phone))html+=`<a class="profile-action" href="tel:${e(c.phone.replace(/[^+0-9]/g,''))}" title="${tr('Appeler','نتاصل')} · ${e(c.phone)}" aria-label="${tr('Appeler','نتاصل')} · ${e(c.phone)}">${actionIcon('phone')}</a>`;
  if(c.email&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email))html+=`<a class="profile-action" href="mailto:${e(encodeURIComponent(c.email))}" title="${tr('Envoyer un email','نصيفط إيميل')} · ${e(c.email)}" aria-label="${tr('Envoyer un email','نصيفط إيميل')} · ${e(c.email)}">${actionIcon('mail')}</a>`;
@@ -30,6 +30,6 @@ export function renderProfile(card,blocks=[],lang='fr',mediaOverrides={}) {
  html+=`<div class="profile-action-list">${link(tr('Partager votre avis Google','شارك الرأي ديالك فـ Google'),b.reviews_link?.url,'star')}</div>`;
  if(b.event_program?.text)html+=`<section class="profile-section"><h2>${tr('Programme','البرنامج')}</h2><p>${e(b.event_program.text).replace(/\n/g,'<br>')}</p>${link(tr('Plan d’accès','الموقع'),b.event_program.maps_url,'pin')}</section>`;
  if(b.product_listing)html+=`<section class="profile-section"><h2>${e(b.product_listing.name)}</h2><strong>${e(b.product_listing.price)} ${tr('dirhams','درهم')}</strong><p>${e(b.product_listing.description)}</p>${link(tr('Visite / vidéo','الفيديو'),b.product_listing.video_url,'play')}</section>`;
- html+=`<div class="profile-action-list profile-share"><button class="profile-action" id="share-card" title="${tr('Partager cette carte','بارطاجي البطاقة')}" aria-label="${tr('Partager cette carte','بارطاجي البطاقة')}">${actionIcon('share')}</button></div><p class="muted" style="margin-top:20px;text-align:center">${tr('Propulsé par','مع')} SoraLink</p></div></article></section>`;
+ html+=`<div class="profile-action-list profile-share"><button class="button secondary profile-text-action" id="share-card" title="${tr('Partager cette carte','بارطاجي البطاقة')}" aria-label="${tr('Partager cette carte','بارطاجي البطاقة')}"><strong>${tr('Partager cette carte','بارطاجي البطاقة')}</strong></button></div><p class="muted" style="margin-top:20px;text-align:center">${tr('Propulsé par','مع')} SoraLink</p></div></article></section>`;
  return html;
 }
