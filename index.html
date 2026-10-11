@@ -1,18 +1,157 @@
-HTML
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SoraLink</title>
+  <title>Karim Bennani · SoraLink</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: sans-serif; display: grid; place-content: center; height: 100vh; margin: 0; background: #0f172a; color: white; text-align: center; }
-    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    p { color: #94a3b8; }
+    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&family=Inter:wght@400;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    [dir="rtl"] body { font-family: 'Tajawal', sans-serif; }
   </style>
 </head>
-<body>
-  <h1>SoraLink</h1>
-  <p>Cartes connectées NFC & QR Code · Bientôt disponible</p>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex justify-center p-0 sm:p-4">
+  <main class="w-full max-w-md bg-slate-950 min-h-screen sm:min-h-0 sm:rounded-3xl shadow-2xl overflow-hidden pb-12 relative border border-slate-800">
+    <!-- Sélecteur de langue -->
+    <div class="absolute top-4 right-4 z-20">
+      <button id="langToggle" onclick="toggleLanguage()" class="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-semibold border border-white/20 text-white shadow-lg">
+        عربي
+      </button>
+    </div>
+
+    <!-- Couverture & Photo -->
+    <div class="h-40 bg-gradient-to-r from-blue-700 via-indigo-700 to-amber-600 relative">
+      <div class="absolute -bottom-12 left-1/2 -translate-x-1/2">
+        <div class="w-24 h-24 rounded-full border-4 border-slate-950 overflow-hidden shadow-xl bg-slate-800 flex items-center justify-center">
+          <i class="fa-solid fa-user text-4xl text-slate-400"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Identité -->
+    <div class="pt-16 px-6 text-center">
+      <h1 id="name" class="text-2xl font-bold tracking-tight">Karim Bennani</h1>
+      <p id="title" class="text-amber-400 text-sm font-medium mt-0.5">Artisan Ébéniste & Décorateur</p>
+      <p id="city" class="text-slate-400 text-xs mt-1"><i class="fa-solid fa-location-dot me-1"></i> Oujda · Maroc</p>
+
+      <!-- Bouton CTA vCard -->
+      <button class="w-full mt-5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition active:scale-95">
+        <i class="fa-solid fa-address-card text-lg"></i>
+        <span id="vcardBtn">Enregistrer le contact</span>
+      </button>
+
+      <!-- Actions Rapides -->
+      <div class="grid grid-cols-4 gap-3 mt-4">
+        <a href="tel:+212600000000" class="flex flex-col items-center justify-center p-3 bg-slate-900 border border-slate-800 rounded-2xl hover:bg-slate-800 transition">
+          <i class="fa-solid fa-phone text-emerald-400 text-lg mb-1"></i>
+          <span id="lblCall" class="text-[11px] text-slate-300">Appel</span>
+        </a>
+        <a href="https://wa.me/212600000000" target="_blank" class="flex flex-col items-center justify-center p-3 bg-slate-900 border border-slate-800 rounded-2xl hover:bg-slate-800 transition">
+          <i class="fa-brands fa-whatsapp text-emerald-500 text-lg mb-1"></i>
+          <span class="text-[11px] text-slate-300">WhatsApp</span>
+        </a>
+        <a href="mailto:contact@soralink.link" class="flex flex-col items-center justify-center p-3 bg-slate-900 border border-slate-800 rounded-2xl hover:bg-slate-800 transition">
+          <i class="fa-solid fa-envelope text-blue-400 text-lg mb-1"></i>
+          <span class="text-[11px] text-slate-300">Email</span>
+        </a>
+        <a href="#" class="flex flex-col items-center justify-center p-3 bg-slate-900 border border-slate-800 rounded-2xl hover:bg-slate-800 transition">
+          <i class="fa-solid fa-map-pin text-rose-400 text-lg mb-1"></i>
+          <span id="lblMaps" class="text-[11px] text-slate-300">Plan</span>
+        </a>
+      </div>
+
+      <!-- Réseaux Sociaux -->
+      <div class="mt-6 flex flex-col gap-2.5">
+        <a href="#" class="flex items-center justify-between p-3.5 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-slate-700 transition">
+          <div class="flex items-center gap-3">
+            <i class="fa-brands fa-instagram text-pink-500 text-xl"></i>
+            <span class="text-sm font-semibold">Instagram</span>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-500"></i>
+        </a>
+        <a href="#" class="flex items-center justify-between p-3.5 bg-slate-900/80 border border-slate-800 rounded-xl hover:border-slate-700 transition">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-file-pdf text-red-400 text-xl"></i>
+            <span id="lblCatalog" class="text-sm font-semibold">Catalogue Réalisations 2026</span>
+          </div>
+          <i class="fa-solid fa-download text-xs text-slate-500"></i>
+        </a>
+      </div>
+
+      <!-- Bouton Partager -->
+      <button onclick="toggleShareModal()" class="w-full mt-4 bg-slate-800 hover:bg-slate-700 text-slate-200 py-3 rounded-xl border border-slate-700 flex items-center justify-center gap-2 text-sm font-semibold transition">
+        <i class="fa-solid fa-share-nodes"></i>
+        <span id="lblShare">Partager cette carte</span>
+      </button>
+
+      <!-- Footer -->
+      <footer class="mt-10 pt-4 border-t border-slate-900 text-center">
+        <p class="text-[11px] text-slate-500">Propulsé par <span class="text-amber-500 font-bold">SoraLink</span> · soralink.link</p>
+      </footer>
+    </div>
+
+    <!-- Modale de Partage -->
+    <div id="shareModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-800 w-full max-w-sm rounded-2xl p-6 text-center relative">
+        <button onclick="toggleShareModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+        <h3 class="text-lg font-bold text-white mb-2" id="modalTitle">Partager la carte</h3>
+        <div class="w-40 h-40 bg-white mx-auto rounded-xl p-2 flex items-center justify-center my-4">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://soralink.link" alt="QR Code" class="w-full h-full" />
+        </div>
+        <p class="text-xs text-slate-400 mb-4">Scannez ce QR Code pour ouvrir la carte</p>
+        <button onclick="copyLink()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-2.5 rounded-xl text-sm font-semibold mb-2">
+          Copier le lien
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentLang = 'fr';
+    const translations = {
+      fr: {
+        btnText: 'عربي', dir: 'ltr',
+        title: 'Artisan Ébéniste & Décorateur', city: 'Oujda · Maroc',
+        vcard: 'Enregistrer le contact', call: 'Appel', maps: 'Plan',
+        catalog: 'Catalogue Réalisations 2026', share: 'Partager cette carte',
+        modalTitle: 'Partager la carte'
+      },
+      ar: {
+        btnText: 'FR', dir: 'rtl',
+        title: 'صانع ديكور ونجارة فنية', city: 'وجدة · المغرب',
+        vcard: 'سجّل النمرة فـ التيليفون', call: 'اتصال', maps: 'الموقع',
+        catalog: 'كتالوج الأعمال 2026', share: 'بارطاجي هاد البطاقة',
+        modalTitle: 'مشاركة البطاقة'
+      }
+    };
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'fr' ? 'ar' : 'fr';
+      const t = translations[currentLang];
+      document.documentElement.dir = t.dir;
+      document.getElementById('langToggle').innerText = t.btnText;
+      document.getElementById('title').innerText = t.title;
+      document.getElementById('city').innerHTML = '<i class="fa-solid fa-location-dot me-1"></i> ' + t.city;
+      document.getElementById('vcardBtn').innerText = t.vcard;
+      document.getElementById('lblCall').innerText = t.call;
+      document.getElementById('lblMaps').innerText = t.maps;
+      document.getElementById('lblCatalog').innerText = t.catalog;
+      document.getElementById('lblShare').innerText = t.share;
+      document.getElementById('modalTitle').innerText = t.modalTitle;
+    }
+
+    function toggleShareModal() {
+      document.getElementById('shareModal').classList.toggle('hidden');
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Lien copié dans le presse-papiers !');
+    }
+  </script>
 </body>
 </html>
