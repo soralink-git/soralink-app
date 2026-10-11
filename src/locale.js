@@ -2,7 +2,7 @@ export const PLAN_LABELS = {social:['Réseaux sociaux','مواقع التواص�
 export const MODE_LABELS = {profile:['Profil','البروفيل'],menu:['Menu de restauration','منيو المطعم'],reviews:['Avis clients','آراء الزبناء'],event:['Événement','المناسبة'],product:['Fiche produit','معلومات المنتوج']};
 export const STATUS_LABELS = {draft:['Brouillon','مسودة'],published:['Publiée','منشورة'],suspended:['Suspendue','موقوفة']};
 export const FIELD_LABELS = {
- image:['Photo ou logo · lien sécurisé','الصورة ولا الشعار · رابط آمن'],number:['Numéro WhatsApp · 212…','رقم واتساب · 212…'],phone:['Téléphone','التيليفون'],email:['Adresse électronique','الإيميل'],address:['Adresse','العنوان'],maps_url:['Lien du plan d’accès','رابط الموقع'],url:['Lien sécurisé','رابط آمن'],text:['Texte','النص'],name:['Titre','العنوان'],price:['Prix en dirhams','الثمن بالدرهم'],description:['Description','التفاصيل'],video_url:['Lien de la vidéo ou visite','رابط الفيديو ولا الزيارة']
+ theme:['Style de la carte','شكل البطاقة'],image:['Photo ou logo · lien sécurisé','الصورة ولا الشعار · رابط آمن'],number:['Numéro WhatsApp · 212…','رقم واتساب · 212…'],phone:['Téléphone','التيليفون'],email:['Adresse électronique','الإيميل'],address:['Adresse','العنوان'],maps_url:['Lien du plan d’accès','رابط الموقع'],url:['Lien sécurisé','رابط آمن'],text:['Texte','النص'],name:['Titre','العنوان'],price:['Prix en dirhams','الثمن بالدرهم'],description:['Description','التفاصيل'],video_url:['Lien de la vidéo ou visite','رابط الفيديو ولا الزيارة']
 };
 export function localized(table,key,lang='fr') {return table[key]?.[lang==='ar'?1:0] || (lang==='ar'?'غير متوفر':'Indisponible');}
 const ERRORS={

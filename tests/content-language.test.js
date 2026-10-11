@@ -18,3 +18,9 @@ test('Editing one language keeps the other language and shared links',()=>{
  assert.equal(languageContent(saved,'ar').items[0].url,'https://example.org/2');
  assert.equal(languageContent({text:'French only'},'ar').text,'');
 });
+test('Card themes use only approved styles',()=>{
+ const card={name:'Test',title:'',bio:''};
+ assert.match(renderProfile(card,[{module:'identity',enabled:true,content:{theme:'ocean'}}]),/theme-ocean/);
+ const html=renderProfile(card,[{module:'identity',enabled:true,content:{theme:'\" onclick=alert(1)'}}]);
+ assert.match(html,/theme-sage/);assert.doesNotMatch(html,/onclick=alert/);
+});
