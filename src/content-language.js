@@ -1,4 +1,4 @@
-const translatedFields=['name','title','bio','text','description','address'];
+const translatedFields=['name','title','bio','text','description','address','section_title'];
 export function languageContent(content={},lang='fr') {
  const result={...content};
  if(lang==='ar')for(const key of translatedFields)result[key]=content[key+'_ar']||'';

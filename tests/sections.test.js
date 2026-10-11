@@ -1,0 +1,16 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {orderedModules} from '../src/sections.js';import {renderProfile} from '../src/profile.js';import {languageContent,saveLanguageContent} from '../src/content-language.js';
+const card={name:'Test',name_ar:'مثال',title:'',bio:''};
+test('Stored order is rendered, identity stays first, invalid positions and unknown modules are ignored',()=>{
+ const blocks=[{module:'gallery',enabled:true,content:{_position:'2',items:[{url:'https://example.com/photo.jpg',label:'Photo'}]}},{module:'opening_hours',enabled:true,content:{_position:'1',text:'09:00–18:00'}},{module:'identity',content:{_position:'99'}}];
+ assert.deepEqual(orderedModules(['gallery','identity','opening_hours','unregistered','gallery'],blocks),['identity','opening_hours','gallery']);const html=renderProfile(card,blocks);assert(html.indexOf('data-section="opening_hours"')<html.indexOf('data-section="gallery"'));assert.deepEqual(orderedModules(['gallery','opening_hours'],[{module:'gallery',content:{_position:'-99'}}]),['gallery','opening_hours']);
+});
+test('Empty sections and sections with only rejected URLs are not rendered',()=>{
+ const html=renderProfile(card,[{module:'gallery',enabled:true,content:{section_title:'Must not appear',items:[{url:'javascript:alert(1)'}]}},{module:'opening_hours',enabled:true,content:{text:'   '}},{module:'restaurant_menu',enabled:true,content:{items:[{name:'',price:'5'}]}},{module:'booking_link',enabled:true,content:{url:'javascript:alert(1)'}},{module:'social_links',enabled:true,content:{items:[{url:'http://invalid.example'}]}}]);for(const name of ['gallery','opening_hours','restaurant_menu','booking_link','social_links'])assert(!html.includes('data-section="'+name+'"'));assert(!html.includes('Must not appear'));
+});
+test('Section titles are isolated by language and escaped; hidden content stays hidden',()=>{
+ const content=saveLanguageContent({section_title:'Business hours',text:'Open',text_ar:'محلول',_position:'3'},{section_title:'أوقات الخدمة'},'ar');assert.equal(content.section_title,'Business hours');assert.equal(languageContent(content,'ar').section_title,'أوقات الخدمة');const blocks=[{module:'opening_hours',enabled:true,content}];assert.match(renderProfile(card,blocks,'ar'),/أوقات الخدمة/);assert.doesNotMatch(renderProfile(card,blocks,'ar'),/Business hours|Open/);assert.match(renderProfile(card,blocks,'fr'),/Business hours/);assert.doesNotMatch(renderProfile(card,blocks,'fr'),/أوقات الخدمة/);assert(!renderProfile(card,[{...blocks[0],enabled:false}]).includes('Business hours'));const html=renderProfile(card,[{module:'opening_hours',enabled:true,content:{section_title:'<img onerror=alert(1)>',text:'Open'}}]);assert(html.includes('&lt;img'));assert(!html.includes('<img onerror'));
+});
+test('Reordering does not remove media or other-language content',()=>{
+ const before={_position:'2',section_title:'Gallery',section_title_ar:'الصور',items:[{label:'Work',label_ar:'الخدمة',url:'https://example.com/a.jpg'}]};const after=saveLanguageContent(before,{_position:'1',section_title:'Portfolio'},'fr');assert.equal(after.items[0].url,before.items[0].url);assert.equal(after.section_title_ar,before.section_title_ar);assert.equal(after._position,'1');
+});
