@@ -18,13 +18,13 @@ La sortie est `dist/`. Les Pages Functions restent dans `functions/`.
 
 ## Ce qui reste à livrer avant exploitation commerciale
 
-Upload et validation des fichiers dans Storage, commandes et paiements manuels, formulaire de devis interne anti-abus, domaines clients, synchronisation calendrier, albums invités, équipe et multi-cartes. Les PDF sont pour le moment ouverts par lien HTTPS ; le lecteur intégré viendra avec le contrôle Storage. Le lien permanent fonctionne ; les alias de toutes les anciennes cartes restent à migrer avant bascule. Le pilote limite chaque client à une carte.
+Upload et validation des fichiers dans Storage, commandes et paiements manuels, formulaire de devis interne anti-abus, domaines clients, synchronisation calendrier, albums invités, équipe et multi-cartes. Les PDF sont pour le moment ouverts par lien HTTPS ; le lecteur intégré viendra avec le contrôle Storage. Le lien permanent fonctionne ; l’ancien lien de démonstration card.html?u=demo est conservé via un alias. Toute nouvelle carte doit conserver ses alias avant changement de nom. Le pilote limite chaque client à une carte.
 
 ## État de mise en service
 
-La migration est testée sur PostgreSQL embarqué avec schéma Auth simulé. Les tentatives d’application sur le projet distant n’ont pas abouti (erreur de session de connexion) ; la base d’origine est conservée. Les parcours Auth réels et l’interface mobile doivent être vérifiés sur la prévisualisation avant lancement.
+Les deux migrations ont été appliquées au projet Supabase soralink. Les tests RLS et MFA ont passé sur PostgreSQL embarqué puis sur la base distante, dans une transaction annulée après vérification. La base d’origine est conservée. Aucun compte utilisateur n’existe encore. Les retours Auth, e-mails et l’interface mobile doivent être vérifiés avant lancement.
 
-1. Appliquer `supabase/migrations/20261011170514_modular_foundation.sql` sur le projet `soralink`. Il crée des tables `sl_*` et conserve `public.cards`. Le schéma `sl_private` doit rester hors des schémas exposés au Data API.
+1. Migrations déjà appliquées sur le projet `soralink` : modular_foundation et permanent_aliases. Elles créent les tables `sl_*`, copient le profil public de démonstration et conservent `public.cards`. Ne pas les réexécuter sur ce projet. Le schéma `sl_private` doit rester hors des schémas exposés au Data API.
 2. Dans Supabase Auth : Site URL `https://soralink.link` ; URLs de retour exactes pour `/dashboard.html` et `/reset.html`, plus la prévisualisation de confiance. Configurer et tester l’envoi des e-mails.
 3. Créer le compte de l’exploitant et vérifier son UUID. L’attribution admin se fait par un opérateur autorisé dans SQL : `insert into sl_private.admins(user_id) values ('UUID_VÉRIFIÉ');`. Ne jamais attribuer admin sur la base d’un user_metadata ou d’une simple adresse déclarée. L’écran `/admin.html` permet d’enrôler TOTP ; les privilèges exigent aal2.
 4. Cloudflare Pages : commande `npm run build`, sortie `dist`, version Node 22+, racine du dépôt. Vérifier la prévisualisation de la branche avant fusion. La branche main synchronisée avec soralink.link est conservée à ce stade.
