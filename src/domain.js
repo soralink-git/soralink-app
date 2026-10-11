@@ -6,8 +6,8 @@ export const MODULES = {
  product_listing:['Fiche produit','معلومات المنتوج']
 };
 export const PLANS = {
- social:{name:'Social',modules:['identity','social_links','whatsapp']},
- pro:{name:'Pro Contact',modules:['identity','social_links','whatsapp','contact_details','vcard']},
+ social:{name:'Réseaux sociaux',modules:['identity','social_links','whatsapp']},
+ pro:{name:'Contact professionnel',modules:['identity','social_links','whatsapp','contact_details','vcard']},
  vitrine:{name:'Vitrine',modules:['identity','social_links','whatsapp','contact_details','vcard','gallery','pdf_catalog','opening_hours']},
  entreprise:{name:'Entreprise',modules:['identity','social_links','whatsapp','contact_details','vcard','gallery','pdf_catalog','opening_hours','booking_link']},
  solution_speciale:{name:'Solution Spéciale',modules:['identity','whatsapp']}

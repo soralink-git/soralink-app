@@ -1,0 +1,16 @@
+export const PLAN_LABELS = {social:['Réseaux sociaux','مواقع التواصل'],pro:['Contact professionnel','الكونتاكت المهني'],vitrine:['Vitrine','واجهة النشاط'],entreprise:['Entreprise','المقاولة'],solution_speciale:['Solution spéciale','حل خاص']};
+export const MODE_LABELS = {profile:['Profil','البروفيل'],menu:['Menu de restauration','منيو المطعم'],reviews:['Avis clients','آراء الزبناء'],event:['Événement','المناسبة'],product:['Fiche produit','معلومات المنتوج']};
+export const STATUS_LABELS = {draft:['Brouillon','مسودة'],published:['Publiée','منشورة'],suspended:['Suspendue','موقوفة']};
+export const FIELD_LABELS = {
+ image:['Photo ou logo · lien sécurisé','الصورة ولا الشعار · رابط آمن'],number:['Numéro WhatsApp · 212…','رقم واتساب · 212…'],phone:['Téléphone','التيليفون'],email:['Adresse électronique','الإيميل'],address:['Adresse','العنوان'],maps_url:['Lien du plan d’accès','رابط الموقع'],url:['Lien sécurisé','رابط آمن'],text:['Texte','النص'],name:['Titre','العنوان'],price:['Prix en dirhams','الثمن بالدرهم'],description:['Description','التفاصيل'],video_url:['Lien de la vidéo ou visite','رابط الفيديو ولا الزيارة']
+};
+export function localized(table,key,lang='fr') {return table[key]?.[lang==='ar'?1:0] || (lang==='ar'?'غير متوفر':'Indisponible');}
+const ERRORS={
+ invalid_credentials:['Adresse électronique ou mot de passe incorrect.','الإيميل ولا كلمة السر ما صحيحاش.'],email_not_confirmed:['Confirmez votre adresse électronique avant de vous connecter.','أكد الإيميل ديالك قبل ما تدخل.'],user_already_exists:['Ce compte existe déjà. Connectez-vous ou récupérez votre mot de passe.','هاد الحساب موجود. دخل ولا رجّع كلمة السر.'],weak_password:['Choisissez un mot de passe plus fort, avec au moins 10 caractères.','اختار كلمة سر قوية فيها على الأقل 10 حروف.'],over_email_send_rate_limit:['Trop de demandes. Attendez quelques minutes avant de réessayer.','طلبات كثيرة. تسنّى شوية وعاود جرّب.'],over_request_rate_limit:['Trop de demandes. Réessayez dans quelques minutes.','طلبات كثيرة. عاود جرّب من بعد شوية.'],mfa_verification_failed:['Code incorrect ou expiré. Saisissez le code actuel de votre application.','الكود غلط ولا سالا. دخل الكود لي باين دابا فالتطبيق.'],mfa_factor_name_conflict:['Un second facteur existe déjà. Utilisez-le ou retirez le facteur non confirmé dans les réglages de votre compte.','كاين تأكيد ثاني مسجّل. استعملو ولا حيد لي ما تأكدش من إعدادات الحساب.'],session_not_found:['Votre session a expiré. Reconnectez-vous.','سالات مدة الدخول. دخل من جديد.'],'42501':['Cette action n’est pas autorisée. Vérifiez votre forfait et votre double authentification.','هاد العملية ما مسموحاش. تأكد من الفورفي والتأكيد بجوج مراحل.'],'23514':['Vérifiez les informations saisies et les limites de votre forfait.','راجع المعلومات والحدود ديال الفورفي.']
+};
+export function localError(message) {const error=new Error(message);error.localized=true;return error;}
+export function errorText(error,lang='fr') {
+ if(error?.localized)return error.message;
+ const pair=ERRORS[error?.code] || (error instanceof SyntaxError?['Les options saisies sont invalides.','الاختيارات ما صحيحاش.']:null);
+ return pair?.[lang==='ar'?1:0] || (lang==='ar'?'ما قدرناش نكملو العملية. راجع المعلومات وعاود جرّب.':'Impossible de terminer cette action. Vérifiez vos informations et réessayez.');
+}
