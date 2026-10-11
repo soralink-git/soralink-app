@@ -1,0 +1,1 @@
+export const config = {"supabaseUrl":"https://blfoxintbgjlfojwtepx.supabase.co","supabaseKey":"sb_publishable_UweeWumN-ByZLzKAVLVWmw_winPa4MZ","canonicalOrigin":"https://soralink.link","whatsapp":"212661446664"};

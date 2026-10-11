@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {resolveModules,safeUrl,createVCard,escapeHtml} from '../src/domain.js';
+test('Social excludes paid features; explicit deny wins',()=>{assert(!resolveModules('social').includes('gallery'));assert(!resolveModules('vitrine','profile',{gallery:false}).includes('gallery'));assert(resolveModules('social','profile',{gallery:true}).includes('gallery'));});
+test('Special modes remain independent of Enterprise',()=>{assert(resolveModules('solution_speciale','menu').includes('restaurant_menu'));assert(!resolveModules('solution_speciale','reviews').includes('restaurant_menu'));assert(!resolveModules('solution_speciale','menu').includes('booking_link'));});
+test('Unsafe links and HTML are neutralized',()=>{for(const v of ['javascript:alert(1)','data:text/html,x','http://x.test','https://u:p@x.test'])assert.equal(safeUrl(v),null);assert.equal(escapeHtml('<script>'),'&lt;script&gt;');});
+test('vCard prevents line injection, keeps UTF8 and folds bytes',()=>{const v=createVCard({id:'x',name:'أحمد '.repeat(25),bio:'Hello\r\nEND:VCARD',title:'A;B'});assert(!v.includes('\r\nEND:VCARD\r\nEND:VCARD'));assert(v.includes('Hello\\nEND:VCARD'));assert(v.includes('A\\;B'));for(const l of v.split('\r\n'))assert(new TextEncoder().encode(l).length<=75);});
