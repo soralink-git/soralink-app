@@ -329,7 +329,7 @@ export default function App({
         body: JSON.stringify(body),
       });
       const b: any = await r.json();
-      if (!r.ok) throw new Error(b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
       return b;
     } finally {
       setBusy(false);
@@ -361,7 +361,7 @@ export default function App({
       form.append('file', await compressPhoto(f));
       const r = await fetch('/api/upload', { method: 'POST', body: form });
       const b: any = await r.json();
-      if (!r.ok) throw new Error(b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
       if (b.storage) setStorage(b.storage);
       setData((d: any) => ({
         ...d,
@@ -484,7 +484,7 @@ export default function App({
     })
       .then(async (r) => {
         const b: any = await r.json();
-        if (!r.ok) throw new Error(b.error);
+        if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
         setSlots(b.slots);
       })
       .catch((e) => {

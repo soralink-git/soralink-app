@@ -1,4 +1,4 @@
-# SoraLink — première étape de réduction de la dette technique
+# SoraLink — réduction de la dette technique
 
 ## Modifications réalisées
 
@@ -27,8 +27,7 @@ Réduction estimée gzip : 21.9 %. Cette mesure porte sur le JavaScript, pas sur
 
 ## Étapes suivantes
 
-1. Ajouter des schémas Zod par action API, en conservant les contrôles d’identité, propriété, publication, consentement, quotas et concurrence. Une validation de forme ne remplace pas ces contrôles.
-2. La documentation Cloudflare actuelle recommande Vinext pour les nouvelles applications Next.js sur Workers ([guide officiel](https://developers.cloudflare.com/workers/framework-guides/web-apps/opennext/)). Une migration vers OpenNext ne constitue donc pas une priorité automatique. Si une limitation réelle apparaît, évaluer l’alternative dans une branche indépendante : auth/cookies, routes SSR, D1/R2, métadonnées, PWA et médias. Vinext reste fixé à la version utilisée ; cette étape n’effectue pas de migration du framework.
+1. La documentation Cloudflare actuelle recommande Vinext pour les nouvelles applications Next.js sur Workers ([guide officiel](https://developers.cloudflare.com/workers/framework-guides/web-apps/opennext/)). Une migration vers OpenNext ne constitue donc pas une priorité automatique. Si une limitation réelle apparaît, évaluer l’alternative dans une branche indépendante : auth/cookies, routes SSR, D1/R2, métadonnées, PWA et médias. Vinext reste fixé à la version utilisée ; cette étape n’effectue pas de migration du framework.
 
 ## Deuxième étape — références de médias D1
 
@@ -41,3 +40,14 @@ Réduction estimée gzip : 21.9 %. Cette mesure porte sur le JavaScript, pas sur
 - Onze tests D1/Miniflare couvrent la migration, les fichiers partagés, les sauvegardes concurrentes, la course sauvegarde/nettoyage, les liens incorporés, les erreurs R2 et le plan indexé. Aucun fichier réel n’est supprimé par ces tests.
 
 Ordre de livraison : valider localement, appliquer la migration additive et vérifier ses références avant de publier le code de nettoyage. Un retour au code utilisant `RETURNING id` (commit `28d4129` ou ultérieur) reste compatible avec cette nouvelle table ; conserver la table et les triggers en cas de retour arrière. Ne pas supprimer les références tant que le code indexé est déployé.
+
+## Troisième étape — validation Zod des API
+
+- `app/lib/api-validation.ts` centralise les contrats de données, d’administration, de connexion, de disponibilité et de métadonnées des fichiers. Les schémas restent côté serveur.
+- Les actions JSON sont discriminées par `action` : les actions inconnues, mauvais types, booléens textuels, dates impossibles, identifiants vides et champs trop longs sont refusés avant leur traitement.
+- Le catalogue conserve les brouillons complètement vides et les anciens articles textuels. Les règles de prix, d’images, de promotions et d’articles partiellement renseignés sont intégrées aux schémas. Les paramètres de personnalisation et les champs futurs du profil sont conservés ; les champs inconnus au niveau des actions ne deviennent pas des permissions.
+- Les champs facultatifs `null` des formulaires et les indices de prestation numériques sous forme de texte restent compatibles. Le partage d’une carte connectée est revalidé après récupération des coordonnées côté serveur.
+- La lecture JSON vérifie les octets effectivement reçus, y compris sans `Content-Length` fiable : 160 000 octets pour les actions client, 10 000 pour la connexion et l’administration. La carte garde sa limite de 35 000 caractères JSON ; les structures excessivement imbriquées sont refusées avant sérialisation. Les données invalides retournent 400, les corps trop gros 413 ; les indisponibilités de service restent 503.
+- Les erreurs de validation contiennent un message français et un message darija. Les formulaires de carte choisissent la langue active. Aucune valeur de mot de passe ou de requête n’est incluse dans les erreurs.
+- Les contrôles de session vérifiée, propriété, administrateur, origine, consentement, offre Pro, disponibilité, quotas et contraintes de réservation restent dans les routes. Les schémas ne remplacent pas ces contrôles. L’e-mail de connexion est normalisé, le mot de passe est transmis exactement tel quel ; les règles de confirmation Supabase et de récupération restent intactes.
+- 22 tests supplémentaires couvrent les schémas, les corps mal formés et volumineux, les autorisations et les branches sensibles. Les appels au fournisseur d’authentification, au stockage et aux notifications sont simulés dans ces tests ; aucun e-mail, message ou rendez-vous réel n’est créé. Le profil existant a aussi été vérifié en lecture seule contre le schéma de carte.

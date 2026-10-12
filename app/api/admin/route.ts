@@ -1,3 +1,4 @@
+import { adminActionSchema, readValidatedJSON, inputErrorResponse } from '../../lib/api-validation';
 import { db, json, identity, log } from '../../lib/server';
 export async function GET() {
   try {
@@ -5,7 +6,7 @@ export async function GET() {
     if (!user) return json({ error: 'Connexion requise' }, 401);
     if (!admin)
       return json(
-        { error: 'Connectez-vous avec le compte SoraLink vérifié soratap08@gmail.com.' },
+        { error: 'Connectez-vous avec le compte SoraLink autorisé pour l’administration.' },
         403,
       );
     const [profiles, orders, audit] = await Promise.all([
@@ -22,7 +23,9 @@ export async function GET() {
       db().prepare('SELECT * FROM audit ORDER BY created DESC LIMIT 50').all(),
     ]);
     return json({ profiles: profiles.results, orders: orders.results, audit: audit.results });
-  } catch {
+  } catch (error) {
+    const invalid = inputErrorResponse(error);
+    if (invalid) return invalid;
     return json({ error: 'Administration indisponible' }, 503);
   }
 }
@@ -32,13 +35,8 @@ export async function POST(req: Request) {
       return json({ error: 'Accès refusé' }, 403);
     const { user, admin } = await identity();
     if (!user || !admin) return json({ error: 'Accès refusé' }, 403);
-    const b: any = await req.json();
+    const b = await readValidatedJSON(req, adminActionSchema, 10000);
     if (b.action === 'profile') {
-      if (
-        !['active', 'trial', 'suspended'].includes(b.state) ||
-        !['Digital', 'Pack', 'Accompagnement'].includes(b.plan)
-      )
-        return json({ error: 'Valeurs invalides' }, 400);
       const expires = b.expires ? new Date(b.expires + 'T23:59:59Z').toISOString() : null;
       await db()
         .prepare('UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=? WHERE id=?')
@@ -48,25 +46,14 @@ export async function POST(req: Request) {
       return json({ ok: true });
     }
     if (b.action === 'order') {
-      if (
-        ![
-          'pending',
-          'paid',
-          'design',
-          'production',
-          'ready',
-          'shipped',
-          'delivered',
-          'cancelled',
-        ].includes(b.status)
-      )
-        return json({ error: 'Statut invalide' }, 400);
       await db().prepare('UPDATE orders SET status=? WHERE id=?').bind(b.status, b.id).run();
       await log(user.email, 'Commande : ' + b.status, b.id);
       return json({ ok: true });
     }
     return json({ error: 'Action inconnue' }, 400);
-  } catch {
+  } catch (error) {
+    const invalid = inputErrorResponse(error);
+    if (invalid) return invalid;
     return json({ error: 'Modification impossible' }, 503);
   }
 }

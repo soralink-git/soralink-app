@@ -1,9 +1,9 @@
+import { authActionSchema, readValidatedJSON, inputErrorResponse } from '../../lib/api-validation';
 import { authFailure } from '../../lib/auth-errors';
 import { authClient } from '../../lib/supabase';
 import { json, identity } from '../../lib/server';
 import { cookies } from 'next/headers';
 import { getChatGPTUser } from '../../chatgpt-auth';
-const passwordValid = (v: unknown) => typeof v === 'string' && v.length >= 10 && v.length <= 128;
 function failed(error: any, action: string) {
   const result = authFailure(error);
   console.warn('soralink_auth_error', {
@@ -29,9 +29,7 @@ export async function POST(req: Request) {
   try {
     if (req.headers.get('origin') !== new URL(req.url).origin)
       return json({ error: 'Accès refusé' }, 403);
-    if (Number(req.headers.get('content-length') || 0) > 10000)
-      return json({ error: 'Requête invalide' }, 400);
-    const b: any = await req.json();
+    const b = await readValidatedJSON(req, authActionSchema, 10000);
     if (b.action === 'legacy') {
       const user = await getChatGPTUser();
       if (!user) return json({ error: 'Connexion ChatGPT requise' }, 401);
@@ -53,8 +51,6 @@ export async function POST(req: Request) {
       return json({ ok: true });
     }
     if (b.action === 'password') {
-      if (!passwordValid(b.password))
-        return json({ error: 'Choisissez un mot de passe de 10 à 128 caractères.' }, 400);
       const { data, error: authError } = await s.auth.getUser();
       if (authError || !data.user || !data.user.email_confirmed_at)
         return json({ error: 'Ouvrez le lien de récupération reçu par e-mail.' }, 401);
@@ -62,11 +58,7 @@ export async function POST(req: Request) {
       if (error) return failed(error, b.action);
       return json({ ok: true, message: 'Mot de passe mis à jour.' });
     }
-    const email = String(b.email || '')
-      .trim()
-      .toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254)
-      return json({ error: 'Renseignez une adresse e-mail valide.' }, 400);
+    const email = b.email;
     if (b.action === 'reset') {
       const { error } = await s.auth.resetPasswordForEmail(email, {
         redirectTo: base + '/auth/callback?next=reset',
@@ -89,15 +81,6 @@ export async function POST(req: Request) {
         message: 'Si une confirmation est en attente, un nouvel e-mail sera envoyé.',
       });
     }
-    if (
-      b.action === 'login'
-        ? typeof b.password !== 'string' || !b.password || b.password.length > 128
-        : !passwordValid(b.password)
-    )
-      return json(
-        { error: 'Vérifiez votre mot de passe (10 caractères minimum à l’inscription).' },
-        400,
-      );
     if (b.action === 'signup') {
       const { error } = await s.auth.signUp({
         email,
@@ -121,7 +104,9 @@ export async function POST(req: Request) {
       return json({ ok: true, redirect: '/?app=1' });
     }
     return json({ error: 'Action inconnue' }, 400);
-  } catch {
+  } catch (error) {
+    const invalid = inputErrorResponse(error);
+    if (invalid) return invalid;
     return json({ error: 'Service de connexion indisponible. Réessayez.' }, 503);
   }
 }

@@ -1,7 +1,14 @@
+import {
+  mediaUploadSchema,
+  uploadQuerySchema,
+  validateInput,
+  inputErrorResponse,
+  ApiInputError,
+} from '../../lib/api-validation';
 import { adoptLegacy, storageUsage, reserveMedia, cleanupMedia } from '../../lib/media-storage';
 import { env } from 'cloudflare:workers';
 import { identity, db } from '../../lib/server';
-import { mediaError, byteRange, MAX_VIDEO_BYTES } from '../../lib/content-media';
+import { byteRange, MAX_VIDEO_BYTES } from '../../lib/content-media';
 function bucket() {
   if (!env.BUCKET) throw new Error('Storage unavailable');
   return env.BUCKET;
@@ -15,12 +22,16 @@ export async function POST(req: Request) {
     const length = Number(req.headers.get('content-length'));
     if (length > MAX_VIDEO_BYTES + 1024 * 1024)
       return Response.json({ error: 'Fichier trop volumineux' }, { status: 413 });
-    const form = await req.formData(),
-      entry = form.get('file');
+    let form: FormData;
+    try {
+      form = await req.formData();
+    } catch {
+      throw new ApiInputError('Choisissez un fichier valide.');
+    }
+    const entry = form.get('file');
     if (!entry || typeof entry === 'string')
       return Response.json({ error: 'Choisissez un fichier' }, { status: 400 });
-    const error = mediaError(entry.type, entry.size);
-    if (error) return Response.json({ error }, { status: 400 });
+    validateInput(mediaUploadSchema, { type: entry.type, size: entry.size });
     const profile = await db()
       .prepare('SELECT * FROM profiles WHERE owner=?')
       .bind(u.userId)
@@ -48,14 +59,18 @@ export async function POST(req: Request) {
       throw new Error('Upload failed');
     }
     return Response.json({ url: '/api/upload?key=' + key, storage: await storageUsage(u.userId) });
-  } catch {
+  } catch (error) {
+    const invalid = inputErrorResponse(error);
+    if (invalid) return invalid;
     return Response.json({ error: 'Importation impossible. Réessayez.' }, { status: 503 });
   }
 }
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
-    if (url.searchParams.get('stats') === '1') {
+    const parsed = uploadQuerySchema.safeParse(Object.fromEntries(url.searchParams));
+    if (!parsed.success) return new Response(null, { status: 404 });
+    if (parsed.data.stats === '1') {
       const { user } = await identity();
       if (!user) return Response.json({ error: 'Connexion requise' }, { status: 401 });
       const p = await db()
@@ -68,8 +83,8 @@ export async function GET(req: Request) {
         headers: { 'Cache-Control': 'no-store' },
       });
     }
-    const key = url.searchParams.get('key');
-    if (!key || !/^[a-f0-9-]{36}$/.test(key)) return new Response(null, { status: 404 });
+    const key = parsed.data.key;
+    if (!key) return new Response(null, { status: 404 });
     const asset: any = await db()
       .prepare('SELECT state FROM media_assets WHERE key=?')
       .bind(key)

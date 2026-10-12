@@ -1,4 +1,12 @@
 import {
+  dataActionSchema,
+  dataQuerySchema,
+  resolvedRequestSchema,
+  readValidatedJSON,
+  validateInput,
+  inputErrorResponse,
+} from '../../lib/api-validation';
+import {
   adoptLegacy,
   validateMedia,
   saveProfileWithMedia,
@@ -7,23 +15,22 @@ import {
 import { publicCardData } from '../../lib/public-card';
 import { recordedVideoUrl } from '../../lib/content-media';
 import { contactCard } from '../../lib/contact-card';
-import { whatsappNumber } from '../../lib/whatsapp-notification';
 import {
-  catalogueError,
   normalizeCatalogue,
   catalogueSelection,
   catalogueRequestMessage,
 } from '../../lib/catalogue';
 import { env } from 'cloudflare:workers';
-import { mailStatement, mailReady, validEmail } from '../../lib/notifications';
-import { normalizePromotions, promotionError } from '../../lib/promotions';
+import { mailStatement, mailReady } from '../../lib/notifications';
+import { normalizePromotions } from '../../lib/promotions';
 import { normalizeAppearance } from '../../lib/personalization';
 import { identity, db, json, active } from '../../lib/server';
 import { availableSlots, normalizeSchedule, blocks } from '../../lib/schedule';
 export async function GET(req: Request) {
   try {
+    const query = validateInput(dataQuerySchema, Object.fromEntries(new URL(req.url).searchParams));
     const { user, admin, source } = await identity();
-    if (new URL(req.url).searchParams.get('exchange') === '1') {
+    if (query.exchange === '1') {
       if (!user) return json({ error: 'Connexion requise' }, 401);
       const own: any = await db()
         .prepare('SELECT * FROM profiles WHERE owner=?')
@@ -31,7 +38,7 @@ export async function GET(req: Request) {
         .first();
       return json({ card: own && active(own) ? contactCard(own) : null });
     }
-    const id = new URL(req.url).searchParams.get('id');
+    const id = query.id;
     if (id) {
       const p: any = await db()
         .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
@@ -92,7 +99,9 @@ export async function GET(req: Request) {
       admin,
       source,
     });
-  } catch {
+  } catch (error) {
+    const invalid = inputErrorResponse(error);
+    if (invalid) return invalid;
     return json({ error: 'Service temporairement indisponible' }, 503);
   }
 }
@@ -100,12 +109,12 @@ export async function POST(req: Request) {
   try {
     if (req.headers.get('origin') !== new URL(req.url).origin)
       return json({ error: 'Accès refusé' }, 403);
-    const b: any = await req.json();
+    const b = await readValidatedJSON(req, dataActionSchema);
     const { user, admin } = await identity();
     if (b.action === 'request') {
       const p: any = await db()
         .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
-        .bind(String(b.profile))
+        .bind(b.profile)
         .first();
       if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
       let sourceCardId = '';
@@ -132,28 +141,8 @@ export async function POST(req: Request) {
         b.phone = ownCard.phone;
         b.email = ownCard.email;
       }
-      if (
-        !['devis', 'commande', 'rdv', 'contact'].includes(b.kind) ||
-        typeof b.name !== 'string' ||
-        !b.name.trim() ||
-        typeof b.phone !== 'string' ||
-        !b.phone.trim() ||
-        String(b.message || '').length > 2000 ||
-        b.trap
-      )
-        return json({ error: 'Vérifiez les champs' }, 400);
-      if (
-        b.kind === 'contact' &&
-        (b.consent !== true ||
-          b.name.trim().length > 120 ||
-          b.phone.length > 40 ||
-          !whatsappNumber(b.phone) ||
-          String(b.message || '').length > 1000 ||
-          String(b.email || '').length > 254)
-      )
-        return json({ error: 'Vérifiez vos coordonnées et votre accord de partage' }, 400);
-      const email = String(b.email || '').trim();
-      if (email && !validEmail(email)) return json({ error: 'E-mail invalide' }, 400);
+      Object.assign(b, validateInput(resolvedRequestSchema, b));
+      const email = b.email;
       let duration = 30,
         service = sourceCardId,
         message = String(b.message || '');
@@ -243,7 +232,7 @@ export async function POST(req: Request) {
         .prepare(
           "DELETE FROM requests WHERE id=? AND kind='contact' AND profile IN (SELECT id FROM profiles WHERE owner=?)",
         )
-        .bind(String(b.id || ''), user.userId)
+        .bind(b.id, user.userId)
         .run();
       if (!result.meta.changes) return json({ error: 'Contact introuvable' }, 404);
       return json({ ok: true });
@@ -255,14 +244,6 @@ export async function POST(req: Request) {
         .first();
       const id = p?.id || crypto.randomUUID();
       let d = b.data;
-      if (!d || typeof d.name !== 'string' || !d.name.trim() || JSON.stringify(d).length > 35000)
-        return json({ error: 'Informations invalides' }, 400);
-      const itemError = catalogueError(d.services);
-      if (itemError) return json({ error: itemError }, 400);
-      const promoError = promotionError(d.promotions);
-      if (promoError) return json({ error: promoError }, 400);
-      if (d.recordedVideo && !recordedVideoUrl(d.recordedVideo))
-        return json({ error: 'Lien de vidéo invalide' }, 400);
       d = normalizeAppearance(normalizeSchedule(d));
       d.recordedVideo = recordedVideoUrl(d.recordedVideo);
       d.promotions = normalizePromotions(d.promotions);
@@ -284,19 +265,11 @@ export async function POST(req: Request) {
       return json({ ok: true, id, cleanupPending: !cleaned });
     }
     if (b.action === 'manual') {
-      if (b.email && !validEmail(b.email)) return json({ error: 'E-mail invalide' }, 400);
       const p: any = await db()
         .prepare('SELECT * FROM profiles WHERE owner=?')
         .bind(user.userId)
         .first();
       if (!p || !active(p) || !p.pro_enabled) return json({ error: 'Option Pro inactive' }, 403);
-      if (
-        typeof b.name !== 'string' ||
-        !b.name.trim() ||
-        typeof b.phone !== 'string' ||
-        !b.phone.trim()
-      )
-        return json({ error: 'Nom et téléphone requis' }, 400);
       const d = normalizeSchedule(JSON.parse(p.data));
       const service = d.appointmentServices[Number(b.service || 0)];
       if (!service) return json({ error: 'Prestation invalide' }, 400);
@@ -362,8 +335,6 @@ export async function POST(req: Request) {
       return json({ ok: true });
     }
     if (b.action === 'order') {
-      if (!['Digital', 'Pack', 'Accompagnement', 'Pro'].includes(b.plan))
-        return json({ error: 'Offre invalide' }, 400);
       const existing = await db()
         .prepare("SELECT id FROM orders WHERE owner=? AND plan=? AND status='pending'")
         .bind(user.userId, b.plan)
@@ -382,12 +353,7 @@ export async function POST(req: Request) {
         )
         .bind(b.id, user.userId)
         .first();
-      if (
-        !r ||
-        r.kind === 'contact' ||
-        !['confirmed', 'cancelled', 'done', 'new'].includes(b.status)
-      )
-        return json({ error: 'Accès refusé' }, 403);
+      if (!r || r.kind === 'contact') return json({ error: 'Accès refusé' }, 403);
       if (r.status === b.status) return json({ ok: true });
       const profile: any = await db()
         .prepare('SELECT * FROM profiles WHERE id=?')
@@ -400,7 +366,7 @@ export async function POST(req: Request) {
         )
         .bind(b.status, revision, r.id, r.notification_revision || 0);
       const notice =
-        r.kind === 'rdv' && ['confirmed', 'cancelled'].includes(b.status)
+        r.kind === 'rdv' && (b.status === 'confirmed' || b.status === 'cancelled')
           ? mailStatement(env as any, profile, r, b.status, revision)
           : [];
       if (b.status === 'confirmed' && r.kind === 'rdv') {
@@ -453,7 +419,9 @@ export async function POST(req: Request) {
       return json({ ok: true });
     }
     return json({ error: 'Action inconnue' }, 400);
-  } catch {
+  } catch (error) {
+    const invalid = inputErrorResponse(error);
+    if (invalid) return invalid;
     return json({ error: 'Enregistrement impossible. Réessayez.' }, 503);
   }
 }

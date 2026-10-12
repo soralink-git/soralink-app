@@ -40,8 +40,9 @@ export default function PublicRequestModal({
       });
       const b = (await r.json()) as {
         error?: string;
+        errorAr?: string;
       };
-      if (!r.ok) throw new Error(b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
       return b;
     } finally {
       setBusy(false);
@@ -82,7 +83,7 @@ export default function PublicRequestModal({
     })
       .then(async (r) => {
         const b: any = await r.json();
-        if (!r.ok) throw new Error(b.error);
+        if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
         setSlots(b.slots);
       })
       .catch((e) => {

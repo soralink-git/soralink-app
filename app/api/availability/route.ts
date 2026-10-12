@@ -1,12 +1,20 @@
+import {
+  availabilityQuerySchema,
+  validateInput,
+  inputErrorResponse,
+} from '../../lib/api-validation';
 import { normalizeAppearance } from '../../lib/personalization';
 import { db, json, active } from '../../lib/server';
 import { availableSlots, normalizeSchedule } from '../../lib/schedule';
 export async function GET(req: Request) {
   try {
-    const u = new URL(req.url);
+    const query = validateInput(
+      availabilityQuerySchema,
+      Object.fromEntries(new URL(req.url).searchParams),
+    );
     const p: any = await db()
       .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
-      .bind(u.searchParams.get('id'))
+      .bind(query.id)
       .first();
     if (!p || !active(p) || !p.pro_enabled)
       return json({ error: 'Rendez-vous indisponibles' }, 404);
@@ -14,10 +22,10 @@ export async function GET(req: Request) {
     if (normalizeAppearance(saved).hiddenSections.includes('appointments'))
       return json({ error: 'Rendez-vous indisponibles' }, 404);
     const d = normalizeSchedule(saved);
-    const index = Number(u.searchParams.get('service') || 0);
+    const index = query.service;
     const s = d.appointmentServices[index];
     if (!s) return json({ error: 'Prestation indisponible' }, 400);
-    const date = u.searchParams.get('date') || '';
+    const date = query.date;
     const busy = await db()
       .prepare('SELECT slot FROM bookings WHERE profile=? AND slot LIKE ?')
       .bind(p.id, date + '%')
@@ -32,7 +40,9 @@ export async function GET(req: Request) {
       ),
       timezone: 'Africa/Casablanca',
     });
-  } catch {
+  } catch (error) {
+    const invalid = inputErrorResponse(error);
+    if (invalid) return invalid;
     return json({ error: 'Agenda temporairement indisponible' }, 503);
   }
 }
