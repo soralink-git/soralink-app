@@ -10,7 +10,7 @@ const { demoCard } = load(path.resolve('app/lib/demo-card.ts')),
   { defaults } = load(path.resolve('app/lib/schedule.ts'));
 const { sectionKeys } = load(path.resolve('app/lib/personalization.ts'));
 const noop = () => {};
-function context(tab) {
+function context(tab, ar = false) {
   const data = {
     ...defaults,
     ...demoCard,
@@ -32,7 +32,7 @@ function context(tab) {
   return {
     tab,
     data,
-    ar: false,
+    ar,
     auth: true,
     loaded: true,
     busy: false,
@@ -47,7 +47,7 @@ function context(tab) {
     sectionLabels: Object.fromEntries(sectionKeys.map((k) => [k, [k, k]])),
     photoCaptureRef: { current: null },
     videoCaptureRef: { current: null },
-    t: (fr) => fr,
+    t: (fr, da) => (ar ? da : fr),
     field: (key, label) =>
       React.createElement(
         'label',
@@ -59,7 +59,7 @@ function context(tab) {
     Card: (props) =>
       React.createElement(CardView, {
         ...props,
-        ar: false,
+        ar,
         setAr: noop,
         onMessage: noop,
         onRequest: noop,
@@ -101,6 +101,19 @@ for (const tab of [
       React.createElement(DashboardEditor, { context: context(tab) }),
     );
     assert.equal((html.match(/workspace-card-preview live-preview/g) || []).length, 1);
-    assert.equal((html.match(/profile-card custom-card/g) || []).length, 1);
+    assert.equal((html.match(/profile-card card-design custom-card/g) || []).length, 1);
     assert.match(html, /workspace-tab-content/);
+  });
+
+for (const ar of [false, true])
+  test(`workspace groups and selected section render in ${ar ? 'Arabic' : 'French'}`, () => {
+    const html = renderToStaticMarkup(
+      React.createElement(DashboardEditor, { context: context('contacts', ar) }),
+    );
+    assert.equal((html.match(/aria-pressed="true"/g) || []).length, 1);
+    assert.equal((html.match(/aria-pressed="false"/g) || []).length, 9);
+    assert.match(html, ar ? /<h1>الكونطاكت ديالي<\/h1>/ : /<h1>Mes contacts<\/h1>/);
+    assert.match(html, ar ? /خصّص الكارط/ : /Personnaliser/);
+    assert.match(html, ar ? /الزبناء ديالي/ : /Mes clients/);
+    assert.equal((html.match(/workspace-card-preview live-preview/g) || []).length, 1);
   });

@@ -106,7 +106,7 @@ export default function CardView({
     return (
       <article
         className={
-          'profile-card custom-card theme-' +
+          'profile-card card-design custom-card theme-' +
           a.theme +
           ' text-size-' +
           a.textSize +
@@ -122,7 +122,8 @@ export default function CardView({
         }
         style={
           {
-            '--accent': a.buttonColor || d.color,
+            '--card-color': d.color || '#d5b66f',
+            '--accent': a.buttonColor || d.color || '#d5b66f',
             '--accent-text': accentText(a.buttonColor || d.color),
             ...(a.textColor ? { '--card-fg': a.textColor, '--card-muted': a.textColor } : {}),
             '--button-radius': a.shape === 'pill' ? '30px' : a.shape === 'square' ? '0px' : '8px',
@@ -154,26 +155,27 @@ export default function CardView({
           )}
         </div>
         <div className="card-content">
-          <div className="avatar">
-            {d.avatar ? (
-              <img src={d.avatar} alt="" />
-            ) : (
-              d.name
-                .split(' ')
-                .filter(Boolean)
-                .slice(0, 2)
-                .map((s: string) => s[0])
-                .join('') || 'SL'
-            )}
-          </div>
-          <span className="eyebrow">{d.business || t('Votre entreprise', 'المقاولة ديالك')}</span>
-          <h2>{d.name || t('Votre nom', 'الاسم ديالك')}</h2>
-          <p className="job">{d.job || t('Votre métier', 'المهنة ديالك')}</p>
-          <p className="bio">
-            {d.bio ||
-              t('Présentez votre activité en quelques mots.', 'عرّف بالنشاط ديالك بكلمات بسيطة.')}
-          </p>
-          {withSections && <Details d={d} preview={preview} />}
+          <section className="card-identity">
+            <div className="avatar">
+              {d.avatar ? (
+                <img src={d.avatar} alt="" />
+              ) : (
+                d.name
+                  .split(' ')
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .map((s: string) => s[0])
+                  .join('') || 'SL'
+              )}
+            </div>
+            <span className="eyebrow">{d.business || t('Votre entreprise', 'المقاولة ديالك')}</span>
+            <h2>{d.name || t('Votre nom', 'الاسم ديالك')}</h2>
+            <p className="job">{d.job || t('Votre métier', 'المهنة ديالك')}</p>
+            <p className="bio">
+              {d.bio ||
+                t('Présentez votre activité en quelques mots.', 'عرّف بالنشاط ديالك بكلمات بسيطة.')}
+            </p>
+          </section>
           {small && !preview && !withSections && <CardSection d={d} section="coordinates" />}
           {small && !preview && !withSections && <CardSection d={d} section="social" />}
           {small && !preview && !withSections ? (
@@ -192,10 +194,29 @@ export default function CardView({
                 : t('Découvrir la carte', 'شوف الكارط')}
             </button>
           ) : (
-            <>
+            <div className="card-actions">
+              <button
+                className="card-button card-save"
+                onClick={() => {
+                  const blob = new Blob(
+                    [
+                      vcardText({
+                        name: d.name,
+                        phone: a.hidePhone ? '' : d.phone,
+                        email: a.hideEmail ? '' : d.email,
+                      }),
+                    ],
+                    { type: 'text/vcard' },
+                  );
+                  download(blob, 'contact.vcf');
+                }}
+              >
+                <Download size={16} />
+                {t('Enregistrer le contact', 'سجّل الكونطاكت')}
+              </button>
               {!d.pro && (
                 <button
-                  className="card-button"
+                  className="card-button card-request"
                   onClick={() => {
                     if (preview) {
                       setMsg(
@@ -258,27 +279,9 @@ export default function CardView({
                 <Users size={18} />
                 {t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
               </button>
-              <button
-                className="text-button"
-                onClick={() => {
-                  const blob = new Blob(
-                    [
-                      vcardText({
-                        name: d.name,
-                        phone: a.hidePhone ? '' : d.phone,
-                        email: a.hideEmail ? '' : d.email,
-                      }),
-                    ],
-                    { type: 'text/vcard' },
-                  );
-                  download(blob, 'contact.vcf');
-                }}
-              >
-                <Download size={16} />
-                {t('Enregistrer le contact', 'سجّل الكونطاكت')}
-              </button>
-            </>
+            </div>
           )}
+          {withSections && <Details d={d} preview={preview} />}
         </div>
       </article>
     );
@@ -315,7 +318,7 @@ export default function CardView({
           )}
           <div className="contact-icons">
             {!a.hidePhone && d.phone && (
-              <a href={'tel:' + d.phone} aria-label="Téléphone">
+              <a href={'tel:' + d.phone} aria-label={t('Téléphone', 'التلفون')}>
                 <Phone size={18} />
               </a>
             )}
@@ -536,7 +539,8 @@ export default function CardView({
         }
         style={
           {
-            '--accent': a.buttonColor || d.color,
+            '--card-color': d.color || '#d5b66f',
+            '--accent': a.buttonColor || d.color || '#d5b66f',
             '--accent-text': accentText(a.buttonColor || d.color),
             ...(a.textColor ? { '--card-fg': a.textColor, '--card-muted': a.textColor } : {}),
             '--button-radius': a.shape === 'pill' ? '30px' : a.shape === 'square' ? '0px' : '8px',

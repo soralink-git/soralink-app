@@ -128,3 +128,18 @@ test('booking cannot be submitted without an available slot', () => {
   assert.match(html, /Jour souhaité/);
   assert.doesNotMatch(html, /datetime-local/);
 });
+
+test('primary card actions precede content and remain unique', () => {
+  const html = card(demoCard);
+  const actionStart = html.indexOf('class="card-actions"');
+  assert.ok(actionStart > html.indexOf('class="card-identity"'));
+  assert.ok(actionStart < html.indexOf('class="public-details'));
+  for (const label of [
+    'Enregistrer le contact',
+    'Partager cette carte',
+    'Échanger nos coordonnées',
+  ]) {
+    assert.equal(html.split(label).length - 1, 1, label);
+  }
+  assert.match(html, /class="card-button card-save"/);
+});

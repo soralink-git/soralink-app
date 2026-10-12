@@ -79,6 +79,8 @@ const blank = {
   mapDestination: '',
   color: '#d5b66f',
   template: 'Professionnel',
+  cardTheme: 'dark',
+  buttonShape: 'pill',
   services: [] as any[],
   photos: [] as string[],
   pdf: '',
@@ -832,18 +834,20 @@ export default function App({
             </span>
             Sora<span>Link</span>
           </a>
-          <nav aria-label={t('Navigation principale', 'التنقل الرئيسي')}>
-            {[
-              ['fonctionnalites', 'Fonctionnalités', 'المزايا'],
-              ['tarifs', 'Tarifs', 'الأثمنة'],
-              ['exemples', 'Exemples', 'أمثلة'],
-              ['faq', 'FAQ', 'أسئلة'],
-            ].map(([anchor, f, a]) => (
-              <a href={(view === 'home' ? '' : '/') + '#' + anchor} key={anchor}>
-                {t(f, a)}
-              </a>
-            ))}
-          </nav>
+          {(view === 'home' || view === 'pricing') && (
+            <nav aria-label={t('Navigation principale', 'التنقل الرئيسي')}>
+              {[
+                ['fonctionnalites', 'Fonctionnalités', 'المزايا'],
+                ['tarifs', 'Tarifs', 'الأثمنة'],
+                ['exemples', 'Exemples', 'أمثلة'],
+                ['faq', 'FAQ', 'أسئلة'],
+              ].map(([anchor, f, a]) => (
+                <a href={(view === 'home' ? '' : '/') + '#' + anchor} key={anchor}>
+                  {t(f, a)}
+                </a>
+              ))}
+            </nav>
+          )}
           <div className="header-actions">
             <button className="language" onClick={() => setAr(!ar)}>
               <Globe size={16} />

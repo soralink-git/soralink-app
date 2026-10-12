@@ -1,5 +1,6 @@
 'use client';
 import type { JSX, Dispatch, SetStateAction, RefObject } from 'react';
+import type { LucideIcon } from 'lucide-react';
 
 import {
   Nfc,
@@ -136,27 +137,55 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     uploadVideo,
     videoCaptureRef,
   } = context;
+  const tabs = [
+    ['profile', Briefcase, 'Ma carte', 'الكارط ديالي', 'card'],
+    ['sections', LayoutDashboard, 'Mes sections', 'الأقسام ديالي', 'card'],
+    ['catalogue', Briefcase, 'Mon catalogue', 'الكاتالوگ ديالي', 'card'],
+    ['media', ImageIcon, 'Mes contenus', 'المحتوى ديالي', 'card'],
+    ['promotions', Palette, 'Mes promos', 'العروض ديالي', 'card'],
+    ['contacts', Users, 'Mes contacts', 'الكونطاكت ديالي', 'clients'],
+    ['requests', Calendar, 'Mes demandes', 'الطلبات ديالي', 'clients'],
+    ['schedule', Clock, 'Mon agenda', 'الأجندة ديالي', 'clients'],
+    ['share', Nfc, 'Partager', 'شارك', 'offer'],
+    ['orders', FileText, 'Mon offre', 'العرض ديالي', 'offer'],
+  ] satisfies Array<[string, LucideIcon, string, string, string]>;
+  const current = tabs.find(([key]) => key === tab) || tabs[0];
   return (
-    <main className="workspace">
+    <main className="workspace workspace-design">
       <aside>
         <h3>{t('Mon espace', 'الحساب ديالي')}</h3>
-        {[
-          ['profile', Briefcase, 'Ma carte', 'الكارط ديالي'],
-          ['sections', LayoutDashboard, 'Mes sections', 'الأقسام ديالي'],
-          ['catalogue', Briefcase, 'Mon catalogue', 'الكاتالوگ ديالي'],
-          ['media', ImageIcon, 'Mes contenus', 'المحتوى ديالي'],
-          ['promotions', Palette, 'Mes promos', 'العروض ديالي'],
-          ['contacts', Users, 'Mes contacts', 'الكونطاكت ديالي'],
-          ['requests', Calendar, 'Mes demandes', 'الطلبات ديالي'],
-          ['schedule', Clock, 'Mon agenda', 'الأجندة ديالي'],
-          ['share', Nfc, 'Partager', 'شارك'],
-          ['orders', FileText, 'Mon offre', 'العرض ديالي'],
-        ].map(([key, Icon, f, a]: any) => (
-          <button key={key} className={tab === key ? 'selected' : ''} onClick={() => setTab(key)}>
-            <Icon size={18} />
-            {t(f, a)}
-          </button>
-        ))}
+        <nav
+          className="workspace-navigation"
+          aria-label={t('Rubriques de votre espace', 'أقسام الحساب ديالك')}
+        >
+          {tabs.map(([key, Icon, fr, da, group], index) => (
+            <div key={key} className="workspace-nav-item">
+              {(index === 0 || tabs[index - 1][4] !== group) && (
+                <span className="workspace-nav-group">
+                  {group === 'card'
+                    ? t('Personnaliser', 'خصّص الكارط')
+                    : group === 'clients'
+                      ? t('Mes clients', 'الزبناء ديالي')
+                      : t('Diffusion et offre', 'المشاركة والعرض')}
+                </span>
+              )}
+              <button
+                key={key}
+                className={tab === key ? 'selected' : ''}
+                onClick={() => setTab(key)}
+                aria-pressed={tab === key}
+              >
+                <Icon size={19} />
+                <span>{t(fr, da)}</span>
+                {key === 'requests' && inbox.some((r) => r.status === 'new') && (
+                  <span className="nav-count">
+                    {inbox.filter((r) => r.status === 'new').length}
+                  </span>
+                )}
+              </button>
+            </div>
+          ))}
+        </nav>
         {auth && (
           <button className="text-button" onClick={logout}>
             {t('Se déconnecter', 'خرج من الحساب')}
@@ -165,7 +194,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         {canAdmin && (
           <a className="secondary small full" href="/admin">
             <Settings size={16} />
-            Administration
+            {t('Administration', 'الإدارة')}
           </a>
         )}
         <div className="sidebar-note">
@@ -186,8 +215,16 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         )}
         <div className="workspace-head">
           <div>
-            <span className="eyebrow">SORALINK / {t('ESPACE CLIENT', 'حساب الزبون')}</span>
-            <h1>{t('Faites bonne impression.', 'خلّي انطباع زوين.')}</h1>
+            <span className="eyebrow">
+              <span dir="ltr">SoraLink</span> / {t('ESPACE CLIENT', 'حساب الزبون')}
+            </span>
+            <h1>{t(current[2], current[3])}</h1>
+            <p className="workspace-intro">
+              {t(
+                'Personnalisez, enregistrez et partagez votre présence digitale.',
+                'خصّص، سجّل وشارك الحضور الرقمي ديالك.',
+              )}
+            </p>
           </div>
           {auth && (
             <button disabled={busy} className="primary" onClick={save}>
@@ -1573,8 +1610,17 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               role="region"
               aria-label={t('Aperçu de votre carte', 'معاينة الكارط ديالك')}
             >
-              <span className="eyebrow">{t('APERÇU EN DIRECT', 'معاينة مباشرة')}</span>
+              <div className="preview-heading">
+                <span className="eyebrow">{t('APERÇU EN DIRECT', 'معاينة مباشرة')}</span>
+                <span className="preview-live-dot" aria-hidden="true" />
+              </div>
               <Card d={data} small preview withSections />
+              <p className="preview-caption">
+                {t(
+                  'Votre carte évolue pendant vos modifications.',
+                  'الكارط كتبدّل مباشرة مع التعديلات ديالك.',
+                )}
+              </p>
             </div>
           </div>
         )}
