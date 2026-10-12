@@ -27,6 +27,17 @@ Réduction estimée gzip : 21.9 %. Cette mesure porte sur le JavaScript, pas sur
 
 ## Étapes suivantes
 
-1. Ajouter `profile_media(profile_id, media_key)` avec une clé composée et un index sur `media_key`. Prévoir le remplissage initial, la synchronisation atomique avec les sauvegardes et des tests de concurrence avant de remplacer les recherches JSON par les références indexées. Le nettoyage actuel n’a pas été modifié dans cette étape.
-2. Ajouter des schémas Zod par action API, en conservant les contrôles d’identité, propriété, publication, consentement, quotas et concurrence. Une validation de forme ne remplace pas ces contrôles.
-3. La documentation Cloudflare actuelle recommande Vinext pour les nouvelles applications Next.js sur Workers ([guide officiel](https://developers.cloudflare.com/workers/framework-guides/web-apps/opennext/)). Une migration vers OpenNext ne constitue donc pas une priorité automatique. Si une limitation réelle apparaît, évaluer l’alternative dans une branche indépendante : auth/cookies, routes SSR, D1/R2, métadonnées, PWA et médias. Vinext reste fixé à la version utilisée ; cette étape n’effectue pas de migration du framework.
+1. Ajouter des schémas Zod par action API, en conservant les contrôles d’identité, propriété, publication, consentement, quotas et concurrence. Une validation de forme ne remplace pas ces contrôles.
+2. La documentation Cloudflare actuelle recommande Vinext pour les nouvelles applications Next.js sur Workers ([guide officiel](https://developers.cloudflare.com/workers/framework-guides/web-apps/opennext/)). Une migration vers OpenNext ne constitue donc pas une priorité automatique. Si une limitation réelle apparaît, évaluer l’alternative dans une branche indépendante : auth/cookies, routes SSR, D1/R2, métadonnées, PWA et médias. Vinext reste fixé à la version utilisée ; cette étape n’effectue pas de migration du framework.
+
+## Deuxième étape — références de médias D1
+
+- Migration `drizzle/0004_profile_media.sql` : table `profile_media`, clé composée, index `profile_media_key`, références de tous les profils existants et suppression en cascade avec le profil. Les médias sans ligne dans `media_assets` restent référencés pour préserver les fichiers historiques.
+- Des triggers synchronisent les références avec l’insertion ou la modification du JSON du profil, dans la transaction de cette écriture. Ils protègent aussi les sauvegardes provenant d’une ancienne version pendant le déploiement.
+- Le JSON est parcouru seulement lors de la migration et des changements de contenu. Les liens locaux, absolus et inclus dans du texte sont reconnus, dédupliqués et conservés même pour un contenu masqué.
+- Le nettoyage utilise maintenant `NOT EXISTS` sur `profile_media.media_key`. Il ne parcourt plus le JSON de tous les profils pour chaque fichier. Le plan SQL de test confirme l’utilisation de l’index.
+- Les sauvegardes continuent à vérifier la version précédente et l’état des médias. Un trigger bloque aussi une nouvelle référence vers un fichier en cours de suppression. La réponse d’une sauvegarde utilise `RETURNING id`, car le compteur de changements D1 inclut les écritures des triggers.
+- Un fichier encore référencé est exclu de la sélection R2, même si son état était déjà `deleting`. Une panne de R2 laisse les suppressions non réalisées réessayables. Le délai de protection des fichiers récemment importés reste de 24 heures.
+- Onze tests D1/Miniflare couvrent la migration, les fichiers partagés, les sauvegardes concurrentes, la course sauvegarde/nettoyage, les liens incorporés, les erreurs R2 et le plan indexé. Aucun fichier réel n’est supprimé par ces tests.
+
+Ordre de livraison : valider localement, appliquer la migration additive et vérifier ses références avant de publier le code de nettoyage. Un retour au code utilisant `RETURNING id` (commit `28d4129` ou ultérieur) reste compatible avec cette nouvelle table ; conserver la table et les triggers en cas de retour arrière. Ne pas supprimer les références tant que le code indexé est déployé.

@@ -88,12 +88,14 @@ export async function cleanupMedia(owner: string) {
   const cutoff = new Date(Date.now() - 24 * 3600000).toISOString();
   await db()
     .prepare(
-      "UPDATE media_assets SET state='deleting' WHERE owner=? AND state IN ('ready','pending') AND created<? AND NOT EXISTS(SELECT 1 FROM profiles WHERE profiles.data LIKE '%'||media_assets.key||'%')",
+      "UPDATE media_assets SET state='deleting' WHERE owner=? AND state IN ('ready','pending') AND created<? AND NOT EXISTS(SELECT 1 FROM profile_media WHERE media_key=media_assets.key)",
     )
     .bind(owner, cutoff)
     .run();
   const items = await db()
-    .prepare("SELECT key FROM media_assets WHERE owner=? AND state='deleting' LIMIT 80")
+    .prepare(
+      "SELECT key FROM media_assets WHERE owner=? AND state='deleting' AND NOT EXISTS(SELECT 1 FROM profile_media WHERE media_key=media_assets.key) LIMIT 80",
+    )
     .bind(owner)
     .all<{ key: string }>();
   let complete = true;
@@ -151,11 +153,11 @@ export async function saveProfileWithMedia(
   const deletions = removed.map((key) =>
     db()
       .prepare(
-        "UPDATE media_assets SET state='deleting' WHERE key=? AND owner=? AND state='ready' AND EXISTS(SELECT 1 FROM profiles WHERE owner=? AND updated=? AND data=?) AND NOT EXISTS(SELECT 1 FROM profiles WHERE data LIKE ?)",
+        "UPDATE media_assets SET state='deleting' WHERE key=? AND owner=? AND state='ready' AND EXISTS(SELECT 1 FROM profiles WHERE owner=? AND updated=? AND data=?) AND NOT EXISTS(SELECT 1 FROM profile_media WHERE media_key=?)",
       )
-      .bind(key, owner, owner, stamp, data, '%' + key + '%'),
+      .bind(key, owner, owner, stamp, data, key),
   );
   const result = await db().batch([save, ...deletions]);
-  // Trigger writes affect meta.changes; RETURNING identifies the accepted profile save.
+  // D1 meta.changes includes trigger writes; RETURNING identifies the accepted save.
   return result[0].results.length === 1;
 }

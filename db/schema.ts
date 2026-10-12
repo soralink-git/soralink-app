@@ -1,4 +1,11 @@
-import { sqliteTable, text, integer, uniqueIndex, index } from 'drizzle-orm/sqlite-core';
+import {
+  sqliteTable,
+  text,
+  integer,
+  uniqueIndex,
+  index,
+  primaryKey,
+} from 'drizzle-orm/sqlite-core';
 export const profiles = sqliteTable('profiles', {
   id: text('id').primaryKey(),
   owner: text('owner').notNull().unique(),
@@ -79,4 +86,18 @@ export const mediaAssets = sqliteTable(
     created: text('created').notNull(),
   },
   (t) => [index('media_owner_state').on(t.owner, t.state)],
+);
+
+export const profileMedia = sqliteTable(
+  'profile_media',
+  {
+    profileId: text('profile_id')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    mediaKey: text('media_key').notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.profileId, t.mediaKey] }),
+    index('profile_media_key').on(t.mediaKey),
+  ],
 );
