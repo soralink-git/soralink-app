@@ -114,3 +114,10 @@ header nav a{font-size:13px;color:var(--muted);padding:10px 0}header nav a:hover
 .custom-card.button-style-outline .card-button,.custom-details.button-style-outline .card-button,.custom-card .exchange-button,.custom-card .secondary,.custom-details .secondary{border-color:var(--accent,#d5b66f)}
 .custom-card .card-content>h2,.custom-details h2,.custom-details h3,.custom-details h4{color:var(--card-fg)}
 .personalization input[type=color]{width:100%;height:46px;padding:4px;cursor:pointer}.personalization .field>.text-button{font-size:14px;min-height:38px;margin-top:4px;text-align:start}
+
+/* Public card: focused presentation with legal links at the page bottom. */
+.public-card-page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.public-card-page>.public-layout{width:100%;flex:1;margin:20px auto 24px}
+.public-card-page>.card-legal-footer{width:calc(100% - 32px);max-width:570px;margin:0 auto;padding:16px 12px 20px;border:0;display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;font-size:13px;line-height:1.6;color:#c9c7c1;text-align:center}
+.card-legal-footer a{padding:6px 2px;text-decoration:underline;text-underline-offset:3px}.card-legal-footer a:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+@media(max-width:700px){.public-card-page>.public-layout{margin:12px auto 16px}.public-card-page>.card-legal-footer{padding-bottom:max(16px,env(safe-area-inset-bottom))}}
