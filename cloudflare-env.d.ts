@@ -12,4 +12,8 @@ declare namespace Cloudflare {
   }
 }
 
-declare namespace Cloudflare {interface Env {ASSETS:Fetcher;}}
+declare namespace Cloudflare {
+  interface Env {
+    ASSETS: Fetcher;
+  }
+}

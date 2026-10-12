@@ -1,2 +1,85 @@
-export const demoCard={name:'Exemple SoraLink',business:'Studio créatif · Démonstration',job:'Création & personnalisation',bio:'Une page pour présenter votre activité, votre catalogue et vos offres. Les articles et promotions ci-dessous sont des exemples fictifs.',phone:'',email:'',whatsapp:'',address:'Oujda · Maroc',color:'#d5b66f',cardTheme:'dark',pro:true,services:[{id:'demo-1',type:'service',name:'Identité visuelle',category:'Création',description:'Présentez ici votre prestation, ses options et les informations utiles avant une demande.',price:'',image:''},{id:'demo-2',type:'product',name:'Cadeau personnalisé',category:'Personnalisation',description:'Ajoutez une photo, une description et un prix pour chaque article.',price:'',image:''}],promotions:[{id:'demo-promo',title:'Votre offre du moment',description:'Exemple de promotion : mettez en avant une nouveauté ou une offre saisonnière.',enabled:true,image:'',promoPrice:'',regularPrice:'',startDate:'',endDate:''}],photos:['/demo-design.svg'],appointmentServices:[{name:'Premier échange',duration:30}]};
-export const demoCardArabic={...demoCard,name:'مثال SoraLink',business:'ستوديو إبداعي · مثال للتوضيح',job:'الإبداع والتخصيص',bio:'صفحة كتقدّم النشاط، الكاتالوگ والعروض ديالك. المنتجات والعروض اللي تحت غير أمثلة للتوضيح.',address:'وجدة · المغرب',services:[{id:'demo-1',type:'service',name:'الهوية البصرية',category:'الإبداع',description:'قدّم هنا الخدمة، الاختيارات والمعلومات اللي خاص الزبون يعرف قبل الطلب.',price:'',image:''},{id:'demo-2',type:'product',name:'هدية شخصية',category:'التخصيص',description:'زيد تصويرة، وصف وثمن لكل منتج.',price:'',image:''}],promotions:[{...demoCard.promotions[0],title:'العرض ديالك دابا',description:'مثال ديال عرض: ورّي جديد النشاط ولا عرض موسمي.'}],appointmentServices:[{name:'تعارف أولي',duration:30}]};
+export const demoCard = {
+  name: 'Exemple SoraLink',
+  business: 'Studio créatif · Démonstration',
+  job: 'Création & personnalisation',
+  bio: 'Une page pour présenter votre activité, votre catalogue et vos offres. Les articles et promotions ci-dessous sont des exemples fictifs.',
+  phone: '',
+  email: '',
+  whatsapp: '',
+  address: 'Oujda · Maroc',
+  color: '#d5b66f',
+  cardTheme: 'dark',
+  pro: true,
+  services: [
+    {
+      id: 'demo-1',
+      type: 'service',
+      name: 'Identité visuelle',
+      category: 'Création',
+      description:
+        'Présentez ici votre prestation, ses options et les informations utiles avant une demande.',
+      price: '',
+      image: '',
+    },
+    {
+      id: 'demo-2',
+      type: 'product',
+      name: 'Cadeau personnalisé',
+      category: 'Personnalisation',
+      description: 'Ajoutez une photo, une description et un prix pour chaque article.',
+      price: '',
+      image: '',
+    },
+  ],
+  promotions: [
+    {
+      id: 'demo-promo',
+      title: 'Votre offre du moment',
+      description: 'Exemple de promotion : mettez en avant une nouveauté ou une offre saisonnière.',
+      enabled: true,
+      image: '',
+      promoPrice: '',
+      regularPrice: '',
+      startDate: '',
+      endDate: '',
+    },
+  ],
+  photos: ['/demo-design.svg'],
+  appointmentServices: [{ name: 'Premier échange', duration: 30 }],
+};
+export const demoCardArabic = {
+  ...demoCard,
+  name: 'مثال SoraLink',
+  business: 'ستوديو إبداعي · مثال للتوضيح',
+  job: 'الإبداع والتخصيص',
+  bio: 'صفحة كتقدّم النشاط، الكاتالوگ والعروض ديالك. المنتجات والعروض اللي تحت غير أمثلة للتوضيح.',
+  address: 'وجدة · المغرب',
+  services: [
+    {
+      id: 'demo-1',
+      type: 'service',
+      name: 'الهوية البصرية',
+      category: 'الإبداع',
+      description: 'قدّم هنا الخدمة، الاختيارات والمعلومات اللي خاص الزبون يعرف قبل الطلب.',
+      price: '',
+      image: '',
+    },
+    {
+      id: 'demo-2',
+      type: 'product',
+      name: 'هدية شخصية',
+      category: 'التخصيص',
+      description: 'زيد تصويرة، وصف وثمن لكل منتج.',
+      price: '',
+      image: '',
+    },
+  ],
+  promotions: [
+    {
+      ...demoCard.promotions[0],
+      title: 'العرض ديالك دابا',
+      description: 'مثال ديال عرض: ورّي جديد النشاط ولا عرض موسمي.',
+    },
+  ],
+  appointmentServices: [{ name: 'تعارف أولي', duration: 30 }],
+};

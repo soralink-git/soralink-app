@@ -1,0 +1,10 @@
+node_modules
+dist
+.next
+.wrangler
+pnpm-lock.yaml
+public
+drizzle/meta
+*.tsbuildinfo
+
+next-env.d.ts

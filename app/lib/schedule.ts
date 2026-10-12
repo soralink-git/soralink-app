@@ -1,6 +1,112 @@
-export const defaults={hours:{'1':['09:00','17:00'],'2':['09:00','17:00'],'3':['09:00','17:00'],'4':['09:00','17:00'],'5':['09:00','17:00']},closures:[] as string[],appointmentServices:[{name:'Consultation',duration:30}],breakStart:'12:00',breakEnd:'14:00'};
-const minutes=(v:string)=>{if(!/^\d{2}:\d{2}$/.test(v))return NaN;const [h,m]=v.split(':').map(Number);return h<24&&m<60?h*60+m:NaN};
-export function moroccoNow(now=new Date()){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Africa/Casablanca',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now);const get=(x:string)=>parts.find(p=>p.type===x)?.value;return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;}
-export function normalizeSchedule(d:any){const hours:any={};for(let n=0;n<7;n++){const h=d.hours?.[n];if(Array.isArray(h)&&Number.isFinite(minutes(h[0]))&&Number.isFinite(minutes(h[1]))&&minutes(h[0])<minutes(h[1]))hours[n]=h;}const services=Array.isArray(d.appointmentServices)?d.appointmentServices.slice(0,5).filter((s:any)=>typeof s.name==='string'&&s.name.trim()&&[15,30,45,60,90,120].includes(Number(s.duration))).map((s:any)=>({name:s.name.slice(0,100),duration:Number(s.duration)})):defaults.appointmentServices;return {...d,hours:d.hours===undefined?defaults.hours:hours,closures:Array.isArray(d.closures)?d.closures.filter((v:any)=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)).slice(0,180):[],appointmentServices:services,breakStart:Number.isFinite(minutes(d.breakStart))?d.breakStart:'12:00',breakEnd:Number.isFinite(minutes(d.breakEnd))?d.breakEnd:'14:00'};}
-export function blocks(slot:string,duration:number){const start=minutes(slot.slice(11));return Array.from({length:duration/15},(_,i)=>{const n=start+i*15;return `${slot.slice(0,10)}T${String(Math.floor(n/60)).padStart(2,'0')}:${String(n%60).padStart(2,'0')}`});}
-export function availableSlots(data:any,date:string,duration:number,busy:string[],now=new Date()){if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Number.isFinite(duration)||duration<15||duration%15)return [];const parsed=new Date(date+'T12:00:00Z');if(!Number.isFinite(parsed.getTime())||parsed.toISOString().slice(0,10)!==date)return [];const current=moroccoNow(now);const latest=new Date(now.getTime()+60*86400000).toISOString().slice(0,10);if(date<current.slice(0,10)||date>latest||data.closures?.includes(date))return [];const s=normalizeSchedule(data);const hours=s.hours[parsed.getUTCDay()];if(!hours)return [];const b=new Set(busy);const out:string[]=[];for(let n=Math.ceil(minutes(hours[0])/15)*15;n+duration<=minutes(hours[1]);n+=15){if(n<minutes(s.breakEnd)&&n+duration>minutes(s.breakStart))continue;const slot=date+'T'+String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');if(slot<=current)continue;if(blocks(slot,duration).some(v=>b.has(v)))continue;out.push(slot);}return out;}
+export const defaults = {
+  hours: {
+    '1': ['09:00', '17:00'],
+    '2': ['09:00', '17:00'],
+    '3': ['09:00', '17:00'],
+    '4': ['09:00', '17:00'],
+    '5': ['09:00', '17:00'],
+  },
+  closures: [] as string[],
+  appointmentServices: [{ name: 'Consultation', duration: 30 }],
+  breakStart: '12:00',
+  breakEnd: '14:00',
+};
+const minutes = (v: string) => {
+  if (!/^\d{2}:\d{2}$/.test(v)) return NaN;
+  const [h, m] = v.split(':').map(Number);
+  return h < 24 && m < 60 ? h * 60 + m : NaN;
+};
+export function moroccoNow(now = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Africa/Casablanca',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(now);
+  const get = (x: string) => parts.find((p) => p.type === x)?.value;
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`;
+}
+export function normalizeSchedule(d: any) {
+  const hours: any = {};
+  for (let n = 0; n < 7; n++) {
+    const h = d.hours?.[n];
+    if (
+      Array.isArray(h) &&
+      Number.isFinite(minutes(h[0])) &&
+      Number.isFinite(minutes(h[1])) &&
+      minutes(h[0]) < minutes(h[1])
+    )
+      hours[n] = h;
+  }
+  const services = Array.isArray(d.appointmentServices)
+    ? d.appointmentServices
+        .slice(0, 5)
+        .filter(
+          (s: any) =>
+            typeof s.name === 'string' &&
+            s.name.trim() &&
+            [15, 30, 45, 60, 90, 120].includes(Number(s.duration)),
+        )
+        .map((s: any) => ({ name: s.name.slice(0, 100), duration: Number(s.duration) }))
+    : defaults.appointmentServices;
+  return {
+    ...d,
+    hours: d.hours === undefined ? defaults.hours : hours,
+    closures: Array.isArray(d.closures)
+      ? d.closures
+          .filter((v: any) => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v))
+          .slice(0, 180)
+      : [],
+    appointmentServices: services,
+    breakStart: Number.isFinite(minutes(d.breakStart)) ? d.breakStart : '12:00',
+    breakEnd: Number.isFinite(minutes(d.breakEnd)) ? d.breakEnd : '14:00',
+  };
+}
+export function blocks(slot: string, duration: number) {
+  const start = minutes(slot.slice(11));
+  return Array.from({ length: duration / 15 }, (_, i) => {
+    const n = start + i * 15;
+    return `${slot.slice(0, 10)}T${String(Math.floor(n / 60)).padStart(2, '0')}:${String(n % 60).padStart(2, '0')}`;
+  });
+}
+export function availableSlots(
+  data: any,
+  date: string,
+  duration: number,
+  busy: string[],
+  now = new Date(),
+) {
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+    !Number.isFinite(duration) ||
+    duration < 15 ||
+    duration % 15
+  )
+    return [];
+  const parsed = new Date(date + 'T12:00:00Z');
+  if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== date) return [];
+  const current = moroccoNow(now);
+  const latest = new Date(now.getTime() + 60 * 86400000).toISOString().slice(0, 10);
+  if (date < current.slice(0, 10) || date > latest || data.closures?.includes(date)) return [];
+  const s = normalizeSchedule(data);
+  const hours = s.hours[parsed.getUTCDay()];
+  if (!hours) return [];
+  const b = new Set(busy);
+  const out: string[] = [];
+  for (let n = Math.ceil(minutes(hours[0]) / 15) * 15; n + duration <= minutes(hours[1]); n += 15) {
+    if (n < minutes(s.breakEnd) && n + duration > minutes(s.breakStart)) continue;
+    const slot =
+      date +
+      'T' +
+      String(Math.floor(n / 60)).padStart(2, '0') +
+      ':' +
+      String(n % 60).padStart(2, '0');
+    if (slot <= current) continue;
+    if (blocks(slot, duration).some((v) => b.has(v))) continue;
+    out.push(slot);
+  }
+  return out;
+}
