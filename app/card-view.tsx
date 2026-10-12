@@ -1,4 +1,5 @@
 'use client';
+import { vcardText } from './lib/vcard';
 import { useState, useEffect } from 'react';
 import { Nfc, Phone, Mail, MapPin, Download, Globe, Users, Share2 } from 'lucide-react';
 import { socialLink } from './lib/social-links';
@@ -260,10 +261,13 @@ export default function CardView({
               <button
                 className="text-button"
                 onClick={() => {
-                  const safe = (s: string) => s.replace(/[\r\n;,]/g, ' ');
                   const blob = new Blob(
                     [
-                      `BEGIN:VCARD\r\nVERSION:3.0\r\nFN:${safe(d.name)}\r\nTEL:${safe(a.hidePhone ? '' : d.phone)}\r\nEMAIL:${safe(a.hideEmail ? '' : d.email)}\r\nEND:VCARD`,
+                      vcardText({
+                        name: d.name,
+                        phone: a.hidePhone ? '' : d.phone,
+                        email: a.hideEmail ? '' : d.email,
+                      }),
                     ],
                     { type: 'text/vcard' },
                   );

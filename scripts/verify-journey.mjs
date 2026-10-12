@@ -1,0 +1,273 @@
+import assert from 'node:assert/strict';
+import path from 'node:path';
+import { readFile, readdir } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const { Miniflare } = createRequire(require.resolve('wrangler'))('miniflare');
+const root = path.resolve('dist/pages');
+const base = 'https://soralink.link';
+const userId = '11111111-1111-4111-8111-111111111111';
+const otherId = '22222222-2222-4222-8222-222222222222';
+const email = 'journey@example.test';
+let confirmed = false;
+const outgoing = [];
+function user(id = userId) {
+  return {
+    id,
+    aud: 'authenticated',
+    role: 'authenticated',
+    email: id === userId ? email : 'other@example.test',
+    email_confirmed_at: confirmed ? '2026-01-01T00:00:00Z' : null,
+    app_metadata: { provider: 'email', providers: ['email'] },
+    user_metadata: {},
+    created_at: '2026-01-01T00:00:00Z',
+  };
+}
+function session(id = userId) {
+  const now = Math.floor(Date.now() / 1000);
+  const enc = (v) => Buffer.from(JSON.stringify(v)).toString('base64url');
+  return {
+    access_token:
+      enc({ alg: 'HS256', typ: 'JWT' }) +
+      '.' +
+      enc({ sub: id, aud: 'authenticated', exp: now + 3600, iat: now }) +
+      '.local-test-signature',
+    refresh_token: 'local-test-refresh',
+    token_type: 'bearer',
+    expires_in: 3600,
+    expires_at: now + 3600,
+    user: user(id),
+  };
+}
+function cookie(id = userId) {
+  return (
+    'sb-qa-auth-token=base64-' + Buffer.from(JSON.stringify(session(id))).toString('base64url')
+  );
+}
+const mf = new Miniflare({
+  modulesRoot: root,
+  modules: [
+    {
+      type: 'ESModule',
+      path: path.join(root, '_worker.js'),
+      contents: await readFile(path.join(root, '_worker.js'), 'utf8'),
+    },
+  ],
+  compatibilityDate: '2026-05-15',
+  compatibilityFlags: ['nodejs_compat'],
+  d1Databases: { DB: 'full-journey-isolated' },
+  r2Buckets: { BUCKET: 'full-journey-isolated' },
+  bindings: {
+    SUPABASE_URL: 'https://qa.supabase.test',
+    SUPABASE_PUBLISHABLE_KEY: 'local-test-only',
+  },
+  serviceBindings: {
+    ASSETS: async (request) => {
+      try {
+        return new Response(await readFile(path.join(root, new URL(request.url).pathname)));
+      } catch {
+        return new Response(null, { status: 404 });
+      }
+    },
+  },
+  outboundService: async (request) => {
+    const url = new URL(request.url);
+    outgoing.push(url.origin + url.pathname);
+    assert.equal(
+      url.hostname,
+      'qa.supabase.test',
+      'No actual outbound notification or auth request is permitted',
+    );
+    if (url.pathname === '/auth/v1/signup') return Response.json({ user: user(), session: null });
+    if (url.pathname === '/auth/v1/token') return Response.json(session());
+    if (url.pathname === '/auth/v1/logout') return new Response(null, { status: 204 });
+    if (url.pathname === '/auth/v1/user') {
+      const token = request.headers.get('authorization')?.replace('Bearer ', '');
+      const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64url').toString());
+      return Response.json(user(payload.sub));
+    }
+    throw Error('Unexpected local provider endpoint: ' + url.pathname);
+  },
+});
+async function request(
+  endpoint,
+  {
+    data,
+    auth = false,
+    id = userId,
+    status = 200,
+    method = data ? 'POST' : 'GET',
+    body,
+    headers = {},
+  } = {},
+) {
+  if (body instanceof FormData) {
+    const encoded = new Request(base + endpoint, { method: 'POST', body });
+    headers = { ...headers, 'Content-Type': encoded.headers.get('content-type') };
+    body = await encoded.arrayBuffer();
+  }
+  const response = await mf.dispatchFetch(base + endpoint, {
+    method,
+    headers: {
+      ...(auth ? { Cookie: cookie(id) } : {}),
+      ...(method === 'POST' ? { Origin: base } : {}),
+      ...(data ? { 'Content-Type': 'application/json' } : {}),
+      ...headers,
+    },
+    body: data ? JSON.stringify(data) : body,
+  });
+  const text = await response.text();
+  assert.equal(response.status, status, endpoint + ': ' + text.slice(0, 160));
+  return {
+    response,
+    text,
+    json: response.headers.get('content-type')?.includes('application/json')
+      ? JSON.parse(text)
+      : null,
+  };
+}
+try {
+  const db = await mf.getD1Database('DB');
+  for (const file of (await readdir('drizzle')).filter((f) => /^\d{4}.*\.sql$/.test(f)).sort())
+    await db.batch(
+      (await readFile('drizzle/' + file, 'utf8'))
+        .split('--> statement-breakpoint')
+        .filter((s) => s.trim())
+        .map((sql) => db.prepare(sql)),
+    );
+  await request('/api/data', {
+    data: { action: 'save', data: { name: 'Journey card' } },
+    status: 401,
+  });
+  await request('/api/auth', {
+    data: { action: 'signup', email, password: 'local-test-password' },
+  });
+  await request('/api/auth', {
+    data: { action: 'login', email, password: 'local-test-password' },
+    status: 403,
+  });
+  confirmed = true;
+  const login = await request('/api/auth', {
+    data: { action: 'login', email, password: 'local-test-password' },
+  });
+  assert.equal(login.json.redirect, '/?app=1');
+  assert(login.response.headers.get('set-cookie'), 'Sign-in must return a session cookie');
+  assert.equal((await request('/api/auth', { auth: true })).json.email, email);
+  const fields = {
+    name: 'Journey card',
+    business: 'Cabinet de test',
+    phone: '0600000001',
+    email,
+    bio: 'Présentation de test',
+    services: [],
+    photos: [],
+    promotions: [],
+    cardTheme: 'dark',
+    textColor: '#ffffff',
+    buttonColor: '#d5b66f',
+    textSize: 'large',
+    buttonShape: 'pill',
+    hours: Object.fromEntries(Array.from({ length: 7 }, (_, i) => [i, ['09:00', '17:00']])),
+    appointmentServices: [{ name: 'Consultation', duration: 30 }],
+  };
+  const saved = await request('/api/data', {
+    auth: true,
+    data: { action: 'save', data: fields, published: false },
+  });
+  const cardId = saved.json.id;
+  await request('/api/data?id=' + cardId, { status: 404 });
+  const photo = await readFile('public/icons/icon-192.png');
+  const form = new FormData();
+  form.set('file', new File([photo], 'test.png', { type: 'image/png' }));
+  const uploaded = await request('/api/upload', { auth: true, method: 'POST', body: form });
+  fields.avatar = uploaded.json.url;
+  fields.cover = uploaded.json.url;
+  await request('/api/data', {
+    auth: true,
+    data: { action: 'save', data: fields, published: true },
+  });
+  const publicData = JSON.parse((await request('/api/data?id=' + cardId)).json.data);
+  assert.equal(publicData.name, fields.name);
+  assert.equal(publicData.textColor, '#ffffff');
+  assert.equal(publicData.avatar, fields.avatar);
+  const stats = (await request('/api/upload?stats=1', { auth: true })).json;
+  assert.equal(stats.files, 1);
+  assert.equal(stats.bytes, photo.length);
+  for (const agent of [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)',
+  ]) {
+    const page = await request('/c/' + cardId, { headers: { 'User-Agent': agent } });
+    assert(page.text.includes('Journey card'));
+    assert(page.text.includes('theme-dark text-size-large'));
+    assert(page.text.includes('https://soralink.link/og-soralink.png'));
+  }
+  assert((await request('/c/' + cardId + '?lang=ar')).text.includes('dir="rtl"'));
+  await request('/api/data', {
+    data: {
+      action: 'request',
+      profile: cardId,
+      kind: 'contact',
+      name: 'Prospect',
+      phone: '0600000002',
+      consent: true,
+    },
+  });
+  const inbox = (await request('/api/data', { auth: true })).json;
+  assert.equal(inbox.contacts.length, 1);
+  await request('/api/data', {
+    auth: true,
+    id: otherId,
+    data: { action: 'deleteContact', id: inbox.contacts[0].id },
+    status: 404,
+  });
+  const now = new Date(Date.now() + 2 * 86400000);
+  const date = now.toISOString().slice(0, 10);
+  await request('/api/availability?id=' + cardId + '&date=' + date, { status: 404 });
+  await db.prepare('UPDATE profiles SET pro_enabled=1 WHERE id=?').bind(cardId).run();
+  const availability = (
+    await request('/api/availability?id=' + cardId + '&date=' + date + '&service=0')
+  ).json;
+  assert(availability.slots.length > 0);
+  const slot = availability.slots[0];
+  const booking = {
+    action: 'request',
+    profile: cardId,
+    kind: 'rdv',
+    name: 'Prospect',
+    phone: '0600000003',
+    email: 'prospect@example.test',
+    slot,
+    service: 0,
+  };
+  await request('/api/data', { data: booking });
+  const pending = (await request('/api/data', { auth: true })).json.requests.find(
+    (r) => r.kind === 'rdv',
+  );
+  await request('/api/data', {
+    auth: true,
+    data: { action: 'status', id: pending.id, status: 'confirmed' },
+  });
+  assert(
+    !(await request('/api/availability?id=' + cardId + '&date=' + date)).json.slots.includes(slot),
+  );
+  await request('/api/data', { data: booking, status: 409 });
+  await request('/api/data', {
+    auth: true,
+    data: { action: 'status', id: pending.id, status: 'cancelled' },
+  });
+  assert(
+    (await request('/api/availability?id=' + cardId + '&date=' + date)).json.slots.includes(slot),
+  );
+  await request('/api/auth', { auth: true, data: { action: 'logout' } });
+  assert.equal((await request('/api/auth')).json.authenticated, false);
+  assert.equal((await db.prepare('SELECT COUNT(*) n FROM notifications').first()).n, 0);
+  console.log(
+    'Journey verified: signup/confirmation/login with simulated provider, draft, R2 upload, customization, public FR/AR and desktop/mobile user agents, consented contact exchange, ownership, Pro booking/confirmation/conflict/cancellation and logout.',
+  );
+  console.log(
+    'Isolated D1/R2 only; no production account, file, contact, booking or notification changed. User-agent checks are not visual browser tests.',
+  );
+} finally {
+  await mf.dispose();
+}
