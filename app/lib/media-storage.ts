@@ -134,7 +134,7 @@ export async function saveProfileWithMedia(
     .prepare(
       'INSERT INTO profiles(id,owner,data,published,updated,email) SELECT ?,?,?,?,?,? WHERE ' +
         valid +
-        ' ON CONFLICT(owner) DO UPDATE SET data=excluded.data,published=excluded.published,updated=excluded.updated,email=excluded.email WHERE profiles.updated=? AND profiles.data=? AND profiles.published=?',
+        ' ON CONFLICT(owner) DO UPDATE SET data=excluded.data,published=excluded.published,updated=excluded.updated,email=excluded.email WHERE profiles.updated=? AND profiles.data=? AND profiles.published=? RETURNING id',
     )
     .bind(
       id,
@@ -156,5 +156,6 @@ export async function saveProfileWithMedia(
       .bind(key, owner, owner, stamp, data, '%' + key + '%'),
   );
   const result = await db().batch([save, ...deletions]);
-  return result[0].meta.changes === 1;
+  // Trigger writes affect meta.changes; RETURNING identifies the accepted profile save.
+  return result[0].results.length === 1;
 }
