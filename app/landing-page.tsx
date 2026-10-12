@@ -1,5 +1,7 @@
 'use client';
 import type { ComponentType } from 'react';
+import type { LucideIcon } from 'lucide-react';
+type LandingFeature = [LucideIcon, string, string, string, string, string];
 import {
   Download,
   Phone,
@@ -146,61 +148,58 @@ export default function LandingPage({
           </p>
         </div>
         <div className="landing-features">
-          {[
+          {(
             [
-              Download,
-              '01',
-              'Enregistrer votre contact',
-              'تسجيل الكونطاكت',
-              'Un bouton télécharge votre fiche contact vCard. Votre interlocuteur peut l’ajouter au répertoire de son téléphone.',
-              'بزر واحد كيتحمّل الكونطاكت بصيغة vCard، واللي قدّامك يقدر يزيدو للريپيرطوار ديال التلفون.',
-            ],
-            [
-              Phone,
-              '02',
-              'WhatsApp, réseaux et itinéraire',
-              'WhatsApp، التواصل والطريق',
-              'Téléphone, e-mail, WhatsApp, Instagram, LinkedIn, site web et Maps : activez uniquement les liens utiles à votre activité.',
-              'التلفون، الإيميل، WhatsApp، Instagram، LinkedIn، الموقع وMaps: فعّل غير الروابط اللي محتاجها النشاط ديالك.',
-            ],
-            [
-              ImageIcon,
-              '03',
-              'Catalogue, photos et vidéo',
-              'الكاتالوگ، التصاور والفيديو',
-              'Présentez jusqu’à 10 articles et 10 photos, un PDF et une vidéo. Mettez vos promotions en avant directement sur la carte.',
-              'ورّي حتى 10 منتجات ولا خدمات و10 تصاور، PDF وفيديو. وزيد العروض ديالك مباشرة فالكارط.',
-            ],
-            [
-              FileText,
-              '04',
-              'Demandes de devis et commandes',
-              'طلبات الثمن والطلبات',
-              'Vos visiteurs précisent leur besoin ou choisissent un article. Vous retrouvez leurs demandes et leurs coordonnées dans votre espace.',
-              'الزوار كيوضحو شنو محتاجين ولا كيختارو عرض. كتلقى الطلبات ومعلومات التواصل فالحساب ديالك.',
-            ],
-            [
-              Users,
-              '05',
-              'Échanger vos coordonnées',
-              'تبادل معلومات التواصل',
-              'Après la rencontre, votre prospect peut vous transmettre ses coordonnées avec son accord. S’il possède une carte SoraLink publiée, il peut la partager.',
-              'من بعد التعارف، الزبون المحتمل يقدر يشارك معاك الكونطاكت بالموافقة ديالو. وإلا عندو كارط SoraLink منشورة يقدر يشاركها.',
-            ],
-            [
-              Download,
-              Phone,
-              ImageIcon,
-              FileText,
-              Users,
-              Calendar,
-              '06',
-              'Rendez-vous avec l’option Pro',
-              'المواعيد مع Pro',
-              'Définissez vos horaires et jusqu’à cinq prestations. Les visiteurs demandent un créneau ; vous confirmez les rendez-vous dans l’agenda SoraLink.',
-              'حدّد الأوقات وحتى خمس خدمات. الزوار كيطلبو وقت، ونتا كتأكد المواعيد فالأجندة ديال SoraLink.',
-            ],
-          ].map(([Icon, n, title, da, desc, dd]: any) => (
+              [
+                Download,
+                '01',
+                'Enregistrer votre contact',
+                'تسجيل الكونطاكت',
+                'Un bouton télécharge votre fiche contact vCard. Votre interlocuteur peut l’ajouter au répertoire de son téléphone.',
+                'بزر واحد كيتحمّل الكونطاكت بصيغة vCard، واللي قدّامك يقدر يزيدو للريپيرطوار ديال التلفون.',
+              ],
+              [
+                Phone,
+                '02',
+                'WhatsApp, réseaux et itinéraire',
+                'WhatsApp، التواصل والطريق',
+                'Téléphone, e-mail, WhatsApp, Instagram, LinkedIn, site web et Maps : activez uniquement les liens utiles à votre activité.',
+                'التلفون، الإيميل، WhatsApp، Instagram، LinkedIn، الموقع وMaps: فعّل غير الروابط اللي محتاجها النشاط ديالك.',
+              ],
+              [
+                ImageIcon,
+                '03',
+                'Catalogue, photos et vidéo',
+                'الكاتالوگ، التصاور والفيديو',
+                'Présentez jusqu’à 10 articles et 10 photos, un PDF et une vidéo. Mettez vos promotions en avant directement sur la carte.',
+                'ورّي حتى 10 منتجات ولا خدمات و10 تصاور، PDF وفيديو. وزيد العروض ديالك مباشرة فالكارط.',
+              ],
+              [
+                FileText,
+                '04',
+                'Demandes de devis et commandes',
+                'طلبات الثمن والطلبات',
+                'Vos visiteurs précisent leur besoin ou choisissent un article. Vous retrouvez leurs demandes et leurs coordonnées dans votre espace.',
+                'الزوار كيوضحو شنو محتاجين ولا كيختارو عرض. كتلقى الطلبات ومعلومات التواصل فالحساب ديالك.',
+              ],
+              [
+                Users,
+                '05',
+                'Échanger vos coordonnées',
+                'تبادل معلومات التواصل',
+                'Après la rencontre, votre prospect peut vous transmettre ses coordonnées avec son accord. S’il possède une carte SoraLink publiée, il peut la partager.',
+                'من بعد التعارف، الزبون المحتمل يقدر يشارك معاك الكونطاكت بالموافقة ديالو. وإلا عندو كارط SoraLink منشورة يقدر يشاركها.',
+              ],
+              [
+                Calendar,
+                '06',
+                'Rendez-vous avec l’option Pro',
+                'المواعيد مع Pro',
+                'Définissez vos horaires et jusqu’à cinq prestations. Les visiteurs demandent un créneau ; vous confirmez les rendez-vous dans l’agenda SoraLink.',
+                'حدّد الأوقات وحتى خمس خدمات. الزوار كيطلبو وقت، ونتا كتأكد المواعيد فالأجندة ديال SoraLink.',
+              ],
+            ] satisfies LandingFeature[]
+          ).map(([Icon, n, title, da, desc, dd]) => (
             <article key={n}>
               <span className="feature-index">{n}</span>
               <Icon size={24} />

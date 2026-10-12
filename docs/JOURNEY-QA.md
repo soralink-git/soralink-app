@@ -38,3 +38,9 @@ Aucun navigateur pilotable n’est disponible dans cette session. Un changement 
 3. Avec un profil de test et un forfait Pro : échanger les coordonnées avec consentement, demander un rendez-vous, le confirmer puis l’annuler dans l’espace client. Vérifier les notifications réelles seulement avec des destinataires de test autorisés.
 
 Ces essais ne doivent pas être déclarés réussis sur la seule base des tests serveur.
+
+## Incident à l’accueil — correction du 12 octobre 2026
+
+L’accueil pouvait répondre HTTP 200 puis afficher « This page couldn’t load » dans le navigateur. Le sixième bloc de fonctionnalités contenait plusieurs composants d’icône à la place du numéro et des textes de la ligne ; React refusait de rendre ces objets. Le bloc est rétabli avec une seule icône et ses cinq champs textuels, et la structure est maintenant typée.
+
+Les anciens contrôles serveur et les tests du parcours isolé ne rendaient pas le contenu de la landing page chargé par `React.lazy`. Trois tests supplémentaires rendent directement toute cette page en français, en darija et pour un visiteur connecté. Ils reproduisaient l’erreur avant le correctif et passent après. Le contrôle HTTP 200 reste distinct de cette vérification de rendu. Les essais visuels sur de vrais appareils restent à faire.
