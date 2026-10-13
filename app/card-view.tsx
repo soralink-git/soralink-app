@@ -131,16 +131,7 @@ export default function CardView({
           } as any
         }
       >
-        <div className="card-cover" style={d.cover ? { backgroundImage: `url(${d.cover})` } : {}}>
-          <a
-            className="card-brand"
-            dir="ltr"
-            href="/"
-            aria-label={t('SoraLink — Accueil', 'SoraLink — الرئيسية')}
-          >
-            SoraLink <Nfc size={18} />
-          </a>
-        </div>
+        <div className="card-cover" style={d.cover ? { backgroundImage: `url(${d.cover})` } : {}} />
         <div className="card-content">
           <section className="card-identity">
             <div className="avatar">
@@ -269,6 +260,16 @@ export default function CardView({
             </div>
           )}
           {withSections && <Details d={d} preview={preview} />}
+          <div className="card-footer-brand">
+            <a
+              className="card-brand"
+              dir="ltr"
+              href="/"
+              aria-label={t('SoraLink — Accueil', 'SoraLink — الرئيسية')}
+            >
+              By Soralink <Nfc size={16} />
+            </a>
+          </div>
         </div>
       </article>
     );

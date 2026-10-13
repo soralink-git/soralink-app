@@ -28,6 +28,8 @@ test('public card is present in server HTML without workspace or legal footer', 
   assert.match(html, /SoraLink/);
   assert.match(html, /unified-card/);
   assert.doesNotMatch(html, /card-language/);
+  assert.match(html, /card-footer-brand/);
+  assert.match(html, /By Soralink/);
   assert.match(html, /Partager cette carte/);
   assert.match(html, /Échanger nos coordonnées/);
   assert.doesNotMatch(html, /workspace-editor-layout|ImageCropper|site-footer|<header/);
