@@ -315,8 +315,12 @@ export default function CardView({
           )}
           <div className="contact-icons">
             {!a.hidePhone && d.phone && (
-              <a href={'tel:' + d.phone} aria-label={t('Téléphone', 'التلفون')}>
-                <Phone size={18} />
+              <a
+                href={'tel:' + d.phone}
+                aria-label={t('Téléphone', 'الهاتف')}
+                title={t('Téléphone', 'الهاتف')}
+              >
+                <Phone size={22} />
                 <span className="contact-label">{t('Téléphone', 'الهاتف')}</span>
               </a>
             )}
@@ -336,20 +340,27 @@ export default function CardView({
               <a
                 href={'mailto:' + String(d.email).trim()}
                 aria-label={t('Contacter par e-mail', 'تواصل بالإيميل')}
+                title={t('E-mail', 'البريد')}
                 aria-expanded={emailActions}
                 onClick={(e) => {
                   e.preventDefault();
                   setEmailActions(!emailActions);
                 }}
               >
-                <Mail size={18} />
+                <Mail size={22} />
                 <span className="contact-label">{t('E-mail', 'البريد')}</span>
               </a>
             )}
-            {!a.hideLocation && location.maps && (
-              <a href={location.maps} target="_blank" rel="noreferrer" aria-label="Adresse">
-                <MapPin size={18} />
-                <span className="contact-label">{t('Adresse', 'العنوان')}</span>
+            {!a.hideLocation && (location.directions || location.maps) && (
+              <a
+                href={location.directions || location.maps}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={t('Itinéraire', 'كيفاش توصل')}
+                title={t('Itinéraire', 'كيفاش توصل')}
+              >
+                <MapPin size={22} />
+                <span className="contact-label">{t('Itinéraire', 'كيفاش توصل')}</span>
               </a>
             )}
           </div>
@@ -396,20 +407,9 @@ export default function CardView({
               </p>
             </div>
           )}
-          {!a.hideLocation && (d.address || location.directions) && (
+          {!a.hideLocation && d.address && (
             <div className="location-links">
-              {d.address && <p className="muted">{d.address}</p>}
-              {location.directions && (
-                <a
-                  className="secondary full"
-                  href={location.directions}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <MapPin size={18} />
-                  <span className="contact-label">{t('Itinéraire', 'كيفاش توصل')}</span>
-                </a>
-              )}
+              <p className="muted">{d.address}</p>
             </div>
           )}
         </div>
