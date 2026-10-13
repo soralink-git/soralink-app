@@ -140,19 +140,6 @@ export default function CardView({
           >
             SoraLink <Nfc size={18} />
           </a>
-          {(preview || view === 'public' || view === 'demo') && (
-            <button
-              type="button"
-              className="card-language"
-              onClick={() => setAr(!ar)}
-              aria-label={ar ? 'Passer en français' : 'بدّل للدارجة'}
-            >
-              <Globe size={16} />
-              <span lang={ar ? 'fr' : 'ar'} dir={ar ? 'ltr' : 'rtl'}>
-                {ar ? 'FR' : 'العربية'}
-              </span>
-            </button>
-          )}
         </div>
         <div className="card-content">
           <section className="card-identity">

@@ -7,7 +7,7 @@ export default function PublicCardView({
   cardId = '',
   initialData,
   initialError = '',
-  initialAr = false,
+  initialAr,
   demoArabic,
 }: {
   cardId?: string;
@@ -16,7 +16,11 @@ export default function PublicCardView({
   initialAr?: boolean;
   demoArabic?: any;
 }) {
-  const [ar, setAr] = useState(initialAr),
+  const [ar, setAr] = useState(
+      typeof initialAr === 'boolean'
+        ? initialAr
+        : initialData?.defaultLanguage === 'ar' || initialData?.lang === 'ar',
+    ),
     [data, setData] = useState(initialData),
     [error, setError] = useState(initialError),
     [busy, setBusy] = useState(false),
@@ -39,7 +43,11 @@ export default function PublicCardView({
         setError(r.status === 404 ? 'notfound' : 'service');
         return;
       }
-      setData(JSON.parse(b.data));
+      const parsed = JSON.parse(b.data);
+      setData(parsed);
+      if (typeof initialAr !== 'boolean' && (parsed.defaultLanguage || parsed.lang)) {
+        setAr(parsed.defaultLanguage === 'ar' || parsed.lang === 'ar');
+      }
       setError('');
     } catch {
       setError('service');

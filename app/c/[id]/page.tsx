@@ -80,7 +80,9 @@ export default async function Page({
       cardId={id}
       initialData={initialData}
       initialError={initialError}
-      initialAr={lang === 'ar'}
+      initialAr={
+        lang ? lang === 'ar' : initialData?.defaultLanguage === 'ar' || initialData?.lang === 'ar'
+      }
     />
   );
 }

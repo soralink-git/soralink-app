@@ -27,10 +27,19 @@ test('public card is present in server HTML without workspace or legal footer', 
   const html = render(PublicCardView, { cardId: 'public-card', initialData: demoCard });
   assert.match(html, /SoraLink/);
   assert.match(html, /unified-card/);
-  assert.match(html, /card-language/);
+  assert.doesNotMatch(html, /card-language/);
   assert.match(html, /Partager cette carte/);
   assert.match(html, /Échanger nos coordonnées/);
   assert.doesNotMatch(html, /workspace-editor-layout|ImageCropper|site-footer|<header/);
+});
+test('public card defaults to Arabic when card defaultLanguage is ar without explicit initialAr', () => {
+  const html = render(PublicCardView, {
+    cardId: 'public-card',
+    initialData: { ...demoCard, defaultLanguage: 'ar' },
+  });
+  assert.match(html, /dir="rtl"/);
+  assert.match(html, /سجّل الكونطاكت/);
+  assert.doesNotMatch(html, /card-language/);
 });
 test('Arabic stays Arabic while the SoraLink brand stays left to right', () => {
   const html = render(PublicCardView, {

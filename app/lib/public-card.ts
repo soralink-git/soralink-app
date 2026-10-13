@@ -55,6 +55,7 @@ export function publicCardData(saved: any, pro: boolean) {
   ])
     out[key] = d[key];
   out.pro = pro;
+  out.defaultLanguage = d.defaultLanguage === 'ar' || d.lang === 'ar' ? 'ar' : 'fr';
   out.services = normalizeCatalogue(d.services).filter((item) => item.name);
   out.promotions = activePromotions(d.promotions);
   out.photos = Array.isArray(d.photos)

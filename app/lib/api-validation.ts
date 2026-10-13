@@ -109,6 +109,8 @@ export const profileDataSchema = z
     cardFont: z.enum(['modern', 'classic', 'simple']).optional(),
     buttonShape: z.enum(['rounded', 'square', 'pill']).optional(),
     avatarShape: z.enum(['circle', 'square']).optional(),
+    defaultLanguage: z.enum(['fr', 'ar']).optional(),
+    lang: z.enum(['fr', 'ar']).optional(),
     textSize: z.enum(['normal', 'large', 'extra']).optional(),
     buttonSize: z.enum(['normal', 'large']).optional(),
     buttonStyle: z.enum(['filled', 'outline']).optional(),

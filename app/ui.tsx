@@ -88,6 +88,7 @@ const blank = {
   recordedVideo: '',
   avatar: '',
   cover: '',
+  defaultLanguage: 'fr',
   pro: false,
   ...defaults,
 };
@@ -245,6 +246,11 @@ export default function App({
       void checkContactCard();
     }
   }, [modal, id]);
+  function toggleLanguage() {
+    const nextAr = !ar;
+    setAr(nextAr);
+    setData((d: any) => ({ ...d, defaultLanguage: nextAr ? 'ar' : 'fr' }));
+  }
   useEffect(() => {
     if (new URLSearchParams(location.search).get('lang') === 'ar') setAr(true);
   }, []);
@@ -261,7 +267,14 @@ export default function App({
         .then((r) => r.json())
         .then((p: any) => {
           if (p.data) {
-            setData(JSON.parse(p.data));
+            const parsed = JSON.parse(p.data);
+            setData(parsed);
+            if (
+              !new URLSearchParams(location.search).has('lang') &&
+              (parsed.defaultLanguage || parsed.lang)
+            ) {
+              setAr(parsed.defaultLanguage === 'ar' || parsed.lang === 'ar');
+            }
             setId(p.id);
           } else setMsg(p.error);
           setLoaded(true);
@@ -298,11 +311,17 @@ export default function App({
         setCanAdmin(!!b.admin);
         setSubscription(b.profile);
         if (b.profile) {
+          const profileData = JSON.parse(b.profile.data);
+          const hasQueryLang = new URLSearchParams(location.search).has('lang');
+          if (!hasQueryLang && (profileData.defaultLanguage || profileData.lang)) {
+            setAr(profileData.defaultLanguage === 'ar' || profileData.lang === 'ar');
+          }
           setData({
             ...blank,
-            ...JSON.parse(b.profile.data),
-            promotions: normalizePromotions(JSON.parse(b.profile.data).promotions),
-            services: normalizeCatalogue(JSON.parse(b.profile.data).services),
+            ...profileData,
+            defaultLanguage: profileData.defaultLanguage || profileData.lang || (ar ? 'ar' : 'fr'),
+            promotions: normalizePromotions(profileData.promotions),
+            services: normalizeCatalogue(profileData.services),
           });
           setId(b.profile.id);
           setPublished(!!b.profile.published);
@@ -339,8 +358,10 @@ export default function App({
   }
   async function save() {
     try {
-      const b = await action({ action: 'save', data, published });
+      const payloadData = { ...data, defaultLanguage: ar ? 'ar' : 'fr' };
+      const b = await action({ action: 'save', data: payloadData, published });
       setId(b.id);
+      setData(payloadData);
       setMsg(
         b.cleanupPending
           ? t(
@@ -696,10 +717,15 @@ export default function App({
                 cardFont: 'modern',
                 buttonShape: 'rounded',
                 avatarShape: 'circle',
+                defaultLanguage: ar ? 'ar' : 'fr',
               } as any
             )[key]
           }
-          onChange={(e) => setData({ ...data, [key]: e.target.value })}
+          onChange={(e) => {
+            const nextVal = e.target.value;
+            if (key === 'defaultLanguage') setAr(nextVal === 'ar');
+            setData({ ...data, [key]: nextVal });
+          }}
         >
           {values.map(([value, fr, ar]) => (
             <option key={value} value={value}>
@@ -713,6 +739,14 @@ export default function App({
       <div className="personalization">
         <h3>{t('Style de votre carte', 'ستايل الكارط ديالك')}</h3>
         <div className="form-grid">
+          {select(
+            'defaultLanguage',
+            t('Langue par défaut de la carte', 'اللغة الافتراضية للكارط'),
+            [
+              ['fr', 'Français', 'الفرنسية'],
+              ['ar', 'العربية / الدارجة', 'العربية / الدارجة'],
+            ],
+          )}
           {select('cardTheme', t('Fond de carte', 'خلفية الكارط'), [
             ['light', 'Clair', 'فاتح'],
             ['dark', 'Sombre', 'غامق'],
@@ -849,7 +883,7 @@ export default function App({
             </nav>
           )}
           <div className="header-actions">
-            <button className="language" onClick={() => setAr(!ar)}>
+            <button className="language" onClick={toggleLanguage}>
               <Globe size={16} />
               {ar ? 'FR' : 'العربية'}
             </button>

@@ -137,5 +137,5 @@ for (const ar of [false, true])
     const article = (html) => html.match(/<article\b[\s\S]*?<\/article>/)[0];
     assert.equal(article(previewHtml), article(publicHtml));
     assert.doesNotMatch(article(previewHtml), /compact/);
-    assert.match(article(previewHtml), /card-language/);
+    assert.doesNotMatch(article(previewHtml), /card-language/);
   });
