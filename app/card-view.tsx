@@ -320,6 +320,7 @@ export default function CardView({
             {!a.hidePhone && d.phone && (
               <a href={'tel:' + d.phone} aria-label={t('Téléphone', 'التلفون')}>
                 <Phone size={18} />
+                <span className="contact-label">{t('Téléphone', 'الهاتف')}</span>
               </a>
             )}
             {!a.hideWhatsApp && d.whatsapp && (
@@ -331,6 +332,7 @@ export default function CardView({
                 title="WhatsApp"
               >
                 <WhatsAppIcon />
+                <span className="contact-label">WhatsApp</span>
               </a>
             )}
             {!a.hideEmail && d.email && (
@@ -344,11 +346,13 @@ export default function CardView({
                 }}
               >
                 <Mail size={18} />
+                <span className="contact-label">{t('E-mail', 'البريد')}</span>
               </a>
             )}
             {!a.hideLocation && location.maps && (
               <a href={location.maps} target="_blank" rel="noreferrer" aria-label="Adresse">
                 <MapPin size={18} />
+                <span className="contact-label">{t('Adresse', 'العنوان')}</span>
               </a>
             )}
           </div>
@@ -443,6 +447,7 @@ export default function CardView({
                     title={label}
                   >
                     <SocialIcon network={key} />
+                    <span className="contact-label">{label}</span>
                   </a>
                 ) : null,
               )}
