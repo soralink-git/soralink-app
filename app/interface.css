@@ -22,6 +22,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 16px;
   transition:
     box-shadow 0.3s ease,
     border-color 0.3s ease;
@@ -69,13 +70,14 @@
   box-sizing: border-box;
   position: relative;
   z-index: 2;
+  gap: 16px;
 }
 .card-design .card-identity {
   width: 100%;
   position: relative;
   text-align: center;
   display: flow-root;
-  margin: 14px 0 16px;
+  margin: 0;
   padding: 0 22px 28px;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 32px;
@@ -167,8 +169,8 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin: 16px 0 20px;
+  gap: 16px;
+  margin: 0;
   box-sizing: border-box;
 }
 .card-design .card-actions > button {
@@ -249,7 +251,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 10px;
+  margin: 0;
   box-sizing: border-box;
 }
 .card-design .public-details .panel,
@@ -719,4 +721,7 @@
 .card-design.custom-card.button-style-outline :is(.card-button, .exchange-button, .secondary) {
   background: var(--card-bg);
   color: var(--card-fg);
+}
+.card-design .card-footer-brand {
+  margin: 0;
 }

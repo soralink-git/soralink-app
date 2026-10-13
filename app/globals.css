@@ -3601,8 +3601,7 @@ header nav {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 26px;
-  margin-bottom: 6px;
+  margin: 0;
   width: 100%;
 }
 .card-footer-brand .card-brand,
