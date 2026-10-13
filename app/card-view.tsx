@@ -403,17 +403,15 @@ export default function CardView({
             <div className="location-links">
               {d.address && <p className="muted">{d.address}</p>}
               {location.directions && (
-                <div className="row">
-                  <a
-                    className="secondary small"
-                    href={location.directions}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MapPin size={16} />
-                    {t('Itinéraire', 'كيفاش توصل')}
-                  </a>
-                </div>
+                <a
+                  className="secondary full"
+                  href={location.directions}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MapPin size={18} />
+                  {t('Itinéraire', 'كيفاش توصل')}
+                </a>
               )}
             </div>
           )}
