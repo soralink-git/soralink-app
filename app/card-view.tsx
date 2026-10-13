@@ -182,25 +182,58 @@ export default function CardView({
             </button>
           ) : (
             <div className="card-actions">
-              <button
-                className="card-button card-save"
-                onClick={() => {
-                  const blob = new Blob(
-                    [
-                      vcardText({
-                        name: d.name,
-                        phone: a.hidePhone ? '' : d.phone,
-                        email: a.hideEmail ? '' : d.email,
-                      }),
-                    ],
-                    { type: 'text/vcard' },
-                  );
-                  download(blob, 'contact.vcf');
-                }}
-              >
-                <Download size={16} />
-                {t('Enregistrer le contact', 'سجّل الكونطاكت')}
-              </button>
+              <div className="card-action-icons">
+                <button
+                  className="card-button card-save"
+                  onClick={() => {
+                    const blob = new Blob(
+                      [
+                        vcardText({
+                          name: d.name,
+                          phone: a.hidePhone ? '' : d.phone,
+                          email: a.hideEmail ? '' : d.email,
+                        }),
+                      ],
+                      { type: 'text/vcard' },
+                    );
+                    download(blob, 'contact.vcf');
+                  }}
+                >
+                  <Download size={22} />
+                  <span className="action-label">
+                    {t('Enregistrer le contact', 'سجّل الكونطاكت')}
+                  </span>
+                </button>
+                <button
+                  className="exchange-button"
+                  onClick={() => void sharePublicCard(d, preview)}
+                >
+                  <Share2 size={22} />
+                  <span className="action-label">
+                    {t('Partager cette carte', 'شارك هاد الكارط')}
+                  </span>
+                </button>
+                <button
+                  className="exchange-button"
+                  onClick={() => {
+                    if (preview || view === 'demo') {
+                      setMsg(
+                        t(
+                          'Aperçu : le formulaire sera disponible sur votre carte publique.',
+                          'معاينة: الفورميلير غادي يخدم فالصفحة العمومية ديالك.',
+                        ),
+                      );
+                      return;
+                    }
+                    onRequest('contact');
+                  }}
+                >
+                  <Users size={22} />
+                  <span className="action-label">
+                    {t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
+                  </span>
+                </button>
+              </div>
               {!d.pro && (
                 <button
                   className="card-button card-request"
@@ -231,10 +264,6 @@ export default function CardView({
                     : t('Demander un devis', 'طلب الثمن')}
                 </button>
               )}
-              <button className="exchange-button" onClick={() => void sharePublicCard(d, preview)}>
-                <Share2 size={18} />
-                {t('Partager cette carte', 'شارك هاد الكارط')}
-              </button>
               {manualShareUrl && !preview && view === 'public' && (
                 <label className="field card-share-link">
                   {t('Lien de cette carte', 'رابط هاد الكارط')}
@@ -248,24 +277,6 @@ export default function CardView({
                   />
                 </label>
               )}
-              <button
-                className="exchange-button"
-                onClick={() => {
-                  if (preview || view === 'demo') {
-                    setMsg(
-                      t(
-                        'Aperçu : le formulaire sera disponible sur votre carte publique.',
-                        'معاينة: الفورميلير غادي يخدم فالصفحة العمومية ديالك.',
-                      ),
-                    );
-                    return;
-                  }
-                  onRequest('contact');
-                }}
-              >
-                <Users size={18} />
-                {t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
-              </button>
             </div>
           )}
           {withSections && <Details d={d} preview={preview} />}
