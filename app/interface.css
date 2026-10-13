@@ -4,12 +4,15 @@
   margin-inline: auto;
   border-radius: 42px;
   border: 4px solid rgba(255, 255, 255, 0.65);
-  background: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--accent) 90%, #00d2d3) 0%,
-    color-mix(in srgb, var(--accent) 55%, #38bdf8) 35%,
-    color-mix(in srgb, var(--card-color, #d5b66f) 50%, #2dd4bf) 70%,
-    color-mix(in srgb, var(--card-color, #d5b66f) 30%, #fef08a) 100%
+  background: var(
+    --card-fond,
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--accent) 90%, #00d2d3) 0%,
+      color-mix(in srgb, var(--accent) 55%, #38bdf8) 35%,
+      color-mix(in srgb, var(--card-color, #d5b66f) 50%, #2dd4bf) 70%,
+      color-mix(in srgb, var(--card-color, #d5b66f) 30%, #fef08a) 100%
+    )
   );
   box-shadow:
     0 25px 65px -15px rgba(0, 0, 0, 0.45),
@@ -28,23 +31,26 @@
     border-color 0.3s ease;
 }
 .card-design.profile-card.theme-dark {
-  background: linear-gradient(
-    165deg,
-    color-mix(in srgb, var(--accent) 35%, #081119) 0%,
-    #0f172a 45%,
-    color-mix(in srgb, var(--card-color, #d5b66f) 20%, #1e293b) 100%
+  background: var(
+    --card-fond,
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--accent) 35%, #081119) 0%,
+      #0f172a 45%,
+      color-mix(in srgb, var(--card-color, #d5b66f) 20%, #1e293b) 100%
+    )
   );
   border-color: rgba(255, 255, 255, 0.12);
 }
 .card-design.profile-card.theme-sand {
-  background: linear-gradient(165deg, #f5b86e 0%, #f9d99c 45%, #fef08a 100%);
+  background: var(--card-fond, linear-gradient(165deg, #f5b86e 0%, #f9d99c 45%, #fef08a 100%));
 }
 .card-design .card-cover {
   width: 100%;
   aspect-ratio: 2.2 / 1;
   height: auto;
   min-height: 140px;
-  background-color: #ffffff;
+  background-color: var(--block-bg, #ffffff);
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -57,7 +63,7 @@
   box-sizing: border-box;
 }
 .card-design.theme-dark .card-cover {
-  background-color: #141c26;
+  background-color: var(--block-bg, #141c26);
   border-color: rgba(255, 255, 255, 0.08);
 }
 .card-design .card-content {
@@ -81,14 +87,15 @@
   padding: 0 22px 28px;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 32px;
-  background: #ffffff;
+  background: var(--block-bg, #ffffff);
+  color: var(--block-fg, inherit);
   box-sizing: border-box;
   box-shadow:
     0 16px 36px -8px rgba(0, 0, 0, 0.12),
     0 1px 3px rgba(0, 0, 0, 0.04);
 }
 .card-design.theme-dark .card-identity {
-  background: #151d28;
+  background: var(--block-bg, #151d28);
   border-color: rgba(255, 255, 255, 0.08);
   box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.35);
 }
@@ -138,7 +145,7 @@
 .card-design .card-identity h2 {
   margin: 0;
   font-size: 26px;
-  color: color-mix(in srgb, var(--accent) 65%, #0f172a);
+  color: var(--card-fg, var(--block-fg, color-mix(in srgb, var(--accent) 65%, #0f172a)));
   line-height: 1.25;
   letter-spacing: 0.04em;
   font-weight: 800;
@@ -146,7 +153,7 @@
   overflow-wrap: anywhere;
 }
 .card-design.theme-dark .card-identity h2 {
-  color: #f8fafc;
+  color: var(--card-fg, var(--block-fg, #f8fafc));
 }
 .card-design .card-identity .job {
   margin: 8px 0 0;
@@ -199,16 +206,18 @@
 .card-design .card-save {
   background: linear-gradient(
     135deg,
-    var(--accent) 0%,
-    color-mix(in srgb, var(--accent) 85%, #000) 100%
+    var(--button-bg, var(--accent)) 0%,
+    color-mix(in srgb, var(--button-bg, var(--accent)) 85%, #000) 100%
   );
-  color: var(--accent-text, #ffffff);
+  color: var(--button-text, var(--accent-text, #ffffff));
   border: none;
-  box-shadow: 0 8px 22px -3px color-mix(in srgb, var(--accent) 50%, rgba(0, 0, 0, 0.25));
+  box-shadow: 0 8px 22px -3px
+    color-mix(in srgb, var(--button-bg, var(--accent)) 50%, rgba(0, 0, 0, 0.25));
 }
 .card-design .card-save:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 28px -3px color-mix(in srgb, var(--accent) 65%, rgba(0, 0, 0, 0.35));
+  box-shadow: 0 12px 28px -3px
+    color-mix(in srgb, var(--button-bg, var(--accent)) 65%, rgba(0, 0, 0, 0.35));
 }
 .card-design .card-save:active {
   transform: translateY(0);
@@ -261,17 +270,17 @@
   padding: 24px;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 32px;
-  background: #ffffff;
+  background: var(--block-bg, #ffffff);
   box-shadow: 0 14px 34px -8px rgba(0, 0, 0, 0.1);
-  color: #1e293b;
+  color: var(--block-fg, #1e293b);
   box-sizing: border-box;
   transition: border-color 0.25s ease;
 }
 .card-design.theme-dark .public-details .panel,
 .card-design.theme-dark .public-details .card-promotions {
-  background: #151d28;
+  background: var(--block-bg, #151d28);
   border-color: rgba(255, 255, 255, 0.08);
-  color: #f1f5f9;
+  color: var(--block-fg, #f1f5f9);
 }
 .card-design .public-details .panel:hover,
 .card-design .public-details .card-promotions:hover {
@@ -298,10 +307,11 @@
   align-items: center;
   justify-content: flex-start;
   gap: 14px;
-  background: var(--accent);
-  color: var(--accent-text, #ffffff) !important;
-  border: 1px solid color-mix(in srgb, var(--accent) 80%, #ffffff);
-  box-shadow: 0 6px 20px -3px color-mix(in srgb, var(--accent) 45%, rgba(0, 0, 0, 0.2));
+  background: var(--button-bg, var(--accent));
+  color: var(--button-text, var(--accent-text, #ffffff)) !important;
+  border: 1px solid color-mix(in srgb, var(--button-bg, var(--accent)) 80%, #ffffff);
+  box-shadow: 0 6px 20px -3px
+    color-mix(in srgb, var(--button-bg, var(--accent)) 45%, rgba(0, 0, 0, 0.2));
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;

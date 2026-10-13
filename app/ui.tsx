@@ -81,6 +81,10 @@ const blank = {
   template: 'Professionnel',
   cardTheme: 'dark',
   buttonShape: 'pill',
+  fondColor: '',
+  blockColor: '',
+  buttonColor: '',
+  textColor: '',
   services: [] as any[],
   photos: [] as string[],
   pdf: '',
@@ -780,6 +784,54 @@ export default function App({
             ['outline', 'Contour', 'بالإطار'],
           ])}
           <label className="field">
+            {t('Couleur du fond', 'لون الخلفية')}
+            <input
+              type="color"
+              value={
+                a.fondColor ||
+                (a.theme === 'dark' ? '#0f172a' : a.theme === 'sand' ? '#f5b86e' : '#e2c478')
+              }
+              onChange={(e) => setData({ ...data, fondColor: e.target.value })}
+            />
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => setData({ ...data, fondColor: '' })}
+            >
+              {t('Fond par défaut', 'الخلفية الافتراضية')}
+            </button>
+          </label>
+          <label className="field">
+            {t('Couleur des blocs', 'لون الكتل')}
+            <input
+              type="color"
+              value={a.blockColor || (a.theme === 'dark' ? '#151d28' : '#ffffff')}
+              onChange={(e) => setData({ ...data, blockColor: e.target.value })}
+            />
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => setData({ ...data, blockColor: '' })}
+            >
+              {t('Blocs par défaut', 'الكتل الافتراضية')}
+            </button>
+          </label>
+          <label className="field">
+            {t('Couleur des boutons', 'لون الأزرار')}
+            <input
+              type="color"
+              value={a.buttonColor || data.color || '#d5b66f'}
+              onChange={(e) => setData({ ...data, buttonColor: e.target.value })}
+            />
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => setData({ ...data, buttonColor: '' })}
+            >
+              {t('Boutons par défaut', 'الأزرار الافتراضية')}
+            </button>
+          </label>
+          <label className="field">
             {t('Couleur du texte', 'لون الكتابة')}
             <input
               type="color"
@@ -795,21 +847,6 @@ export default function App({
               onClick={() => setData({ ...data, textColor: '' })}
             >
               {t('Couleur automatique', 'لون أوتوماتيكي')}
-            </button>
-          </label>
-          <label className="field">
-            {t('Couleur des boutons', 'لون الأزرار')}
-            <input
-              type="color"
-              value={a.buttonColor || data.color || '#d5b66f'}
-              onChange={(e) => setData({ ...data, buttonColor: e.target.value })}
-            />
-            <button
-              type="button"
-              className="text-button"
-              onClick={() => setData({ ...data, buttonColor: '' })}
-            >
-              {t('Utiliser la couleur de la carte', 'استعمل لون الكارط')}
             </button>
           </label>
         </div>

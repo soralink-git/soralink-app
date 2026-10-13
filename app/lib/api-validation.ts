@@ -103,6 +103,8 @@ export const profileDataSchema = z
       .max(10)
       .optional(),
     color,
+    fondColor: color,
+    blockColor: color,
     textColor: color,
     buttonColor: color,
     cardTheme: z.enum(['light', 'dark', 'sand']).optional(),

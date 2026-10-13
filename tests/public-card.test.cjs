@@ -83,13 +83,18 @@ test('shared renderer preserves theme, sizing, color and shape customization', (
     textSize: 'large',
     buttonSize: 'large',
     buttonStyle: 'outline',
+    fondColor: '#abcdef',
+    blockColor: '#121212',
     textColor: '#123456',
     buttonColor: '#654321',
     buttonShape: 'pill',
   });
   assert.match(html, /theme-sand text-size-large button-size-large button-style-outline/);
+  assert.match(html, /--card-fond:#abcdef/);
+  assert.match(html, /--block-bg:#121212/);
   assert.match(html, /--card-fg:#123456/);
   assert.match(html, /--accent:#654321/);
+  assert.match(html, /--button-bg:#654321/);
   assert.match(html, /--button-radius:30px/);
 });
 test('contact exchange still requires explicit consent', () => {

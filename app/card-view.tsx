@@ -123,8 +123,17 @@ export default function CardView({
         style={
           {
             '--card-color': d.color || '#d5b66f',
+            ...(a.fondColor ? { '--card-fond': a.fondColor } : {}),
+            ...(a.blockColor
+              ? {
+                  '--block-bg': a.blockColor,
+                  '--block-fg': accentText(a.blockColor) === '#ffffff' ? '#ffffff' : '#1e293b',
+                }
+              : {}),
             '--accent': a.buttonColor || d.color || '#d5b66f',
             '--accent-text': accentText(a.buttonColor || d.color),
+            '--button-bg': a.buttonColor || d.color || '#d5b66f',
+            '--button-text': accentText(a.buttonColor || d.color),
             ...(a.textColor ? { '--card-fg': a.textColor, '--card-muted': a.textColor } : {}),
             '--button-radius': a.shape === 'pill' ? '30px' : a.shape === 'square' ? '0px' : '8px',
             '--avatar-radius': a.avatarShape === 'square' ? '12px' : '50%',
@@ -522,8 +531,17 @@ export default function CardView({
         style={
           {
             '--card-color': d.color || '#d5b66f',
+            ...(a.fondColor ? { '--card-fond': a.fondColor } : {}),
+            ...(a.blockColor
+              ? {
+                  '--block-bg': a.blockColor,
+                  '--block-fg': accentText(a.blockColor) === '#ffffff' ? '#ffffff' : '#1e293b',
+                }
+              : {}),
             '--accent': a.buttonColor || d.color || '#d5b66f',
             '--accent-text': accentText(a.buttonColor || d.color),
+            '--button-bg': a.buttonColor || d.color || '#d5b66f',
+            '--button-text': accentText(a.buttonColor || d.color),
             ...(a.textColor ? { '--card-fg': a.textColor, '--card-muted': a.textColor } : {}),
             '--button-radius': a.shape === 'pill' ? '30px' : a.shape === 'square' ? '0px' : '8px',
           } as any

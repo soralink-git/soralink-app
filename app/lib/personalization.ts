@@ -27,6 +27,8 @@ export function appearance(d: any) {
     theme,
     font,
     shape,
+    fondColor: /^#[0-9a-f]{6}$/i.test(d.fondColor || '') ? d.fondColor : '',
+    blockColor: /^#[0-9a-f]{6}$/i.test(d.blockColor || '') ? d.blockColor : '',
     textColor: /^#[0-9a-f]{6}$/i.test(d.textColor || '') ? d.textColor : '',
     buttonColor: /^#[0-9a-f]{6}$/i.test(d.buttonColor || '') ? d.buttonColor : '',
     textSize: ['normal', 'large', 'extra'].includes(d.textSize) ? d.textSize : 'normal',
@@ -56,6 +58,8 @@ export function normalizeAppearance(d: any) {
   return {
     ...d,
     sectionTitles: sectionTitles(d.sectionTitles),
+    fondColor: a.fondColor,
+    blockColor: a.blockColor,
     textColor: a.textColor,
     buttonColor: a.buttonColor,
     textSize: a.textSize,

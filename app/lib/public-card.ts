@@ -35,6 +35,8 @@ export function publicCardData(saved: any, pro: boolean) {
     out: Record<string, any> = {};
   for (const key of textFields) out[key] = typeof d[key] === 'string' ? d[key] : '';
   for (const key of [
+    'fondColor',
+    'blockColor',
     'textColor',
     'buttonColor',
     'textSize',

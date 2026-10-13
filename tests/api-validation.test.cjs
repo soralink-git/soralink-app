@@ -254,11 +254,15 @@ test('profile preserves customization, Arabic and future fields while empty cata
     promotions: [],
     textColor: '#112233',
     buttonColor: '',
+    fondColor: '#123456',
+    blockColor: '#654321',
     hiddenSections: ['photos'],
     futureSetting: { enabled: true },
   };
   const result = v.profileDataSchema.parse(input);
   assert.equal(result.bio, input.bio);
+  assert.equal(result.fondColor, '#123456');
+  assert.equal(result.blockColor, '#654321');
   assert.equal(result.futureSetting.enabled, true);
   assert(valid(v.profileDataSchema, { name: 'Card', services: [], photos: [], promotions: [] }));
 });
