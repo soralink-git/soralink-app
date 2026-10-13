@@ -17,7 +17,7 @@ export default function ImageCropper({
   onApply: (file: File) => Promise<void>;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr),
-    ratio = target === 'cover' ? 4 : 1;
+    ratio = target === 'cover' ? 2 : 1;
   const canvas = useRef<HTMLCanvasElement>(null),
     image = useRef<HTMLImageElement | null>(null),
     dialog = useRef<HTMLDivElement>(null),

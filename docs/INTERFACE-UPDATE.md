@@ -1,6 +1,6 @@
 # Interface de la carte et de l’espace client
 
-La carte publique et son aperçu partagent une même présentation : couverture au ratio 4:1, portrait ou logo centré, identité lisible, actions principales avant les contenus et blocs distincts pour chaque section. Le style par défaut reste noir et or. Les couleurs, tailles, thèmes et formes choisis par les clients sont conservés.
+La carte publique et son aperçu partagent une même présentation : couverture au ratio 2:1, portrait ou logo centré, identité lisible, actions principales avant les contenus et blocs distincts pour chaque section. Le style par défaut reste noir et or. Les couleurs, tailles, thèmes et formes choisis par les clients sont conservés.
 
 Les dix rubriques de l’espace client sont regroupées en personnalisation, gestion des clients et diffusion/offre. Le titre correspond à la rubrique active. L’aperçu reste présent dans tous les onglets, avec une disposition adaptée aux petits écrans. Les liens marketing ne s’affichent plus dans le header de l’éditeur.
 
@@ -16,3 +16,9 @@ Le bouton WhatsApp reste une icône unique. Le nom SoraLink reste de gauche à d
 ## Alignement de l’aperçu et de la carte
 
 L’aperçu utilise désormais la carte complète, sans le mode compact ni les anciennes règles de style spécifiques à l’aperçu. Le sélecteur de langue est aussi visible dans l’aperçu. Deux tests comparent exactement le HTML de la carte dans l’éditeur et sur la page publique, en français et en arabe. Le bloc d’identité est arrondi comme dans les références fournies. Les ajustements de mise en page se basent sur la largeur de la carte elle-même ; seule la largeur disponible peut différer entre l’espace client et la page publique.
+
+## Couverture et boutons
+
+La couverture est deux fois plus haute à largeur égale (ratio 2:1). Le recadrage utilise ce nouveau format. Les couvertures existantes sont affichées entièrement, sans découpe supplémentaire ; le fond complète l’espace si leurs proportions diffèrent.
+
+Les boutons de la carte avec du texte partagent désormais la même taille de police, graisse, couleur de texte et couleur de fond. Le choix de couleur et le mode plein/contour du client s’appliquent à tous ces boutons, dans la carte publique comme dans l’aperçu. Les icônes de contact restent des icônes.

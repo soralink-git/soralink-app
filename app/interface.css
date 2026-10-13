@@ -7,16 +7,17 @@
   container-type: inline-size;
 }
 .card-design .card-cover {
-  aspect-ratio: 4 / 1;
+  aspect-ratio: 2 / 1;
   height: auto;
   min-height: 0;
-  background-color: var(--card-color, #d5b66f);
+  background-color: var(--card-bg);
   background-image: linear-gradient(
     125deg,
     #11161c,
     color-mix(in srgb, var(--card-color, #d5b66f) 45%, #172029)
   );
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
   background-position: center;
 }
 .card-design .card-brand,
@@ -89,7 +90,7 @@
 }
 .card-design .card-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 9px;
   margin: 10px 0 20px;
 }
@@ -466,4 +467,21 @@
 }
 .card-design .text-button {
   margin-top: 15px;
+}
+
+/* All labelled card actions use the client's chosen button style. */
+.card-design.custom-card :is(.card-button, .exchange-button, .secondary) {
+  min-height: calc(var(--card-button-height) + 8px);
+  padding: var(--card-button-padding);
+  font-size: var(--card-text-size);
+  font-weight: 700;
+  line-height: 1.45;
+  background: var(--accent);
+  color: var(--accent-text);
+  border: 1px solid var(--accent);
+  border-radius: var(--button-radius, 8px);
+}
+.card-design.custom-card.button-style-outline :is(.card-button, .exchange-button, .secondary) {
+  background: var(--card-bg);
+  color: var(--card-fg);
 }
