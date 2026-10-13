@@ -410,7 +410,7 @@ export default function CardView({
                   rel="noopener noreferrer"
                 >
                   <MapPin size={18} />
-                  {t('Itinéraire', 'كيفاش توصل')}
+                  <span className="contact-label">{t('Itinéraire', 'كيفاش توصل')}</span>
                 </a>
               )}
             </div>
@@ -685,8 +685,10 @@ export default function CardView({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Globe size={17} />
-                  {sectionHeading(d, 'links', t('Site web', 'الموقع'))}
+                  <Globe size={18} />
+                  <span className="contact-label">
+                    {sectionHeading(d, 'links', t('Site web', 'الموقع'))}
+                  </span>
                 </a>
               );
             return null;
