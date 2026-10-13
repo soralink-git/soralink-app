@@ -60,6 +60,8 @@ function context(tab, ar = false) {
       React.createElement(CardView, {
         ...props,
         ar,
+        view: 'app',
+        id: 'public-card',
         setAr: noop,
         onMessage: noop,
         onRequest: noop,
@@ -100,7 +102,7 @@ for (const tab of [
     const html = renderToStaticMarkup(
       React.createElement(DashboardEditor, { context: context(tab) }),
     );
-    assert.equal((html.match(/workspace-card-preview live-preview/g) || []).length, 1);
+    assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
     assert.equal((html.match(/profile-card card-design custom-card/g) || []).length, 1);
     assert.match(html, /workspace-tab-content/);
   });
@@ -115,5 +117,25 @@ for (const ar of [false, true])
     assert.match(html, ar ? /<h1>الكونطاكت ديالي<\/h1>/ : /<h1>Mes contacts<\/h1>/);
     assert.match(html, ar ? /خصّص الكارط/ : /Personnaliser/);
     assert.match(html, ar ? /الزبناء ديالي/ : /Mes clients/);
-    assert.equal((html.match(/workspace-card-preview live-preview/g) || []).length, 1);
+    assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
+  });
+
+for (const ar of [false, true])
+  test(`preview and public card render exactly the same card markup in ${ar ? 'Arabic' : 'French'}`, () => {
+    const ctx = context('profile', ar);
+    const PublicCardView = load(path.resolve('app/public-card-view.tsx')).default;
+    const previewHtml = renderToStaticMarkup(
+      React.createElement(DashboardEditor, { context: ctx }),
+    );
+    const publicHtml = renderToStaticMarkup(
+      React.createElement(PublicCardView, {
+        initialData: ctx.data,
+        initialAr: ar,
+        cardId: 'public-card',
+      }),
+    );
+    const article = (html) => html.match(/<article\b[\s\S]*?<\/article>/)[0];
+    assert.equal(article(previewHtml), article(publicHtml));
+    assert.doesNotMatch(article(previewHtml), /compact/);
+    assert.match(article(previewHtml), /card-language/);
   });

@@ -140,7 +140,7 @@ export default function CardView({
           >
             SoraLink <Nfc size={18} />
           </a>
-          {(view === 'public' || view === 'demo') && (
+          {(preview || view === 'public' || view === 'demo') && (
             <button
               type="button"
               className="card-language"

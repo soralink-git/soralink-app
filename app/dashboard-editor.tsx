@@ -1606,7 +1606,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               )}
             </div>
             <div
-              className="workspace-card-preview live-preview"
+              className="workspace-card-preview"
               role="region"
               aria-label={t('Aperçu de votre carte', 'معاينة الكارط ديالك')}
             >
@@ -1614,7 +1614,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 <span className="eyebrow">{t('APERÇU EN DIRECT', 'معاينة مباشرة')}</span>
                 <span className="preview-live-dot" aria-hidden="true" />
               </div>
-              <Card d={data} small preview withSections />
+              <Card d={data} preview withSections />
               <p className="preview-caption">
                 {t(
                   'Votre carte évolue pendant vos modifications.',
