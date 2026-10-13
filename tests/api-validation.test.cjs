@@ -100,7 +100,7 @@ function load(filename) {
         if (name === 'cloudflare:workers') return { env: {} };
         if (name === 'next/headers') return { cookies: async () => ({ set() {}, delete() {} }) };
         if (!name.startsWith('.')) return require(name);
-        const resolved = path.resolve(path.dirname(file), name) + '.ts';
+        const resolved = (path.resolve(path.dirname(file), name) + '.ts').replace(/\\/g, '/');
         if (resolved.endsWith('/lib/server.ts')) return server;
         if (resolved.endsWith('/lib/supabase.ts')) return { authClient: async () => provider };
         if (resolved.endsWith('/chatgpt-auth.ts')) return { getChatGPTUser: async () => null };
