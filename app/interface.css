@@ -59,45 +59,6 @@
   background-color: #141c26;
   border-color: rgba(255, 255, 255, 0.08);
 }
-.card-design .card-brand,
-.card-design .card-language {
-  z-index: 2;
-  border-radius: 22px;
-  min-height: 40px;
-  font-size: 13px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  color: #0f172a;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-  padding: 7px 14px;
-  top: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-weight: 700;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.card-design .card-brand:hover,
-.card-design .card-language:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-}
-.card-design.theme-dark .card-brand,
-.card-design.theme-dark .card-language {
-  background: rgba(15, 23, 42, 0.85);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.15);
-}
-.card-design .card-brand {
-  left: 12px;
-}
-.card-design .card-language {
-  right: 12px;
-}
 .card-design .card-content {
   width: 100%;
   padding: 0;
@@ -106,13 +67,15 @@
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
+  position: relative;
+  z-index: 2;
 }
 .card-design .card-identity {
   width: 100%;
   position: relative;
   text-align: center;
   display: flow-root;
-  margin: 56px 0 16px;
+  margin: 0 0 16px;
   padding: 0 22px 28px;
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: 32px;
@@ -128,6 +91,8 @@
   box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.35);
 }
 .card-design .avatar {
+  position: relative;
+  z-index: 3;
   width: 128px;
   height: 128px;
   margin: -64px auto 16px;
@@ -718,7 +683,7 @@
 /* The card responds to its own width, identically in the editor and public page. */
 @container (max-width: 400px) {
   .card-design .card-content {
-    padding-inline: 16px;
+    padding-inline: 0;
   }
   .card-design .public-details .panel,
   .card-design .public-details .card-promotions {
