@@ -399,20 +399,11 @@ export default function CardView({
               </p>
             </div>
           )}
-          {!a.hideLocation && location.maps && (
+          {!a.hideLocation && (d.address || location.directions) && (
             <div className="location-links">
               {d.address && <p className="muted">{d.address}</p>}
-              <div className="row">
-                <a
-                  className="secondary small"
-                  href={location.maps}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <MapPin size={16} />
-                  {t('Voir sur Maps', 'شوف فـ Maps')}
-                </a>
-                {location.directions && (
+              {location.directions && (
+                <div className="row">
                   <a
                     className="secondary small"
                     href={location.directions}
@@ -422,8 +413,8 @@ export default function CardView({
                     <MapPin size={16} />
                     {t('Itinéraire', 'كيفاش توصل')}
                   </a>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )}
         </div>
