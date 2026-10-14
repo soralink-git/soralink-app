@@ -5,5 +5,11 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
-  return <App workspaceMode={params.app !== undefined} />;
+  const initialTab = typeof params.tab === 'string' ? params.tab : undefined;
+  return (
+    <App
+      workspaceMode={params.app !== undefined || params.tab !== undefined}
+      initialTab={initialTab}
+    />
+  );
 }

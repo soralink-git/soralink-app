@@ -383,20 +383,40 @@ export function Customization({
   );
 }
 
+const VALID_DASHBOARD_TABS = new Set([
+  'coordinates',
+  'content',
+  'interface',
+  'contacts',
+  'requests',
+  'schedule',
+  'share',
+  'orders',
+  'profile',
+  'sections',
+  'catalogue',
+  'promotions',
+  'media',
+]);
+
 export default function App({
   cardId,
   demoMode = false,
   workspaceMode = false,
+  initialTab,
 }: {
   cardId?: string;
   demoMode?: boolean;
   workspaceMode?: boolean;
+  initialTab?: string;
 }) {
   const [ar, setAr] = useState(false),
     [view, setView] = useState(
       workspaceMode ? 'app' : demoMode ? 'demo' : cardId ? 'public' : 'home',
     ),
-    [tab, setTab] = useState('coordinates'),
+    [tab, setTab] = useState(
+      initialTab && VALID_DASHBOARD_TABS.has(initialTab) ? initialTab : 'coordinates',
+    ),
     [data, setData] = useState<any>(demoMode ? { ...blank, ...demoCard } : blank),
     [published, setPublished] = useState(false),
     [id, setId] = useState(''),
@@ -455,6 +475,50 @@ export default function App({
   useEffect(() => {
     const timer = setInterval(() => setPromoToday(todayMorocco()), 30000);
     return () => clearInterval(timer);
+  }, []);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlTab = urlParams.get('tab');
+      const hashTab = window.location.hash.replace(/^#/, '');
+      const savedTab = localStorage.getItem('soralink_dashboard_tab');
+      const candidate =
+        (urlTab && VALID_DASHBOARD_TABS.has(urlTab) ? urlTab : null) ||
+        (hashTab && VALID_DASHBOARD_TABS.has(hashTab) ? hashTab : null) ||
+        (savedTab && VALID_DASHBOARD_TABS.has(savedTab) ? savedTab : null);
+      if (candidate && candidate !== tab) {
+        setTab(candidate);
+      }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (!VALID_DASHBOARD_TABS.has(tab)) return;
+    try {
+      localStorage.setItem('soralink_dashboard_tab', tab);
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('app') || view === 'app') {
+        if (url.searchParams.get('tab') !== tab) {
+          url.searchParams.set('app', '1');
+          url.searchParams.set('tab', tab);
+          window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+        }
+      }
+    } catch {}
+  }, [tab, view]);
+  useEffect(() => {
+    const handlePopState = () => {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlTab = urlParams.get('tab');
+        if (urlTab && VALID_DASHBOARD_TABS.has(urlTab)) {
+          setTab(urlTab);
+        }
+      } catch {}
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
   const [notifications, setNotifications] = useState<any[]>([]),
     [mailConfigured, setMailConfigured] = useState(false);
@@ -578,7 +642,10 @@ export default function App({
           } else setMsg(p.error);
           setLoaded(true);
         });
-    } else if (new URLSearchParams(location.search).has('app')) {
+    } else if (
+      new URLSearchParams(location.search).has('app') ||
+      new URLSearchParams(location.search).has('tab')
+    ) {
       setView('app');
       load();
     }
@@ -918,6 +985,19 @@ export default function App({
   );
   const openApp = () => {
     setView('app');
+    if (typeof window !== 'undefined') {
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('app', '1');
+        const savedTab = localStorage.getItem('soralink_dashboard_tab');
+        const targetTab = savedTab && VALID_DASHBOARD_TABS.has(savedTab) ? savedTab : tab;
+        url.searchParams.set('tab', targetTab);
+        window.history.pushState(null, '', url.pathname + url.search + url.hash);
+        if (targetTab !== tab) {
+          setTab(targetTab);
+        }
+      } catch {}
+    }
     load();
     window.scrollTo(0, 0);
   };

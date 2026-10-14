@@ -32,8 +32,30 @@ export default function Admin() {
     }
   }
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const urlTab = new URLSearchParams(window.location.search).get('tab');
+        const savedTab = localStorage.getItem('soralink_admin_tab');
+        const candidate = urlTab || savedTab;
+        if (candidate && ['clients', 'orders', 'audit'].includes(candidate)) {
+          setTab(candidate);
+        }
+      } catch {}
+    }
     load();
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem('soralink_admin_tab', tab);
+      const url = new URL(window.location.href);
+      if (url.searchParams.get('tab') !== tab) {
+        url.searchParams.set('tab', tab);
+        window.history.replaceState(null, '', url.pathname + url.search + url.hash);
+      }
+    } catch {}
+  }, [tab]);
   async function save(body: any) {
     setBusy(true);
     try {
