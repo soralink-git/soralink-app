@@ -22,6 +22,7 @@ import {
   Copy,
   Camera,
   Video,
+  Package,
 } from 'lucide-react';
 
 import { type CardViewProps } from './card-view';
@@ -138,18 +139,24 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     videoCaptureRef,
   } = context;
   const tabs = [
-    ['profile', Briefcase, 'Ma carte', 'الكارط ديالي', 'card'],
-    ['sections', LayoutDashboard, 'Mes sections', 'الأقسام ديالي', 'card'],
-    ['catalogue', Briefcase, 'Mon catalogue', 'الكاتالوگ ديالي', 'card'],
-    ['media', ImageIcon, 'Mes contenus', 'المحتوى ديالي', 'card'],
-    ['promotions', Palette, 'Mes promos', 'العروض ديالي', 'card'],
+    ['coordinates', Phone, 'Coordonnées', 'معلومات التواصل', 'card'],
+    ['content', Package, 'Contenu', 'المحتوى', 'card'],
+    ['interface', Palette, 'Interface', 'الواجهة والمظهر', 'card'],
     ['contacts', Users, 'Mes contacts', 'الكونطاكت ديالي', 'clients'],
     ['requests', Calendar, 'Mes demandes', 'الطلبات ديالي', 'clients'],
     ['schedule', Clock, 'Mon agenda', 'الأجندة ديالي', 'clients'],
     ['share', Nfc, 'Partager', 'شارك', 'offer'],
     ['orders', FileText, 'Mon offre', 'العرض ديالي', 'offer'],
   ] satisfies Array<[string, LucideIcon, string, string, string]>;
-  const current = tabs.find(([key]) => key === tab) || tabs[0];
+  const activeTab =
+    tab === 'profile'
+      ? 'coordinates'
+      : tab === 'sections'
+        ? 'interface'
+        : tab === 'catalogue' || tab === 'promotions' || tab === 'media'
+          ? 'content'
+          : tab;
+  const current = tabs.find(([key]) => key === activeTab) || tabs[0];
   return (
     <main className="workspace workspace-design">
       <aside>
@@ -171,9 +178,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               )}
               <button
                 key={key}
-                className={tab === key ? 'selected' : ''}
+                className={activeTab === key ? 'selected' : ''}
                 onClick={() => setTab(key)}
-                aria-pressed={tab === key}
+                aria-pressed={activeTab === key}
               >
                 <Icon size={19} />
                 <span>{t(fr, da)}</span>
@@ -272,11 +279,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         ) : (
           <div className="workspace-editor-layout">
             <div className="workspace-tab-content">
-              {tab === 'profile' && (
+              {(activeTab === 'coordinates' || tab === 'profile') && (
                 <>
                   <section className="panel">
                     <div className="panel-title">
-                      <h2>{t('Votre carte, à votre image', 'الكارط ديالك، على حساب ذوقك')}</h2>
+                      <h2>{t('Vos coordonnées et identité', 'معلومات التواصل والهوية')}</h2>
                       <label className="toggle">
                         <input
                           type="checkbox"
@@ -286,6 +293,76 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         {t('Page publiée', 'الصفحة منشورة')}
                       </label>
                     </div>
+                    <h3>{t('Portrait, logo et couverture', 'التصويرة، اللوگو والغلاف')}</h3>
+                    <div className="form-grid">
+                      <label className="field">
+                        {t('Portrait / logo', 'التصويرة / اللوگو')}
+                        <input
+                          type="file"
+                          disabled={busy}
+                          accept="image/png,image/jpeg,image/webp"
+                          onChange={(e) => {
+                            const f = e.currentTarget.files?.[0];
+                            e.currentTarget.value = '';
+                            if (f) startCrop(f, 'avatar');
+                          }}
+                        />
+                        {data.avatar && (
+                          <button
+                            type="button"
+                            className="secondary small"
+                            disabled={busy}
+                            onClick={() => startCrop(data.avatar, 'avatar')}
+                          >
+                            {t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
+                          </button>
+                        )}
+                        {data.avatar && (
+                          <button
+                            type="button"
+                            className="text-button"
+                            disabled={busy}
+                            onClick={() => setData({ ...data, avatar: '' })}
+                          >
+                            {t('Retirer le portrait / logo', 'حيّد التصويرة / اللوگو')}
+                          </button>
+                        )}
+                      </label>
+                      <label className="field">
+                        {t('Image de couverture', 'تصويرة الغلاف')}
+                        <input
+                          type="file"
+                          disabled={busy}
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={(e) => {
+                            const f = e.currentTarget.files?.[0];
+                            e.currentTarget.value = '';
+                            if (f) startCrop(f, 'cover');
+                          }}
+                        />
+                        {data.cover && (
+                          <button
+                            type="button"
+                            className="secondary small"
+                            disabled={busy}
+                            onClick={() => startCrop(data.cover, 'cover')}
+                          >
+                            {t('Recadrer la couverture', 'قصّ الغلاف')}
+                          </button>
+                        )}
+                        {data.cover && (
+                          <button
+                            type="button"
+                            className="text-button"
+                            disabled={busy}
+                            onClick={() => setData({ ...data, cover: '' })}
+                          >
+                            {t('Retirer la couverture', 'حيّد الغلاف')}
+                          </button>
+                        )}
+                      </label>
+                    </div>
+                    <h3>{t('Informations professionnelles', 'المعلومات المهنية')}</h3>
                     <div className="form-grid">
                       {field('name', t('Nom complet *', 'الاسم الكامل *'))}
                       {field('job', t('Profession', 'المهنة'))}
@@ -331,157 +408,12 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         onChange={(e) => setData({ ...data, bio: e.target.value })}
                       />
                     </label>
-                    <div className="form-grid">
-                      <label className="field">
-                        {t('Couleur de la carte', 'لون الكارط')}
-                        <input
-                          type="color"
-                          value={data.color}
-                          onChange={(e) => setData({ ...data, color: e.target.value })}
-                        />
-                      </label>
-                      <label className="field">
-                        {t('Portrait / logo', 'التصويرة / اللوگو')}
-                        <input
-                          type="file"
-                          disabled={busy}
-                          accept="image/png,image/jpeg,image/webp"
-                          onChange={(e) => {
-                            const f = e.currentTarget.files?.[0];
-                            e.currentTarget.value = '';
-                            if (f) startCrop(f, 'avatar');
-                          }}
-                        />
-                        {data.avatar && (
-                          <button
-                            type="button"
-                            className="secondary small"
-                            disabled={busy}
-                            onClick={() => startCrop(data.avatar, 'avatar')}
-                          >
-                            {t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
-                          </button>
-                        )}
-                        {data.avatar && (
-                          <button
-                            type="button"
-                            className="text-button"
-                            disabled={busy}
-                            onClick={() => setData({ ...data, avatar: '' })}
-                          >
-                            {t('Retirer le portrait / logo', 'حيّد التصويرة / اللوگو')}
-                          </button>
-                        )}
-                      </label>
-                    </div>
-                    <Customization />
                     <p className="hint">
                       {t(
-                        'Renseignez votre métier, choisissez vos couleurs et ajoutez vos contenus. Enregistrez pour mettre à jour votre page.',
-                        'كتب المهنة ديالك، اختار اللون وزيد المحتوى ديالك. سجّل باش تحدّث الصفحة.',
+                        'Renseignez vos coordonnées, logo, couverture et présentation. Enregistrez pour mettre à jour votre page.',
+                        'عمّر المعلومات ديالك، اللوگو، الغلاف والتقديم. سجّل باش تحدّث الصفحة.',
                       )}
                     </p>
-                  </section>
-                </>
-              )}
-              {tab === 'sections' && (
-                <>
-                  <section className="panel">
-                    <h2>{t('Mes sections', 'الأقسام ديالي')}</h2>
-                    <p className="hint">
-                      {t(
-                        'Choisissez les sections visibles et leur ordre. L’identité reste en tête. Les sections vides ne s’affichent pas. Enregistrez pour appliquer les changements à la carte publique.',
-                        'اختار الأقسام اللي يبانوا وترتيبهم. المعلومات كتبقى فاللول والأقسام الخاوية ما كيبانوش. سجّل باش يتطبق التغيير فالصفحة العمومية.',
-                      )}
-                    </p>
-                    {appearance(data).order.map((key, i) => {
-                      const a = appearance(data),
-                        locked = key === 'appointments' && !data.pro;
-                      const destinations: Record<string, string> = {
-                        coordinates: 'profile',
-                        social: 'profile',
-                        promotions: 'promotions',
-                        services: 'catalogue',
-                        photos: 'media',
-                        pdf: 'media',
-                        video: 'media',
-                        links: 'profile',
-                        appointments: 'schedule',
-                      };
-                      return (
-                        <div className="section-editor-row" key={key}>
-                          <div className="section-control">
-                            <label>
-                              <input
-                                type="checkbox"
-                                disabled={locked}
-                                checked={!locked && !a.hidden.includes(key)}
-                                onChange={(e) =>
-                                  setData((d: any) => ({
-                                    ...d,
-                                    hiddenSections: e.target.checked
-                                      ? a.hidden.filter((k: string) => k !== key)
-                                      : [...a.hidden, key],
-                                  }))
-                                }
-                              />
-                              {t(...sectionLabels[key])}
-                              {locked && <small> · {t('Option Pro requise', 'خاص Pro')}</small>}
-                            </label>
-                            <label className="section-position">
-                              {t('Position', 'الترتيب')}
-                              <select
-                                value={i}
-                                disabled={locked}
-                                aria-label={t('Position de ', 'ترتيب ') + t(...sectionLabels[key])}
-                                onChange={(e) => {
-                                  const index = Number(e.target.value);
-                                  const order = [...a.order];
-                                  order.splice(i, 1);
-                                  order.splice(index, 0, key);
-                                  setData((d: any) => ({ ...d, sectionOrder: order }));
-                                }}
-                              >
-                                {a.order.map((_, n) => (
-                                  <option key={n} value={n}>
-                                    {n + 1}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-                          </div>
-                          <label className="field">
-                            {t('Titre personnalisé · français', 'عنوان شخصي · الدارجة')}
-                            <input
-                              maxLength={120}
-                              disabled={locked}
-                              value={data.sectionTitles?.[ar ? 'ar' : 'fr']?.[key] || ''}
-                              placeholder={t(...sectionLabels[key])}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                setData((d: any) => ({
-                                  ...d,
-                                  sectionTitles: {
-                                    ...d.sectionTitles,
-                                    [ar ? 'ar' : 'fr']: {
-                                      ...d.sectionTitles?.[ar ? 'ar' : 'fr'],
-                                      [key]: value,
-                                    },
-                                  },
-                                }));
-                              }}
-                            />
-                          </label>
-                          <button
-                            className="text-button"
-                            disabled={locked}
-                            onClick={() => setTab(destinations[key])}
-                          >
-                            {t('Modifier le contenu', 'بدّل المحتوى')}
-                          </button>
-                        </div>
-                      );
-                    })}
                     <button className="primary full" disabled={busy} onClick={save}>
                       <Save size={17} />
                       {t('Enregistrer les modifications', 'سجّل التغييرات')}
@@ -489,8 +421,140 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                   </section>
                 </>
               )}
-              {tab === 'promotions' && (
+              {(activeTab === 'content' ||
+                tab === 'catalogue' ||
+                tab === 'promotions' ||
+                tab === 'media') && (
                 <>
+                  <section className="panel">
+                    <h2>{t('Mon catalogue', 'الكاتالوگ ديالي')}</h2>
+                    <p className="hint">
+                      {t(
+                        'Présentez jusqu’à 10 produits ou services. Les visiteurs peuvent demander un article précis ; vous retrouvez sa référence dans Mes demandes. Enregistrez vos changements.',
+                        'قدّم حتى 10 منتجات ولا خدمات. الزوار يقدرو يطلبو عرض معيّن، وكتلقاه فـ الطلبات ديالي. سجّل التغييرات.',
+                      )}
+                    </p>
+                    {data.services.map((item: any, i: number) => (
+                      <div className="catalogue-editor" key={item.id}>
+                        <div className="panel-title">
+                          <h3>
+                            {t('Article ', 'عرض ')}
+                            {i + 1}
+                          </h3>
+                          <button
+                            className="secondary small"
+                            disabled={busy}
+                            onClick={() =>
+                              setData((d: any) => ({
+                                ...d,
+                                services: d.services.filter((v: any) => v.id !== item.id),
+                              }))
+                            }
+                          >
+                            {t('Supprimer', 'مسح')}
+                          </button>
+                        </div>
+                        <div className="form-grid">
+                          <label className="field">
+                            {t('Type', 'النوع')}
+                            <select
+                              value={item.type}
+                              onChange={(e) => updateCatalogue(item.id, 'type', e.target.value)}
+                            >
+                              <option value="product">{t('Produit', 'منتج')}</option>
+                              <option value="service">{t('Service', 'خدمة')}</option>
+                            </select>
+                          </label>
+                          <label className="field">
+                            {t('Nom *', 'الاسم *')}
+                            <input
+                              maxLength={120}
+                              value={item.name}
+                              onChange={(e) => updateCatalogue(item.id, 'name', e.target.value)}
+                            />
+                          </label>
+                          <label className="field">
+                            {t('Catégorie — facultative', 'الصنف — اختياري')}
+                            <input
+                              maxLength={80}
+                              value={item.category}
+                              onChange={(e) => updateCatalogue(item.id, 'category', e.target.value)}
+                            />
+                          </label>
+                          <label className="field">
+                            {t('Prix en DH — facultatif', 'الثمن بالدرهم — اختياري')}
+                            <input
+                              inputMode="decimal"
+                              maxLength={12}
+                              value={item.price}
+                              onChange={(e) => updateCatalogue(item.id, 'price', e.target.value)}
+                            />
+                          </label>
+                        </div>
+                        <label className="field">
+                          {t('Description', 'الوصف')}
+                          <textarea
+                            maxLength={800}
+                            value={item.description}
+                            onChange={(e) =>
+                              updateCatalogue(item.id, 'description', e.target.value)
+                            }
+                          />
+                        </label>
+                        <label className="field">
+                          {t('Photo — JPG, PNG, WebP · 10 Mo', 'تصويرة — JPG، PNG، WebP · 10 Mo')}
+                          <input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            disabled={busy}
+                            onChange={(e) => {
+                              const f = e.currentTarget.files?.[0];
+                              e.currentTarget.value = '';
+                              if (f) void uploadCatalogue(f, item.id);
+                            }}
+                          />
+                        </label>
+                        {item.image && (
+                          <div className="promotion-photo">
+                            <img src={item.image} alt={item.name || t('Article', 'عرض')} />
+                            <button
+                              className="secondary small"
+                              disabled={busy}
+                              onClick={() => updateCatalogue(item.id, 'image', '')}
+                            >
+                              {t('Retirer la photo', 'حيّد التصويرة')}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <button
+                      className="secondary"
+                      disabled={busy || data.services.length >= MAX_CATALOGUE_ITEMS}
+                      onClick={() =>
+                        setData((d: any) => ({
+                          ...d,
+                          services: [
+                            ...d.services,
+                            {
+                              id: crypto.randomUUID(),
+                              type: 'product',
+                              name: '',
+                              description: '',
+                              category: '',
+                              price: '',
+                              image: '',
+                            },
+                          ],
+                        }))
+                      }
+                    >
+                      <Plus size={16} />
+                      {t('Ajouter un produit ou service', 'زيد منتج ولا خدمة')} (
+                      {data.services.length}/{MAX_CATALOGUE_ITEMS})
+                    </button>
+                  </section>
+
                   <section className="panel">
                     <h2>{t('Mes promos', 'العروض ديالي')}</h2>
                     <p className="hint">
@@ -647,365 +711,316 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </p>
                     )}
                   </section>
-                </>
-              )}
-              {tab === 'catalogue' && (
-                <>
+
                   <section className="panel">
-                    <h2>{t('Mon catalogue', 'الكاتالوگ ديالي')}</h2>
-                    <p className="hint">
-                      {t(
-                        'Présentez jusqu’à 10 produits ou services. Les visiteurs peuvent demander un article précis ; vous retrouvez sa référence dans Mes demandes. Enregistrez vos changements.',
-                        'قدّم حتى 10 منتجات ولا خدمات. الزوار يقدرو يطلبو عرض معيّن، وكتلقاه فـ الطلبات ديالي. سجّل التغييرات.',
-                      )}
-                    </p>
-                    {data.services.map((item: any, i: number) => (
-                      <div className="catalogue-editor" key={item.id}>
-                        <div className="panel-title">
-                          <h3>
-                            {t('Article ', 'عرض ')}
-                            {i + 1}
-                          </h3>
-                          <button
-                            className="secondary small"
-                            disabled={busy}
-                            onClick={() =>
-                              setData((d: any) => ({
-                                ...d,
-                                services: d.services.filter((v: any) => v.id !== item.id),
-                              }))
-                            }
-                          >
-                            {t('Supprimer', 'مسح')}
-                          </button>
-                        </div>
-                        <div className="form-grid">
-                          <label className="field">
-                            {t('Type', 'النوع')}
-                            <select
-                              value={item.type}
-                              onChange={(e) => updateCatalogue(item.id, 'type', e.target.value)}
-                            >
-                              <option value="product">{t('Produit', 'منتج')}</option>
-                              <option value="service">{t('Service', 'خدمة')}</option>
-                            </select>
-                          </label>
-                          <label className="field">
-                            {t('Nom *', 'الاسم *')}
-                            <input
-                              maxLength={120}
-                              value={item.name}
-                              onChange={(e) => updateCatalogue(item.id, 'name', e.target.value)}
-                            />
-                          </label>
-                          <label className="field">
-                            {t('Catégorie — facultative', 'الصنف — اختياري')}
-                            <input
-                              maxLength={80}
-                              value={item.category}
-                              onChange={(e) => updateCatalogue(item.id, 'category', e.target.value)}
-                            />
-                          </label>
-                          <label className="field">
-                            {t('Prix en DH — facultatif', 'الثمن بالدرهم — اختياري')}
-                            <input
-                              inputMode="decimal"
-                              maxLength={12}
-                              value={item.price}
-                              onChange={(e) => updateCatalogue(item.id, 'price', e.target.value)}
-                            />
-                          </label>
-                        </div>
-                        <label className="field">
-                          {t('Description', 'الوصف')}
-                          <textarea
-                            maxLength={800}
-                            value={item.description}
-                            onChange={(e) =>
-                              updateCatalogue(item.id, 'description', e.target.value)
-                            }
-                          />
-                        </label>
-                        <label className="field">
-                          {t('Photo — JPG, PNG, WebP · 10 Mo', 'تصويرة — JPG، PNG، WebP · 10 Mo')}
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp"
-                            disabled={busy}
-                            onChange={(e) => {
-                              const f = e.currentTarget.files?.[0];
-                              e.currentTarget.value = '';
-                              if (f) void uploadCatalogue(f, item.id);
-                            }}
-                          />
-                        </label>
-                        {item.image && (
-                          <div className="promotion-photo">
-                            <img src={item.image} alt={item.name || t('Article', 'عرض')} />
-                            <button
-                              className="secondary small"
-                              disabled={busy}
-                              onClick={() => updateCatalogue(item.id, 'image', '')}
-                            >
-                              {t('Retirer la photo', 'حيّد التصويرة')}
-                            </button>
-                          </div>
+                    <h2>{t('Médias et documents', 'الوسائط والملفات')}</h2>
+                    <div className="storage-summary">
+                      <strong>{t('Stockage du compte', 'التخزين ديال الحساب')}</strong>
+                      <p>
+                        {storage
+                          ? Math.ceil(storage.bytes / 1048576) +
+                            ' / ' +
+                            storage.limitBytes / 1048576 +
+                            ' Mo · ' +
+                            storage.files +
+                            ' / ' +
+                            storage.limitFiles +
+                            ' ' +
+                            t('fichiers', 'ملف')
+                          : t(
+                              '400 Mo maximum par compte · 80 fichiers',
+                              'حتى 400 Mo لكل حساب · 80 ملف',
+                            )}
+                      </p>
+                      <p className="hint">
+                        {t(
+                          'Après enregistrement, les médias retirés sont supprimés s’ils ne sont plus utilisés sur une carte. Les imports abandonnés depuis plus de 24 h sont nettoyés lors d’une prochaine action.',
+                          'من بعد التسجيل، الملفات اللي حيّدتي كيتحيدو نهائياً إلا ما بقاوش مستعملين فشي كارط. الملفات اللي ترفعو وما تستعملوش كيتنقّاو من بعد 24 ساعة فإجراء جاي.',
                         )}
-                      </div>
-                    ))}
-                    <button
-                      className="secondary"
-                      disabled={busy || data.services.length >= MAX_CATALOGUE_ITEMS}
-                      onClick={() =>
-                        setData((d: any) => ({
-                          ...d,
-                          services: [
-                            ...d.services,
-                            {
-                              id: crypto.randomUUID(),
-                              type: 'product',
-                              name: '',
-                              description: '',
-                              category: '',
-                              price: '',
-                              image: '',
-                            },
-                          ],
-                        }))
-                      }
-                    >
-                      <Plus size={16} />
-                      {t('Ajouter un produit ou service', 'زيد منتج ولا خدمة')} (
-                      {data.services.length}/{MAX_CATALOGUE_ITEMS})
-                    </button>
-                  </section>
-                </>
-              )}
-              {tab === 'media' && (
-                <section className="panel">
-                  <h2>
-                    {t('Votre activité en images et en mots', 'النشاط ديالك بالتصاور والكلمات')}
-                  </h2>
-                  <div className="storage-summary">
-                    <strong>{t('Stockage du compte', 'التخزين ديال الحساب')}</strong>
-                    <p>
-                      {storage
-                        ? Math.ceil(storage.bytes / 1048576) +
-                          ' / ' +
-                          storage.limitBytes / 1048576 +
-                          ' Mo · ' +
-                          storage.files +
-                          ' / ' +
-                          storage.limitFiles +
-                          ' ' +
-                          t('fichiers', 'ملف')
-                        : t(
-                            '400 Mo maximum par compte · 80 fichiers',
-                            'حتى 400 Mo لكل حساب · 80 ملف',
-                          )}
-                    </p>
-                    <p className="hint">
-                      {t(
-                        'Après enregistrement, les médias retirés sont supprimés s’ils ne sont plus utilisés sur une carte. Les imports abandonnés depuis plus de 24 h sont nettoyés lors d’une prochaine action.',
-                        'من بعد التسجيل، الملفات اللي حيّدتي كيتحيدو نهائياً إلا ما بقاوش مستعملين فشي كارط. الملفات اللي ترفعو وما تستعملوش كيتنقّاو من بعد 24 ساعة فإجراء جاي.',
-                      )}
-                    </p>
-                  </div>
-                  <div className="camera-actions">
-                    <button
-                      className="secondary"
-                      disabled={busy || data.photos.length >= 10}
-                      onClick={() => photoCaptureRef.current?.click()}
-                    >
-                      <Camera size={18} />
-                      {t('Prendre une photo', 'خد تصويرة')}
-                    </button>
-                    <button
-                      className="secondary"
-                      disabled={busy}
-                      onClick={() => videoCaptureRef.current?.click()}
-                    >
-                      <Video size={18} />
-                      {t('Filmer une vidéo', 'صوّر فيديو')}
-                    </button>
-                    <input
-                      hidden
-                      ref={photoCaptureRef}
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      capture="environment"
-                      onChange={(e) => {
-                        const file = e.currentTarget.files?.[0];
-                        e.currentTarget.value = '';
-                        if (file) void uploadPhotos([file]);
-                      }}
-                    />
-                    <input
-                      hidden
-                      ref={videoCaptureRef}
-                      type="file"
-                      accept="video/*"
-                      capture="environment"
-                      onChange={(e) => {
-                        const file = e.currentTarget.files?.[0];
-                        e.currentTarget.value = '';
-                        if (file) void uploadVideo(file);
-                      }}
-                    />
-                  </div>
-                  <p className="hint">
-                    {t(
-                      'Sur téléphone, utilisez la caméra. Sur PC, choisissez un fichier enregistré. Photos compressées automatiquement à 1 600 pixels maximum (40 Mo avant compression). Vidéo : 50 Mo maximum, format MP4 conseillé. Enregistrez ensuite votre carte.',
-                      'فالتلفون استعمل الكاميرا. فالكمبيوتر اختار ملف مسجّل. التصاور كيتضغطو أوتوماتيكياً حتى 1600 بيكسل (حتى 40 Mo قبل الضغط) والفيديو حتى 50 Mo، والأفضل MP4. ومن بعد سجّل الكارط.',
-                    )}
-                  </p>
-                  <div className="form-grid">
-                    <label className="field">
-                      {t('Galerie · 10 photos maximum', 'الگالوري · حتى 10 تصاور')}
-                      <input
-                        type="file"
-                        multiple
-                        accept="image/jpeg,image/png,image/webp"
+                      </p>
+                    </div>
+                    <div className="camera-actions">
+                      <button
+                        className="secondary"
                         disabled={busy || data.photos.length >= 10}
+                        onClick={() => photoCaptureRef.current?.click()}
+                      >
+                        <Camera size={18} />
+                        {t('Prendre une photo', 'خد تصويرة')}
+                      </button>
+                      <button
+                        className="secondary"
+                        disabled={busy}
+                        onClick={() => videoCaptureRef.current?.click()}
+                      >
+                        <Video size={18} />
+                        {t('Filmer une vidéo', 'صوّر فيديو')}
+                      </button>
+                      <input
+                        hidden
+                        ref={photoCaptureRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        capture="environment"
                         onChange={(e) => {
-                          const files = Array.from(e.currentTarget.files || []);
+                          const file = e.currentTarget.files?.[0];
                           e.currentTarget.value = '';
-                          void uploadPhotos(files);
+                          if (file) void uploadPhotos([file]);
                         }}
                       />
-                      <span className="hint">
-                        {uploadProgress
-                          ? t(
-                              'Importation : ' + uploadProgress.done + '/' + uploadProgress.total,
-                              'كنزيدو التصاور : ' +
-                                uploadProgress.done +
-                                '/' +
-                                uploadProgress.total,
-                            )
-                          : t(
-                              'Sélectionnez plusieurs photos · JPG, PNG, WebP · 10 Mo par photo · ' +
-                                data.photos.length +
-                                '/10 utilisées',
-                              'اختار تصاور بزاف · JPG، PNG، WebP · 10 Mo لكل تصويرة · ' +
-                                data.photos.length +
-                                '/10 مستعملين',
-                            )}
-                      </span>
-                    </label>
-                    <label className="field">
-                      {t('Catalogue PDF · maximum 10 Mo', 'كاتالوگ PDF · حتى 10 Mo')}
                       <input
+                        hidden
+                        ref={videoCaptureRef}
                         type="file"
-                        disabled={busy}
-                        accept="application/pdf"
-                        onChange={(e) => e.target.files?.[0] && upload(e.target.files[0], 'pdf')}
-                      />
-                    </label>
-                    <label className="field">
-                      {t(
-                        'Vidéo enregistrée · 1 vidéo, maximum 50 Mo',
-                        'فيديو مسجّل · فيديو واحد، حتى 50 Mo',
-                      )}
-                      <input
-                        type="file"
-                        accept="video/mp4,video/webm,video/quicktime"
-                        disabled={busy}
+                        accept="video/*"
+                        capture="environment"
                         onChange={(e) => {
                           const file = e.currentTarget.files?.[0];
                           e.currentTarget.value = '';
                           if (file) void uploadVideo(file);
                         }}
                       />
-                      <span className="hint">
+                    </div>
+                    <p className="hint">
+                      {t(
+                        'Sur téléphone, utilisez la caméra. Sur PC, choisissez un fichier enregistré. Photos compressées automatiquement à 1 600 pixels maximum (40 Mo avant compression). Vidéo : 50 Mo maximum, format MP4 conseillé. Enregistrez ensuite votre carte.',
+                        'فالتلفون استعمل الكاميرا. فالكمبيوتر اختار ملف مسجّل. التصاور كيتضغطو أوتوماتيكياً حتى 1600 بيكسل (حتى 40 Mo قبل الضغط) والفيديو حتى 50 Mo، والأفضل MP4. ومن بعد سجّل الكارط.',
+                      )}
+                    </p>
+                    <div className="form-grid">
+                      <label className="field">
+                        {t('Galerie · 10 photos maximum', 'الگالوري · حتى 10 تصاور')}
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/jpeg,image/png,image/webp"
+                          disabled={busy || data.photos.length >= 10}
+                          onChange={(e) => {
+                            const files = Array.from(e.currentTarget.files || []);
+                            e.currentTarget.value = '';
+                            void uploadPhotos(files);
+                          }}
+                        />
+                        <span className="hint">
+                          {uploadProgress
+                            ? t(
+                                'Importation : ' + uploadProgress.done + '/' + uploadProgress.total,
+                                'كنزيدو التصاور : ' +
+                                  uploadProgress.done +
+                                  '/' +
+                                  uploadProgress.total,
+                              )
+                            : t(
+                                'Sélectionnez plusieurs photos · JPG, PNG, WebP · 10 Mo par photo · ' +
+                                  data.photos.length +
+                                  '/10 utilisées',
+                                'اختار تصاور بزاف · JPG، PNG، WebP · 10 Mo لكل تصويرة · ' +
+                                  data.photos.length +
+                                  '/10 مستعملين',
+                              )}
+                        </span>
+                      </label>
+                      <label className="field">
+                        {t('Catalogue PDF · maximum 10 Mo', 'كاتالوگ PDF · حتى 10 Mo')}
+                        <input
+                          type="file"
+                          disabled={busy}
+                          accept="application/pdf"
+                          onChange={(e) => e.target.files?.[0] && upload(e.target.files[0], 'pdf')}
+                        />
+                      </label>
+                      <label className="field">
                         {t(
-                          'Une nouvelle vidéo remplace la vidéo actuelle sur votre carte après enregistrement.',
-                          'الفيديو الجديد كيبدّل الفيديو الحالي فالـكارط من بعد التسجيل.',
+                          'Vidéo enregistrée · 1 vidéo, maximum 50 Mo',
+                          'فيديو مسجّل · فيديو واحد، حتى 50 Mo',
                         )}
-                      </span>
-                    </label>
-                    {field('video', t('Lien YouTube', 'رابط YouTube'), 'url')}
-                    <label className="field">
-                      {t('Image de couverture', 'تصويرة الغلاف')}
-                      <input
-                        type="file"
-                        disabled={busy}
-                        accept="image/jpeg,image/png,image/webp"
-                        onChange={(e) => {
-                          const f = e.currentTarget.files?.[0];
-                          e.currentTarget.value = '';
-                          if (f) startCrop(f, 'cover');
-                        }}
-                      />
-                      {data.cover && (
+                        <input
+                          type="file"
+                          accept="video/mp4,video/webm,video/quicktime"
+                          disabled={busy}
+                          onChange={(e) => {
+                            const file = e.currentTarget.files?.[0];
+                            e.currentTarget.value = '';
+                            if (file) void uploadVideo(file);
+                          }}
+                        />
+                        <span className="hint">
+                          {t(
+                            'Une nouvelle vidéo remplace la vidéo actuelle sur votre carte après enregistrement.',
+                            'الفيديو الجديد كيبدّل الفيديو الحالي فالـكارط من بعد التسجيل.',
+                          )}
+                        </span>
+                      </label>
+                      {field('video', t('Lien YouTube', 'رابط YouTube'), 'url')}
+                    </div>
+                    {recordedVideoUrl(data.recordedVideo) && (
+                      <div className="recorded-video-preview">
+                        <video
+                          className="content-video"
+                          src={data.recordedVideo}
+                          controls
+                          playsInline
+                          preload="metadata"
+                          aria-label={t('Aperçu de la vidéo', 'معاينة الفيديو')}
+                        />
                         <button
-                          type="button"
                           className="secondary small"
                           disabled={busy}
-                          onClick={() => startCrop(data.cover, 'cover')}
+                          onClick={() => setData({ ...data, recordedVideo: '' })}
                         >
-                          {t('Recadrer la couverture', 'قصّ الغلاف')}
-                        </button>
-                      )}
-                      {data.cover && (
-                        <button
-                          type="button"
-                          className="text-button"
-                          disabled={busy}
-                          onClick={() => setData({ ...data, cover: '' })}
-                        >
-                          {t('Retirer la couverture', 'حيّد الغلاف')}
-                        </button>
-                      )}
-                    </label>
-                  </div>
-                  {recordedVideoUrl(data.recordedVideo) && (
-                    <div className="recorded-video-preview">
-                      <video
-                        className="content-video"
-                        src={data.recordedVideo}
-                        controls
-                        playsInline
-                        preload="metadata"
-                        aria-label={t('Aperçu de la vidéo', 'معاينة الفيديو')}
-                      />
-                      <button
-                        className="secondary small"
-                        disabled={busy}
-                        onClick={() => setData({ ...data, recordedVideo: '' })}
-                      >
-                        {t('Retirer la vidéo', 'حيّد الفيديو')}
-                      </button>
-                    </div>
-                  )}
-                  <div className="gallery">
-                    {data.photos.map((p: string, i: number) => (
-                      <div key={p}>
-                        <img src={p} alt={'Photo ' + (i + 1)} />
-                        <button
-                          onClick={() =>
-                            setData({
-                              ...data,
-                              photos: data.photos.filter((_: any, n: number) => i !== n),
-                            })
-                          }
-                          aria-label="Supprimer"
-                        >
-                          <X size={16} />
+                          {t('Retirer la vidéo', 'حيّد الفيديو')}
                         </button>
                       </div>
-                    ))}
-                  </div>
-                  {data.pdf && (
-                    <div className="row">
-                      <a href={data.pdf} target="_blank">
-                        {t('Voir le catalogue', 'شوف الكاتالوگ')}
-                      </a>
-                      <button onClick={() => setData({ ...data, pdf: '' })}>
-                        {t('Retirer', 'حيّد')}
-                      </button>
+                    )}
+                    <div className="gallery">
+                      {data.photos.map((p: string, i: number) => (
+                        <div key={p}>
+                          <img src={p} alt={'Photo ' + (i + 1)} />
+                          <button
+                            onClick={() =>
+                              setData({
+                                ...data,
+                                photos: data.photos.filter((_: any, n: number) => i !== n),
+                              })
+                            }
+                            aria-label="Supprimer"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </section>
+                    {data.pdf && (
+                      <div className="row">
+                        <a href={data.pdf} target="_blank">
+                          {t('Voir le catalogue', 'شوف الكاتالوگ')}
+                        </a>
+                        <button onClick={() => setData({ ...data, pdf: '' })}>
+                          {t('Retirer', 'حيّد')}
+                        </button>
+                      </div>
+                    )}
+                    <button className="primary full" disabled={busy} onClick={save}>
+                      <Save size={17} />
+                      {t('Enregistrer les modifications', 'سجّل التغييرات')}
+                    </button>
+                  </section>
+                </>
+              )}
+              {(activeTab === 'interface' || tab === 'sections') && (
+                <>
+                  <section className="panel">
+                    <h2>{t('Interface et style de la carte', 'الواجهة وستايل الكارط')}</h2>
+                    <p className="hint">
+                      {t(
+                        'Personnalisez l’apparence visuelle, les couleurs, les polices et l’affichage de votre carte.',
+                        'خصّص المظهر، الألوان، الخطوط وطريقة العرض فالكارط ديالك.',
+                      )}
+                    </p>
+                    <Customization />
+                  </section>
+                  <section className="panel">
+                    <h2>{t('Mes sections', 'الأقسام ديالي')}</h2>
+                    <p className="hint">
+                      {t(
+                        'Choisissez les sections visibles et leur ordre. L’identité reste en tête. Les sections vides ne s’affichent pas. Enregistrez pour appliquer les changements à la carte publique.',
+                        'اختار الأقسام اللي يبانوا وترتيبهم. المعلومات كتبقى فاللول والأقسام الخاوية ما كيبانوش. سجّل باش يتطبق التغيير فالصفحة العمومية.',
+                      )}
+                    </p>
+                    {appearance(data).order.map((key, i) => {
+                      const a = appearance(data),
+                        locked = key === 'appointments' && !data.pro;
+                      const destinations: Record<string, string> = {
+                        coordinates: 'coordinates',
+                        social: 'coordinates',
+                        promotions: 'content',
+                        services: 'content',
+                        photos: 'content',
+                        pdf: 'content',
+                        video: 'content',
+                        links: 'coordinates',
+                        appointments: 'schedule',
+                      };
+                      return (
+                        <div className="section-editor-row" key={key}>
+                          <div className="section-control">
+                            <label>
+                              <input
+                                type="checkbox"
+                                disabled={locked}
+                                checked={!locked && !a.hidden.includes(key)}
+                                onChange={(e) =>
+                                  setData((d: any) => ({
+                                    ...d,
+                                    hiddenSections: e.target.checked
+                                      ? a.hidden.filter((k: string) => k !== key)
+                                      : [...a.hidden, key],
+                                  }))
+                                }
+                              />
+                              {t(...sectionLabels[key])}
+                              {locked && <small> · {t('Option Pro requise', 'خاص Pro')}</small>}
+                            </label>
+                            <label className="section-position">
+                              {t('Position', 'الترتيب')}
+                              <select
+                                value={i}
+                                disabled={locked}
+                                aria-label={t('Position de ', 'ترتيب ') + t(...sectionLabels[key])}
+                                onChange={(e) => {
+                                  const index = Number(e.target.value);
+                                  const order = [...a.order];
+                                  order.splice(i, 1);
+                                  order.splice(index, 0, key);
+                                  setData((d: any) => ({ ...d, sectionOrder: order }));
+                                }}
+                              >
+                                {a.order.map((_, n) => (
+                                  <option key={n} value={n}>
+                                    {n + 1}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <label className="field">
+                            {t('Titre personnalisé · français', 'عنوان شخصي · الدارجة')}
+                            <input
+                              maxLength={120}
+                              disabled={locked}
+                              value={data.sectionTitles?.[ar ? 'ar' : 'fr']?.[key] || ''}
+                              placeholder={t(...sectionLabels[key])}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setData((d: any) => ({
+                                  ...d,
+                                  sectionTitles: {
+                                    ...d.sectionTitles,
+                                    [ar ? 'ar' : 'fr']: {
+                                      ...d.sectionTitles?.[ar ? 'ar' : 'fr'],
+                                      [key]: value,
+                                    },
+                                  },
+                                }));
+                              }}
+                            />
+                          </label>
+                          <button
+                            className="text-button"
+                            disabled={locked}
+                            onClick={() => setTab(destinations[key])}
+                          >
+                            {t('Modifier le contenu', 'بدّل المحتوى')}
+                          </button>
+                        </div>
+                      );
+                    })}
+                    <button className="primary full" disabled={busy} onClick={save}>
+                      <Save size={17} />
+                      {t('Enregistrer les modifications', 'سجّل التغييرات')}
+                    </button>
+                  </section>
+                </>
               )}
               {tab === 'contacts' && (
                 <section className="panel">

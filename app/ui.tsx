@@ -109,7 +109,7 @@ export default function App({
     [view, setView] = useState(
       workspaceMode ? 'app' : demoMode ? 'demo' : cardId ? 'public' : 'home',
     ),
-    [tab, setTab] = useState('profile'),
+    [tab, setTab] = useState('coordinates'),
     [data, setData] = useState<any>(demoMode ? { ...blank, ...demoCard } : blank),
     [published, setPublished] = useState(false),
     [id, setId] = useState(''),
@@ -223,7 +223,7 @@ export default function App({
     } catch {}
   }
   useEffect(() => {
-    if (auth && tab === 'media') void loadStorage();
+    if (auth && (tab === 'media' || tab === 'content')) void loadStorage();
   }, [auth, tab]);
   async function checkContactCard() {
     setCardCheck('loading');
@@ -783,6 +783,21 @@ export default function App({
             ['filled', 'Plein', 'عامر'],
             ['outline', 'Contour', 'بالإطار'],
           ])}
+          <label className="field">
+            {t('Couleur de la carte', 'لون الكارط')}
+            <input
+              type="color"
+              value={data.color || '#d5b66f'}
+              onChange={(e) => setData({ ...data, color: e.target.value })}
+            />
+            <button
+              type="button"
+              className="text-button"
+              onClick={() => setData({ ...data, color: '#d5b66f' })}
+            >
+              {t('Couleur par défaut', 'اللون الافتراضي')}
+            </button>
+          </label>
           <label className="field">
             {t('Couleur du fond', 'لون الخلفية')}
             <input

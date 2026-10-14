@@ -87,16 +87,19 @@ function context(tab, ar = false) {
   };
 }
 for (const tab of [
-  'profile',
-  'sections',
-  'catalogue',
-  'media',
-  'promotions',
+  'coordinates',
+  'content',
+  'interface',
   'contacts',
   'requests',
   'schedule',
   'share',
   'orders',
+  'profile',
+  'sections',
+  'catalogue',
+  'media',
+  'promotions',
 ])
   test(`one full-card preview remains in dashboard tab ${tab}`, () => {
     const html = renderToStaticMarkup(
@@ -113,7 +116,7 @@ for (const ar of [false, true])
       React.createElement(DashboardEditor, { context: context('contacts', ar) }),
     );
     assert.equal((html.match(/aria-pressed="true"/g) || []).length, 1);
-    assert.equal((html.match(/aria-pressed="false"/g) || []).length, 9);
+    assert.equal((html.match(/aria-pressed="false"/g) || []).length, 7);
     assert.match(html, ar ? /<h1>الكونطاكت ديالي<\/h1>/ : /<h1>Mes contacts<\/h1>/);
     assert.match(html, ar ? /خصّص الكارط/ : /Personnaliser/);
     assert.match(html, ar ? /الزبناء ديالي/ : /Mes clients/);
