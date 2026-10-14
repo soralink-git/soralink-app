@@ -1,7 +1,7 @@
 'use client';
 import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { X, Calendar, Check, Globe, Users } from 'lucide-react';
+import { X, Calendar, Check, Globe, Users, RotateCcw } from 'lucide-react';
 import QRCode from 'qrcode';
 import Pwa from './pwa';
 import ImageCropper from './image-cropper';
@@ -751,11 +751,6 @@ export default function App({
               ['ar', 'العربية / الدارجة', 'العربية / الدارجة'],
             ],
           )}
-          {select('cardTheme', t('Fond de carte', 'خلفية الكارط'), [
-            ['light', 'Clair', 'فاتح'],
-            ['dark', 'Sombre', 'غامق'],
-            ['sand', 'Crème', 'كريمي'],
-          ])}
           {select('cardFont', t('Police', 'الخط'), [
             ['modern', 'Moderne', 'عصري'],
             ['classic', 'Classique', 'كلاسيكي'],
@@ -784,21 +779,6 @@ export default function App({
             ['outline', 'Contour', 'بالإطار'],
           ])}
           <label className="field">
-            {t('Couleur de la carte', 'لون الكارط')}
-            <input
-              type="color"
-              value={data.color || '#d5b66f'}
-              onChange={(e) => setData({ ...data, color: e.target.value })}
-            />
-            <button
-              type="button"
-              className="text-button"
-              onClick={() => setData({ ...data, color: '#d5b66f' })}
-            >
-              {t('Couleur par défaut', 'اللون الافتراضي')}
-            </button>
-          </label>
-          <label className="field">
             {t('Couleur du fond', 'لون الخلفية')}
             <input
               type="color"
@@ -808,13 +788,6 @@ export default function App({
               }
               onChange={(e) => setData({ ...data, fondColor: e.target.value })}
             />
-            <button
-              type="button"
-              className="text-button"
-              onClick={() => setData({ ...data, fondColor: '' })}
-            >
-              {t('Fond par défaut', 'الخلفية الافتراضية')}
-            </button>
           </label>
           <label className="field">
             {t('Couleur des blocs', 'لون الكتل')}
@@ -823,13 +796,6 @@ export default function App({
               value={a.blockColor || (a.theme === 'dark' ? '#151d28' : '#ffffff')}
               onChange={(e) => setData({ ...data, blockColor: e.target.value })}
             />
-            <button
-              type="button"
-              className="text-button"
-              onClick={() => setData({ ...data, blockColor: '' })}
-            >
-              {t('Blocs par défaut', 'الكتل الافتراضية')}
-            </button>
           </label>
           <label className="field">
             {t('Couleur des boutons', 'لون الأزرار')}
@@ -838,13 +804,6 @@ export default function App({
               value={a.buttonColor || data.color || '#d5b66f'}
               onChange={(e) => setData({ ...data, buttonColor: e.target.value })}
             />
-            <button
-              type="button"
-              className="text-button"
-              onClick={() => setData({ ...data, buttonColor: '' })}
-            >
-              {t('Boutons par défaut', 'الأزرار الافتراضية')}
-            </button>
           </label>
           <label className="field">
             {t('Couleur du texte', 'لون الكتابة')}
@@ -856,14 +815,26 @@ export default function App({
               }
               onChange={(e) => setData({ ...data, textColor: e.target.value })}
             />
+          </label>
+          <div style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
             <button
               type="button"
-              className="text-button"
-              onClick={() => setData({ ...data, textColor: '' })}
+              className="secondary small"
+              onClick={() =>
+                setData({
+                  ...data,
+                  color: '#d5b66f',
+                  fondColor: '',
+                  blockColor: '',
+                  buttonColor: '',
+                  textColor: '',
+                })
+              }
             >
-              {t('Couleur automatique', 'لون أوتوماتيكي')}
+              <RotateCcw size={15} />
+              {t('Réinitialiser les couleurs par défaut', 'استعادة الألوان الافتراضية')}
             </button>
-          </label>
+          </div>
         </div>
         <h3>{t('Coordonnées visibles', 'المعلومات اللي كيبانو')}</h3>
         <div className="visibility-options">
