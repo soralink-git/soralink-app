@@ -96,6 +96,245 @@ const blank = {
   pro: false,
   ...defaults,
 };
+
+export function Customization({
+  data = {},
+  setData = () => {},
+  ar = false,
+  setAr = () => {},
+  t = (fr: string) => fr,
+}: {
+  data?: any;
+  setData?: (data: any) => void;
+  ar?: boolean;
+  setAr?: (ar: boolean) => void;
+  t?: (fr: string, arText: string) => string;
+} = {}) {
+  const a = appearance(data);
+  const select = (key: string, label: string, values: [string, string, string][]) => (
+    <label className="field">
+      {label}
+      <select
+        value={
+          data[key] ||
+          (
+            {
+              textSize: 'normal',
+              buttonSize: 'normal',
+              buttonStyle: 'filled',
+              cardTheme: 'light',
+              cardFont: 'modern',
+              buttonShape: 'rounded',
+              avatarShape: 'circle',
+              defaultLanguage: ar ? 'ar' : 'fr',
+            } as any
+          )[key]
+        }
+        onChange={(e) => {
+          const nextVal = e.target.value;
+          if (key === 'defaultLanguage' && setAr) setAr(nextVal === 'ar');
+          setData({ ...data, [key]: nextVal });
+        }}
+      >
+        {values.map(([value, fr, arText]) => (
+          <option key={value} value={value}>
+            {t(fr, arText)}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+
+  return (
+    <div className="personalization">
+      <h3>{t('Style de votre carte', 'ستايل الكارط ديالك')}</h3>
+      <div className="form-grid">
+        {select(
+          'defaultLanguage',
+          t('Langue par défaut de la carte', 'اللغة الافتراضية للكارط'),
+          [
+            ['fr', 'Français', 'الفرنسية'],
+            ['ar', 'العربية / الدارجة', 'العربية / الدارجة'],
+          ],
+        )}
+        {select('cardFont', t('Police', 'الخط'), [
+          ['modern', 'Moderne', 'عصري'],
+          ['classic', 'Classique', 'كلاسيكي'],
+          ['simple', 'Simple', 'بسيط'],
+        ])}
+        {select('buttonShape', t('Forme des boutons', 'شكل الأزرار'), [
+          ['rounded', 'Arrondis', 'مدوّرين'],
+          ['square', 'Carrés', 'مربّعين'],
+          ['pill', 'Très arrondis', 'مدوّرين بزاف'],
+        ])}
+        {select('avatarShape', t('Forme du portrait / logo', 'شكل التصويرة / اللوگو'), [
+          ['circle', 'Rond', 'دائرة'],
+          ['square', 'Carré arrondi', 'مربع مدوّر'],
+        ])}
+        {select('textSize', t('Taille du texte', 'حجم الكتابة'), [
+          ['normal', 'Confortable', 'مريح'],
+          ['large', 'Grande', 'كبيرة'],
+          ['extra', 'Très grande', 'كبيرة بزاف'],
+        ])}
+        {select('buttonSize', t('Taille des boutons', 'حجم الأزرار'), [
+          ['normal', 'Standard', 'عادي'],
+          ['large', 'Grande', 'كبير'],
+        ])}
+        {select('buttonStyle', t('Style des boutons', 'ستايل الأزرار'), [
+          ['filled', 'Plein', 'عامر'],
+          ['outline', 'Contour', 'بالإطار'],
+        ])}
+        <label className="field">
+          {t('Couleur du fond', 'لون الخلفية')}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+            <input
+              type="color"
+              style={{ flex: 1, minWidth: '48px', height: '46px', padding: '4px', cursor: 'pointer' }}
+              value={
+                a.fondColor ||
+                (a.theme === 'dark' ? '#0f172a' : a.theme === 'sand' ? '#f5b86e' : '#e2c478')
+              }
+              onChange={(e) => setData({ ...data, fondColor: e.target.value })}
+            />
+            <input
+              type="text"
+              value={data.fondColor || ''}
+              placeholder={a.theme === 'dark' ? '#0F172A' : a.theme === 'sand' ? '#F5B86E' : '#E2C478'}
+              maxLength={7}
+              style={{ width: '96px', flexShrink: 0, minHeight: '46px', fontFamily: 'monospace', textTransform: 'uppercase' }}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '' || /^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                  setData({ ...data, fondColor: val });
+                }
+              }}
+            />
+          </div>
+        </label>
+        <label className="field">
+          {t('Couleur des blocs', 'لون الكتل')}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+            <input
+              type="color"
+              style={{ flex: 1, minWidth: '48px', height: '46px', padding: '4px', cursor: 'pointer' }}
+              value={a.blockColor || (a.theme === 'dark' ? '#151d28' : '#ffffff')}
+              onChange={(e) => setData({ ...data, blockColor: e.target.value })}
+            />
+            <input
+              type="text"
+              value={data.blockColor || ''}
+              placeholder={a.theme === 'dark' ? '#151D28' : '#FFFFFF'}
+              maxLength={7}
+              style={{ width: '96px', flexShrink: 0, minHeight: '46px', fontFamily: 'monospace', textTransform: 'uppercase' }}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '' || /^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                  setData({ ...data, blockColor: val });
+                }
+              }}
+            />
+          </div>
+        </label>
+        <label className="field">
+          {t('Couleur des boutons', 'لون الأزرار')}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+            <input
+              type="color"
+              style={{ flex: 1, minWidth: '48px', height: '46px', padding: '4px', cursor: 'pointer' }}
+              value={a.buttonColor || data.color || '#d5b66f'}
+              onChange={(e) => setData({ ...data, buttonColor: e.target.value })}
+            />
+            <input
+              type="text"
+              value={data.buttonColor || ''}
+              placeholder="#D5B66F"
+              maxLength={7}
+              style={{ width: '96px', flexShrink: 0, minHeight: '46px', fontFamily: 'monospace', textTransform: 'uppercase' }}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '' || /^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                  setData({ ...data, buttonColor: val });
+                }
+              }}
+            />
+          </div>
+        </label>
+        <label className="field">
+          {t('Couleur du texte', 'لون الكتابة')}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+            <input
+              type="color"
+              style={{ flex: 1, minWidth: '48px', height: '46px', padding: '4px', cursor: 'pointer' }}
+              value={
+                a.textColor ||
+                (a.theme === 'dark' ? '#f5f6f8' : a.theme === 'sand' ? '#352b20' : '#1c2623')
+              }
+              onChange={(e) => setData({ ...data, textColor: e.target.value })}
+            />
+            <input
+              type="text"
+              value={data.textColor || ''}
+              placeholder={a.theme === 'dark' ? '#F5F6F8' : a.theme === 'sand' ? '#352B20' : '#1C2623'}
+              maxLength={7}
+              style={{ width: '96px', flexShrink: 0, minHeight: '46px', fontFamily: 'monospace', textTransform: 'uppercase' }}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '' || /^#[0-9a-fA-F]{0,6}$/.test(val)) {
+                  setData({ ...data, textColor: val });
+                }
+              }}
+            />
+          </div>
+        </label>
+        <div style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
+          <button
+            type="button"
+            className="secondary small"
+            onClick={() =>
+              setData({
+                ...data,
+                color: '#d5b66f',
+                fondColor: '',
+                blockColor: '',
+                buttonColor: '',
+                textColor: '',
+              })
+            }
+          >
+            <RotateCcw size={15} />
+            {t('Réinitialiser les couleurs par défaut', 'استعادة الألوان الافتراضية')}
+          </button>
+        </div>
+      </div>
+      <h3>{t('Coordonnées visibles', 'المعلومات اللي كيبانو')}</h3>
+      <div className="visibility-options">
+        {[
+          ['hidePhone', 'Téléphone', 'التلفون'],
+          ['hideEmail', 'E-mail', 'الإيميل'],
+          ['hideLocation', 'Maps et adresse', 'Maps والعنوان'],
+          ['hideSocial', 'Réseaux sociaux', 'مواقع التواصل'],
+          ['hideWhatsApp', 'WhatsApp', 'WhatsApp'],
+        ].map(([key, fr, da]) => (
+          <label key={key}>
+            <input
+              type="checkbox"
+              checked={!data[key]}
+              onChange={(e) => setData({ ...data, [key]: !e.target.checked })}
+            />
+            {t(fr, da)}
+          </label>
+        ))}
+      </div>
+      <p className="hint">
+        {t(
+          'Les informations masquées restent dans votre espace et ne sont plus transmises avec la carte publique après enregistrement.',
+          'المعلومات المخبيّة كاتبقى فالحساب ديالك وما كاتتسيفطش مع الكارط العمومية من بعد التسجيل.',
+        )}
+      </p>
+    </div>
+  );
+}
+
 export default function App({
   cardId,
   demoMode = false,
@@ -704,166 +943,6 @@ export default function App({
     links: ['Site web', 'الموقع'],
     appointments: ['Rendez-vous', 'المواعيد'],
   };
-  function Customization() {
-    const a = appearance(data);
-    const select = (key: string, label: string, values: [string, string, string][]) => (
-      <label className="field">
-        {label}
-        <select
-          value={
-            data[key] ||
-            (
-              {
-                textSize: 'normal',
-                buttonSize: 'normal',
-                buttonStyle: 'filled',
-                cardTheme: 'light',
-                cardFont: 'modern',
-                buttonShape: 'rounded',
-                avatarShape: 'circle',
-                defaultLanguage: ar ? 'ar' : 'fr',
-              } as any
-            )[key]
-          }
-          onChange={(e) => {
-            const nextVal = e.target.value;
-            if (key === 'defaultLanguage') setAr(nextVal === 'ar');
-            setData({ ...data, [key]: nextVal });
-          }}
-        >
-          {values.map(([value, fr, ar]) => (
-            <option key={value} value={value}>
-              {t(fr, ar)}
-            </option>
-          ))}
-        </select>
-      </label>
-    );
-    return (
-      <div className="personalization">
-        <h3>{t('Style de votre carte', 'ستايل الكارط ديالك')}</h3>
-        <div className="form-grid">
-          {select(
-            'defaultLanguage',
-            t('Langue par défaut de la carte', 'اللغة الافتراضية للكارط'),
-            [
-              ['fr', 'Français', 'الفرنسية'],
-              ['ar', 'العربية / الدارجة', 'العربية / الدارجة'],
-            ],
-          )}
-          {select('cardFont', t('Police', 'الخط'), [
-            ['modern', 'Moderne', 'عصري'],
-            ['classic', 'Classique', 'كلاسيكي'],
-            ['simple', 'Simple', 'بسيط'],
-          ])}
-          {select('buttonShape', t('Forme des boutons', 'شكل الأزرار'), [
-            ['rounded', 'Arrondis', 'مدوّرين'],
-            ['square', 'Carrés', 'مربّعين'],
-            ['pill', 'Très arrondis', 'مدوّرين بزاف'],
-          ])}
-          {select('avatarShape', t('Forme du portrait / logo', 'شكل التصويرة / اللوگو'), [
-            ['circle', 'Rond', 'دائرة'],
-            ['square', 'Carré arrondi', 'مربع مدوّر'],
-          ])}
-          {select('textSize', t('Taille du texte', 'حجم الكتابة'), [
-            ['normal', 'Confortable', 'مريح'],
-            ['large', 'Grande', 'كبيرة'],
-            ['extra', 'Très grande', 'كبيرة بزاف'],
-          ])}
-          {select('buttonSize', t('Taille des boutons', 'حجم الأزرار'), [
-            ['normal', 'Standard', 'عادي'],
-            ['large', 'Grande', 'كبير'],
-          ])}
-          {select('buttonStyle', t('Style des boutons', 'ستايل الأزرار'), [
-            ['filled', 'Plein', 'عامر'],
-            ['outline', 'Contour', 'بالإطار'],
-          ])}
-          <label className="field">
-            {t('Couleur du fond', 'لون الخلفية')}
-            <input
-              type="color"
-              value={
-                a.fondColor ||
-                (a.theme === 'dark' ? '#0f172a' : a.theme === 'sand' ? '#f5b86e' : '#e2c478')
-              }
-              onChange={(e) => setData({ ...data, fondColor: e.target.value })}
-            />
-          </label>
-          <label className="field">
-            {t('Couleur des blocs', 'لون الكتل')}
-            <input
-              type="color"
-              value={a.blockColor || (a.theme === 'dark' ? '#151d28' : '#ffffff')}
-              onChange={(e) => setData({ ...data, blockColor: e.target.value })}
-            />
-          </label>
-          <label className="field">
-            {t('Couleur des boutons', 'لون الأزرار')}
-            <input
-              type="color"
-              value={a.buttonColor || data.color || '#d5b66f'}
-              onChange={(e) => setData({ ...data, buttonColor: e.target.value })}
-            />
-          </label>
-          <label className="field">
-            {t('Couleur du texte', 'لون الكتابة')}
-            <input
-              type="color"
-              value={
-                a.textColor ||
-                (a.theme === 'dark' ? '#f5f6f8' : a.theme === 'sand' ? '#352b20' : '#1c2623')
-              }
-              onChange={(e) => setData({ ...data, textColor: e.target.value })}
-            />
-          </label>
-          <div style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
-            <button
-              type="button"
-              className="secondary small"
-              onClick={() =>
-                setData({
-                  ...data,
-                  color: '#d5b66f',
-                  fondColor: '',
-                  blockColor: '',
-                  buttonColor: '',
-                  textColor: '',
-                })
-              }
-            >
-              <RotateCcw size={15} />
-              {t('Réinitialiser les couleurs par défaut', 'استعادة الألوان الافتراضية')}
-            </button>
-          </div>
-        </div>
-        <h3>{t('Coordonnées visibles', 'المعلومات اللي كيبانو')}</h3>
-        <div className="visibility-options">
-          {[
-            ['hidePhone', 'Téléphone', 'التلفون'],
-            ['hideEmail', 'E-mail', 'الإيميل'],
-            ['hideLocation', 'Maps et adresse', 'Maps والعنوان'],
-            ['hideSocial', 'Réseaux sociaux', 'مواقع التواصل'],
-            ['hideWhatsApp', 'WhatsApp', 'WhatsApp'],
-          ].map(([key, fr, da]) => (
-            <label key={key}>
-              <input
-                type="checkbox"
-                checked={!data[key]}
-                onChange={(e) => setData({ ...data, [key]: !e.target.checked })}
-              />
-              {t(fr, da)}
-            </label>
-          ))}
-        </div>
-        <p className="hint">
-          {t(
-            'Les informations masquées restent dans votre espace et ne sont plus transmises avec la carte publique après enregistrement.',
-            'المعلومات المخبيّة كاتبقى فالحساب ديالك وما كاتتسيفطش مع الكارط العمومية من بعد التسجيل.',
-          )}
-        </p>
-      </div>
-    );
-  }
   function download(blob: Blob, name: string) {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -1124,6 +1203,7 @@ export default function App({
               qr,
               save,
               sectionLabels,
+              setAr,
               setData,
               setModal,
               setMsg,

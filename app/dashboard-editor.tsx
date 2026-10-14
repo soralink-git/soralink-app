@@ -37,9 +37,10 @@ import { MAX_PROMOTIONS, promotionStatus } from './lib/promotions';
 
 export type DashboardContext = {
   Card: (props: CardViewProps) => JSX.Element;
-  Customization: () => JSX.Element;
+  Customization: (props?: any) => JSX.Element | null;
   action: (body: any) => Promise<any>;
   ar: boolean;
+  setAr?: (ar: boolean) => void;
   auth: boolean;
   authLoadError: boolean;
   authLoading: boolean;
@@ -116,6 +117,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     qr,
     save,
     sectionLabels,
+    setAr,
     setData,
     setModal,
     setMsg,
@@ -917,7 +919,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         'خصّص المظهر، الألوان، الخطوط وطريقة العرض فالكارط ديالك.',
                       )}
                     </p>
-                    <Customization />
+                    <Customization data={data} setData={setData} ar={ar} setAr={setAr} t={t} />
                     <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
                       <button disabled={busy} className="primary" onClick={save}>
                         <Save size={17} />
