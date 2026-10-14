@@ -92,20 +92,77 @@ export default function LandingPage({
             <Nfc size={16} />
           </div>
           <div className="showcase-phone">
+            <div className="phone-notch">
+              <span className="phone-speaker" />
+            </div>
             <Card
               d={{
                 ...blank,
                 name: t('Dr. Yasmine Alami', 'د. ياسمين العلمي'),
                 business: t('Cabinet Dentaire & Esthétique', 'عيادة طب الأسنان والتجميل'),
-                job: t('Chirurgien-Dentiste', 'طبيبة جراحة الأسنان'),
+                job: t('Chirurgien-Dentiste & Esthétique', 'طبيبة جراحة الأسنان والتجميل'),
                 bio: t(
-                  'Expertise en soins dentaires modernes, esthétique du sourire et implantologie. Prenez rendez-vous en ligne en 1 clic.',
-                  'خبرة فطب الأسنان الحديث وتجميل الابتسامة وزراعة الأسنان. حجز موعدك فالموقع بنقرة وحدة.',
+                  'Soins dentaires modernes, esthétique du sourire et prise de rendez-vous en ligne en 1 clic.',
+                  'علاجات الأسنان الحديثة، تجميل الابتسامة وحجز المواعيد بنقرة وحدة.',
                 ),
+                phone: '+212600000000',
+                whatsapp: '+212661446664',
+                email: 'contact@soralink.ma',
+                address: 'Boulevard d’Anfa, Casablanca',
+                website: 'https://soralink.link',
+                instagram: 'https://instagram.com/soralink',
+                linkedin: 'https://linkedin.com/company/soralink',
                 cardTheme: 'dark',
                 color: '#d5b66f',
+                fondColor: '#0a0e16',
+                blockColor: '#141b26',
+                buttonColor: '#d5b66f',
+                textColor: '#ffffff',
+                buttonShape: 'rounded',
+                avatarShape: 'circle',
+                pro: true,
+                cover:
+                  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="220" viewBox="0 0 600 220"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231a2332"/><stop offset="50%" stop-color="%23263346"/><stop offset="100%" stop-color="%230f1622"/></linearGradient></defs><rect width="600" height="220" fill="url(%23g)"/><circle cx="120" cy="110" r="140" fill="%23d5b66f" opacity="0.12"/><circle cx="500" cy="90" r="160" fill="%23d5b66f" opacity="0.08"/></svg>',
+                avatar:
+                  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ecd296"/><stop offset="100%" stop-color="%23d5b66f"/></linearGradient></defs><rect width="200" height="200" fill="%23141b26"/><circle cx="100" cy="100" r="94" fill="none" stroke="url(%23ag)" stroke-width="6"/><text x="100" y="122" font-family="system-ui,sans-serif" font-size="68" font-weight="800" fill="url(%23ag)" text-anchor="middle">YA</text></svg>',
+                services: [
+                  {
+                    id: 's1',
+                    type: 'service',
+                    name: t('Consultation & Bilan', 'استشارة وتشخيص'),
+                    price: '300 DH',
+                    description: t(
+                      'Examen complet et plan de traitement personnalisé.',
+                      'فحص كامل وخطة علاج مخصصة.',
+                    ),
+                  },
+                  {
+                    id: 's2',
+                    type: 'service',
+                    name: t('Blanchiment & Esthétique', 'تبييض وتجميل'),
+                    price: '800 DH',
+                    description: t(
+                      'Éclaircissement dentaire haute performance.',
+                      'تبييض الأسنان بأحدث التقنيات.',
+                    ),
+                  },
+                ],
+                promotions: [
+                  {
+                    id: 'p1',
+                    title: t('Offre Découverte -20%', 'عرض ترحيبي -20%'),
+                    promoPrice: '240 DH',
+                    regularPrice: '300 DH',
+                    description: t(
+                      'Valable sur votre première consultation en ligne.',
+                      'صالح فالاستشارة الأولى بحجز مسبق.',
+                    ),
+                    enabled: true,
+                  },
+                ],
               }}
-              small
+              preview
+              withSections
             />
           </div>
           <div className="showcase-nfc" aria-hidden="true">
