@@ -1,17 +1,27 @@
 'use client';
-import type { ComponentType } from 'react';
+import { useState, type ComponentType } from 'react';
 import type { LucideIcon } from 'lucide-react';
 type LandingFeature = [LucideIcon, string, string, string, string, string];
 import {
   Calendar,
   Check,
+  CreditCard,
+  Download,
   ExternalLink,
   Globe,
+  Heart,
+  Layers,
+  MapPin,
   Nfc,
+  Package,
   Plus,
+  QrCode,
   Share2,
   ShoppingBag,
   Sparkles,
+  Star,
+  Utensils,
+  Wifi,
 } from 'lucide-react';
 import { WhatsAppIcon } from './card-helpers';
 
@@ -29,10 +39,74 @@ export default function LandingPage({
   onPricing: () => void;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr);
+  const [activePersona, setActivePersona] = useState(0);
+
+  const personas = [
+    {
+      id: 'commercial',
+      badge: t('COMMERCIAL & INDÉPENDANT', 'تجاري ومهني حر'),
+      badgeColor: '#2563EB',
+      title: t('Commerciaux & Indépendants', 'تجاريين ومهنيين أحرار'),
+      desc: t(
+        'Enregistrez votre contact en 1 seconde et recevez des demandes de devis.',
+        'سجّل الكونطاكت فـ ثانية واستقبل طلبات الدوڤي.',
+      ),
+      icon: '💼',
+      highlight: t(
+        'Bouton vCard 1-clic · Formulaire de devis express · Liens LinkedIn & WhatsApp',
+        'حفظ جهة الاتصال بنقرة وحدة · طلب دوڤي سريع · روابط LinkedIn وWhatsApp',
+      ),
+    },
+    {
+      id: 'restaurant',
+      badge: t('COMMERCE & RESTAURATION', 'محلات ومطاعم'),
+      badgeColor: '#EA580C',
+      title: t('Commerces & Restaurants', 'محلات ومطاعم'),
+      desc: t(
+        'Affichez votre menu PDF, votre catalogue et vos promos du moment.',
+        'بيّن المينو PDF، الكاتالوگ ديالك والعروض الحالية.',
+      ),
+      icon: '🍕',
+      highlight: t(
+        'Menu digital PDF sans contact · Galerie photos de plats · Promos flash du jour',
+        'مينو رقمي بلا لمس · صور الأطباق · عروض ترويجية يومية',
+      ),
+    },
+    {
+      id: 'cabinet',
+      badge: t('SANTÉ & PROFESSIONS LIBÉRALES', 'عيادات وخدمات'),
+      badgeColor: '#0D9488',
+      title: t('Cabinets & Services', 'عيادات وخدمات'),
+      desc: t(
+        'Partagez votre itinéraire Maps et gérez vos prises de rendez-vous.',
+        'شارك مسار Maps وسير حجز المواعيد ديالك.',
+      ),
+      icon: '🩺',
+      highlight: t(
+        'Itinéraire GPS Maps en 1 clic · Réservation de créneau Pro · Horaires d’ouverture',
+        'مسار GPS خرائط بنقرة وحدة · حجز موعد Pro أونلاين · أوقات العمل',
+      ),
+    },
+    {
+      id: 'artisan',
+      badge: t('ARTISANAT & CRÉATION', 'حرفيين ومبدعين'),
+      badgeColor: '#D97706',
+      title: t('Artisans & Créateurs', 'حرفيين ومبدعين'),
+      desc: t(
+        'Montrez vos réalisations en photos/vidéo et prenez des commandes.',
+        'ورّي خدمتك بالصور/الفيديو واستقبل طلبيات مباشرة.',
+      ),
+      icon: '🛠️',
+      highlight: t(
+        'Galerie portfolio de réalisations · Vidéo de présentation · Commande directe WhatsApp',
+        'معرض صور الإنجازات · فيديو تعريفي · طلبات مباشرة فـ WhatsApp',
+      ),
+    },
+  ];
 
   return (
     <main className="landing">
-      {/* 1. EN-TÊTE (HERO) */}
+      {/* 1. EN-TÊTE (HERO) AVEC COMPOSITION VISUELLE 3D FLOTTANTE */}
       <section className="landing-hero">
         <div className="landing-copy">
           <span className="landing-kicker">
@@ -65,97 +139,113 @@ export default function LandingPage({
           </div>
         </div>
 
-        {/* HERO SHOWCASE: LIVE CARD + NFC SMART CARD */}
+        {/* HERO SHOWCASE 3D: MOCKUP SMARTPHONE + CARTE PHYSIQUE NFC NOIRE & DORÉE */}
         <div className="landing-showcase">
           <div className="showcase-caption">
             <span>{t('VOTRE UNIVERS PROFESSIONNEL EN 1 TAP', 'النشاط ديالك فـ نقرة وحدة')}</span>
-            <Nfc size={16} />
-          </div>
-          <div className="showcase-phone">
-            <div className="phone-notch">
-              <span className="phone-speaker" />
+            <div className="showcase-pulse-tag">
+              <span className="pulse-dot" />
+              <span>NFC LIVE</span>
             </div>
-            <Card
-              d={{
-                ...blank,
-                name: t('Dr. Yasmine Alami', 'د. ياسمين العلمي'),
-                business: t('Cabinet Dentaire & Esthétique', 'عيادة طب الأسنان والتجميل'),
-                job: t('Chirurgien-Dentiste & Esthétique', 'طبيبة جراحة الأسنان والتجميل'),
-                bio: t(
-                  'Soins dentaires modernes, esthétique du sourire et prise de rendez-vous en ligne en 1 clic.',
-                  'علاجات الأسنان الحديثة، تجميل الابتسامة وحجز المواعيد بنقرة وحدة.',
-                ),
-                phone: '+212600000000',
-                whatsapp: '+212661446664',
-                email: 'contact@soralink.ma',
-                address: 'Boulevard d’Anfa, Casablanca',
-                website: 'https://soralink.link',
-                instagram: 'https://instagram.com/soralink',
-                linkedin: 'https://linkedin.com/company/soralink',
-                cardTheme: 'dark',
-                color: '#d5b66f',
-                fondColor: '#0a0e16',
-                blockColor: '#141b26',
-                buttonColor: '#d5b66f',
-                textColor: '#ffffff',
-                buttonShape: 'rounded',
-                avatarShape: 'circle',
-                pro: true,
-                cover:
-                  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="220" viewBox="0 0 600 220"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231a2332"/><stop offset="50%" stop-color="%23263346"/><stop offset="100%" stop-color="%230f1622"/></linearGradient></defs><rect width="600" height="220" fill="url(%23g)"/><circle cx="120" cy="110" r="140" fill="%23d5b66f" opacity="0.12"/><circle cx="500" cy="90" r="160" fill="%23d5b66f" opacity="0.08"/></svg>',
-                avatar:
-                  'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ecd296"/><stop offset="100%" stop-color="%23d5b66f"/></linearGradient></defs><rect width="200" height="200" fill="%23141b26"/><circle cx="100" cy="100" r="94" fill="none" stroke="url(%23ag)" stroke-width="6"/><text x="100" y="122" font-family="system-ui,sans-serif" font-size="68" font-weight="800" fill="url(%23ag)" text-anchor="middle">YA</text></svg>',
-                services: [
-                  {
-                    id: 's1',
-                    type: 'service',
-                    name: t('Consultation & Bilan', 'استشارة وتشخيص'),
-                    price: '300 DH',
-                    description: t(
-                      'Examen complet et plan de traitement personnalisé.',
-                      'فحص كامل وخطة علاج مخصصة.',
-                    ),
-                  },
-                  {
-                    id: 's2',
-                    type: 'service',
-                    name: t('Blanchiment & Esthétique', 'تبييض وتجميل'),
-                    price: '800 DH',
-                    description: t(
-                      'Éclaircissement dentaire haute performance.',
-                      'تبييض الأسنان بأحدث التقنيات.',
-                    ),
-                  },
-                ],
-                promotions: [
-                  {
-                    id: 'p1',
-                    title: t('Offre Découverte -20%', 'عرض ترحيبي -20%'),
-                    promoPrice: '240 DH',
-                    regularPrice: '300 DH',
-                    description: t(
-                      'Valable sur votre première consultation en ligne.',
-                      'صالح فالاستشارة الأولى بحجز مسبق.',
-                    ),
-                    enabled: true,
-                  },
-                ],
-              }}
-              preview
-              withSections
-            />
           </div>
-          <div className="showcase-nfc" aria-hidden="true">
-            <span dir="ltr">
-              SoraLink <Nfc size={22} />
-            </span>
-            <strong>
-              {t('Votre prochain contact\ncommence ici.', 'التواصل الجاي\nكيبدا من هنا.')}
-            </strong>
-            <span className="nfc-bottom">
-              NFC + QR <Share2 size={16} />
-            </span>
+
+          <div className="showcase-composition">
+            {/* Mockup Smartphone */}
+            <div className="showcase-phone">
+              <div className="phone-notch">
+                <span className="phone-speaker" />
+              </div>
+              <Card
+                d={{
+                  ...blank,
+                  name: t('Dr. Yasmine Alami', 'د. ياسمين العلمي'),
+                  business: t('Cabinet Dentaire & Esthétique', 'عيادة طب الأسنان والتجميل'),
+                  job: t('Chirurgien-Dentiste & Esthétique', 'طبيبة جراحة الأسنان والتجميل'),
+                  bio: t(
+                    'Soins dentaires modernes, esthétique du sourire et prise de rendez-vous en ligne en 1 clic.',
+                    'علاجات الأسنان الحديثة، تجميل الابتسامة وحجز المواعيد بنقرة وحدة.',
+                  ),
+                  phone: '+212600000000',
+                  whatsapp: '+212661446664',
+                  email: 'contact@soralink.ma',
+                  address: 'Boulevard d’Anfa, Casablanca',
+                  website: 'https://soralink.link',
+                  instagram: 'https://instagram.com/soralink',
+                  linkedin: 'https://linkedin.com/company/soralink',
+                  cardTheme: 'dark',
+                  color: '#d5b66f',
+                  fondColor: '#0a0e16',
+                  blockColor: '#141b26',
+                  buttonColor: '#d5b66f',
+                  textColor: '#ffffff',
+                  buttonShape: 'rounded',
+                  avatarShape: 'circle',
+                  pro: true,
+                  cover:
+                    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="220" viewBox="0 0 600 220"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231a2332"/><stop offset="50%" stop-color="%23263346"/><stop offset="100%" stop-color="%230f1622"/></linearGradient></defs><rect width="600" height="220" fill="url(%23g)"/><circle cx="120" cy="110" r="140" fill="%23d5b66f" opacity="0.12"/><circle cx="500" cy="90" r="160" fill="%23d5b66f" opacity="0.08"/></svg>',
+                  avatar:
+                    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ecd296"/><stop offset="100%" stop-color="%23d5b66f"/></linearGradient></defs><rect width="200" height="200" fill="%23141b26"/><circle cx="100" cy="100" r="94" fill="none" stroke="url(%23ag)" stroke-width="6"/><text x="100" y="122" font-family="system-ui,sans-serif" font-size="68" font-weight="800" fill="url(%23ag)" text-anchor="middle">YA</text></svg>',
+                  services: [
+                    {
+                      id: 's1',
+                      type: 'service',
+                      name: t('Consultation & Bilan', 'استشارة وتشخيص'),
+                      price: '300 DH',
+                      description: t(
+                        'Examen complet et plan de traitement personnalisé.',
+                        'فحص كامل وخطة علاج مخصصة.',
+                      ),
+                    },
+                    {
+                      id: 's2',
+                      type: 'service',
+                      name: t('Blanchiment & Esthétique', 'تبييض وتجميل'),
+                      price: '800 DH',
+                      description: t(
+                        'Éclaircissement dentaire haute performance.',
+                        'تبييض الأسنان بأحدث التقنيات.',
+                      ),
+                    },
+                  ],
+                  promotions: [
+                    {
+                      id: 'p1',
+                      title: t('Offre Découverte -20%', 'عرض ترحيبي -20%'),
+                      promoPrice: '240 DH',
+                      regularPrice: '300 DH',
+                      description: t(
+                        'Valable sur votre première consultation en ligne.',
+                        'صالح فالاستشارة الأولى بحجز مسبق.',
+                      ),
+                      enabled: true,
+                    },
+                  ],
+                }}
+                preview
+                withSections
+              />
+            </div>
+
+            {/* Carte NFC physique noire et dorée au premier plan avec onde animée */}
+            <div className="showcase-nfc" aria-hidden="true">
+              <div className="nfc-pulse-badge">
+                <span className="nfc-pulse-ring" />
+                <Nfc size={16} />
+                <span>{t('Approchez ou scannez', 'قرّب ولا امسح')}</span>
+              </div>
+              <span dir="ltr">
+                SoraLink <Nfc size={22} />
+              </span>
+              <strong>
+                {t('Votre prochain contact\ncommence ici.', 'التواصل الجاي\nكيبدا من هنا.')}
+              </strong>
+              <div className="nfc-bottom">
+                <span>NFC + QR DYNAMIQUE</span>
+                <Share2 size={16} />
+              </div>
+            </div>
           </div>
+
           <div className="showcase-note">
             <span className="showcase-dot" />
             {t(
@@ -166,7 +256,7 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 2. POURQUOI SORALINK ? (4 VRAIS ARGUMENTS DE VENTE) */}
+      {/* 2. POURQUOI SORALINK ? (GRILLE BENTO MODERNE AVEC ICÔNES COLORÉES) */}
       <section className="landing-value" id="fonctionnalites">
         <div className="landing-heading">
           <span className="landing-kicker">
@@ -180,56 +270,117 @@ export default function LandingPage({
             )}
           </p>
         </div>
-        <div className="landing-features">
-          {(
-            [
-              [
-                Globe,
-                '01',
-                'Plus qu’une carte, un mini-site',
-                'أكثر من كارت فيزيت، سيت كامل',
+
+        <div className="landing-bento-grid">
+          {/* Bento 1: Contact & Mini-site */}
+          <article className="bento-card bento-card-blue">
+            <div className="bento-header">
+              <span className="feature-index">01</span>
+              <span className="bento-tag bento-tag-blue">
+                <Globe size={13} /> {t('MINI-SITE DIGITAL', 'سيت ديجيتال')}
+              </span>
+            </div>
+            <h3>{t('Plus qu’une carte, un mini-site', 'أكثر من كارت فيزيت، سيت كامل')}</h3>
+            <p>
+              {t(
                 'Fiche contact en 1 clic, WhatsApp, réseaux sociaux, localisation Maps, vidéo et document PDF.',
                 'تسجيل الكونطاكت بنقرة وحدة، WhatsApp، مواقع التواصل، موقع Maps، فيديو وكتيب PDF.',
-              ],
-              [
-                ShoppingBag,
-                '02',
-                'Catalogue & Devis intégrés',
-                'كاتالوگ وطلبات أثمان مدمجة',
+              )}
+            </p>
+            <div className="bento-preview bento-preview-contact">
+              <span className="preview-btn preview-btn-primary">
+                <Download size={13} /> {t('Ajouter aux contacts', 'حفظ فالكونطاكت')}
+              </span>
+              <span className="preview-btn preview-btn-whatsapp">
+                <WhatsAppIcon /> WhatsApp
+              </span>
+            </div>
+          </article>
+
+          {/* Bento 2: Catalogue & Devis */}
+          <article className="bento-card bento-card-amber">
+            <div className="bento-header">
+              <span className="feature-index">02</span>
+              <span className="bento-tag bento-tag-amber">
+                <ShoppingBag size={13} /> {t('CATALOGUE & VENTE', 'كاتالوگ وعروض')}
+              </span>
+            </div>
+            <h3>{t('Catalogue & Devis intégrés', 'كاتالوگ وطلبات أثمان مدمجة')}</h3>
+            <p>
+              {t(
                 'Exposez jusqu’à 10 articles/photos, affichez vos promos du moment et recevez des demandes de devis ou commandes directement.',
                 'قدّم حتى 10 منتجات/تصاور، بيّن عروضك الترويجية واستقبل طلبات الدوڤي ولا الشراء مباشرة.',
-              ],
-              [
-                Calendar,
-                '03',
-                'Prise de rendez-vous (Option Pro)',
-                'المواعيد مع Pro',
+              )}
+            </p>
+            <div className="bento-preview bento-preview-catalogue">
+              <div className="bento-mini-thumb">
+                <span>🍽️</span>
+                <small>{t('Plat & Menu', 'أطباق')}</small>
+              </div>
+              <div className="bento-mini-thumb">
+                <span>✂️</span>
+                <small>{t('Coiffure & Soin', 'تجميل')}</small>
+              </div>
+              <div className="bento-mini-thumb">
+                <span>🏗️</span>
+                <small>{t('Chantier & Déco', 'أشغال')}</small>
+              </div>
+              <span className="bento-promo-badge">-20% PROMO</span>
+            </div>
+          </article>
+
+          {/* Bento 3: Prise de RDV Option Pro */}
+          <article className="bento-card bento-card-indigo">
+            <div className="bento-header">
+              <span className="feature-index">03</span>
+              <span className="bento-tag bento-tag-indigo">
+                <Calendar size={13} /> {t('AGENDA EN LIGNE', 'حجز المواعيد')}
+              </span>
+            </div>
+            <h3>{t('Prise de rendez-vous (Option Pro)', 'المواعيد مع Pro')}</h3>
+            <p>
+              {t(
                 'Affichez vos disponibilités et laissez vos clients réserver un créneau dans votre agenda.',
                 'بيّن أوقات الخدمة ديالك وخلي الزبناء يحجزو الموعد المناسب فالأجندة ديالك.',
-              ],
-              [
-                Sparkles,
-                '04',
-                'Modifiable à l’infini',
-                'تعديل بلا حدود وبلا إعادة طبع',
+              )}
+            </p>
+            <div className="bento-preview bento-preview-slots">
+              <div className="bento-slot active">
+                <Calendar size={12} /> 10:30 · {t('Disponible', 'شاغر')}
+              </div>
+              <div className="bento-slot">14:00 · {t('Disponible', 'شاغر')}</div>
+              <div className="bento-slot confirm">
+                <Check size={12} /> {t('Confirmé', 'تم التأكيد')}
+              </div>
+            </div>
+          </article>
+
+          {/* Bento 4: Modifiable à l'infini */}
+          <article className="bento-card bento-card-emerald">
+            <div className="bento-header">
+              <span className="feature-index">04</span>
+              <span className="bento-tag bento-tag-emerald">
+                <Sparkles size={13} /> {t('ZÉRO RÉIMPRESSION', 'تحديث فوري')}
+              </span>
+            </div>
+            <h3>{t('Modifiable à l’infini', 'تعديل بلا حدود وبلا إعادة طبع')}</h3>
+            <p>
+              {t(
                 'Changez vos prix, votre numéro ou vos offres à tout moment depuis votre téléphone. Votre carte et votre QR code restent les mêmes.',
                 'بدّل الأثمنة، النمرة ولا العروض وقتما بغيتي من التلفون ديالك. الكارط والكود QR كيبقاو هما هما.',
-              ],
-            ] satisfies LandingFeature[]
-          ).map(([Icon, n, title, da, desc, dd]) => (
-            <article key={n}>
-              <span className="feature-index">{n}</span>
-              <Icon size={24} />
-              <div>
-                <h3>{t(title, da)}</h3>
-                <p>{t(desc, dd)}</p>
-              </div>
-            </article>
-          ))}
+              )}
+            </p>
+            <div className="bento-preview bento-preview-live">
+              <span className="live-dot-pulse" />
+              <span>
+                {t('Mise à jour en direct · 100% synchronisé', 'تحديث مباشر فالحين · 100% متزامن')}
+              </span>
+            </div>
+          </article>
         </div>
       </section>
 
-      {/* 3. COMMENT ÇA MARCHE ? — EN 3 LIGNES */}
+      {/* 3. COMMENT ÇA MARCHE ? — EN 3 LIGNES AVEC CARTES ÉLÉGANTES */}
       <section className="landing-process">
         <div className="landing-heading">
           <span className="landing-kicker">{t('SIMPLE & RAPIDE', 'ساهلة وسريعة')}</span>
@@ -259,8 +410,8 @@ export default function LandingPage({
               'استقبل جهات الاتصال وطلبات الزبناء مباشرة فحسابك SoraLink.',
             ],
           ].map(([n, f, a, d, dd]) => (
-            <article key={n}>
-              <span>{n}</span>
+            <article key={n} className="step-card">
+              <span className="step-badge">{n}</span>
               <h3>{t(f, a)}</h3>
               <p>{t(d, dd)}</p>
             </article>
@@ -268,7 +419,7 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 4. POUR QUI ? — 1 PHRASE PAR MÉTIER + BOUTON DÉMO */}
+      {/* 4. POUR QUI ? — SÉLECTEUR INTERACTIF PAR MÉTIER + BOUTON DÉMO */}
       <section className="landing-examples" id="exemples">
         <div className="landing-heading">
           <span className="landing-kicker">
@@ -276,48 +427,86 @@ export default function LandingPage({
           </span>
           <h2>{t('Pour qui ?', 'لمن مخصصة الكارط؟')}</h2>
         </div>
+
+        {/* Sélecteur d'onglets interactif */}
+        <div className="persona-tabs" role="tablist">
+          {personas.map((p, idx) => (
+            <button
+              key={p.id}
+              type="button"
+              role="tab"
+              aria-selected={activePersona === idx}
+              className={`persona-tab-btn ${activePersona === idx ? 'active' : ''}`}
+              onClick={() => setActivePersona(idx)}
+              style={
+                activePersona === idx
+                  ? { borderColor: p.badgeColor, color: p.badgeColor }
+                  : undefined
+              }
+            >
+              <span>{p.icon}</span>
+              <strong>{p.title}</strong>
+            </button>
+          ))}
+        </div>
+
+        {/* Carte showcase dynamique du métier sélectionné */}
+        <div className="persona-display-panel">
+          <div className="persona-card-active">
+            <div className="persona-meta">
+              <span
+                className="persona-pill"
+                style={{
+                  backgroundColor: `${personas[activePersona].badgeColor}22`,
+                  borderColor: personas[activePersona].badgeColor,
+                  color: personas[activePersona].badgeColor,
+                }}
+              >
+                {personas[activePersona].badge}
+              </span>
+              <h3>
+                {personas[activePersona].icon} {personas[activePersona].title}
+              </h3>
+              <p className="persona-desc">{personas[activePersona].desc}</p>
+              <div className="persona-features-row">
+                <Check size={16} color={personas[activePersona].badgeColor} />
+                <span>{personas[activePersona].highlight}</span>
+              </div>
+            </div>
+            <div className="persona-action">
+              <a className="primary" href={'/demo' + (ar ? '?lang=ar' : '')}>
+                👉 {t('Explorer ce cas d’usage', 'شوف هاد النموذج')}
+                <ExternalLink size={16} />
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Grille accessible des 4 métiers */}
         <div className="usecase-grid">
-          {[
-            [
-              'Commerciaux & Indépendants',
-              'تجاريين ومهنيين أحرار',
-              'Enregistrez votre contact en 1 seconde et recevez des demandes de devis.',
-              'سجّل الكونطاكت فـ ثانية واستقبل طلبات الدوڤي.',
-            ],
-            [
-              'Commerces & Restaurants',
-              'محلات ومطاعم',
-              'Affichez votre menu PDF, votre catalogue et vos promos du moment.',
-              'بيّن المينو PDF، الكاتالوگ ديالك والعروض الحالية.',
-            ],
-            [
-              'Cabinets & Services',
-              'عيادات وخدمات',
-              'Partagez votre itinéraire Maps et gérez vos prises de rendez-vous.',
-              'شارك مسار Maps وسير حجز المواعيد ديالك.',
-            ],
-            [
-              'Artisans & Créateurs',
-              'حرفيين ومبدعين',
-              'Montrez vos réalisations en photos/vidéo et prenez des commandes.',
-              'ورّي خدمتك بالصور/الفيديو واستقبل طلبيات مباشرة.',
-            ],
-          ].map(([f, a, d, dd]) => (
-            <article key={f}>
-              <h3>{t(f, a)}</h3>
-              <p>{t(d, dd)}</p>
+          {personas.map((p, idx) => (
+            <article
+              key={p.id}
+              className={`usecase-card ${activePersona === idx ? 'active' : ''}`}
+              onClick={() => setActivePersona(idx)}
+              style={{ cursor: 'pointer' }}
+            >
+              <span className="usecase-icon">{p.icon}</span>
+              <h3>{p.title}</h3>
+              <p>{p.desc}</p>
             </article>
           ))}
         </div>
-        <div style={{ textAlign: 'center', marginTop: '24px' }}>
+
+        <div style={{ textAlign: 'center', marginTop: '28px' }}>
           <a className="landing-link" href={'/demo' + (ar ? '?lang=ar' : '')}>
-            👉 {t('Explorer une carte de démonstration', 'شوف مثال كامل ديال الكارط')}
+            👉 {t('Explorer une carte de démonstration complète', 'شوف مثال كامل ديال الكارط')}
             <ExternalLink size={16} />
           </a>
         </div>
       </section>
 
-      {/* 5. LES OFFRES — CLAIRES ET ORIENTÉES VALEUR */}
+      {/* 5. LES OFFRES — CLAIRES, ORIENTÉES VALEUR AVEC PACK HYBRIDE MIS EN RELIEF */}
       <section className="landing-pricing" id="tarifs">
         <div className="landing-heading">
           <span className="landing-kicker">{t('TARIFS TRANSPARENTS', 'أثمنة واضحة')}</span>
@@ -329,9 +518,10 @@ export default function LandingPage({
             )}
           </p>
         </div>
+
         <div className="landing-price-grid">
-          {/* Digital */}
-          <article>
+          {/* 1. Digital */}
+          <article className="pricing-card">
             <span className="eyebrow">
               {t('L’essentiel 100 % en ligne', 'الأساسي 100% أونلاين')}
             </span>
@@ -363,8 +553,12 @@ export default function LandingPage({
             <small>{t('Renouvellement : 149 DH/an', 'التجديد: 149 درهم فالعام')}</small>
           </article>
 
-          {/* Pack Hybride - Featured */}
-          <article className="featured">
+          {/* 2. Pack Hybride - Mis en relief (Bleu Nuit #0F172A, scale, bordure lumineuse, badge 🔥) */}
+          <article className="pricing-card featured pack-hybride-highlight">
+            <div className="floating-highlight-badge">
+              <span>🔥 {t('LE PLUS CHOISI · 349 DH', 'الأكثر طلباً · 349 درهم')}</span>
+            </div>
+
             <span className="eyebrow">{t('⭐ Le plus populaire', '⭐ الأكثر طلباً')}</span>
             <h3 dir="ltr">Pack Hybride</h3>
             <div className="landing-price-tagline">
@@ -373,37 +567,58 @@ export default function LandingPage({
                 'العصري والتقليدي باش ما تضيع حتى زبون',
               )}
             </div>
+
+            <div className="pack-hardware-preview">
+              <div className="hardware-pill">
+                <Nfc size={15} /> 1 Carte NFC
+              </div>
+              <div className="hardware-pill">
+                <Layers size={15} /> 100 Cartes papier QR
+              </div>
+            </div>
+
             <strong className="landing-price">
               349<small> DH</small>
             </strong>
             <p className="hint">{t('la première année', 'فالعام الأول')}</p>
+
             <ul className="landing-price-features">
               <li>
                 <Check size={16} />
                 <span>
-                  {t('Tout le forfait Digital inclus (1 an)', 'كل ما في باقة الديجيتال (1 عام)')}
+                  <strong>
+                    {t('Tout le forfait Digital inclus (1 an)', 'كل ما في باقة الديجيتال (1 عام)')}
+                  </strong>
                 </span>
               </li>
               <li>
                 <Check size={16} />
                 <span>
-                  {t(
-                    '+ 1 Carte NFC personnalisée à votre image',
-                    '+ 1 كارط NFC مخصصة بالهوية ديالك',
-                  )}
+                  <strong>
+                    {t(
+                      '+ 1 Carte NFC personnalisée à votre image',
+                      '+ 1 كارط NFC مخصصة بالهوية ديالك',
+                    )}
+                  </strong>
                 </span>
               </li>
               <li>
                 <Check size={16} />
                 <span>
-                  {t(
-                    '+ 100 Cartes papier imprimées avec votre QR code',
-                    '+ 100 كارت فيزيت مطبوعة بالـ QR ديالك',
-                  )}
+                  <strong>
+                    {t(
+                      '+ 100 Cartes papier imprimées avec votre QR code',
+                      '+ 100 كارت فيزيت مطبوعة بالـ QR ديالك',
+                    )}
+                  </strong>
                 </span>
               </li>
             </ul>
-            <a className="primary full" href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}>
+
+            <a
+              className="primary full btn-glow-gold"
+              href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}
+            >
               {t('Choisir le Pack', 'اختار هاد الپاك')}
             </a>
             <small>
@@ -414,8 +629,8 @@ export default function LandingPage({
             </small>
           </article>
 
-          {/* Clé en main */}
-          <article>
+          {/* 3. Clé en main */}
+          <article className="pricing-card">
             <span className="eyebrow">
               {t('On s’occupe de tout pour vous', 'كنتكلفو ليك بكلشي')}
             </span>
@@ -459,7 +674,7 @@ export default function LandingPage({
           </article>
         </div>
 
-        {/* 5E OFFRE : CARTES SPÉCIALES & SUR-MESURE */}
+        {/* 5E OFFRE : CARTES SPÉCIALES COLORÉES PAR USAGE */}
         <div className="landing-special-offer">
           <div className="special-offer-header">
             <div>
@@ -480,7 +695,7 @@ export default function LandingPage({
               </p>
             </div>
             <a
-              className="primary"
+              className="whatsapp-btn-glow"
               href={`https://wa.me/212661446664?text=${encodeURIComponent(
                 t(
                   'Bonjour SoraLink, je souhaite commander une carte spéciale sur-mesure (Avis Google, Menu, Santé, etc.). Pouvez-vous me renseigner ?',
@@ -496,10 +711,16 @@ export default function LandingPage({
           </div>
 
           <div className="special-offer-grid">
-            <div className="special-offer-item">
-              <span className="special-icon">⭐</span>
+            {/* Carte Avis Google : Dégradé Jaune/Or + 5 étoiles + Google */}
+            <div className="special-offer-item special-card-google">
+              <div className="special-icon-box google-box">
+                <Star size={24} className="star-gold" />
+              </div>
               <div>
-                <h4>{t('Carte Avis Google & Réseaux', 'كارط تقييمات Google والمواقع')}</h4>
+                <div className="special-card-badge-row">
+                  <h4>{t('Carte Avis Google & Réseaux', 'كارط تقييمات Google والمواقع')}</h4>
+                  <span className="stars-five">★★★★★</span>
+                </div>
                 <p>
                   {t(
                     'Posez-la sur votre comptoir ou présentez-la à vos clients pour récolter des avis 5 étoiles ou des abonnés Instagram/TikTok en 3 secondes.',
@@ -509,10 +730,16 @@ export default function LandingPage({
               </div>
             </div>
 
-            <div className="special-offer-item">
-              <span className="special-icon">🍽️</span>
+            {/* Carte Menu : Fond Terracotta/Orange + icône couvert / menu */}
+            <div className="special-offer-item special-card-menu">
+              <div className="special-icon-box menu-box">
+                <Utensils size={24} className="cutlery-icon" />
+              </div>
               <div>
-                <h4>{t('Carte Menu & Catalogue', 'كارط المينو والكاتالوگ')}</h4>
+                <div className="special-card-badge-row">
+                  <h4>{t('Carte Menu & Catalogue', 'كارط المينو والكاتالوگ')}</h4>
+                  <span className="mini-badge-pill">{t('Café & Resto', 'قهوة ومطعم')}</span>
+                </div>
                 <p>
                   {t(
                     'Idéale sur les tables de cafés, restaurants et salons pour afficher votre carte PDF ou vos tarifs sans réimprimer.',
@@ -522,10 +749,18 @@ export default function LandingPage({
               </div>
             </div>
 
-            <div className="special-offer-item">
-              <span className="special-icon">🩺</span>
+            {/* Carte Santé : Fond Vert Médical / Corail + icône cœur/croix */}
+            <div className="special-offer-item special-card-health">
+              <div className="special-icon-box health-box">
+                <Heart size={24} className="health-icon" />
+              </div>
               <div>
-                <h4>{t('Carte Santé & Urgence', 'كارط الصحة والطوارئ')}</h4>
+                <div className="special-card-badge-row">
+                  <h4>{t('Carte Santé & Urgence', 'كارط الصحة والطوارئ')}</h4>
+                  <span className="mini-badge-pill medical-pill">
+                    {t('Urgence & SOS', 'طوارئ')}
+                  </span>
+                </div>
                 <p>
                   {t(
                     'Groupe sanguin, allergies, traitements et contacts d’urgence accessibles par simple scan en cas de besoin (idéal enfants, seniors, sportifs).',
@@ -535,10 +770,16 @@ export default function LandingPage({
               </div>
             </div>
 
-            <div className="special-offer-item">
-              <span className="special-icon">💡</span>
+            {/* Carte Sur-mesure : Fond Violet/Indigo + Wi-Fi */}
+            <div className="special-offer-item special-card-custom">
+              <div className="special-icon-box custom-box">
+                <Wifi size={24} className="wifi-icon" />
+              </div>
               <div>
-                <h4>{t('Autre besoin sur mesure', 'أي طلب خاص على المقاس')}</h4>
+                <div className="special-card-badge-row">
+                  <h4>{t('Autre besoin sur mesure', 'أي طلب خاص على المقاس')}</h4>
+                  <span className="mini-badge-pill custom-pill">{t('100% Modulable', 'مرن')}</span>
+                </div>
                 <p>
                   {t(
                     'Partage Wi-Fi, badge événementiel, lien unique... Nous adaptons le support à votre usage.',
@@ -621,7 +862,7 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 7. APPEL À L'ACTION FINAL (BAS DE PAGE) */}
+      {/* 7. APPEL À L'ACTION FINAL (BAS DE PAGE) AVEC OMBRES ET COULEURS VIBRANTES */}
       <section className="landing-final">
         <div>
           <span className="landing-kicker">{t('COMMENCEZ AUJOURD’HUI', 'بدا اليوم')}</span>
@@ -640,14 +881,14 @@ export default function LandingPage({
         </div>
         <div className="landing-actions">
           <a
-            className="primary"
+            className="primary btn-glow"
             href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}
           >
             {t('Créer ma carte', 'صايب الكارط ديالي')}
             <Plus size={18} />
           </a>
           <a
-            className="secondary"
+            className="whatsapp-btn-glow"
             href="https://wa.me/212661446664"
             target="_blank"
             rel="noopener noreferrer"
