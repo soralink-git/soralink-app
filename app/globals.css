@@ -2799,6 +2799,107 @@ header nav {
   flex-shrink: 0;
   margin-top: 2px;
 }
+.landing-special-offer {
+  margin-top: 32px;
+  padding: 30px;
+  background: linear-gradient(145deg, #1d1a13 0%, #141517 100%);
+  border: 1px solid #78623a;
+  border-radius: 14px;
+}
+.special-offer-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #332d22;
+  flex-wrap: wrap;
+}
+.special-offer-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--landing-gold);
+  background: rgba(213, 182, 111, 0.12);
+  border: 1px solid rgba(213, 182, 111, 0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+.special-offer-header h3 {
+  font-size: 22px;
+  margin: 4px 0 8px;
+  color: #ffffff;
+}
+.special-offer-header p {
+  font-size: 14px;
+  color: var(--landing-muted);
+  margin: 0;
+  max-width: 640px;
+}
+.special-offer-header > a.primary {
+  align-self: center;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.special-offer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  padding: 24px 0 18px;
+}
+.special-offer-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 16px;
+}
+.special-icon {
+  font-size: 24px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.special-offer-item h4 {
+  font-size: 15px;
+  margin: 0 0 6px;
+  color: #f1ede6;
+}
+.special-offer-item p {
+  font-size: 13px;
+  color: #aaa59a;
+  margin: 0;
+  line-height: 1.5;
+}
+.special-offer-footer {
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.special-tag {
+  font-size: 13px;
+  color: var(--landing-gold);
+  font-weight: 500;
+}
+@media (max-width: 768px) {
+  .special-offer-grid {
+    grid-template-columns: 1fr;
+  }
+  .special-offer-header {
+    flex-direction: column;
+  }
+  .special-offer-header > a.primary {
+    align-self: stretch;
+    justify-content: center;
+  }
+}
 .pricing-notes {
   padding: 24px 0 0;
 }

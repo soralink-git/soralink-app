@@ -459,6 +459,107 @@ export default function LandingPage({
           </article>
         </div>
 
+        {/* 5E OFFRE : CARTES SPÉCIALES & SUR-MESURE */}
+        <div className="landing-special-offer">
+          <div className="special-offer-header">
+            <div>
+              <span className="special-offer-badge">
+                {t('🎯 USAGE UNIQUE & SUR-MESURE', '🎯 استعمال مباشر وعلى المقاس')}
+              </span>
+              <h3>
+                {t(
+                  'Cartes Spéciales (Usage unique) — À partir de 149 DH',
+                  'كارتات خاصة (استعمال مباشر) — ابتداءً من 149 درهم',
+                )}
+              </h3>
+              <p>
+                {t(
+                  'Un besoin précis ? Une carte NFC + QR dédiée à une seule action immédiate, sans abonnement obligatoire.',
+                  'عندك غرض محدد؟ كارط NFC وQR مخصصة لحركة وحدة ومباشرة، بلا اشتراك إجباري.',
+                )}
+              </p>
+            </div>
+            <a
+              className="primary"
+              href={`https://wa.me/212661446664?text=${encodeURIComponent(
+                t(
+                  'Bonjour SoraLink, je souhaite commander une carte spéciale sur-mesure (Avis Google, Menu, Santé, etc.). Pouvez-vous me renseigner ?',
+                  'السلام عليكم SoraLink، بغيت نطلب كارط خاصة على المقاس (Avis Google، مينو، صحة، إلخ). ممكن معلومات؟',
+                ),
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('Demander ma carte spéciale sur WhatsApp', 'طلب الكارط الخاصة فـ WhatsApp')}
+              <WhatsAppIcon />
+            </a>
+          </div>
+
+          <div className="special-offer-grid">
+            <div className="special-offer-item">
+              <span className="special-icon">⭐</span>
+              <div>
+                <h4>{t('Carte Avis Google & Réseaux', 'كارط تقييمات Google والمواقع')}</h4>
+                <p>
+                  {t(
+                    'Posez-la sur votre comptoir ou présentez-la à vos clients pour récolter des avis 5 étoiles ou des abonnés Instagram/TikTok en 3 secondes.',
+                    'حطها فالكونطوار ولا قدّمها للزبناء باش تجمع تقييمات 5 نجوم ومتابعين Instagram/TikTok فـ 3 ثواني.',
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="special-offer-item">
+              <span className="special-icon">🍽️</span>
+              <div>
+                <h4>{t('Carte Menu & Catalogue', 'كارط المينو والكاتالوگ')}</h4>
+                <p>
+                  {t(
+                    'Idéale sur les tables de cafés, restaurants et salons pour afficher votre carte PDF ou vos tarifs sans réimprimer.',
+                    'مثالية لطبلات القهاوي، المطاعم والصالونات باش تبين المينو PDF ولا الأثمنة بلا ما تعاود تطبع.',
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="special-offer-item">
+              <span className="special-icon">🩺</span>
+              <div>
+                <h4>{t('Carte Santé & Urgence', 'كارط الصحة والطوارئ')}</h4>
+                <p>
+                  {t(
+                    'Groupe sanguin, allergies, traitements et contacts d’urgence accessibles par simple scan en cas de besoin (idéal enfants, seniors, sportifs).',
+                    'فصيلة الدم، الحساسية، الأدوية ومعلومات الطوارئ بمسحة وحدة (للأطفال، الكبار والرياضيين).',
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="special-offer-item">
+              <span className="special-icon">💡</span>
+              <div>
+                <h4>{t('Autre besoin sur mesure', 'أي طلب خاص على المقاس')}</h4>
+                <p>
+                  {t(
+                    'Partage Wi-Fi, badge événementiel, lien unique... Nous adaptons le support à votre usage.',
+                    'مشاركة الويفي Wi-Fi، بادج للمناسبات، رابط مباشر... كنصايبو الدعم اللي يناسبك.',
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="special-offer-footer">
+            <span className="special-tag">
+              ✨{' '}
+              {t(
+                'Disponible en format carte PVC, sticker NFC de table ou chevalet de comptoir.',
+                'متوفرة فشكل كارط PVC، ستيكر NFC للطبلة ولا حامل للكونطوار.',
+              )}
+            </span>
+          </div>
+        </div>
+
         <div className="pricing-notes">
           <p>
             <Calendar size={18} />
