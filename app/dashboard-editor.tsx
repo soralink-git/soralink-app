@@ -918,6 +918,12 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       )}
                     </p>
                     <Customization />
+                    <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+                      <button disabled={busy} className="primary" onClick={save}>
+                        <Save size={17} />
+                        {t('Enregistrer les modifications', 'سجّل التغييرات')}
+                      </button>
+                    </div>
                   </section>
                   <section className="panel">
                     <h2>{t('Mes sections', 'الأقسام ديالي')}</h2>
