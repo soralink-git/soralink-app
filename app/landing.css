@@ -1,0 +1,1068 @@
+/* ==========================================================================
+   SoraLink — Modern, Elegant & Professional Landing Page Styles
+   ========================================================================== */
+
+.landing {
+  position: relative;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 30px 24px 80px;
+  color: #f1f5f9;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Ambient Background Glows */
+.landing::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 600px;
+  background: radial-gradient(
+    circle 500px at 50% 100px,
+    rgba(213, 182, 111, 0.12),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Common Kicker / Badge */
+.landing-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(213, 182, 111, 0.08);
+  border: 1px solid rgba(213, 182, 111, 0.25);
+  color: #ecd296;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.landing-kicker > span:first-child {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d5b66f;
+  box-shadow: 0 0 10px #d5b66f;
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+}
+
+/* ==========================================================================
+   1. HERO SECTION
+   ========================================================================== */
+.landing-hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
+  gap: 48px;
+  align-items: center;
+  padding: 40px 0 70px;
+}
+
+.landing-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: start;
+}
+
+.landing-copy h1 {
+  font-size: clamp(38px, 5.2vw, 62px);
+  line-height: 1.08;
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  margin: 0 0 24px;
+  color: #ffffff;
+}
+
+.landing-copy h1 em,
+.landing-copy h1 .hero-gradient {
+  font-style: normal;
+  background: linear-gradient(135deg, #ffffff 0%, #f1dc9e 45%, #d5b66f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.landing-copy > p {
+  font-size: clamp(16px, 1.9vw, 19px);
+  line-height: 1.65;
+  color: #94a3b8;
+  margin: 0 0 32px;
+  max-width: 580px;
+}
+
+.landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.landing .primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 28px;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 750;
+  color: #120e06 !important;
+  background: linear-gradient(135deg, #ecd296 0%, #d5b66f 60%, #c49f50 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 8px 24px -4px rgba(213, 182, 111, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.landing .primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow:
+    0 12px 32px -4px rgba(213, 182, 111, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.landing .primary:active {
+  transform: translateY(0);
+}
+
+.landing-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.landing-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(213, 182, 111, 0.4);
+  color: #ecd296;
+  transform: translateY(-2px);
+}
+
+.landing-proof {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.landing-proof svg {
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   HERO SHOWCASE (PHONE & NFC CARD)
+   ========================================================================== */
+.landing-showcase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Glowing Halo behind mockup */
+.landing-showcase::before {
+  content: '';
+  position: absolute;
+  width: 380px;
+  height: 480px;
+  background: radial-gradient(circle 240px at 50% 50%, rgba(213, 182, 111, 0.2), transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.showcase-caption {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: #ecd296;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(213, 182, 111, 0.2);
+}
+
+.showcase-phone {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 340px;
+  background: #0f131a;
+  border: 8px solid #1e2633;
+  border-radius: 38px;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.7),
+    0 0 35px rgba(213, 182, 111, 0.15);
+  overflow: hidden;
+  padding: 10px 8px 24px;
+}
+
+.showcase-phone .profile-card {
+  width: 100%;
+  box-shadow: none;
+}
+
+/* Floating Physical NFC Badge */
+.showcase-nfc {
+  position: absolute;
+  bottom: 25px;
+  right: -24px;
+  z-index: 3;
+  width: 185px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1b212c 0%, #0d1117 100%);
+  border: 1px solid rgba(213, 182, 111, 0.4);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(213, 182, 111, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transform: rotate(3deg);
+  transition: transform 0.3s ease;
+}
+
+.showcase-nfc:hover {
+  transform: rotate(0deg) scale(1.04);
+}
+
+.showcase-nfc > span:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ecd296;
+  letter-spacing: -0.02em;
+}
+
+.showcase-nfc strong {
+  font-size: 11px;
+  line-height: 1.35;
+  color: #cbd5e1;
+  font-weight: 600;
+  white-space: pre-line;
+}
+
+.showcase-nfc .nfc-bottom {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.showcase-note {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #94a3b8;
+}
+
+.showcase-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+}
+
+/* ==========================================================================
+   2. SHARING MODES BAR
+   ========================================================================== */
+.landing-sharing {
+  position: relative;
+  z-index: 1;
+  margin: 20px 0 60px;
+  padding: 24px 32px;
+  border-radius: 20px;
+  background: rgba(18, 23, 32, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(16px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.landing-sharing > p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.landing-sharing > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.landing-sharing span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.landing-sharing span:hover {
+  border-color: rgba(213, 182, 111, 0.35);
+  color: #ecd296;
+}
+
+.landing-sharing svg {
+  color: #d5b66f;
+}
+
+/* ==========================================================================
+   3. FEATURES GRID (FONCTIONNALITÉS)
+   ========================================================================== */
+.landing-value {
+  position: relative;
+  z-index: 1;
+  padding: 60px 0;
+}
+
+.landing-heading {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 50px;
+}
+
+.landing-heading h2 {
+  font-size: clamp(28px, 3.8vw, 42px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+  color: #ffffff;
+}
+
+.landing-heading > p {
+  font-size: 17px;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.landing-features {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.landing-features article {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 28px;
+  border-radius: 20px;
+  background: rgba(18, 24, 34, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+.landing-features article:hover {
+  transform: translateY(-4px);
+  border-color: rgba(213, 182, 111, 0.35);
+  background: rgba(24, 32, 46, 0.85);
+  box-shadow:
+    0 16px 36px -10px rgba(0, 0, 0, 0.5),
+    0 0 25px rgba(213, 182, 111, 0.08);
+}
+
+.feature-index {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  font-size: 13px;
+  font-weight: 800;
+  color: rgba(213, 182, 111, 0.6);
+  letter-spacing: 0.05em;
+}
+
+.landing-features article > svg {
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(213, 182, 111, 0.1);
+  color: #ecd296;
+  border: 1px solid rgba(213, 182, 111, 0.25);
+  margin-bottom: 22px;
+  box-sizing: border-box;
+}
+
+.landing-features h3 {
+  font-size: 19px;
+  font-weight: 750;
+  line-height: 1.35;
+  color: #ffffff;
+  margin: 0 0 12px;
+}
+
+.landing-features p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ==========================================================================
+   4. HOW IT WORKS (3 ÉTAPES)
+   ========================================================================== */
+.landing-process {
+  position: relative;
+  z-index: 1;
+  padding: 60px 0;
+}
+
+.landing-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.landing-steps article {
+  position: relative;
+  padding: 34px 28px;
+  border-radius: 20px;
+  background: rgba(18, 24, 34, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-steps article > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(213, 182, 111, 0.2) 0%, rgba(213, 182, 111, 0.05) 100%);
+  border: 1px solid rgba(213, 182, 111, 0.35);
+  color: #ecd296;
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 22px;
+}
+
+.landing-steps h3 {
+  font-size: 20px;
+  font-weight: 750;
+  color: #ffffff;
+  margin: 0 0 10px;
+}
+
+.landing-steps p {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ==========================================================================
+   5. NFC PHYSICAL CARD SHOWCASE
+   ========================================================================== */
+.landing-hardware {
+  position: relative;
+  z-index: 1;
+  padding: 60px 0;
+}
+
+.nfc-explainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 50px 30px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(19, 26, 38, 0.8) 0%, rgba(12, 16, 24, 0.9) 100%);
+  border: 1px solid rgba(213, 182, 111, 0.2);
+  margin-bottom: 24px;
+}
+
+.nfc-mini-card {
+  width: 170px;
+  height: 105px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #1f2735 0%, #0e1218 100%);
+  border: 1px solid rgba(213, 182, 111, 0.45);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px;
+  color: #ecd296;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.nfc-signal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ecd296;
+  animation: pulse-signal 1.8s infinite ease-in-out;
+}
+
+@keyframes pulse-signal {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.nfc-mini-phone {
+  width: 110px;
+  height: 140px;
+  border-radius: 20px;
+  background: #11151c;
+  border: 3px solid #283142;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #10b981;
+}
+
+.nfc-mini-phone > span {
+  font-size: 11px;
+  font-weight: 800;
+  color: #ecd296;
+}
+
+.nfc-mini-phone small {
+  font-size: 10px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.hardware-note {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #64748b;
+}
+
+/* ==========================================================================
+   6. USE CASES / EXAMPLES
+   ========================================================================== */
+.landing-examples {
+  position: relative;
+  z-index: 1;
+  padding: 60px 0;
+  text-align: center;
+}
+
+.usecase-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.usecase-grid article {
+  padding: 28px 22px;
+  border-radius: 18px;
+  background: rgba(18, 24, 34, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  text-align: start;
+  transition: all 0.2s ease;
+}
+
+.usecase-grid article:hover {
+  border-color: rgba(213, 182, 111, 0.35);
+  transform: translateY(-3px);
+  background: rgba(24, 32, 46, 0.8);
+}
+
+.usecase-grid h3 {
+  font-size: 18px;
+  font-weight: 750;
+  color: #ffffff;
+  margin: 0 0 8px;
+}
+
+.usecase-grid p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* ==========================================================================
+   7. PRICING SECTION
+   ========================================================================== */
+.landing-pricing {
+  position: relative;
+  z-index: 1;
+  padding: 60px 0;
+}
+
+.landing-price-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  margin-bottom: 40px;
+}
+
+.landing-price-grid article {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 38px 30px;
+  border-radius: 24px;
+  background: rgba(18, 24, 34, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  backdrop-filter: blur(14px);
+  box-sizing: border-box;
+}
+
+.landing-price-grid article.featured {
+  background: linear-gradient(135deg, rgba(27, 34, 48, 0.9) 0%, rgba(18, 23, 33, 0.95) 100%);
+  border: 2px solid rgba(213, 182, 111, 0.55);
+  box-shadow:
+    0 20px 45px -10px rgba(0, 0, 0, 0.6),
+    0 0 35px rgba(213, 182, 111, 0.12);
+  transform: scale(1.03);
+}
+
+.landing-price-grid .eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ecd296;
+  margin-bottom: 12px;
+}
+
+.landing-price-grid h3 {
+  font-size: 26px;
+  font-weight: 850;
+  color: #ffffff;
+  margin: 0 0 16px;
+}
+
+.landing-price {
+  font-size: 46px;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.landing-price small {
+  font-size: 20px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.landing-price-grid article > p.hint {
+  font-size: 13.5px;
+  color: #94a3b8;
+  margin: 0 0 20px;
+}
+
+.landing-price-grid article > p:not(.hint) {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #cbd5e1;
+  margin: 0 0 28px;
+  flex-grow: 1;
+}
+
+.landing-price-grid article a {
+  margin-top: auto;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 750;
+  border-radius: 9999px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-price-grid article a.primary {
+  color: #120e06 !important;
+  background: linear-gradient(135deg, #ecd296 0%, #d5b66f 60%, #c49f50 100%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.landing-price-grid article a.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
+}
+
+.landing-price-grid article a.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(213, 182, 111, 0.35);
+  color: #ecd296;
+}
+
+.landing-price-grid article > small {
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 12px;
+}
+
+.pricing-notes {
+  max-width: 780px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #94a3b8;
+}
+
+.pricing-notes p {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pricing-notes p svg {
+  color: #d5b66f;
+}
+
+/* ==========================================================================
+   8. FAQ SECTION
+   ========================================================================== */
+.landing-faq {
+  position: relative;
+  z-index: 1;
+  padding: 60px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.landing-faq details {
+  background: rgba(18, 24, 34, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.landing-faq details[open] {
+  border-color: rgba(213, 182, 111, 0.35);
+  background: rgba(23, 30, 42, 0.85);
+}
+
+.landing-faq summary {
+  padding: 20px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.landing-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.landing-faq summary::after {
+  content: '+';
+  font-size: 22px;
+  font-weight: 400;
+  color: #ecd296;
+  transition: transform 0.2s ease;
+}
+
+.landing-faq details[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.landing-faq details p {
+  margin: 0;
+  padding: 0 24px 22px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: #94a3b8;
+}
+
+/* ==========================================================================
+   9. PILOT & FEEDBACK
+   ========================================================================== */
+.landing-pilot {
+  position: relative;
+  z-index: 1;
+  margin: 40px 0;
+  padding: 36px 32px;
+  border-radius: 22px;
+  background: rgba(18, 24, 34, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+}
+
+.landing-pilot h3 {
+  font-size: 20px;
+  font-weight: 750;
+  color: #ffffff;
+  margin: 0 0 10px;
+}
+
+.landing-pilot p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin: 0 0 16px;
+}
+
+/* ==========================================================================
+   10. FINAL CTA BANNER
+   ========================================================================== */
+.landing-final {
+  position: relative;
+  z-index: 1;
+  margin-top: 50px;
+  padding: 60px 48px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle 500px at 50% 0%, rgba(213, 182, 111, 0.15), transparent 70%),
+    linear-gradient(135deg, rgba(23, 30, 42, 0.95) 0%, rgba(13, 17, 24, 0.98) 100%);
+  border: 1px solid rgba(213, 182, 111, 0.35);
+  box-shadow:
+    0 25px 60px -15px rgba(0, 0, 0, 0.7),
+    0 0 40px rgba(213, 182, 111, 0.12);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.landing-final h2 {
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 850;
+  color: #ffffff;
+  margin: 0 0 10px;
+  line-height: 1.2;
+}
+
+.landing-final p {
+  font-size: 17px;
+  color: #cbd5e1;
+  margin: 0;
+  max-width: 540px;
+}
+
+/* ==========================================================================
+   RESPONSIVE ADAPTATIONS
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .landing-hero {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .landing-copy {
+    align-items: center;
+    text-align: center;
+  }
+  .landing-actions {
+    justify-content: center;
+  }
+  .landing-proof {
+    justify-content: center;
+  }
+  .landing-features {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .usecase-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .landing-price-grid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin-inline: auto;
+  }
+  .landing-price-grid article.featured {
+    transform: none;
+  }
+  .landing-faq {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .landing-pilot {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 680px) {
+  .landing {
+    padding: 16px 14px 60px;
+  }
+  .landing-features {
+    grid-template-columns: 1fr;
+  }
+  .landing-steps {
+    grid-template-columns: 1fr;
+  }
+  .usecase-grid {
+    grid-template-columns: 1fr;
+  }
+  .landing-sharing {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+  }
+  .landing-final {
+    padding: 36px 24px;
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  .landing-final .primary {
+    width: 100%;
+  }
+  .showcase-nfc {
+    right: 0;
+    bottom: 10px;
+  }
+}
+
+/* ==========================================================================
+   RTL SUPPORT (ARABIC)
+   ========================================================================== */
+[dir='rtl'] .landing-copy {
+  align-items: flex-start;
+  text-align: start;
+}
+
+[dir='rtl'] .landing-proof,
+[dir='rtl'] .landing-sharing > p,
+[dir='rtl'] .landing-features article,
+[dir='rtl'] .landing-steps article,
+[dir='rtl'] .usecase-grid article,
+[dir='rtl'] .landing-price-grid article,
+[dir='rtl'] .landing-pilot,
+[dir='rtl'] .landing-final {
+  text-align: start;
+}
+
+[dir='rtl'] .feature-index {
+  right: auto;
+  left: 28px;
+}
+
+[dir='rtl'] .showcase-nfc {
+  right: auto;
+  left: -24px;
+  transform: rotate(-3deg);
+}
+
+@media (max-width: 680px) {
+  [dir='rtl'] .showcase-nfc {
+    left: 0;
+  }
+}

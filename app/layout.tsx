@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './interface.css';
+import './landing.css';
 
 export const viewport: Viewport = { themeColor: '#101112' };
 
