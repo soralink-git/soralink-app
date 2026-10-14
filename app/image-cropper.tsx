@@ -6,6 +6,8 @@ export default function ImageCropper({
   target,
   ar,
   circle,
+  cardData,
+  onLivePreview,
   onCancel,
   onApply,
 }: {
@@ -13,11 +15,13 @@ export default function ImageCropper({
   target: 'avatar' | 'cover';
   ar: boolean;
   circle: boolean;
+  cardData?: any;
+  onLivePreview?: (dataUrl: string) => void;
   onCancel: () => void;
   onApply: (file: File) => Promise<void>;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr),
-    ratio = target === 'cover' ? 2 : 1;
+    ratio = target === 'cover' ? 2.2 : 1;
   const canvas = useRef<HTMLCanvasElement>(null),
     image = useRef<HTMLImageElement | null>(null),
     dialog = useRef<HTMLDivElement>(null),
@@ -27,7 +31,8 @@ export default function ImageCropper({
     [x, setX] = useState(0),
     [y, setY] = useState(0),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
+    [error, setError] = useState(''),
+    [livePreviewUrl, setLivePreviewUrl] = useState<string>('');
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
     const old = document.body.style.overflow;
@@ -40,29 +45,69 @@ export default function ImageCropper({
   }, []);
   useEffect(() => {
     let live = true;
-    const url = typeof source === 'string' ? source : URL.createObjectURL(source);
-    const img = new Image();
-    img.onload = () => {
-      if (live) {
-        image.current = img;
-        setReady(true);
+    let objectUrlToRevoke: string | null = null;
+
+    async function loadImage() {
+      try {
+        let url: string;
+        if (typeof source !== 'string') {
+          url = URL.createObjectURL(source);
+          objectUrlToRevoke = url;
+        } else if (source.startsWith('data:') || source.startsWith('blob:')) {
+          url = source;
+        } else {
+          try {
+            const resp = await fetch(source, { mode: 'cors' });
+            if (resp.ok) {
+              const b = await resp.blob();
+              url = URL.createObjectURL(b);
+              objectUrlToRevoke = url;
+            } else {
+              url = source;
+            }
+          } catch {
+            url = source;
+          }
+        }
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          if (live) {
+            image.current = img;
+            setReady(true);
+          }
+        };
+        img.onerror = () => {
+          if (live)
+            setError(
+              t(
+                'Image illisible. Choisissez une autre photo.',
+                'ما قدرناش نقراو التصويرة. اختار وحدة أخرى.',
+              ),
+            );
+        };
+        img.src = url;
+      } catch {
+        if (live) {
+          setError(
+            t(
+              'Image illisible. Choisissez une autre photo.',
+              'ما قدرناش نقراو التصويرة. اختار وحدة أخرى.',
+            ),
+          );
+        }
       }
-    };
-    img.onerror = () => {
-      if (live)
-        setError(
-          t(
-            'Image illisible. Choisissez une autre photo.',
-            'ما قدرناش نقراو التصويرة. اختار وحدة أخرى.',
-          ),
-        );
-    };
-    img.src = url;
+    }
+
+    loadImage();
+
     return () => {
       live = false;
       image.current = null;
-      img.onload = img.onerror = null;
-      if (typeof source !== 'string') URL.revokeObjectURL(url);
+      if (objectUrlToRevoke) {
+        URL.revokeObjectURL(objectUrlToRevoke);
+      }
     };
   }, [source]);
   useEffect(() => {
@@ -74,7 +119,15 @@ export default function ImageCropper({
     const r = cropRect(img.naturalWidth, img.naturalHeight, ratio, zoom, x, y);
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.drawImage(img, r.sx, r.sy, r.sw, r.sh, 0, 0, c.width, c.height);
-  }, [ready, zoom, x, y, ratio]);
+
+    try {
+      const pUrl = c.toDataURL('image/webp', 0.85);
+      setLivePreviewUrl(pUrl);
+      if (onLivePreview) {
+        onLivePreview(pUrl);
+      }
+    } catch {}
+  }, [ready, zoom, x, y, ratio, onLivePreview]);
   async function apply() {
     if (!image.current || busy) return;
     setBusy(true);
@@ -150,14 +203,58 @@ export default function ImageCropper({
             'حرّك التصويرة بالماوس ولا بالصبع، ومن بعد عدّل الزوم.',
           )}
         </p>
+        <div className="crop-live-preview">
+          <div className="crop-live-badge">
+            <span className="live-dot" />
+            {t('Rendu en direct sur votre carte', 'معاينة مباشرة على الكارط')}
+          </div>
+          <div className="crop-mockup-card">
+            <div
+              className="crop-mockup-cover"
+              style={{
+                aspectRatio: '2.2 / 1',
+                backgroundImage:
+                  target === 'cover'
+                    ? livePreviewUrl
+                      ? `url(${livePreviewUrl})`
+                      : 'none'
+                    : cardData?.cover
+                      ? `url(${cardData.cover})`
+                      : 'none',
+              }}
+            />
+            <div className="crop-mockup-identity">
+              <div className={'crop-mockup-avatar ' + (circle ? 'is-circle' : 'is-square')}>
+                {target === 'avatar' && livePreviewUrl ? (
+                  <img src={livePreviewUrl} alt="" />
+                ) : cardData?.avatar ? (
+                  <img src={cardData.avatar} alt="" />
+                ) : (
+                  <span>
+                    {(cardData?.name || 'SL')
+                      .split(' ')
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map((s: string) => s[0])
+                      .join('') || 'SL'}
+                  </span>
+                )}
+              </div>
+              <div className="crop-mockup-meta">
+                <strong>{cardData?.name || t('Votre nom', 'الاسم ديالك')}</strong>
+                <span>{cardData?.job || t('Votre métier', 'المهنة ديالك')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
         <div
           className={'crop-frame ' + (target === 'avatar' && circle ? 'crop-circle' : '')}
           style={{ aspectRatio: ratio }}
         >
           <canvas
             ref={canvas}
-            width={400}
-            height={400 / ratio}
+            width={440}
+            height={Math.round(440 / ratio)}
             aria-label={t('Aperçu du recadrage', 'معاينة القصّ')}
             onPointerDown={(e) => {
               if (!ready || busy) return;

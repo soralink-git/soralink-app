@@ -149,14 +149,10 @@ export function Customization({
     <div className="personalization">
       <h3>{t('Style de votre carte', 'ستايل الكارط ديالك')}</h3>
       <div className="form-grid">
-        {select(
-          'defaultLanguage',
-          t('Langue par défaut de la carte', 'اللغة الافتراضية للكارط'),
-          [
-            ['fr', 'Français', 'الفرنسية'],
-            ['ar', 'العربية / الدارجة', 'العربية / الدارجة'],
-          ],
-        )}
+        {select('defaultLanguage', t('Langue par défaut de la carte', 'اللغة الافتراضية للكارط'), [
+          ['fr', 'Français', 'الفرنسية'],
+          ['ar', 'العربية / الدارجة', 'العربية / الدارجة'],
+        ])}
         {select('cardFont', t('Police', 'الخط'), [
           ['modern', 'Moderne', 'عصري'],
           ['classic', 'Classique', 'كلاسيكي'],
@@ -189,7 +185,13 @@ export function Customization({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
             <input
               type="color"
-              style={{ flex: 1, minWidth: '48px', height: '46px', padding: '4px', cursor: 'pointer' }}
+              style={{
+                flex: 1,
+                minWidth: '48px',
+                height: '46px',
+                padding: '4px',
+                cursor: 'pointer',
+              }}
               value={
                 a.fondColor ||
                 (a.theme === 'dark' ? '#0f172a' : a.theme === 'sand' ? '#f5b86e' : '#e2c478')
@@ -199,9 +201,17 @@ export function Customization({
             <input
               type="text"
               value={data.fondColor || ''}
-              placeholder={a.theme === 'dark' ? '#0F172A' : a.theme === 'sand' ? '#F5B86E' : '#E2C478'}
+              placeholder={
+                a.theme === 'dark' ? '#0F172A' : a.theme === 'sand' ? '#F5B86E' : '#E2C478'
+              }
               maxLength={7}
-              style={{ width: '96px', flexShrink: 0, minHeight: '46px', fontFamily: 'monospace', textTransform: 'uppercase' }}
+              style={{
+                width: '96px',
+                flexShrink: 0,
+                minHeight: '46px',
+                fontFamily: 'monospace',
+                textTransform: 'uppercase',
+              }}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val === '' || /^#[0-9a-fA-F]{0,6}$/.test(val)) {
@@ -216,7 +226,13 @@ export function Customization({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
             <input
               type="color"
-              style={{ flex: 1, minWidth: '48px', height: '46px', padding: '4px', cursor: 'pointer' }}
+              style={{
+                flex: 1,
+                minWidth: '48px',
+                height: '46px',
+                padding: '4px',
+                cursor: 'pointer',
+              }}
               value={a.blockColor || (a.theme === 'dark' ? '#151d28' : '#ffffff')}
               onChange={(e) => setData({ ...data, blockColor: e.target.value })}
             />
@@ -225,7 +241,13 @@ export function Customization({
               value={data.blockColor || ''}
               placeholder={a.theme === 'dark' ? '#151D28' : '#FFFFFF'}
               maxLength={7}
-              style={{ width: '96px', flexShrink: 0, minHeight: '46px', fontFamily: 'monospace', textTransform: 'uppercase' }}
+              style={{
+                width: '96px',
+                flexShrink: 0,
+                minHeight: '46px',
+                fontFamily: 'monospace',
+                textTransform: 'uppercase',
+              }}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val === '' || /^#[0-9a-fA-F]{0,6}$/.test(val)) {
@@ -240,7 +262,13 @@ export function Customization({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
             <input
               type="color"
-              style={{ flex: 1, minWidth: '48px', height: '46px', padding: '4px', cursor: 'pointer' }}
+              style={{
+                flex: 1,
+                minWidth: '48px',
+                height: '46px',
+                padding: '4px',
+                cursor: 'pointer',
+              }}
               value={a.buttonColor || data.color || '#d5b66f'}
               onChange={(e) => setData({ ...data, buttonColor: e.target.value })}
             />
@@ -249,7 +277,13 @@ export function Customization({
               value={data.buttonColor || ''}
               placeholder="#D5B66F"
               maxLength={7}
-              style={{ width: '96px', flexShrink: 0, minHeight: '46px', fontFamily: 'monospace', textTransform: 'uppercase' }}
+              style={{
+                width: '96px',
+                flexShrink: 0,
+                minHeight: '46px',
+                fontFamily: 'monospace',
+                textTransform: 'uppercase',
+              }}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val === '' || /^#[0-9a-fA-F]{0,6}$/.test(val)) {
@@ -264,7 +298,13 @@ export function Customization({
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
             <input
               type="color"
-              style={{ flex: 1, minWidth: '48px', height: '46px', padding: '4px', cursor: 'pointer' }}
+              style={{
+                flex: 1,
+                minWidth: '48px',
+                height: '46px',
+                padding: '4px',
+                cursor: 'pointer',
+              }}
               value={
                 a.textColor ||
                 (a.theme === 'dark' ? '#f5f6f8' : a.theme === 'sand' ? '#352b20' : '#1c2623')
@@ -274,9 +314,17 @@ export function Customization({
             <input
               type="text"
               value={data.textColor || ''}
-              placeholder={a.theme === 'dark' ? '#F5F6F8' : a.theme === 'sand' ? '#352B20' : '#1C2623'}
+              placeholder={
+                a.theme === 'dark' ? '#F5F6F8' : a.theme === 'sand' ? '#352B20' : '#1C2623'
+              }
               maxLength={7}
-              style={{ width: '96px', flexShrink: 0, minHeight: '46px', fontFamily: 'monospace', textTransform: 'uppercase' }}
+              style={{
+                width: '96px',
+                flexShrink: 0,
+                minHeight: '46px',
+                fontFamily: 'monospace',
+                textTransform: 'uppercase',
+              }}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val === '' || /^#[0-9a-fA-F]{0,6}$/.test(val)) {
@@ -379,9 +427,14 @@ export default function App({
     [authLoadError, setAuthLoadError] = useState(false);
   const [manualShareUrl, setManualShareUrl] = useState('');
   const [emailActions, setEmailActions] = useState(false);
-  const [crop, setCrop] = useState<{ source: File | string; target: 'avatar' | 'cover' } | null>(
-    null,
+  const [rawSources, setRawSources] = useState<{ avatar?: File | string; cover?: File | string }>(
+    {},
   );
+  const [crop, setCrop] = useState<{
+    source: File | string;
+    target: 'avatar' | 'cover';
+    previousValue?: string;
+  } | null>(null);
   function startCrop(source: File | string, target: 'avatar' | 'cover') {
     if (busy) return;
     if (
@@ -392,7 +445,10 @@ export default function App({
       setMsg(t('JPG, PNG ou WebP : maximum 40 Mo.', 'JPG، PNG ولا WebP: حتى 40 Mo.'));
       return;
     }
-    setCrop({ source, target });
+    if (typeof source !== 'string') {
+      setRawSources((prev) => ({ ...prev, [target]: source }));
+    }
+    setCrop({ source, target, previousValue: data[target] || '' });
   }
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [promoToday, setPromoToday] = useState(todayMorocco);
@@ -1038,10 +1094,31 @@ export default function App({
           target={crop.target}
           ar={ar}
           circle={appearance(data).avatarShape === 'circle'}
-          onCancel={() => setCrop(null)}
-          onApply={async (file) => {
-            if (!(await upload(file, crop.target))) throw new Error('Importation impossible');
+          cardData={data}
+          onLivePreview={(previewUrl) => {
+            setData((prev: any) => ({ ...prev, [crop.target]: previewUrl }));
+          }}
+          onCancel={() => {
+            if (crop.previousValue !== undefined) {
+              setData((prev: any) => ({ ...prev, [crop.target]: crop.previousValue }));
+            }
             setCrop(null);
+          }}
+          onApply={async (file) => {
+            try {
+              if (!(await upload(file, crop.target))) {
+                if (crop.previousValue !== undefined) {
+                  setData((prev: any) => ({ ...prev, [crop.target]: crop.previousValue }));
+                }
+                throw new Error('Importation impossible');
+              }
+              setCrop(null);
+            } catch (err) {
+              if (crop.previousValue !== undefined) {
+                setData((prev: any) => ({ ...prev, [crop.target]: crop.previousValue }));
+              }
+              throw err;
+            }
           }}
         />
       )}
@@ -1201,6 +1278,7 @@ export default function App({
               promoToday,
               published,
               qr,
+              rawSources,
               save,
               sectionLabels,
               setAr,

@@ -21,6 +21,7 @@ import {
   Settings,
   Copy,
   Camera,
+  Crop,
   Video,
   Package,
 } from 'lucide-react';
@@ -63,6 +64,7 @@ export type DashboardContext = {
   promoToday: string;
   published: boolean;
   qr: string;
+  rawSources?: { avatar?: File | string; cover?: File | string };
   save: () => Promise<void>;
   sectionLabels: Record<string, [string, string]>;
   setData: Dispatch<any>;
@@ -115,6 +117,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     promoToday,
     published,
     qr,
+    rawSources,
     save,
     sectionLabels,
     setAr,
@@ -310,24 +313,32 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           }}
                         />
                         {data.avatar && (
-                          <button
-                            type="button"
-                            className="secondary small"
-                            disabled={busy}
-                            onClick={() => startCrop(data.avatar, 'avatar')}
+                          <div
+                            style={{
+                              display: 'flex',
+                              gap: '8px',
+                              alignItems: 'center',
+                              marginTop: '6px',
+                            }}
                           >
-                            {t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
-                          </button>
-                        )}
-                        {data.avatar && (
-                          <button
-                            type="button"
-                            className="text-button"
-                            disabled={busy}
-                            onClick={() => setData({ ...data, avatar: '' })}
-                          >
-                            {t('Retirer le portrait / logo', 'حيّد التصويرة / اللوگو')}
-                          </button>
+                            <button
+                              type="button"
+                              className="secondary small"
+                              disabled={busy}
+                              onClick={() => startCrop(rawSources?.avatar || data.avatar, 'avatar')}
+                            >
+                              <Crop size={15} />
+                              {t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
+                            </button>
+                            <button
+                              type="button"
+                              className="text-button"
+                              disabled={busy}
+                              onClick={() => setData({ ...data, avatar: '' })}
+                            >
+                              {t('Retirer', 'حيّد')}
+                            </button>
+                          </div>
                         )}
                       </label>
                       <label className="field">
@@ -343,24 +354,32 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           }}
                         />
                         {data.cover && (
-                          <button
-                            type="button"
-                            className="secondary small"
-                            disabled={busy}
-                            onClick={() => startCrop(data.cover, 'cover')}
+                          <div
+                            style={{
+                              display: 'flex',
+                              gap: '8px',
+                              alignItems: 'center',
+                              marginTop: '6px',
+                            }}
                           >
-                            {t('Recadrer la couverture', 'قصّ الغلاف')}
-                          </button>
-                        )}
-                        {data.cover && (
-                          <button
-                            type="button"
-                            className="text-button"
-                            disabled={busy}
-                            onClick={() => setData({ ...data, cover: '' })}
-                          >
-                            {t('Retirer la couverture', 'حيّد الغلاف')}
-                          </button>
+                            <button
+                              type="button"
+                              className="secondary small"
+                              disabled={busy}
+                              onClick={() => startCrop(rawSources?.cover || data.cover, 'cover')}
+                            >
+                              <Crop size={15} />
+                              {t('Recadrer la couverture', 'قصّ الغلاف')}
+                            </button>
+                            <button
+                              type="button"
+                              className="text-button"
+                              disabled={busy}
+                              onClick={() => setData({ ...data, cover: '' })}
+                            >
+                              {t('Retirer', 'حيّد')}
+                            </button>
+                          </div>
                         )}
                       </label>
                     </div>
