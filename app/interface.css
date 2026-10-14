@@ -369,6 +369,13 @@
   height: 24px !important;
   color: inherit;
 }
+.card-design .contact-icons a[href*='wa.me'],
+.card-design .contact-icons a[title='WhatsApp'] {
+  background: #25d366 !important;
+  color: #ffffff !important;
+  border-color: #25d366 !important;
+  box-shadow: 0 6px 20px -3px rgba(37, 211, 102, 0.45) !important;
+}
 .card-design :is(.contact-icons, .social-links, .location-links) a .contact-label,
 .card-design .public-details a.secondary.full .contact-label,
 .card-design .contact-label {

@@ -254,15 +254,17 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  max-width: 400px;
-  height: 680px;
-  max-height: 82vh;
+  max-width: 360px;
+  height: 640px;
+  max-height: 80vh;
+  margin: 0 auto;
   background: #090e18;
-  border: 10px solid #1c2637;
+  border: 10px solid #1e293b;
   border-radius: 46px;
   box-shadow:
     0 30px 70px -15px rgba(0, 0, 0, 0.8),
-    0 0 45px rgba(213, 182, 111, 0.18);
+    0 0 45px rgba(79, 70, 229, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
@@ -279,8 +281,58 @@
   width: 100%;
   max-width: 100%;
   border-radius: 36px;
-  box-shadow: none;
-  border: none;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 12px 14px 28px !important;
+  background: var(--card-fond, #0a0e16);
+}
+
+.showcase-phone .card-cover {
+  width: 100%;
+  aspect-ratio: 2.2 / 1 !important;
+  height: auto !important;
+  min-height: 125px !important;
+  border-radius: 26px !important;
+}
+
+.showcase-phone .card-content {
+  padding: 0 !important;
+  gap: 12px !important;
+}
+
+.showcase-phone .card-identity {
+  border-radius: 26px !important;
+  padding: 0 16px 20px !important;
+}
+
+.showcase-phone .avatar {
+  width: 96px !important;
+  height: 96px !important;
+  margin: -48px auto 12px !important;
+  font-size: 30px !important;
+}
+
+.showcase-phone .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.showcase-phone .profile-card h2 {
+  font-size: 20px !important;
+}
+
+.showcase-phone .card-action-icons > button {
+  width: 48px !important;
+  min-width: 44px !important;
+  height: 48px !important;
+  min-height: 44px !important;
+}
+
+.showcase-phone .public-details .panel,
+.showcase-phone .public-details .card-promotions {
+  border-radius: 24px !important;
+  padding: 16px 14px !important;
 }
 
 /* Smartphone Top Notch / Speaker */
@@ -311,40 +363,47 @@
   position: absolute;
   bottom: 25px;
   right: -24px;
-  z-index: 3;
-  width: 185px;
-  padding: 14px 16px;
+  left: auto;
+  inset-inline-start: auto;
+  z-index: 5;
+  width: 190px;
+  min-height: 115px;
+  padding: 16px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #1e283a 0%, #0f1522 100%);
-  border: 1px solid rgba(213, 182, 111, 0.45);
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1.5px solid #f59e0b;
   box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.6),
-    0 0 25px rgba(213, 182, 111, 0.18);
+    0 20px 45px -10px rgba(0, 0, 0, 0.7),
+    0 0 25px rgba(245, 158, 11, 0.25);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  transform: rotate(3deg);
-  transition: transform 0.3s ease;
+  justify-content: space-between;
+  gap: 8px;
+  transform: rotate(4deg);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .showcase-nfc:hover {
   transform: rotate(0deg) scale(1.04);
 }
 
-.showcase-nfc > span:first-child {
+.showcase-nfc > span[dir='ltr'],
+.showcase-nfc > span:not(.nfc-pulse-badge) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
-  color: #ecd296;
-  letter-spacing: -0.02em;
+  color: #f59e0b;
+  letter-spacing: -0.01em;
 }
 
 .showcase-nfc strong {
   font-size: 11px;
-  line-height: 1.35;
-  color: #cbd5e1;
+  line-height: 1.4;
+  color: #e2e8f0;
   font-weight: 600;
   white-space: pre-line;
 }

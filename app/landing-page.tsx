@@ -184,7 +184,7 @@ export default function LandingPage({
                   cover:
                     'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="220" viewBox="0 0 600 220"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231a2332"/><stop offset="50%" stop-color="%23263346"/><stop offset="100%" stop-color="%230f1622"/></linearGradient></defs><rect width="600" height="220" fill="url(%23g)"/><circle cx="120" cy="110" r="140" fill="%23d5b66f" opacity="0.12"/><circle cx="500" cy="90" r="160" fill="%23d5b66f" opacity="0.08"/></svg>',
                   avatar:
-                    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><linearGradient id="ag" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23ecd296"/><stop offset="100%" stop-color="%23d5b66f"/></linearGradient></defs><rect width="200" height="200" fill="%23141b26"/><circle cx="100" cy="100" r="94" fill="none" stroke="url(%23ag)" stroke-width="6"/><text x="100" y="122" font-family="system-ui,sans-serif" font-size="68" font-weight="800" fill="url(%23ag)" text-anchor="middle">YA</text></svg>',
+                    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><linearGradient id="abg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231e293b"/><stop offset="100%" stop-color="%230f172a"/></linearGradient><linearGradient id="face" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23fed7aa"/><stop offset="100%" stop-color="%23fba572"/></linearGradient><linearGradient id="hair" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23334155"/><stop offset="100%" stop-color="%230f172a"/></linearGradient></defs><rect width="200" height="200" fill="url(%23abg)"/><path d="M52 185c0-28 22-48 48-48s48 20 48 48" fill="%232563eb"/><path d="M85 137l15 22 15-22h-30z" fill="%23ffffff"/><path d="M96 150v35M104 150v35" stroke="%23cbd5e1" stroke-width="2"/><path d="M78 140c-2 18 10 32 22 32s24-14 22-32" stroke="%2338bdf8" stroke-width="3" fill="none"/><circle cx="100" cy="88" r="38" fill="url(%23face)"/><path d="M68 80c0-22 14-36 32-36s32 14 32 36c-6-6-14-10-22-10-8 0-14 4-20 8-8 4-14 2-22 2z" fill="url(%23hair)"/><circle cx="88" cy="85" r="4.5" fill="%231e293b"/><circle cx="112" cy="85" r="4.5" fill="%231e293b"/><path d="M90 102c5 6 15 6 20 0" stroke="%23dc2626" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M93 103c4 3 10 3 14 0" fill="%23ffffff"/></svg>',
                   services: [
                     {
                       id: 's1',
@@ -195,6 +195,8 @@ export default function LandingPage({
                         'Examen complet et plan de traitement personnalisé.',
                         'فحص كامل وخطة علاج مخصصة.',
                       ),
+                      image:
+                        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240" viewBox="0 0 400 240"><defs><linearGradient id="cg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231e293b"/><stop offset="100%" stop-color="%230f172a"/></linearGradient></defs><rect width="400" height="240" fill="url(%23cg1)"/><circle cx="200" cy="120" r="70" fill="%232563eb" opacity="0.2"/><path d="M175 110c0-18 11-30 25-30s25 12 25 30c0 14-8 26-14 36-3 5-8 12-11 12s-8-7-11-12c-6-10-14-22-14-36z" fill="%2338bdf8"/><circle cx="200" cy="115" r="14" fill="%23ffffff"/><text x="200" y="200" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="%2394a3b8" text-anchor="middle">BILAN &amp; DIAGNOSTIC</text></svg>',
                     },
                     {
                       id: 's2',
@@ -205,6 +207,8 @@ export default function LandingPage({
                         'Éclaircissement dentaire haute performance.',
                         'تبييض الأسنان بأحدث التقنيات.',
                       ),
+                      image:
+                        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240" viewBox="0 0 400 240"><defs><linearGradient id="cg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231e293b"/><stop offset="100%" stop-color="%230f172a"/></linearGradient></defs><rect width="400" height="240" fill="url(%23cg2)"/><circle cx="200" cy="120" r="70" fill="%23f59e0b" opacity="0.2"/><path d="M165 130c10 22 60 22 70 0" stroke="%23f59e0b" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M200 85l4 12 12 4-12 4-4 12-4-12-12-4 12-4z" fill="%23fcd34d"/><path d="M165 95l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="%23fcd34d"/><path d="M235 95l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="%23fcd34d"/><text x="200" y="200" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="%2394a3b8" text-anchor="middle">SOURIRE ÉCLATANT</text></svg>',
                     },
                   ],
                   promotions: [
@@ -217,6 +221,8 @@ export default function LandingPage({
                         'Valable sur votre première consultation en ligne.',
                         'صالح فالاستشارة الأولى بحجز مسبق.',
                       ),
+                      image:
+                        'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="240" viewBox="0 0 400 240"><defs><linearGradient id="pbg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%2378350f"/><stop offset="100%" stop-color="%231e1307"/></linearGradient></defs><rect width="400" height="240" fill="url(%23pbg)"/><circle cx="200" cy="115" r="55" fill="%23f59e0b" opacity="0.25"/><text x="200" y="132" font-family="system-ui,sans-serif" font-size="48" font-weight="900" fill="%23f59e0b" text-anchor="middle">-20%</text><text x="200" y="180" font-family="system-ui,sans-serif" font-size="13" font-weight="700" fill="%23fed7aa" text-anchor="middle">PREMIÈRE CONSULTATION</text></svg>',
                       enabled: true,
                     },
                   ],

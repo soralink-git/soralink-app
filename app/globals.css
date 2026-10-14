@@ -2181,79 +2181,167 @@ textarea::placeholder {
 }
 .landing-showcase {
   position: relative;
-  padding: 22px 28px 24px;
-  background: radial-gradient(ellipse at 65% 40%, #d5b66f19, transparent 65%), #141516;
-  border: 1px solid #373229;
-  border-radius: 24px;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 .showcase-caption {
-  display: flex;
-  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
   gap: 10px;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  color: #aaa294;
-  margin-bottom: 28px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: #f59e0b;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 .showcase-phone {
-  max-width: 290px;
-  margin: 0 0 48px auto;
-  padding: 9px;
-  border: 1px solid #6b6050;
-  border-radius: 25px;
-  background: #0e0f10;
-  box-shadow: 0 25px 50px #0006;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 360px;
+  height: 640px;
+  max-height: 80vh;
+  margin: 0 auto;
+  padding: 0;
+  background: #090e18;
+  border: 10px solid #1e293b;
+  border-radius: 46px;
+  box-shadow:
+    0 30px 70px -15px rgba(0, 0, 0, 0.8),
+    0 0 45px rgba(79, 70, 229, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  box-sizing: border-box;
+}
+.showcase-phone::-webkit-scrollbar {
+  display: none;
 }
 .showcase-phone .profile-card {
-  border-radius: 18px;
-  text-align: center;
-}
-.showcase-phone .card-content {
-  padding: 0 20px 20px;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 36px;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 12px 14px 28px !important;
+  background: var(--card-fond, #0a0e16);
 }
 .showcase-phone .card-cover {
-  height: 92px;
+  width: 100%;
+  aspect-ratio: 2.2 / 1 !important;
+  height: auto !important;
+  min-height: 125px !important;
+  border-radius: 26px !important;
+}
+.showcase-phone .card-content {
+  padding: 0 !important;
+  gap: 12px !important;
+}
+.showcase-phone .card-identity {
+  border-radius: 26px !important;
+  padding: 0 16px 20px !important;
+}
+.showcase-phone .avatar {
+  width: 96px !important;
+  height: 96px !important;
+  margin: -48px auto 12px !important;
+  font-size: 30px !important;
+}
+.showcase-phone .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .showcase-phone .profile-card h2 {
-  font-size: 23px;
+  font-size: 20px !important;
+}
+.showcase-phone .card-action-icons > button {
+  width: 48px !important;
+  min-width: 44px !important;
+  height: 48px !important;
+  min-height: 44px !important;
+}
+.showcase-phone .public-details .panel,
+.showcase-phone .public-details .card-promotions {
+  border-radius: 24px !important;
+  padding: 16px 14px !important;
 }
 .showcase-nfc {
   position: absolute;
-  inset-inline-start: 0;
-  bottom: 65px;
-  width: 255px;
-  height: 153px;
-  padding: 20px;
-  background: linear-gradient(115deg, #151617, #27251e);
-  border: 1px solid #8c7545;
-  border-radius: 12px;
-  box-shadow: 0 16px 35px #0008;
-  transform: rotate(-7deg);
+  bottom: 25px;
+  right: -24px;
+  left: auto;
+  inset-inline-start: auto;
+  z-index: 5;
+  width: 190px;
+  min-height: 115px;
+  padding: 16px;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 1.5px solid #f59e0b;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 45px -10px rgba(0, 0, 0, 0.7),
+    0 0 25px rgba(245, 158, 11, 0.25);
+  transform: rotate(4deg);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 8px;
 }
-.showcase-nfc > span:first-child {
+.showcase-nfc:hover {
+  transform: rotate(0deg) scale(1.04);
+}
+.showcase-nfc > span[dir='ltr'],
+.showcase-nfc > span:not(.nfc-pulse-badge) {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  font-size: 17px;
-  font-weight: 700;
-  color: #dfc382;
+  font-size: 14px;
+  font-weight: 800;
+  color: #f59e0b;
+  letter-spacing: -0.01em;
 }
 .showcase-nfc strong {
   white-space: pre-line;
-  font-size: 13px;
-  line-height: 1.45;
-  font-weight: 500;
-  color: #f0e8d5;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #e2e8f0;
 }
 .nfc-bottom {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 9px;
-  letter-spacing: 1.5px;
-  color: #aaa18e;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+[dir='rtl'] .showcase-nfc {
+  right: auto;
+  left: -24px;
+  transform: rotate(-4deg);
+}
+[dir='rtl'] .showcase-nfc:hover {
+  transform: rotate(0deg) scale(1.04);
 }
 .showcase-note {
   display: flex;
@@ -2578,8 +2666,7 @@ textarea::placeholder {
   letter-spacing: 0;
 }
 [dir='rtl'] .showcase-phone {
-  margin-inline-start: auto;
-  margin-inline-end: 0;
+  margin: 0 auto;
 }
 @media (max-width: 1000px) {
   .landing {
@@ -2595,10 +2682,18 @@ textarea::placeholder {
   .landing-faq {
     gap: 40px;
   }
+  .showcase-phone {
+    max-width: 320px;
+    height: 580px;
+  }
   .showcase-nfc {
-    width: 220px;
-    height: 138px;
-    inset-inline-start: -10px;
+    width: 170px;
+    right: -10px;
+    bottom: 15px;
+  }
+  [dir='rtl'] .showcase-nfc {
+    left: -10px;
+    right: auto;
   }
   .landing-process {
     padding: 35px;
@@ -2634,19 +2729,24 @@ textarea::placeholder {
     width: 100%;
     max-width: 420px;
     margin: auto;
-    padding: 20px 22px;
+    padding: 0;
   }
   .showcase-phone {
-    max-width: 260px;
-    margin-bottom: 50px;
+    max-width: 300px;
+    height: 540px;
+    margin-bottom: 24px;
   }
   .showcase-nfc {
-    inset-inline-start: 8px;
-    width: 205px;
-    height: 130px;
-    bottom: 62px;
-    padding: 16px;
-    transform: rotate(-5deg);
+    right: -6px;
+    bottom: 10px;
+    width: 155px;
+    padding: 12px;
+    transform: rotate(3deg);
+  }
+  [dir='rtl'] .showcase-nfc {
+    left: -6px;
+    right: auto;
+    transform: rotate(-3deg);
   }
   .showcase-note {
     font-size: 9px;
