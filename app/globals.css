@@ -1187,51 +1187,58 @@ html[dir='rtl'] .hero-stage .profile-card {
     font-size: 37px;
   }
 }
-/* SoraLink — noir et or */
+/* SoraLink — palette harmonieuse et raffinée (navy profond, or champagne, saphir) */
 :root {
-  --ink: #f5f1e8;
+  --ink: #f8fafc;
   --green: #d5b66f;
-  --lime: #e6c980;
-  --muted: #aaa69d;
-  --line: #36322b;
+  --lime: #ecd296;
+  --muted: #94a3b8;
+  --line: rgba(148, 163, 184, 0.16);
 }
 body {
-  background: #0c0d0e;
+  background-color: #0b111e;
+  background-image:
+    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.08) 0px, transparent 45%),
+    radial-gradient(at 85% 20%, rgba(213, 182, 111, 0.1) 0px, transparent 50%),
+    radial-gradient(at 50% 85%, rgba(14, 165, 233, 0.07) 0px, transparent 55%);
+  background-attachment: fixed;
   color: var(--ink);
 }
 .brand-icon {
-  background: #d5b66f;
-  color: #15130f;
+  background: linear-gradient(135deg, #ecd296 0%, #d5b66f 100%);
+  color: #120e06;
 }
 .primary {
-  background: #d5b66f;
-  color: #16130e;
+  background: linear-gradient(135deg, #ecd296 0%, #d5b66f 60%, #c49f50 100%);
+  color: #120e06;
 }
 .primary:hover {
-  background: #e7cc8f;
+  background: linear-gradient(135deg, #f5e2b8 0%, #e0c482 60%, #d0ad61 100%);
 }
 .secondary {
-  background: #18191a;
-  color: #f5f1e8;
+  background: #151e30;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  color: #f1f5f9;
 }
 .secondary:hover {
-  background: #22211e;
-  border-color: #d5b66f;
+  background: #1c2840;
+  border-color: rgba(213, 182, 111, 0.5);
+  color: #ecd296;
 }
 .hero-stage {
-  background: linear-gradient(145deg, #24221c, #131415);
-  border: 1px solid #443b2a;
+  background: linear-gradient(145deg, #182337, #0f1726);
+  border: 1px solid rgba(148, 163, 184, 0.18);
 }
 .stage-label,
 .stage-footer {
-  color: #c1b291;
+  color: #cbd5e1;
 }
 .hero-stage .profile-card {
-  box-shadow: 0 22px 45px #0009;
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.6);
 }
 .profile-card {
-  background: #171819;
-  border-color: #443b2a;
+  background: #131b2c;
+  border-color: rgba(148, 163, 184, 0.18);
   --accent: #d5b66f;
 }
 .card-cover {
@@ -1242,75 +1249,88 @@ body {
   border-color: #17130d55;
 }
 .avatar {
-  background: #2b281f;
+  background: #232d40;
   color: #e6ca83;
-  border-color: #171819;
+  border-color: #131b2c;
 }
 .card-button {
   color: #17130d;
   background: var(--accent);
 }
 .contact-icons a {
-  background: #22211e;
+  background: #1a2438;
   color: #dfc587;
 }
 .how,
 .callout {
-  background: #181817;
+  background: linear-gradient(145deg, #141c2e 0%, #0e1524 100%);
+  border: 1px solid rgba(148, 163, 184, 0.16);
 }
 .price-card,
 .panel,
 .modal {
-  background: #151617;
+  background: linear-gradient(160deg, #141c2e 0%, #0f1626 100%);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  box-shadow: 0 12px 36px -10px rgba(0, 0, 0, 0.45);
 }
 .price-card.featured {
-  background: #1c1a15;
+  background: linear-gradient(160deg, #1a253c 0%, #121b2d 100%);
+  border: 2px solid rgba(213, 182, 111, 0.55);
 }
 .recommended {
   color: #17130d;
 }
 .workspace aside > button.selected {
-  background: #282319;
-  color: #e6ca83;
+  background: linear-gradient(90deg, rgba(213, 182, 111, 0.18) 0%, rgba(213, 182, 111, 0.06) 100%);
+  border: 1px solid rgba(213, 182, 111, 0.45);
+  color: #fce7b0;
+  font-weight: 700;
 }
 input,
 select,
 textarea {
-  background: #101112;
-  border-color: #403a30;
-  color: #f5f1e8;
+  background: #0d1322;
+  border-color: #243248;
+  color: #f8fafc;
 }
 input:focus,
 select:focus,
 textarea:focus {
   outline-color: #d5b66f;
+  border-color: #d5b66f;
+  box-shadow: 0 0 0 3px rgba(213, 182, 111, 0.25);
 }
 input[type='checkbox'] {
   accent-color: #d5b66f;
 }
 input::placeholder,
 textarea::placeholder {
-  color: #88847b;
+  color: #64748b;
 }
 .badge {
-  background: #2a251a;
-  color: #e6ca83;
+  background: rgba(213, 182, 111, 0.14);
+  color: #fce7b0;
+  border: 1px solid rgba(213, 182, 111, 0.3);
 }
 .notice {
-  background: #292319;
-  border-color: #7f693d;
-  color: #f3deb0;
+  background: rgba(26, 37, 58, 0.95);
+  border-color: rgba(213, 182, 111, 0.4);
+  color: #fef3c7;
+  backdrop-filter: blur(12px);
 }
 .demo-banner {
-  background: #262218;
-  color: #e6ca83;
+  background: linear-gradient(90deg, #1a243a 0%, #202d48 100%);
+  border-bottom: 1px solid rgba(213, 182, 111, 0.3);
+  color: #fce7b0;
 }
 .modal-backdrop {
-  background: #000b;
+  background: rgba(3, 7, 18, 0.75);
+  backdrop-filter: blur(8px);
 }
 .gallery button {
-  background: #29251d;
-  color: #f5f1e8;
+  background: #162034;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  color: #f8fafc;
 }
 .share-box > img {
   background: white;
