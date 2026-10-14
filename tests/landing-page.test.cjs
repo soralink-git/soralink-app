@@ -21,19 +21,19 @@ function render(ar, auth = false) {
     React.createElement(LandingPage, { ar, auth, Card, blank: demoCard, onPricing: () => {} }),
   );
 }
-test('entire French landing renders after lazy loading with all six readable feature blocks', () => {
+test('entire French landing renders after lazy loading with all four selling points', () => {
   const html = render(false);
   assert.match(html, /Toute votre activité/);
-  assert.match(html, /Rendez-vous avec l’option Pro/);
-  assert.equal((html.match(/class="feature-index"/g) || []).length, 6);
-  assert.match(html, /class="feature-index">06<\/span>/);
+  assert.match(html, /Prise de rendez-vous \(Option Pro\)/);
+  assert.equal((html.match(/class="feature-index"/g) || []).length, 4);
+  assert.match(html, /class="feature-index">04<\/span>/);
   assert.match(html, /href="\/auth\?mode=signup"/);
 });
 test('entire Darija landing renders after lazy loading without French appointment heading', () => {
   const html = render(true);
   assert.match(html, /المواعيد مع Pro/);
-  assert.doesNotMatch(html, /Rendez-vous avec l’option Pro/);
-  assert.equal((html.match(/class="feature-index"/g) || []).length, 6);
+  assert.doesNotMatch(html, /Prise de rendez-vous \(Option Pro\)/);
+  assert.equal((html.match(/class="feature-index"/g) || []).length, 4);
   assert.match(html, /href="\/auth\?mode=signup&amp;lang=ar"/);
 });
 test('connected visitor landing links the main call to action to the workspace', () => {

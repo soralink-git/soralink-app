@@ -3,25 +3,15 @@ import type { ComponentType } from 'react';
 import type { LucideIcon } from 'lucide-react';
 type LandingFeature = [LucideIcon, string, string, string, string, string];
 import {
-  Download,
-  Phone,
-  ImageIcon,
-  FileText,
-  Users,
   Calendar,
   Check,
   ExternalLink,
-  LayoutDashboard,
-  Link as LinkIcon,
+  Globe,
   Nfc,
   Plus,
   Share2,
+  ShoppingBag,
   Sparkles,
-  Zap,
-  ShieldCheck,
-  Smartphone,
-  CreditCard,
-  ArrowRight,
 } from 'lucide-react';
 import { WhatsAppIcon } from './card-helpers';
 
@@ -42,25 +32,22 @@ export default function LandingPage({
 
   return (
     <main className="landing">
-      {/* 1. HERO SECTION */}
+      {/* 1. EN-TÊTE (HERO) */}
       <section className="landing-hero">
         <div className="landing-copy">
           <span className="landing-kicker">
             <span />
-            {t(
-              'CARTE DE VISITE CONNECTÉE NFC & QR NOUVELLE GÉNÉRATION',
-              'كارط ديجيتال NFC وQR الجيل الجديد',
-            )}
+            {t('CARTE NFC & MINI-SITE PROFESSIONNEL', 'كارط NFC وسيت بروفيسيونيل')}
           </span>
           <h1>
             {t('Toute votre activité.', 'النشاط ديالك كامل.')}
             <br />
-            <em>{t('Une seule carte.', 'فكارط وحدة.')}</em>
+            <em>{t('En un seul geste.', 'فحركة وحدة.')}</em>
           </h1>
           <p>
             {t(
-              'Transmettez vos coordonnées, catalogue, réalisations et prise de rendez-vous d’un simple geste sans contact. Compatible tous smartphones, sans aucune application à installer.',
-              'شارك معلومات التواصل، الكاتالوگ، الخدمة والمواعيد فلحظة بحركة وحدة وبلا تطبيق. متوافقة مع جميع التلفونات الذكية.',
+              'Partagez vos coordonnées, votre catalogue, vos réalisations et prenez des rendez-vous instantanément par carte NFC, QR code ou lien direct. Sans application.',
+              'شارك معلومات التواصل، الكاتالوگ، الخدمة والمواعيد فالحين بكارط NFC، كود QR ولا رابط مباشر. بلا حتى تطبيق.',
             )}
           </p>
           <div className="landing-actions">
@@ -72,16 +59,9 @@ export default function LandingPage({
               <Plus size={18} />
             </a>
             <a className="landing-link" href={'/demo' + (ar ? '?lang=ar' : '')}>
-              {t('Voir la démo', 'شوف المثال')}
+              {t('Voir un exemple', 'شوف مثال')}
               <ExternalLink size={16} />
             </a>
-          </div>
-          <div className="landing-proof">
-            <Check size={16} />
-            {t(
-              'Sans application requise · NFC instantané ou QR code universel',
-              'بلا تطبيق · NFC فالحين ولا QR كبديل شامل',
-            )}
           </div>
         </div>
 
@@ -186,39 +166,17 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 2. TRANSMISSION MODES */}
-      <section className="landing-sharing" aria-label={t('Modes de partage', 'طرق المشاركة')}>
-        <p>
-          {t(
-            'Un seul lien. 3 façons instantanées de vous faire découvrir.',
-            'رابط واحد، و3 طرق مباشرة باش يتعرفو عليك.',
-          )}
-        </p>
-        <div>
-          <span>
-            <Nfc size={19} /> NFC sans contact
-          </span>
-          <span>
-            <LayoutDashboard size={19} /> QR code dynamique
-          </span>
-          <span>
-            <LinkIcon size={19} />
-            {t('Lien web direct', 'رابط مباشر')}
-          </span>
-        </div>
-      </section>
-
-      {/* 3. CORE FEATURES */}
+      {/* 2. POURQUOI SORALINK ? (4 VRAIS ARGUMENTS DE VENTE) */}
       <section className="landing-value" id="fonctionnalites">
         <div className="landing-heading">
           <span className="landing-kicker">
-            {t('VOS OUTILS, AU MÊME ENDROIT', 'الأدوات ديالك فبلاصة وحدة')}
+            {t('POURQUOI SORALINK ?', 'علاش تختار SORALINK ؟')}
           </span>
-          <h2>{t('Une carte. Des actions concrètes.', 'كارط وحدة، وخدمات واضحة.')}</h2>
+          <h2>{t('Pourquoi SoraLink ?', 'علاش تختار SoraLink؟')}</h2>
           <p>
             {t(
-              'Offrez à vos prospects une expérience interactive complète pour passer à l’action immédiatement.',
-              'عطي للزبناء ديالك تجربة سريعة وساهلة باش يتواصلو ويطلبو خدماتك مباشرة.',
+              'Vos 4 vrais atouts pour moderniser vos échanges et booster votre activité.',
+              '4 مميزات حقيقية باش تطوّر التواصل ديالك وتزيد من مداخيلك.',
             )}
           </p>
         </div>
@@ -226,52 +184,36 @@ export default function LandingPage({
           {(
             [
               [
-                Download,
+                Globe,
                 '01',
-                'Enregistrer votre contact',
-                'تسجيل الكونطاكت',
-                'Un bouton télécharge votre fiche contact vCard. Votre interlocuteur l’enregistre dans son répertoire en 1 clic.',
-                'بزر واحد كيتحمّل الكونطاكت بصيغة vCard، واللي قدّامك كيحفظو فالريپيرطوار بنقرة وحدة.',
+                'Plus qu’une carte, un mini-site',
+                'أكثر من كارت فيزيت، سيت كامل',
+                'Fiche contact en 1 clic, WhatsApp, réseaux sociaux, localisation Maps, vidéo et document PDF.',
+                'تسجيل الكونطاكت بنقرة وحدة، WhatsApp، مواقع التواصل، موقع Maps، فيديو وكتيب PDF.',
               ],
               [
-                Phone,
+                ShoppingBag,
                 '02',
-                'WhatsApp, réseaux et itinéraire',
-                'WhatsApp، التواصل والطريق',
-                'Appel direct, e-mail, WhatsApp, réseaux sociaux et itinéraire GPS Google Maps pour vous trouver facilement.',
-                'اتصال مباشر، إيميل، WhatsApp، مواقع التواصل وموقع GPS فـ Google Maps باش يوصلو ليك بسهولة.',
-              ],
-              [
-                ImageIcon,
-                '03',
-                'Catalogue, photos et vidéo',
-                'الكاتالوگ، التصاور والفيديو',
-                'Présentez jusqu’à 10 articles, une galerie de 10 photos, votre vidéo et un PDF téléchargeable pour valoriser votre offre.',
-                'ورّي حتى 10 عروض، 10 تصاور، فيديو وكتيب PDF باش تبيّن الجودة ديال الخدمة ديالك.',
-              ],
-              [
-                FileText,
-                '04',
-                'Demandes de devis et commandes',
-                'طلبات الثمن والطلبات',
-                'Vos prospects précisent leur besoin ou commandent un article. Retrouvez leurs coordonnées qualifiées dans votre espace.',
-                'الزوار كيطلبو عروض أثمان ولا كيشريو عروضك. كتلقى الطلبات ومعلومات الزبناء فالحساب ديالك.',
-              ],
-              [
-                Users,
-                '05',
-                'Échanger vos coordonnées',
-                'تبادل معلومات التواصل',
-                'Collectez instantanément les informations de vos prospects avec leur accord. S’ils ont une carte SoraLink, le partage est immédiat.',
-                'جمع معلومات التواصل ديال الناس اللي كيتلاقاو بيك بموافقتهم، والتبادل كيكون فثواني.',
+                'Catalogue & Devis intégrés',
+                'كاتالوگ وطلبات أثمان مدمجة',
+                'Exposez jusqu’à 10 articles/photos, affichez vos promos du moment et recevez des demandes de devis ou commandes directement.',
+                'قدّم حتى 10 منتجات/تصاور، بيّن عروضك الترويجية واستقبل طلبات الدوڤي ولا الشراء مباشرة.',
               ],
               [
                 Calendar,
-                '06',
-                'Rendez-vous avec l’option Pro',
+                '03',
+                'Prise de rendez-vous (Option Pro)',
                 'المواعيد مع Pro',
-                'Définissez vos horaires et vos prestations. Vos visiteurs choisissent un créneau et vous confirmez dans votre agenda dédié.',
-                'حدّد أوقات العمل والخدمات. الزبناء كيحجزو الوقت اللي ناسبهم ونتا كتأكد فالأجندة ديالك.',
+                'Affichez vos disponibilités et laissez vos clients réserver un créneau dans votre agenda.',
+                'بيّن أوقات الخدمة ديالك وخلي الزبناء يحجزو الموعد المناسب فالأجندة ديالك.',
+              ],
+              [
+                Sparkles,
+                '04',
+                'Modifiable à l’infini',
+                'تعديل بلا حدود وبلا إعادة طبع',
+                'Changez vos prix, votre numéro ou vos offres à tout moment depuis votre téléphone. Votre carte et votre QR code restent les mêmes.',
+                'بدّل الأثمنة، النمرة ولا العروض وقتما بغيتي من التلفون ديالك. الكارط والكود QR كيبقاو هما هما.',
               ],
             ] satisfies LandingFeature[]
           ).map(([Icon, n, title, da, desc, dd]) => (
@@ -287,34 +229,34 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 4. THREE STEPS */}
+      {/* 3. COMMENT ÇA MARCHE ? — EN 3 LIGNES */}
       <section className="landing-process">
         <div className="landing-heading">
-          <span className="landing-kicker">{t('SIMPLE ET RAPIDE', 'ساهلة وسريعة')}</span>
-          <h2>{t('Votre carte en trois étapes.', 'الكارط ديالك فثلاث خطوات.')}</h2>
+          <span className="landing-kicker">{t('SIMPLE & RAPIDE', 'ساهلة وسريعة')}</span>
+          <h2>{t('Comment ça marche ?', 'كيفاش كتخدم الكارط؟')}</h2>
         </div>
         <div className="landing-steps">
           {[
             [
               '01',
-              'Créez votre compte',
-              'صايب الحساب',
-              'Inscrivez-vous en 30 secondes et confirmez votre e-mail en toute sécurité.',
-              'تسجّل فـ 30 ثانية وأكّد الإيميل ديالك بأمان.',
+              'Composez votre page',
+              'قاد الصفحة ديالك',
+              'Composez votre page en quelques minutes (ou laissez-nous la créer pour vous).',
+              'قاد صفحتك فدقائق قليلة (ولا خلي الفريق ديالنا يصايبها ليك).',
             ],
             [
               '02',
-              'Composez votre carte',
-              'قاد الكارط ديالك',
-              'Personnalisez votre logo, couverture, coordonnées, catalogue et style visuel.',
-              'زيد اللوگو، الغلاف، معلومات التواصل، الكاتالوگ واللون اللي بغيتي.',
+              'Partagez sans contact',
+              'شارك فلحظة',
+              'Partagez-la en approchant votre carte NFC, par scan QR code ou sur WhatsApp.',
+              'شاركها فلحظة بتقريب كارط NFC، بمسح كود QR ولا عبر WhatsApp.',
             ],
             [
               '03',
-              'Publiez et partagez',
-              'نشر وشارك',
-              'Votre lien reste unique et permanent. Modifiez votre carte quand vous voulez : tout s’actualise en direct.',
-              'الرابط ديالك كيبقى ديما صالح. بدّل أي معلومة وقتما بغيتي وكلشي كيتجدد فالحين.',
+              'Recevez vos opportunités',
+              'استقبل الزبناء والطلبات',
+              'Récupérez vos contacts et demandes de clients dans votre espace SoraLink.',
+              'استقبل جهات الاتصال وطلبات الزبناء مباشرة فحسابك SoraLink.',
             ],
           ].map(([n, f, a, d, dd]) => (
             <article key={n}>
@@ -326,78 +268,39 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 5. NFC HARDWARE */}
-      <section className="landing-hardware" id="carte-nfc">
-        <div className="landing-heading">
-          <span className="landing-kicker">
-            {t('DU DIGITAL AU PHYSIQUE', 'من الديجيتال للكارط')}
-          </span>
-          <h2>{t('Votre carte NFC. Votre lien.', 'كارط NFC والرابط ديالك.')}</h2>
-          <p>
-            {t(
-              'La puce NFC transmet instantanément le lien de votre page à tout smartphone compatible. Approchez la carte de la zone de lecture du téléphone pour ouvrir la page. Sans NFC, scannez le QR code au verso.',
-              'الـ NFC كيدوز رابط صفحتك مباشرة لتلفون متوافق. قرّب الكارط لظهر التلفون باش تفتح صفحتك. وبلا NFC، مسح الـ QR اللي فالظهر.',
-            )}
-          </p>
-        </div>
-        <div
-          className="nfc-explainer"
-          aria-label={t('Illustration du partage NFC', 'توضيح مشاركة NFC')}
-        >
-          <div className="nfc-mini-card">
-            <span dir="ltr">SoraLink</span>
-            <Nfc size={30} />
-          </div>
-          <div className="nfc-signal">
-            <Nfc size={26} />
-          </div>
-          <div className="nfc-mini-phone">
-            <span dir="ltr">SoraLink</span>
-            <Check size={28} />
-            <small>{t('Votre page', 'الصفحة ديالك')}</small>
-          </div>
-        </div>
-        <p className="hardware-note">
-          {t(
-            'Le Pack Pro comprend une carte physique NFC personnalisée avec votre identité visuelle, ainsi que 100 cartes de visite imprimées de haute qualité avec votre QR code. Finition mate anti-rayures, étanche et résistante à vie.',
-            'الپاك Pro فيه كارط NFC شخصية مطبوعة بالهوية ديالك، وزايد 100 كارت فيزيت مطبوعين بجودة عالية بالـ QR ديالك. مادة مقاومة للماء والخدش كتدوم سنين.',
-          )}
-        </p>
-      </section>
-
-      {/* 6. EXAMPLES / USE CASES */}
+      {/* 4. POUR QUI ? — 1 PHRASE PAR MÉTIER + BOUTON DÉMO */}
       <section className="landing-examples" id="exemples">
         <div className="landing-heading">
           <span className="landing-kicker">
             {t('POUR TOUS LES PROFESSIONNELS', 'لكل المهنيين')}
           </span>
-          <h2>{t('Un format. Votre façon de travailler.', 'شكل واحد، على حساب خدمتك.')}</h2>
+          <h2>{t('Pour qui ?', 'لمن مخصصة الكارط؟')}</h2>
         </div>
         <div className="usecase-grid">
           {[
             [
-              'Commercial & Dirigeant',
-              'تجاري ومدير',
-              'Fiche contact complète, pitch d’activité, liens réseaux et formulaires de devis.',
-              'كونطاكت كامل، تقديم النشاط، روابط مباشرة وطلبات أثمان.',
+              'Commerciaux & Indépendants',
+              'تجاريين ومهنيين أحرار',
+              'Enregistrez votre contact en 1 seconde et recevez des demandes de devis.',
+              'سجّل الكونطاكت فـ ثانية واستقبل طلبات الدوڤي.',
             ],
             [
-              'Cabinet & Profession Libérale',
-              'عيادة ومكتب',
-              'Coordonnées précises, itinéraire GPS fluide et prise de rendez-vous en ligne avec Pro.',
-              'تواصل دقيق، طريق GPS ساهل وحجز مواعيد مباشرة مع Pro.',
+              'Commerces & Restaurants',
+              'محلات ومطاعم',
+              'Affichez votre menu PDF, votre catalogue et vos promos du moment.',
+              'بيّن المينو PDF، الكاتالوگ ديالك والعروض الحالية.',
             ],
             [
-              'Artisan & Créateur',
-              'صانع ومهني حر',
-              'Galerie photo de réalisations, catalogue d’offres et prise de contact WhatsApp.',
-              'تصاور الخدمة السابقة، كاتالوگ المنتجات وتواصل WhatsApp.',
+              'Cabinets & Services',
+              'عيادات وخدمات',
+              'Partagez votre itinéraire Maps et gérez vos prises de rendez-vous.',
+              'شارك مسار Maps وسير حجز المواعيد ديالك.',
             ],
             [
-              'Restaurant & Commerce',
-              'مطعم وتجارة',
-              'Menu digital consultable, photos de plats, promotions du moment et avis.',
-              'مينو رقمي، تصاور الأطباق، العروض الخاصة والموقع.',
+              'Artisans & Créateurs',
+              'حرفيين ومبدعين',
+              'Montrez vos réalisations en photos/vidéo et prenez des commandes.',
+              'ورّي خدمتك بالصور/الفيديو واستقبل طلبيات مباشرة.',
             ],
           ].map(([f, a, d, dd]) => (
             <article key={f}>
@@ -406,87 +309,168 @@ export default function LandingPage({
             </article>
           ))}
         </div>
-        <a className="landing-link" href={'/demo' + (ar ? '?lang=ar' : '')}>
-          {t('Explorer une carte de démonstration', 'شوف مثال كامل ديال الكارط')}
-          <ExternalLink size={16} />
-        </a>
+        <div style={{ textAlign: 'center', marginTop: '24px' }}>
+          <a className="landing-link" href={'/demo' + (ar ? '?lang=ar' : '')}>
+            👉 {t('Explorer une carte de démonstration', 'شوف مثال كامل ديال الكارط')}
+            <ExternalLink size={16} />
+          </a>
+        </div>
       </section>
 
-      {/* 7. PRICING */}
+      {/* 5. LES OFFRES — CLAIRES ET ORIENTÉES VALEUR */}
       <section className="landing-pricing" id="tarifs">
         <div className="landing-heading">
           <span className="landing-kicker">{t('TARIFS TRANSPARENTS', 'أثمنة واضحة')}</span>
-          <h2>{t('Choisissez votre point de départ.', 'اختار منين تبدا.')}</h2>
+          <h2>{t('Les Offres', 'العروض ديالنا')}</h2>
           <p>
             {t(
-              'Tarifs transparents sans abonnement automatique ni frais cachés. Paiement sécurisé par virement ou espèces après accord.',
-              'أثمنة واضحة بلا اقتطاع أوتوماتيكي ولا مصاريف مخبية. الأداء بالتحويل أو كاش بعد الاتفاق.',
+              'Un mini-site complet et vos supports physiques, sans prélèvement automatique.',
+              'سيت كامل مع الكارطات ديالك، بلا حتى اقتطاع أوتوماتيكي.',
             )}
           </p>
         </div>
         <div className="landing-price-grid">
-          {[
-            [
-              'Digital',
-              149,
-              'Carte digitale seule',
-              'الكارط الديجيتال بوحدها',
-              'Profil digital complet, QR code, catalogue, médias, promotions, demandes et mises à jour illimitées.',
-              'صفحة كاملة، QR، الكاتالوگ، المحتوى، العروض والطلبات وتحديثات ديما بلا حدود.',
-            ],
-            [
-              'Pack Pro NFC',
-              349,
-              'Digital + Carte NFC + 100 Cartes',
-              'ديجيتال + كارط NFC + 100 كارت',
-              'La formule complète : votre carte digitale + 1 carte NFC personnalisée + 100 cartes imprimées avec QR.',
-              'العرض الأفضل: الديجيتال + كارط NFC بالاسم ديالك + 100 كارت فيزيت مطبوعة بالـ QR.',
-            ],
-            [
-              'Accompagnement VIP',
-              549,
-              'Pack complet + Préparation sur mesure',
-              'الپاك كامل + إعداد خاص',
-              'Le Pack Pro NFC avec création clé en main de votre carte par nos designers et 2 séries de corrections.',
-              'الپاك كامل مع تجهيز الكارط ديالك من طرف متخصصين وجوج مراحل ديال التعديل.',
-            ],
-          ].map(([n, p, f, a, d, dd], i) => (
-            <article key={n} className={i === 1 ? 'featured' : ''}>
-              <span className="eyebrow">{t(String(f), String(a))}</span>
-              <h3 dir="ltr">{n}</h3>
-              <strong className="landing-price">
-                {p}
-                <small> DH</small>
-              </strong>
-              <p className="hint">
-                {i === 0 ? t('par an', 'فالعام') : t('la première année', 'فالعام الأول')}
-              </p>
-              <p>{t(String(d), String(dd))}</p>
-              <a
-                className={i === 1 ? 'primary full' : 'secondary full'}
-                href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}
-              >
-                {t('Choisir cette offre', 'اختار هاد العرض')}
-              </a>
-              <small>{t('Renouvellement : 149 DH/an', 'التجديد: 149 درهم فالعام')}</small>
-            </article>
-          ))}
+          {/* Digital */}
+          <article>
+            <span className="eyebrow">
+              {t('L’essentiel 100 % en ligne', 'الأساسي 100% أونلاين')}
+            </span>
+            <h3 dir="ltr">Digital</h3>
+            <strong className="landing-price">
+              149<small> DH</small>
+            </strong>
+            <p className="hint">{t('/ an', 'فالعام')}</p>
+            <ul className="landing-price-features">
+              <li>
+                <Check size={16} />
+                <span>
+                  {t(
+                    'Votre page complète (Profil, Catalogue, Promos, Devis)',
+                    'صفحة كاملة (بروفايل، كاتالوگ، عروض، دوڤي)',
+                  )}
+                </span>
+              </li>
+              <li>
+                <Check size={16} />
+                <span>
+                  {t('QR code et lien de partage illimité', 'كود QR ورابط مشاركة غير محدود')}
+                </span>
+              </li>
+            </ul>
+            <a className="secondary full" href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}>
+              {t('Choisir Digital', 'اختار Digital')}
+            </a>
+            <small>{t('Renouvellement : 149 DH/an', 'التجديد: 149 درهم فالعام')}</small>
+          </article>
+
+          {/* Pack Hybride - Featured */}
+          <article className="featured">
+            <span className="eyebrow">{t('⭐ Le plus populaire', '⭐ الأكثر طلباً')}</span>
+            <h3 dir="ltr">Pack Hybride</h3>
+            <div className="landing-price-tagline">
+              {t(
+                'Le moderne + le classique pour ne rater aucun client',
+                'العصري والتقليدي باش ما تضيع حتى زبون',
+              )}
+            </div>
+            <strong className="landing-price">
+              349<small> DH</small>
+            </strong>
+            <p className="hint">{t('la première année', 'فالعام الأول')}</p>
+            <ul className="landing-price-features">
+              <li>
+                <Check size={16} />
+                <span>
+                  {t('Tout le forfait Digital inclus (1 an)', 'كل ما في باقة الديجيتال (1 عام)')}
+                </span>
+              </li>
+              <li>
+                <Check size={16} />
+                <span>
+                  {t(
+                    '+ 1 Carte NFC personnalisée à votre image',
+                    '+ 1 كارط NFC مخصصة بالهوية ديالك',
+                  )}
+                </span>
+              </li>
+              <li>
+                <Check size={16} />
+                <span>
+                  {t(
+                    '+ 100 Cartes papier imprimées avec votre QR code',
+                    '+ 100 كارت فيزيت مطبوعة بالـ QR ديالك',
+                  )}
+                </span>
+              </li>
+            </ul>
+            <a className="primary full" href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}>
+              {t('Choisir le Pack', 'اختار هاد الپاك')}
+            </a>
+            <small>
+              {t(
+                'Renouvellement l’année suivante : 149 DH/an',
+                'التجديد فالعام الموالي: 149 درهم فالعام',
+              )}
+            </small>
+          </article>
+
+          {/* Clé en main */}
+          <article>
+            <span className="eyebrow">
+              {t('On s’occupe de tout pour vous', 'كنتكلفو ليك بكلشي')}
+            </span>
+            <h3 dir="ltr">Clé en main</h3>
+            <div className="landing-price-tagline">
+              {t('Accompagnement VIP', 'مرافقة VIP خاصة')}
+            </div>
+            <strong className="landing-price">
+              549<small> DH</small>
+            </strong>
+            <p className="hint">{t('la première année', 'فالعام الأول')}</p>
+            <ul className="landing-price-features">
+              <li>
+                <Check size={16} />
+                <span>
+                  {t(
+                    'Tout le Pack Hybride inclus (Page + 1 carte NFC + 100 cartes QR)',
+                    'كل ما في الپاك الهجين (سيت + 1 كارط NFC + 100 كارت QR)',
+                  )}
+                </span>
+              </li>
+              <li>
+                <Check size={16} />
+                <span>
+                  {t(
+                    '+ Création complète de votre page par notre équipe (avec 2 séries de retouches)',
+                    '+ إعداد كامل لصفحتك من طرف فريقنا (مع مرحلتين للتعديل)',
+                  )}
+                </span>
+              </li>
+            </ul>
+            <a className="secondary full" href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}>
+              {t('Choisir Clé en main', 'اختار Clé en main')}
+            </a>
+            <small>
+              {t(
+                'Renouvellement l’année suivante : 149 DH/an',
+                'التجديد فالعام الموالي: 149 درهم فالعام',
+              )}
+            </small>
+          </article>
         </div>
+
         <div className="pricing-notes">
           <p>
             <Calendar size={18} />
             <strong>
-              {t('Pro Rendez-vous : +250 DH/an', 'Pro Rendez-vous: +250 درهم فالعام')}
+              {t(
+                'Option Pro (Rendez-vous) : +250 DH / an',
+                'Option Pro (المواعيد): +250 درهم فالعام',
+              )}
             </strong>{' '}
             {t(
-              'Digital + Pro : 399 DH/an. Agenda SoraLink dédié avec gestion jusqu’à 5 prestations.',
-              'Digital + Pro: 399 درهم فالعام. أجندة خاصة وحتى 5 خدمات مختلفة.',
-            )}
-          </p>
-          <p>
-            {t(
-              '1 carte par compte · 10 photos · 10 articles · 400 Mo de stockage. Livraison express sur tout le Maroc.',
-              'كارط وحدة للحساب · 10 تصاور · 10 عروض · 400 Mo تخزين. توصيل سريع لجميع مدن المغرب.',
+              'Ajoutez un agenda de réservation en ligne (jusqu’à 5 prestations) à votre carte.',
+              'زيد أجندة حجز المواعيد أونلاين (حتى لـ 5 خدمات) فصفحتك.',
             )}
           </p>
           <button className="landing-link" onClick={() => onPricing()}>
@@ -495,49 +479,37 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 8. FAQ */}
+      {/* 6. FAQ — RÉDUITE AUX 4 VRAIES QUESTIONS D'ACHAT */}
       <section className="landing-faq" id="faq">
         <div>
           <span className="landing-kicker">{t('EN TOUTE CLARTÉ', 'كلشي واضح')}</span>
-          <h2>{t('Avant de commencer.', 'قبل ما تبدا.')}</h2>
+          <h2>{t('Foire aux questions', 'الأسئلة الشائعة')}</h2>
         </div>
         <div>
           {[
             [
-              'Comment payer ma commande ?',
-              'كيفاش نخلّص الطلب؟',
-              'Le paiement s’effectue simplement par virement bancaire ou en espèces après validation de votre commande. Tous les détails et le suivi vous sont confirmés avant tout règlement.',
-              'الأداء كيكون ساهل بالتحويل البنكي ولا كاش من بعد تأكيد الطلب. كاع التفاصيل والتتبع كيتأكدو معاك قبل الأداء.',
+              'Est-ce que ça marche sur tous les téléphones ?',
+              'واش كيخدم فجميع التلفونات؟',
+              'Oui ! Par simple approche (NFC) sur la majorité des smartphones récents, ou en scannant le QR code intégré. Aucune application n’est nécessaire pour vos clients.',
+              'إيه! بمجرد تقريب الكارط (NFC) فالتلفونات الحديثة، ولا بمسح كود QR المدمج. بلا ما يحتاج الزبون يتيليشارجي أي تطبيق.',
             ],
             [
-              'Est-ce compatible avec tous les smartphones ?',
-              'واش متوافقة مع كاع التلفونات؟',
-              'Oui, à 100%. Le NFC fonctionne nativement sur tous les iPhone récents et appareils Android. Pour les téléphones sans NFC, le QR code au verso et le lien web direct garantissent une ouverture instantanée.',
-              'إيه 100%. الـ NFC كيخدم تلقائياً فجميع هواتف iPhone الحديثة وأندرويد. والتلفونات اللي ما فيهاش NFC يقدرو يمسحو الـ QR فالظهر.',
+              'Comment se passe le paiement et la livraison ?',
+              'كيفاش كيتم الأداء والتوصيل؟',
+              'Vous validez d’abord votre commande et votre visuel avec nous. Le règlement se fait ensuite simplement par virement bancaire ou en espèces, et nous vous confirmons le délai d’expédition selon votre ville.',
+              'كتأكد التصميم والطلب ديالك معانا أولاً. من بعد كيتم الأداء بالتحويل البنكي ولا كاش، وكنأكدو ليك مدة التوصيل على حساب مدينتك.',
             ],
             [
-              'Mes interlocuteurs doivent-ils installer une application ?',
-              'واش خاص الناس يتيليشارجي كاش تطبيق؟',
-              'Absolument pas ! Votre page s’ouvre directement dans le navigateur du smartphone de votre interlocuteur en un instant.',
-              'أبداً! الصفحة ديالك كتحل مباشرة فالمتصفح ديال التلفون بلا حتى تطبيق.',
+              'Puis-je modifier mes informations après l’impression des cartes ?',
+              'واش نقدر نبدل معلوماتي من بعد ما تطبع الكارط؟',
+              'Oui, à tout moment. Vos modifications s’appliquent instantanément sur votre page, sans jamais avoir à réimprimer votre carte NFC ou vos cartes papier.',
+              'إيه، وقتما بغيتي. التعديلات كتبان فالحين فصفحتك، بلا ما تحتاج تعاود تطبع لا كارط NFC ولا الكارطات ديال الورق.',
             ],
             [
-              'Puis-je modifier mes informations après impression de la carte ?',
-              'واش نقدر نبدّل معلوماتي من بعد ما تطبع الكارط؟',
-              'Oui ! C’est tout l’avantage de SoraLink : vous pouvez mettre à jour vos coordonnées, photos, catalogue et tarifs à tout moment depuis votre espace. Votre carte physique et votre QR code restent toujours valables.',
-              'إيه طبعاً! هادي هي الميزة ديال SoraLink: تبدّل معلوماتك وتصاورك وعروضك وقتما بغيتي من حسابك، والكارط ديالك كتبقى ديما محينة.',
-            ],
-            [
-              'Quelle assistance est incluse ?',
-              'شنو الدعم اللي كتوفروا؟',
-              'Notre équipe vous accompagne du lundi au vendredi sur WhatsApp et par e-mail. L’offre Accompagnement VIP comprend en plus la configuration complète de votre carte par nos designers.',
-              'الفريق ديالنا كيساعدك من الاثنين للجمعة فـ WhatsApp والإيميل. وعرض VIP فيه إعداد كامل للكارط من طرف المصممين ديالنا.',
-            ],
-            [
-              'Y a-t-il un abonnement ou prélèvement automatique ?',
-              'واش كاين اقتطاع شهري ولا أوتوماتيكي؟',
-              'Aucun prélèvement automatique. Vous êtes totalement libre. Le service digital est annuel (149 DH/an) et vous décidez vous-même de son renouvellement.',
-              'ما كاين حتى اقتطاع أوتوماتيكي. الخدمة سنوية (149 درهم/عام) ونتا اللي كتختار تجدد وقتما بغيتي بكل حرية.',
+              'Pourquoi y a-t-il un renouvellement à 149 DH/an ?',
+              'علاش كاين تجديد سنوي بـ 149 درهم/عام؟',
+              'Cela couvre l’hébergement sécurisé de votre mini-site, de votre catalogue photos/PDF, de vos demandes de devis et les mises à jour techniques toute l’année (soit moins de 13 DH par mois).',
+              'باش نضمنو ليك استضافة آمنة للسيت ديالك، الكاتالوگ، طلبات الدوڤي والتحديثات التقنية على طول العام (أقل من 13 درهم فالشهر).',
             ],
           ].map(([q, qa, a, aa]) => (
             <details key={q}>
@@ -548,19 +520,33 @@ export default function LandingPage({
         </div>
       </section>
 
-      {/* 9. PILOT & FEEDBACK */}
-      <section className="landing-pilot">
+      {/* 7. APPEL À L'ACTION FINAL (BAS DE PAGE) */}
+      <section className="landing-final">
         <div>
-          <span className="landing-kicker">{t('ÉCOUTE & ACCOMPAGNEMENT', 'كنسمعو ليك')}</span>
-          <h3>{t('Vos retours font évoluer SoraLink.', 'الملاحظات ديالك كتطوّر SoraLink.')}</h3>
+          <span className="landing-kicker">{t('COMMENCEZ AUJOURD’HUI', 'بدا اليوم')}</span>
+          <h2>
+            {t(
+              'Prêt à moderniser votre façon de réseauter ?',
+              'واجد باش تطور طريقة التواصل ديالك؟',
+            )}
+          </h2>
           <p>
             {t(
-              'Explorez la démo et personnalisez votre présence digitale. Une question, un besoin spécifique pour votre entreprise ? Contactez notre équipe directement sur WhatsApp.',
-              'جرّب المثال وصايب حضورك الرقمي. عندك سؤال ولا استفسار لمقاولتك؟ تواصل مع الفريق ديالنا مباشرة فـ WhatsApp.',
+              'Créez votre carte en ligne dès maintenant ou contactez-nous directement sur WhatsApp pour être accompagné.',
+              'صايب الكارط ديالك أونلاين دابا ولا تواصل معانا مباشرة فـ WhatsApp باش نعاونوك.',
             )}
           </p>
+        </div>
+        <div className="landing-actions">
           <a
-            className="landing-link"
+            className="primary"
+            href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}
+          >
+            {t('Créer ma carte', 'صايب الكارط ديالي')}
+            <Plus size={18} />
+          </a>
+          <a
+            className="secondary"
             href="https://wa.me/212661446664"
             target="_blank"
             rel="noopener noreferrer"
@@ -569,38 +555,6 @@ export default function LandingPage({
             <WhatsAppIcon />
           </a>
         </div>
-        <div>
-          <h3>
-            {t(
-              'Un lien unique qui dure, une présence qui évolue.',
-              'رابط واحد دائم، وحضور كيطوّر.',
-            )}
-          </h3>
-          <p>
-            {t(
-              'Ne jetez plus vos cartes papier à chaque changement de poste, de numéro ou de tarif. SoraLink s’adapte à votre croissance et centralise toute votre activité professionnelle.',
-              'ما تبقاش تضيع الكارطات فكل تبديل ديال النمرة ولا العنوان. SoraLink كتكبر مع المشروع ديالك وكتجمع كلشي فبلاصة وحدة.',
-            )}
-          </p>
-        </div>
-      </section>
-
-      {/* 10. FINAL CTA BANNER */}
-      <section className="landing-final">
-        <div>
-          <span className="landing-kicker">{t('COMMENCEZ AUJOURD’HUI', 'بدا اليوم')}</span>
-          <h2>{t('Prêt à partager autrement ?', 'واجد تشارك بطريقة جديدة؟')}</h2>
-          <p>
-            {t(
-              'Rejoignez les professionnels qui modernisent leur réseau avec la carte connectée SoraLink.',
-              'انضم للمهنيين اللي طورو التواصل والشبكة ديالهم مع كارط SoraLink الذكية.',
-            )}
-          </p>
-        </div>
-        <a className="primary" href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}>
-          {t('Créer ma carte', 'صايب الكارط ديالي')}
-          <Plus size={18} />
-        </a>
       </section>
     </main>
   );
