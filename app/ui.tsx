@@ -1,4 +1,5 @@
 'use client';
+import { appendUnique, type History, type PageInfo } from './lib/pagination';
 import { selectedPlan, workspacePath, offerLabel } from './lib/journey-links';
 import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
@@ -660,7 +661,38 @@ export default function App({
   useEffect(() => {
     if (id) QRCode.toDataURL(location.origin + '/c/' + id, { width: 240, margin: 2 }).then(setQr);
   }, [id]);
+  const [historyPages, setHistoryPages] = useState<Partial<Record<History, PageInfo>>>({});
+  const [historyBusy, setHistoryBusy] = useState(false);
+  const historyEpoch = useRef(0);
+  const historyLock = useRef(false);
+  async function loadMoreHistory(kind: History) {
+    const cursor = historyPages[kind]?.nextCursor;
+    if (!cursor || historyLock.current || busy) return;
+    const epoch = historyEpoch.current;
+    historyLock.current = true;
+    setHistoryBusy(true);
+    try {
+      const query = new URLSearchParams({ history: kind, cursor });
+      const response = await fetch('/api/data?' + query);
+      const page: any = await response.json();
+      if (epoch !== historyEpoch.current) return;
+      if (!response.ok)
+        throw new Error(t('Chargement impossible. Réessayez.', 'ما تحمّلاتش اللائحة. عاود جرّب.'));
+      if (kind === 'requests') {
+        setInbox((items) => appendUnique(items, page.items));
+        setNotifications((items) => appendUnique(items, page.notifications || []));
+      } else if (kind === 'contacts') setContacts((items) => appendUnique(items, page.items));
+      else setOrders((items) => appendUnique(items, page.items));
+      setHistoryPages((pages) => ({ ...pages, [kind]: { nextCursor: page.nextCursor } }));
+    } catch (error: any) {
+      if (epoch === historyEpoch.current) setMsg(error.message);
+    } finally {
+      historyLock.current = false;
+      setHistoryBusy(false);
+    }
+  }
   async function load(authMode = 'login') {
+    historyEpoch.current++;
     authEpoch.current++;
     setBusy(true);
     setAuthLoading(true);
@@ -705,6 +737,7 @@ export default function App({
           setId(b.profile.id);
           setPublished(!!b.profile.published);
         }
+        setHistoryPages(b.pages || {});
         setInbox(b.requests);
         setContacts(b.contacts || []);
         setNotifications(b.notifications || []);
@@ -1407,6 +1440,9 @@ export default function App({
               field,
               id,
               inbox,
+              historyPages,
+              historyBusy,
+              loadMoreHistory,
               load,
               loaded,
               logout,

@@ -40,3 +40,24 @@ test('administrator connection screen follows its initial language', () => {
   assert.match(html, /دخول الإدارة/);
   assert.doesNotMatch(html, /Connexion administrateur|Mon espace/);
 });
+
+test('request status and prepared replies use one language and keep quotes separate from appointments', () => {
+  const { requestKind, requestStatus, requestReply, whatsappNotification } = load(
+    path.resolve('app/lib/whatsapp-notification.ts'),
+  );
+  const request = { kind: 'devis', status: 'new', name: 'Test', phone: '0600000000' };
+  assert.equal(requestStatus('new'), 'en attente');
+  assert.equal(requestStatus('unknown', true), 'خاص المراجعة');
+  assert.equal(requestKind('rdv', true), 'الموعد');
+  const french = requestReply(request, 'SoraLink');
+  assert.match(french, /demande de devis/);
+  assert.doesNotMatch(french, /rendez-vous|undefined|[\u0600-\u06ff]/);
+  const arabic = requestReply(request, 'SoraLink', true);
+  assert.match(arabic, /طلب الثمن/);
+  assert.doesNotMatch(arabic, /Bonjour|Statut|new|undefined/);
+  assert.equal(
+    new URL(whatsappNotification(request, 'SoraLink', true)).searchParams.get('text'),
+    arabic,
+  );
+  assert.equal(whatsappNotification({ ...request, phone: 'invalid' }, 'SoraLink'), '');
+});
