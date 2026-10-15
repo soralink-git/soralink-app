@@ -46,6 +46,7 @@ await writeFile(
       '/manifest.webmanifest',
       '/sw.js',
       '/offline.html',
+      '/offline',
       '/og-soralink.png',
       '/demo-design.svg',
     ],

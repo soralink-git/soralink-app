@@ -45,6 +45,8 @@ Les e-mails d’authentification Supabase restent indépendants. WhatsApp reste 
   met aussi ce manifeste à jour pendant la navigation.
 - La page hors connexion affiche une seule langue. Elle reprend le choix explicite de
   l’URL, puis la préférence locale disponible ; un bouton permet de changer de langue.
+- La redirection Cloudflare de `/offline.html` vers `/offline` reste dans les ressources
+  statiques, afin que la page de secours ne soit pas envoyée au routeur de l’application.
 - Le service worker ne conserve que la page générique hors connexion. Les données de
   compte, réponses API, cartes et fichiers clients ne sont pas mis en cache hors ligne.
 - Aucun formulaire ni aucune sauvegarde n’est rejoué automatiquement sans connexion.

@@ -12,6 +12,7 @@ export default {
         '/manifest.webmanifest',
         '/sw.js',
         '/offline.html',
+        '/offline',
         '/og-soralink.png',
         '/demo-design.svg',
       ].includes(url.pathname)

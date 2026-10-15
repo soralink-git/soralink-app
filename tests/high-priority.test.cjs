@@ -312,3 +312,30 @@ test('Pages queues notifications without a provider secret; only the dispatcher 
     f.sqlite.close();
   }
 });
+
+test('offline asset remains accessible after Pages redirects .html to its canonical extensionless URL', async () => {
+  const worker = load('worker.ts', {
+    'vinext/server/fetch-handler': {
+      default: {
+        fetch() {
+          assert.fail('The app router must not handle the offline asset');
+        },
+      },
+    },
+    './app/lib/notifications': { mailReady: () => false },
+  }).default;
+  for (const pathname of ['/offline.html', '/offline']) {
+    const response = await worker.fetch(
+      new Request('https://example.test' + pathname),
+      {
+        ASSETS: {
+          fetch: async () =>
+            new Response('Offline asset', { headers: { 'Content-Type': 'text/html' } }),
+        },
+      },
+      {},
+    );
+    assert.equal(response.status, 200);
+    assert.equal(await response.text(), 'Offline asset');
+  }
+});
