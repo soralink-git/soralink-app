@@ -1,5 +1,7 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import LoadMore from '../load-more';
+import { appendUnique } from '../lib/pagination';
 import { offerLabel } from '../lib/journey-links';
 import { Nfc, Users, Package, Clock, RefreshCw, Shield, Save, Globe } from 'lucide-react';
 const statuses: any = {
@@ -27,18 +29,43 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
     document.documentElement.lang = ar ? 'ar' : 'fr';
     document.documentElement.dir = ar ? 'rtl' : 'ltr';
   }, [ar]);
-  async function load() {
+  const activeSearch = useRef('');
+  const loadEpoch = useRef(0);
+  const loading = useRef(false);
+  async function load(
+    options: { section?: 'profiles' | 'orders' | 'audit'; cursor?: string; search?: string } = {},
+  ) {
+    const epoch = ++loadEpoch.current;
+    const requestedSearch = options.search ?? activeSearch.current;
+    loading.current = true;
     setBusy(true);
     try {
-      const r = await fetch('/api/admin');
+      const query = new URLSearchParams({ search: requestedSearch });
+      if (options.section) query.set('section', options.section);
+      if (options.cursor) query.set('cursor', options.cursor);
+      const r = await fetch('/api/admin?' + query);
       const b: any = await r.json();
+      if (epoch !== loadEpoch.current) return;
       if (!r.ok) throw new Error(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
-      setData(b);
+      activeSearch.current = requestedSearch;
+      setData((current: any) => {
+        if (!options.section || !current) return { ...b, search: requestedSearch };
+        const section = options.section;
+        return {
+          ...current,
+          stats: b.stats,
+          [section]: appendUnique(current[section], b[section]),
+          pages: { ...current.pages, [section]: b.pages[section] },
+        };
+      });
       setError('');
     } catch (e: any) {
-      setError(e.message);
+      if (epoch === loadEpoch.current) setError(e.message);
     } finally {
-      setBusy(false);
+      if (epoch === loadEpoch.current) {
+        loading.current = false;
+        setBusy(false);
+      }
     }
   }
   useEffect(() => {
@@ -98,7 +125,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
         >
           {ar ? 'Français' : 'العربية'}
         </button>
-        <a className="brand" dir="ltr" href="/">
+        <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
           <span className="brand-icon">
             <Nfc />
           </span>
@@ -116,7 +143,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
         <span className="eyebrow">{t('SORALINK / GESTION', 'SoraLink / التسيير')}</span>
         <div className="workspace-head">
           <h1>{t('Administration', 'الإدارة')}</h1>
-          <button className="secondary" disabled={busy} onClick={load}>
+          <button className="secondary" disabled={busy} onClick={() => load()}>
             <RefreshCw size={16} />
             {t('Actualiser', 'حدّث')}
           </button>
@@ -147,22 +174,17 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
             <div className="admin-stats">
               <div className="panel">
                 <Users />
-                <b>{data.profiles.length}</b>
+                <b>{data.stats.clients}</b>
                 <span>{t('Clients', 'الزبناء')}</span>
               </div>
               <div className="panel">
                 <Package />
-                <b>{data.orders.filter((o: any) => o.status === 'pending').length}</b>
+                <b>{data.stats.pendingOrders}</b>
                 <span>{t('Demandes en attente', 'الطلبات المعلقة')}</span>
               </div>
               <div className="panel">
                 <Clock />
-                <b>
-                  {
-                    data.profiles.filter((p: any) => p.expires && new Date(p.expires) < new Date())
-                      .length
-                  }
-                </b>
+                <b>{data.stats.expired}</b>
                 <span>{t('Échéances dépassées', 'الاشتراكات اللي سالات')}</span>
               </div>
             </div>
@@ -183,102 +205,109 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
             </div>
             {tab === 'clients' && (
               <>
-                <label className="field">
-                  {t('Rechercher', 'قلب')}
-                  <input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder={t('Nom ou e-mail', 'الاسم ولا الإيميل')}
-                  />
-                </label>
-                {data.profiles
-                  .filter((p: any) =>
-                    (p.email + ' ' + JSON.parse(p.data).name)
-                      .toLowerCase()
-                      .includes(search.toLowerCase()),
-                  )
-                  .map((p: any) => (
-                    <form
-                      className="panel admin-client"
-                      key={p.id}
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        const f = new FormData(e.currentTarget);
-                        save({
-                          action: 'profile',
-                          id: p.id,
-                          state: f.get('state'),
-                          plan: f.get('plan'),
-                          expires: f.get('expires'),
-                          pro: f.get('pro') === 'on',
-                        });
-                      }}
-                    >
-                      <div className="panel-title">
-                        <div>
-                          <h2>{JSON.parse(p.data).name}</h2>
-                          <p className="hint">
-                            {p.email ||
-                              t(
-                                'E-mail renseigné à la prochaine connexion',
-                                'الإيميل غادي يتسجّل فالدخول الجاي',
-                              )}
-                          </p>
-                        </div>
-                        <a className="secondary small" href={'/c/' + p.id} target="_blank">
-                          {t('Voir la carte', 'شوف الكارط')}
-                        </a>
+                <form
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void load({ search });
+                  }}
+                >
+                  <label className="field">
+                    {t('Rechercher', 'قلب')}
+                    <input
+                      value={search}
+                      maxLength={120}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder={t('Nom ou e-mail', 'الاسم ولا الإيميل')}
+                    />
+                  </label>
+                  <button className="secondary" disabled={busy} type="submit">
+                    {t('Rechercher', 'قلب')}
+                  </button>
+                </form>
+                {data.profiles.map((p: any) => (
+                  <form
+                    className="panel admin-client"
+                    key={p.id}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const f = new FormData(e.currentTarget);
+                      save({
+                        action: 'profile',
+                        id: p.id,
+                        state: f.get('state'),
+                        plan: f.get('plan'),
+                        expires: f.get('expires'),
+                        pro: f.get('pro') === 'on',
+                      });
+                    }}
+                  >
+                    <div className="panel-title">
+                      <div>
+                        <h2>{JSON.parse(p.data).name}</h2>
+                        <p className="hint">
+                          {p.email ||
+                            t(
+                              'E-mail renseigné à la prochaine connexion',
+                              'الإيميل غادي يتسجّل فالدخول الجاي',
+                            )}
+                        </p>
                       </div>
-                      <div className="form-grid">
-                        <label className="field">
-                          {t('État', 'الحالة')}
-                          <select name="state" defaultValue={p.state}>
-                            <option value="trial">{t('Essai', 'تجربة')}</option>
-                            <option value="active">{t('Actif', 'مفعّل')}</option>
-                            <option value="suspended">{t('Suspendu', 'موقوف')}</option>
-                          </select>
-                        </label>
-                        <label className="field">
-                          {t('Offre', 'العرض')}
-                          <select name="plan" defaultValue={p.plan}>
-                            {['Digital', 'Pack', 'Accompagnement'].map((v) => (
-                              <option key={v} value={v}>
-                                {offerLabel(v, ar)}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <label className="field">
-                          {t('Échéance', 'نهاية الاشتراك')}
-                          <input
-                            name="expires"
-                            type="date"
-                            defaultValue={p.expires?.slice(0, 10) || ''}
-                          />
-                        </label>
-                        <label className="toggle">
-                          <input name="pro" type="checkbox" defaultChecked={!!p.pro_enabled} />
-                          {t('Option Rendez-vous', 'خيار المواعيد')}
-                        </label>
-                      </div>
-                      <p className="hint">
-                        {t(
-                          'Validez le paiement séparément dans Commandes, puis activez l’offre et son échéance ici.',
-                          'أكّد الأداء فقسم الطلبات ومن بعد فعّل العرض والأجل ديالو هنا.',
-                        )}
-                      </p>
-                      <button className="primary" disabled={busy}>
-                        <Save size={16} />
-                        {t('Enregistrer', 'سجّل')}
-                      </button>
-                    </form>
-                  ))}
+                      <a className="secondary small" href={'/c/' + p.id} target="_blank">
+                        {t('Voir la carte', 'شوف الكارط')}
+                      </a>
+                    </div>
+                    <div className="form-grid">
+                      <label className="field">
+                        {t('État', 'الحالة')}
+                        <select name="state" defaultValue={p.state}>
+                          <option value="trial">{t('Essai', 'تجربة')}</option>
+                          <option value="active">{t('Actif', 'مفعّل')}</option>
+                          <option value="suspended">{t('Suspendu', 'موقوف')}</option>
+                        </select>
+                      </label>
+                      <label className="field">
+                        {t('Offre', 'العرض')}
+                        <select name="plan" defaultValue={p.plan}>
+                          {['Digital', 'Pack', 'Accompagnement'].map((v) => (
+                            <option key={v} value={v}>
+                              {offerLabel(v, ar)}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="field">
+                        {t('Échéance', 'نهاية الاشتراك')}
+                        <input
+                          name="expires"
+                          type="date"
+                          defaultValue={p.expires?.slice(0, 10) || ''}
+                        />
+                      </label>
+                      <label className="toggle">
+                        <input name="pro" type="checkbox" defaultChecked={!!p.pro_enabled} />
+                        {t('Option Rendez-vous', 'خيار المواعيد')}
+                      </label>
+                    </div>
+                    <p className="hint">
+                      {t(
+                        'Validez le paiement séparément dans Commandes, puis activez l’offre et son échéance ici.',
+                        'أكّد الأداء فقسم الطلبات ومن بعد فعّل العرض والأجل ديالو هنا.',
+                      )}
+                    </p>
+                    <button className="primary" disabled={busy}>
+                      <Save size={16} />
+                      {t('Enregistrer', 'سجّل')}
+                    </button>
+                  </form>
+                ))}
                 {!data.profiles.length && (
                   <div className="empty">
-                    {t(
-                      'Aucun client. Créez votre première carte dans Mon espace.',
-                      'ما كاين حتى زبون. صايب أول كارط فالحساب ديالك.',
-                    )}
+                    {data.search
+                      ? t('Aucun résultat pour cette recherche.', 'ما لقينا حتى نتيجة لهاد البحث.')
+                      : t(
+                          'Aucun client. Créez votre première carte dans Mon espace.',
+                          'ما كاين حتى زبون. صايب أول كارط فالحساب ديالك.',
+                        )}
                   </div>
                 )}
               </>
@@ -333,7 +362,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                       </p>
                     </div>
                     <span className="hint">
-                      {new Date(a.created).toLocaleString('fr-FR', {
+                      {new Date(a.created).toLocaleString(ar ? 'ar-MA' : 'fr-MA', {
                         timeZone: 'Africa/Casablanca',
                       })}
                     </span>
@@ -349,6 +378,19 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                 )}
               </section>
             )}
+            <LoadMore
+              page={data.pages[tab === 'clients' ? 'profiles' : tab]}
+              busy={busy}
+              ar={ar}
+              onClick={() => {
+                if (loading.current) return;
+                const section = (tab === 'clients' ? 'profiles' : tab) as
+                  | 'profiles'
+                  | 'orders'
+                  | 'audit';
+                void load({ section, cursor: data.pages[section].nextCursor });
+              }}
+            />
           </>
         )}
       </main>

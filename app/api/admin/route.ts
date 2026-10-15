@@ -1,6 +1,13 @@
-import { adminActionSchema, readValidatedJSON, inputErrorResponse } from '../../lib/api-validation';
+import { readPage } from '../../lib/pagination';
+import {
+  adminActionSchema,
+  adminQuerySchema,
+  validateInput,
+  readValidatedJSON,
+  inputErrorResponse,
+} from '../../lib/api-validation';
 import { db, json, identity, log } from '../../lib/server';
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const { user, admin } = await identity();
     if (!user) return json({ error: 'Connexion requise' }, 401);
@@ -9,20 +16,59 @@ export async function GET() {
         { error: 'Connectez-vous avec le compte SoraLink autorisé pour l’administration.' },
         403,
       );
-    const [profiles, orders, audit] = await Promise.all([
-      db()
-        .prepare(
-          'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated FROM profiles ORDER BY updated DESC',
-        )
-        .all(),
-      db()
-        .prepare(
-          'SELECT orders.*,profiles.email,profiles.data FROM orders LEFT JOIN profiles ON profiles.owner=orders.owner ORDER BY orders.created DESC',
-        )
-        .all(),
-      db().prepare('SELECT * FROM audit ORDER BY created DESC LIMIT 50').all(),
-    ]);
-    return json({ profiles: profiles.results, orders: orders.results, audit: audit.results });
+    const query = validateInput(
+      adminQuerySchema,
+      Object.fromEntries(new URL(req.url).searchParams),
+    );
+    const sections = ['profiles', 'orders', 'audit'] as const;
+    const empty = { items: [], nextCursor: null };
+    const pages = await Promise.all(
+      sections.map(async (section) => {
+        if (query.section && section !== query.section) return empty;
+        const cursor = query.section === section ? query.cursor : undefined;
+        if (section === 'profiles') {
+          // instr treats %, _ and quotes literally and keeps the search parameterized.
+          return readPage(
+            db(),
+            'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated FROM profiles',
+            "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0)",
+            [query.search, query.search, query.search],
+            cursor,
+            'updated',
+          );
+        }
+        if (section === 'orders')
+          return readPage(
+            db(),
+            'SELECT orders.*,profiles.email,profiles.data FROM orders LEFT JOIN profiles ON profiles.owner=orders.owner',
+            '1=1',
+            [],
+            cursor,
+            'orders.created',
+            'orders.id',
+          );
+        return readPage(db(), 'SELECT * FROM audit', '1=1', [], cursor);
+      }),
+    );
+    const [profiles, orders, audit] = pages;
+    const stats = await db()
+      .prepare(
+        `SELECT
+      (SELECT COUNT(*) FROM profiles) AS clients,
+      (SELECT COUNT(*) FROM orders WHERE status='pending') AS pendingOrders,
+      (SELECT COUNT(*) FROM profiles WHERE expires IS NOT NULL AND expires < ?) AS expired`,
+      )
+      .bind(new Date().toISOString())
+      .first();
+    return json({
+      profiles: profiles.items,
+      orders: orders.items,
+      audit: audit.items,
+      stats,
+      pages: Object.fromEntries(
+        sections.map((section, i) => [section, { nextCursor: pages[i].nextCursor }]),
+      ),
+    });
   } catch (error) {
     const invalid = inputErrorResponse(error);
     if (invalid) return invalid;

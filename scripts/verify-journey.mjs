@@ -289,6 +289,45 @@ try {
   assert(
     (await request('/api/availability?id=' + cardId + '&date=' + date)).json.slots.includes(slot),
   );
+  const historyStamp = '2025-01-01T00:00:00.000Z';
+  await db.batch(
+    Array.from({ length: 105 }, (_, index) =>
+      db
+        .prepare(
+          'INSERT INTO requests(id,profile,kind,name,phone,message,created) VALUES(?,?,?,?,?,?,?)',
+        )
+        .bind(
+          'history-' + String(index).padStart(3, '0'),
+          cardId,
+          'devis',
+          'Pagination test',
+          '0600000000',
+          '',
+          historyStamp,
+        ),
+    ),
+  );
+  const firstPage = (await request('/api/data', { auth: true })).json;
+  assert.equal(firstPage.requests.length, 50);
+  assert(firstPage.pages.requests.nextCursor);
+  const seen = new Set(firstPage.requests.map((item) => item.id));
+  let cursor = firstPage.pages.requests.nextCursor;
+  while (cursor) {
+    const query = new URLSearchParams({ history: 'requests', cursor });
+    const page = (await request('/api/data?' + query, { auth: true })).json;
+    for (const item of page.items) {
+      assert(!seen.has(item.id), 'A history row must appear once');
+      seen.add(item.id);
+    }
+    cursor = page.nextCursor;
+  }
+  assert.equal(seen.size, 106);
+  await request('/api/data?history=requests', { status: 401 });
+  await request('/api/data?history=requests&cursor=invalid', { auth: true, status: 400 });
+  const otherHistory = (await request('/api/data?history=requests', { auth: true, id: otherId }))
+    .json;
+  assert.equal(otherHistory.items.length, 0);
+  await request('/api/admin', { auth: true, status: 403 });
   const hiddenForm = new FormData();
   hiddenForm.set('file', new File([photo], 'hidden.png', { type: 'image/png' }));
   const hiddenUpload = await request('/api/upload', {
@@ -324,7 +363,7 @@ try {
   assert.equal((await request('/api/auth')).json.authenticated, false);
   assert.equal((await db.prepare('SELECT COUNT(*) n FROM notifications').first()).n, 0);
   console.log(
-    'Journey verified: signup/confirmation/login with simulated provider, draft, R2 upload, customization, public FR/AR and desktop/mobile user agents, consented contact exchange, ownership, Pro booking/confirmation/conflict/cancellation and logout.',
+    'Journey verified: signup/confirmation/login with simulated provider, draft, R2 upload, customization, public FR/AR and desktop/mobile user agents, consented contact exchange, ownership, Pro booking/confirmation/conflict/cancellation, paginated history with account isolation and logout.',
   );
   console.log(
     'Isolated D1/R2 only; no production account, file, contact, booking or notification changed. User-agent checks are not visual browser tests.',

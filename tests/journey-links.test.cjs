@@ -40,3 +40,60 @@ test('administrator connection screen follows its initial language', () => {
   assert.match(html, /دخول الإدارة/);
   assert.doesNotMatch(html, /Connexion administrateur|Mon espace/);
 });
+
+test('request status and prepared replies use one language and keep quotes separate from appointments', () => {
+  const { requestKind, requestStatus, requestReply, whatsappNotification } = load(
+    path.resolve('app/lib/whatsapp-notification.ts'),
+  );
+  const request = { kind: 'devis', status: 'new', name: 'Test', phone: '0600000000' };
+  assert.equal(requestStatus('new'), 'en attente');
+  assert.equal(requestStatus('unknown', true), 'خاص المراجعة');
+  assert.equal(requestKind('rdv', true), 'الموعد');
+  const french = requestReply(request, 'SoraLink');
+  assert.match(french, /demande de devis/);
+  assert.doesNotMatch(french, /rendez-vous|undefined|[\u0600-\u06ff]/);
+  const arabic = requestReply(request, 'SoraLink', true);
+  assert.match(arabic, /طلب الثمن/);
+  assert.doesNotMatch(arabic, /Bonjour|Statut|new|undefined/);
+  assert.equal(
+    new URL(whatsappNotification(request, 'SoraLink', true)).searchParams.get('text'),
+    arabic,
+  );
+  assert.equal(whatsappNotification({ ...request, phone: 'invalid' }, 'SoraLink'), '');
+});
+
+test('home footer, sign-in and card brand links preserve the selected language', () => {
+  const App = load(path.resolve('app/ui.tsx')).default;
+  const CardView = load(path.resolve('app/card-view.tsx')).default;
+  for (const ar of [true, false]) {
+    const lang = ar ? 'ar' : 'fr';
+    const home = renderToStaticMarkup(React.createElement(App, { initialArabic: ar }));
+    assert.match(home, new RegExp('href="/conditions\\?lang=' + lang + '"'));
+    assert.match(home, new RegExp('href="/confidentialite\\?lang=' + lang + '"'));
+    assert.match(home, new RegExp('href="/\\?lang=' + lang + '#tarifs"'));
+    const auth = renderToStaticMarkup(React.createElement(Auth, { initialArabic: ar }));
+    assert.match(auth, new RegExp('href="/\\?lang=' + lang + '"'));
+    const card = renderToStaticMarkup(
+      React.createElement(CardView, {
+        ar,
+        setAr() {},
+        onMessage() {},
+        onRequest() {},
+        d: { name: 'Example' },
+      }),
+    );
+    assert.match(card, new RegExp('href="/\\?lang=' + lang + '"'));
+  }
+});
+
+test('changing language updates the reload URL and preserves the selected offer, tab and anchor', () => {
+  const { languagePath } = load(path.resolve('app/lib/journey-links.ts'));
+  const current = 'https://soralink.link/?app=1&lang=ar&offer=Pack&tab=orders#tarifs';
+  const next = new URL(languagePath(current, false), 'https://soralink.link');
+  assert.equal(next.searchParams.get('lang'), 'fr');
+  assert.equal(next.searchParams.get('offer'), 'Pack');
+  assert.equal(next.searchParams.get('tab'), 'orders');
+  assert.equal(next.searchParams.get('app'), '1');
+  assert.equal(next.hash, '#tarifs');
+  assert.equal(new URL(languagePath(next.href, true), next.origin).searchParams.get('lang'), 'ar');
+});

@@ -94,8 +94,8 @@ il n’est pas masqué par une liste d’exceptions.
   commercial ou nouveau prix n’est inventé par ce correctif.
 - Les textes légaux restent ceux d’un pilote : identité du vendeur/responsable et
   conditions définitives nécessitent des informations réelles, absentes du dépôt.
-- Les historiques au-delà des limites actuelles et la pagination de l’administration
-  restent à traiter si le volume le nécessite. Les index ont été ajoutés dès maintenant.
+- Les historiques et la pagination de l’administration sont corrigés dans le lot suivant ;
+  consulter [REMAINING-FIXES.md](REMAINING-FIXES.md) pour le détail et les limites restantes.
 - Le nettoyage des imports abandonnés dépend toujours d’une prochaine action du compte ;
   aucun effacement automatique de comptes à 90 jours n’est promis.
 - Le vrai SMTP, les modèles Supabase, MFA, les réglages du bucket et la restauration de

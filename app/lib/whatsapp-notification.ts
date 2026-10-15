@@ -14,42 +14,49 @@ export function whatsappNumber(value: unknown): string {
   if (/^0[5-7]\d{8}$/.test(n)) n = '212' + n.slice(1);
   return /^[1-9]\d{7,14}$/.test(n) ? n : '';
 }
-export function whatsappNotification(r: Request, business: string, ar = false): string {
-  const number = whatsappNumber(r.phone);
-  if (!number) return '';
-  const kind = ar
-    ? ({ rdv: 'الموعد', devis: 'طلب الثمن', commande: 'الطلب' } as Record<string, string>)[
-        r.kind || ''
-      ]
-    : (
-        { rdv: 'rendez-vous', devis: 'demande de devis', commande: 'commande' } as Record<
+export function requestKind(kind = '', ar = false): string {
+  return (
+    (ar
+      ? ({ rdv: 'الموعد', devis: 'طلب الثمن', commande: 'الطلب', contact: 'التواصل' } as Record<
           string,
           string
-        >
-      )[r.kind || ''];
-  const status = ar
-    ? (
-        { new: 'فانتظار التأكيد', confirmed: 'مؤكد', cancelled: 'ملغي', done: 'تعالج' } as Record<
+        >)
+      : ({
+          rdv: 'rendez-vous',
+          devis: 'demande de devis',
+          commande: 'commande',
+          contact: 'contact',
+        } as Record<string, string>))[kind] || (ar ? 'الطلب' : 'demande')
+  );
+}
+export function requestStatus(status = '', ar = false): string {
+  return (
+    (ar
+      ? ({ new: 'فانتظار التأكيد', confirmed: 'مؤكد', cancelled: 'ملغي', done: 'تعالج' } as Record<
           string,
           string
-        >
-      )[r.status || '']
-    : (
-        { new: 'en attente', confirmed: 'confirmé', cancelled: 'annulé', done: 'traité' } as Record<
-          string,
-          string
-        >
-      )[r.status || ''];
+        >)
+      : ({
+          new: 'en attente',
+          confirmed: 'confirmé',
+          cancelled: 'annulé',
+          done: 'traité',
+        } as Record<string, string>))[status] || (ar ? 'خاص المراجعة' : 'à vérifier')
+  );
+}
+export function requestReply(r: Request, business: string, ar = false): string {
+  const kind = requestKind(r.kind, ar);
+  const status = requestStatus(r.status, ar);
   const lines = ar
     ? [
         'السلام عليكم ' + (r.name || '') + '،',
         'بخصوص ' + (kind || 'الطلب') + ' ديالك.',
-        'الحالة: ' + (status || r.status || ''),
+        'الحالة: ' + status,
       ]
     : [
         'Bonjour ' + (r.name || '') + ',',
         'Concernant votre ' + (kind || 'demande') + '.',
-        'Statut : ' + (status || r.status || '') + '.',
+        'Statut : ' + status + '.',
       ];
   if (r.service) lines.push((ar ? 'الخدمة / المنتوج: ' : 'Service / article : ') + r.service);
   if (r.slot)
@@ -59,5 +66,11 @@ export function whatsappNotification(r: Request, business: string, ar = false): 
         (ar ? ' (بتوقيت المغرب)' : ' (heure du Maroc)'),
     );
   lines.push(business || 'SoraLink');
-  return 'https://wa.me/' + number + '?text=' + encodeURIComponent(lines.join('\n'));
+  return lines.join('\n');
+}
+
+export function whatsappNotification(r: Request, business: string, ar = false): string {
+  const number = whatsappNumber(r.phone);
+  if (!number) return '';
+  return 'https://wa.me/' + number + '?text=' + encodeURIComponent(requestReply(r, business, ar));
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { cursorSchema } from './pagination';
 import { catalogueError } from './catalogue';
 import { promotionError } from './promotions';
 import { recordedVideoUrl, mediaError } from './content-media';
@@ -271,7 +272,22 @@ export const authActionSchema = z
       offer: z.enum(['Digital', 'Pack', 'Accompagnement', 'Pro']).optional(),
     }),
   );
-export const dataQuerySchema = z.object({ id: id.optional(), exchange: z.literal('1').optional() });
+export const dataQuerySchema = z
+  .object({
+    id: id.optional(),
+    exchange: z.literal('1').optional(),
+    history: z.enum(['requests', 'contacts', 'orders']).optional(),
+    cursor: cursorSchema.optional(),
+  })
+  .refine((q) => !q.cursor || !!q.history, 'Historique requis.')
+  .refine((q) => !q.history || (!q.id && !q.exchange), 'Requête incompatible.');
+export const adminQuerySchema = z
+  .object({
+    section: z.enum(['profiles', 'orders', 'audit']).optional(),
+    search: z.string().trim().max(120).default(''),
+    cursor: cursorSchema.optional(),
+  })
+  .refine((q) => !q.cursor || !!q.section, 'Historique requis.');
 export const availabilityQuerySchema = z.object({ id, date: calendarDate, service: serviceIndex });
 export const uploadQuerySchema = z
   .object({

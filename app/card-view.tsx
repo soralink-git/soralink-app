@@ -299,7 +299,7 @@ export default function CardView({
             <a
               className="card-brand"
               dir="ltr"
-              href="/"
+              href={'/?lang=' + (ar ? 'ar' : 'fr')}
               aria-label={t('SoraLink — Accueil', 'SoraLink — الرئيسية')}
             >
               {t('Par SoraLink', 'من SoraLink')} <Nfc size={16} />

@@ -1,4 +1,6 @@
 'use client';
+import LoadMore from './load-more';
+import type { History, PageInfo } from './lib/pagination';
 import { offerLabel } from './lib/journey-links';
 import type { JSX, Dispatch, SetStateAction, RefObject } from 'react';
 import type { LucideIcon } from 'lucide-react';
@@ -32,7 +34,13 @@ import { WhatsAppIcon } from './card-helpers';
 
 import { recordedVideoUrl } from './lib/content-media';
 
-import { whatsappNumber, whatsappNotification } from './lib/whatsapp-notification';
+import {
+  whatsappNumber,
+  whatsappNotification,
+  requestKind,
+  requestStatus,
+  requestReply,
+} from './lib/whatsapp-notification';
 import { MAX_CATALOGUE_ITEMS } from './lib/catalogue';
 import { appearance } from './lib/personalization';
 import { MAX_PROMOTIONS, promotionStatus } from './lib/promotions';
@@ -54,6 +62,9 @@ export type DashboardContext = {
   field: (key: string, label: string, type?: string) => JSX.Element;
   id: string;
   inbox: any[];
+  historyPages?: Partial<Record<History, PageInfo>>;
+  historyBusy?: boolean;
+  loadMoreHistory?: (kind: History) => Promise<void>;
   load: (authMode?: string) => Promise<void>;
   loaded: boolean;
   logout: () => Promise<void>;
@@ -107,6 +118,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     field,
     id,
     inbox,
+    historyPages,
+    historyBusy,
+    loadMoreHistory,
     load,
     loaded,
     logout,
@@ -1150,6 +1164,14 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </article>
                     ))
                   )}
+                  <LoadMore
+                    page={historyPages?.contacts}
+                    busy={busy || !!historyBusy}
+                    ar={ar}
+                    onClick={() => {
+                      void loadMoreHistory?.('contacts');
+                    }}
+                  />
                 </section>
               )}
               {tab === 'requests' && (
@@ -1174,8 +1196,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                   </div>
                   <span className="badge">
                     {data.pro
-                      ? t('Pro Rendez-vous actif', 'Pro Rendez-vous مفعّل')
-                      : t('Option Pro à activer par SoraLink', 'خاص SoraLink يفعّل Pro')}
+                      ? t('Pro Rendez-vous actif', 'خيار المواعيد مفعّل')
+                      : t('Option Pro à activer par SoraLink', 'خاص SoraLink يفعّل خيار المواعيد')}
                   </span>
                   <p className="hint">
                     {t(
@@ -1207,7 +1229,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       <article className="request" key={r.id}>
                         <div>
                           <span className="badge">
-                            {r.kind.toUpperCase()} · {r.status}
+                            {requestKind(r.kind, ar)} · {requestStatus(r.status, ar)}
                           </span>
                           <h3>{r.name}</h3>
                           <a href={'tel:' + r.phone}>{r.phone}</a>
@@ -1225,25 +1247,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                                 'mailto:' +
                                 r.email +
                                 '?subject=' +
-                                encodeURIComponent('Votre demande — ' + data.name) +
-                                '&body=' +
                                 encodeURIComponent(
-                                  'Bonjour ' +
-                                    r.name +
-                                    ',\nVotre rendez-vous : ' +
-                                    (r.slot || 'à préciser') +
-                                    ' (heure du Maroc).\nStatut : ' +
-                                    (
-                                      {
-                                        confirmed: 'confirmé',
-                                        cancelled: 'annulé',
-                                        new: 'en attente',
-                                        done: 'traité',
-                                      } as any
-                                    )[r.status] +
-                                    '.\n' +
-                                    data.name,
-                                )
+                                  t('Votre demande — ', 'الطلب ديالك — ') + data.name,
+                                ) +
+                                '&body=' +
+                                encodeURIComponent(requestReply(r, data.name, ar))
                               }
                             >
                               {t('Préparer un e-mail', 'وجد إيميل')} · {r.email}
@@ -1327,6 +1335,14 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </article>
                     ))
                   )}
+                  <LoadMore
+                    page={historyPages?.requests}
+                    busy={busy || !!historyBusy}
+                    ar={ar}
+                    onClick={() => {
+                      void loadMoreHistory?.('requests');
+                    }}
+                  />
                 </section>
               )}
               {tab === 'schedule' && (
@@ -1597,8 +1613,10 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           }
                         }}
                       >
-                        {n}
-                        <b>{p} DH</b>
+                        {offerLabel(String(n), ar)}
+                        <b>
+                          {p} {t('DH', 'درهم')}
+                        </b>
                       </button>
                     ))}
                   </div>
@@ -1636,6 +1654,14 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       <span>{o.created.slice(0, 10)}</span>
                     </div>
                   ))}
+                  <LoadMore
+                    page={historyPages?.orders}
+                    busy={busy || !!historyBusy}
+                    ar={ar}
+                    onClick={() => {
+                      void loadMoreHistory?.('orders');
+                    }}
+                  />
                   <div className="callout">
                     <Phone />
                     <p>

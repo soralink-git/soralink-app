@@ -1,3 +1,4 @@
+import { readHistory, requestNotifications } from '../../lib/history';
 import {
   dataActionSchema,
   dataQuerySchema,
@@ -53,47 +54,39 @@ export async function GET(req: Request) {
       .prepare('SELECT * FROM profiles WHERE owner=?')
       .bind(user.userId)
       .first();
+    if (query.history) {
+      const page = await readHistory(db(), user.userId, p?.id, query.history, query.cursor);
+      return json({
+        items: page.items,
+        nextCursor: page.nextCursor,
+        notifications:
+          query.history === 'requests'
+            ? await requestNotifications(db(), p?.id, page.items as { id: string }[])
+            : [],
+      });
+    }
     if (p) {
       await db().prepare('UPDATE profiles SET email=? WHERE id=?').bind(user.email, p.id).run();
       const d = JSON.parse(p.data);
       d.pro = !!p.pro_enabled;
       p.data = JSON.stringify(d);
     }
-    const inbox = p
-      ? await db()
-          .prepare(
-            "SELECT * FROM requests WHERE profile=? AND kind!='contact' ORDER BY created DESC LIMIT 500",
-          )
-          .bind(p.id)
-          .all()
-      : { results: [] };
-    const contacts = p
-      ? await db()
-          .prepare(
-            "SELECT id,name,phone,email,message,created,service AS sourceCardId FROM requests WHERE profile=? AND kind='contact' ORDER BY created DESC LIMIT 500",
-          )
-          .bind(p.id)
-          .all()
-      : { results: [] };
-    const orders = await db()
-      .prepare('SELECT * FROM orders WHERE owner=? ORDER BY created DESC LIMIT 100')
-      .bind(user.userId)
-      .all();
-    const notifications = p
-      ? await db()
-          .prepare(
-            'SELECT id,request_id,state,error,created FROM notifications WHERE profile=? ORDER BY created DESC LIMIT 100',
-          )
-          .bind(p.id)
-          .all()
-      : { results: [] };
+    const histories = ['requests', 'contacts', 'orders'] as const;
+    const pages = await Promise.all(
+      histories.map((kind) => readHistory(db(), user.userId, p?.id, kind)),
+    );
+    const [inbox, contacts, orders] = pages;
+    const notifications = await requestNotifications(db(), p?.id, inbox.items as { id: string }[]);
     return json({
       profile: p,
-      requests: inbox.results,
-      contacts: contacts.results,
-      notifications: notifications.results,
+      requests: inbox.items,
+      contacts: contacts.items,
+      notifications,
       mailConfigured: mailReady(env as any),
-      orders: orders.results,
+      orders: orders.items,
+      pages: Object.fromEntries(
+        histories.map((kind, i) => [kind, { nextCursor: pages[i].nextCursor }]),
+      ),
       user: user.displayName,
       email: user.email,
       admin,

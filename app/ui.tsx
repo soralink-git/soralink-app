@@ -1,5 +1,6 @@
 'use client';
-import { selectedPlan, workspacePath, offerLabel } from './lib/journey-links';
+import { appendUnique, type History, type PageInfo } from './lib/pagination';
+import { selectedPlan, workspacePath, offerLabel, languagePath } from './lib/journey-links';
 import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { X, Calendar, Check, Globe, Users, RotateCcw } from 'lucide-react';
@@ -619,6 +620,7 @@ export default function App({
   function toggleLanguage() {
     const nextAr = !ar;
     setAr(nextAr);
+    history.replaceState(null, '', languagePath(location.href, nextAr));
     setData((d: any) => ({ ...d, defaultLanguage: nextAr ? 'ar' : 'fr' }));
   }
   useEffect(() => {
@@ -660,7 +662,38 @@ export default function App({
   useEffect(() => {
     if (id) QRCode.toDataURL(location.origin + '/c/' + id, { width: 240, margin: 2 }).then(setQr);
   }, [id]);
+  const [historyPages, setHistoryPages] = useState<Partial<Record<History, PageInfo>>>({});
+  const [historyBusy, setHistoryBusy] = useState(false);
+  const historyEpoch = useRef(0);
+  const historyLock = useRef(false);
+  async function loadMoreHistory(kind: History) {
+    const cursor = historyPages[kind]?.nextCursor;
+    if (!cursor || historyLock.current || busy) return;
+    const epoch = historyEpoch.current;
+    historyLock.current = true;
+    setHistoryBusy(true);
+    try {
+      const query = new URLSearchParams({ history: kind, cursor });
+      const response = await fetch('/api/data?' + query);
+      const page: any = await response.json();
+      if (epoch !== historyEpoch.current) return;
+      if (!response.ok)
+        throw new Error(t('Chargement impossible. Réessayez.', 'ما تحمّلاتش اللائحة. عاود جرّب.'));
+      if (kind === 'requests') {
+        setInbox((items) => appendUnique(items, page.items));
+        setNotifications((items) => appendUnique(items, page.notifications || []));
+      } else if (kind === 'contacts') setContacts((items) => appendUnique(items, page.items));
+      else setOrders((items) => appendUnique(items, page.items));
+      setHistoryPages((pages) => ({ ...pages, [kind]: { nextCursor: page.nextCursor } }));
+    } catch (error: any) {
+      if (epoch === historyEpoch.current) setMsg(error.message);
+    } finally {
+      historyLock.current = false;
+      setHistoryBusy(false);
+    }
+  }
   async function load(authMode = 'login') {
+    historyEpoch.current++;
     authEpoch.current++;
     setBusy(true);
     setAuthLoading(true);
@@ -705,6 +738,7 @@ export default function App({
           setId(b.profile.id);
           setPublished(!!b.profile.published);
         }
+        setHistoryPages(b.pages || {});
         setInbox(b.requests);
         setContacts(b.contacts || []);
         setNotifications(b.notifications || []);
@@ -1113,7 +1147,7 @@ export default function App({
     >
       {view !== 'public' && view !== 'demo' && (
         <header>
-          <a className="brand" dir="ltr" href="/">
+          <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
             <span className="brand-icon">
               <svg width="25" height="25" viewBox="0 0 64 64" fill="none" aria-hidden="true">
                 <path
@@ -1134,7 +1168,7 @@ export default function App({
                 ['exemples', 'Exemples', 'أمثلة'],
                 ['faq', 'FAQ', 'أسئلة'],
               ].map(([anchor, f, a]) => (
-                <a href={(view === 'home' ? '' : '/') + '#' + anchor} key={anchor}>
+                <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#' + anchor} key={anchor}>
                   {t(f, a)}
                 </a>
               ))}
@@ -1151,7 +1185,7 @@ export default function App({
               </span>
             ) : auth ? (
               <>
-                <a className="header-login" href="/?app=1">
+                <a className="header-login" href={workspacePath(ar)}>
                   {t('Mon espace', 'الحساب ديالي')}
                 </a>
                 <details className="account-menu">
@@ -1165,7 +1199,7 @@ export default function App({
                     <span dir="ltr" className="account-email">
                       {accountEmail || t('Votre compte', 'الحساب ديالك')}
                     </span>
-                    <a href="/?app=1">{t('Ouvrir mon espace', 'حل الحساب ديالي')}</a>
+                    <a href={workspacePath(ar)}>{t('Ouvrir mon espace', 'حل الحساب ديالي')}</a>
                     <button disabled={busy} onClick={logout}>
                       {t('Se déconnecter', 'خرج من الحساب')}
                     </button>
@@ -1407,6 +1441,9 @@ export default function App({
               field,
               id,
               inbox,
+              historyPages,
+              historyBusy,
+              loadMoreHistory,
               load,
               loaded,
               logout,
@@ -1749,11 +1786,11 @@ export default function App({
       {view === 'public' || view === 'demo' ? null : (
         <footer className="site-footer">
           <div>
-            <a className="brand" dir="ltr" href="/">
+            <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
               Sora<span>Link</span>
             </a>
             <p>{t('Votre activité, à portée de main.', 'النشاط ديالك، قريب ليك.')}</p>
-            <span>Oujda · Maroc</span>
+            <span>{t('Oujda · Maroc', 'وجدة · المغرب')}</span>
           </div>
           <div className="footer-contact">
             <strong>{t('Parlons de votre carte', 'نهضرو على الكارط ديالك')}</strong>
@@ -1769,9 +1806,15 @@ export default function App({
             </a>
           </div>
           <div className="footer-links">
-            <a href="/conditions">{t('Conditions de service · pilote', 'شروط الخدمة · تجريبية')}</a>
-            <a href="/confidentialite">{t('Confidentialité', 'الخصوصية')}</a>
-            <a href="/#tarifs">{t('Offres et renouvellement', 'العروض والتجديد')}</a>
+            <a href={'/conditions?lang=' + (ar ? 'ar' : 'fr')}>
+              {t('Conditions de service · pilote', 'شروط الخدمة · تجريبية')}
+            </a>
+            <a href={'/confidentialite?lang=' + (ar ? 'ar' : 'fr')}>
+              {t('Confidentialité', 'الخصوصية')}
+            </a>
+            <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#tarifs'}>
+              {t('Offres et renouvellement', 'العروض والتجديد')}
+            </a>
             {!cardId && <Pwa ar={ar} />}
           </div>
         </footer>
