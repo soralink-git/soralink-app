@@ -35,12 +35,7 @@ export async function identity() {
 }
 export const json = (v: unknown, s = 200) =>
   Response.json(v, { status: s, headers: { 'Cache-Control': 'no-store' } });
-export function active(p: any) {
-  return (
-    p.state !== 'suspended' &&
-    (!p.expires || new Date(p.expires).getTime() + 15 * 86400000 > Date.now())
-  );
-}
+export { active } from './subscription';
 export async function log(actor: string, action: string, target: string) {
   await db()
     .prepare('INSERT INTO audit(id,actor,action,target,created) VALUES(?,?,?,?,?)')

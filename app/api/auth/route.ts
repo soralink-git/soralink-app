@@ -1,5 +1,6 @@
 import { authActionSchema, readValidatedJSON, inputErrorResponse } from '../../lib/api-validation';
 import { authFailure } from '../../lib/auth-errors';
+import { workspacePath } from '../../lib/journey-links';
 import { authClient } from '../../lib/supabase';
 import { json, identity } from '../../lib/server';
 import { cookies } from 'next/headers';
@@ -44,6 +45,9 @@ export async function POST(req: Request) {
     }
     const s = await authClient();
     const base = new URL(req.url).origin;
+    const callback = new URL('/auth/callback', base);
+    callback.searchParams.set('lang', b.lang);
+    if (b.offer) callback.searchParams.set('offer', b.offer);
     if (b.action === 'logout') {
       (await cookies()).delete('soratap_legacy');
       const { error } = await s.auth.signOut({ scope: 'local' });
@@ -56,41 +60,48 @@ export async function POST(req: Request) {
         return json({ error: 'Ouvrez le lien de récupération reçu par e-mail.' }, 401);
       const { error } = await s.auth.updateUser({ password: b.password });
       if (error) return failed(error, b.action);
-      return json({ ok: true, message: 'Mot de passe mis à jour.' });
+      return json({
+        ok: true,
+        message: 'Mot de passe mis à jour.',
+        messageAr: 'تبدلات كلمة السر.',
+      });
     }
     const email = b.email;
     if (b.action === 'reset') {
       const { error } = await s.auth.resetPasswordForEmail(email, {
-        redirectTo: base + '/auth/callback?next=reset',
+        redirectTo: callback.href + '&next=reset',
       });
       if (error) return failed(error, b.action);
       return json({
         ok: true,
         message: 'Si un compte existe à cette adresse, vous recevrez un lien de récupération.',
+        messageAr: 'إلا كان حساب بهاد الإيميل غادي تتوصل برابط باش تبدّل كلمة السر.',
       });
     }
     if (b.action === 'resend') {
       const { error } = await s.auth.resend({
         type: 'signup',
         email,
-        options: { emailRedirectTo: base + '/auth/callback' },
+        options: { emailRedirectTo: callback.href },
       });
       if (error) return failed(error, b.action);
       return json({
         ok: true,
         message: 'Si une confirmation est en attente, un nouvel e-mail sera envoyé.',
+        messageAr: 'إلا كان التأكيد باقي معلّق غادي يتسيفط إيميل جديد.',
       });
     }
     if (b.action === 'signup') {
       const { error } = await s.auth.signUp({
         email,
         password: b.password,
-        options: { emailRedirectTo: base + '/auth/callback' },
+        options: { emailRedirectTo: callback.href },
       });
       if (error) return failed(error, b.action);
       return json({
         ok: true,
         message: 'Vérifiez votre boîte e-mail pour confirmer votre inscription.',
+        messageAr: 'شوف الإيميل ديالك باش تأكّد التسجيل.',
       });
     }
     if (b.action === 'login') {
@@ -101,7 +112,7 @@ export async function POST(req: Request) {
         return json({ error: 'Confirmez votre e-mail avant de vous connecter.' }, 403);
       }
       (await cookies()).delete('soratap_legacy');
-      return json({ ok: true, redirect: '/?app=1' });
+      return json({ ok: true, redirect: workspacePath(b.lang === 'ar', b.offer) });
     }
     return json({ error: 'Action inconnue' }, 400);
   } catch (error) {

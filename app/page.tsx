@@ -1,4 +1,5 @@
 import App from './ui';
+import { selectedPlan } from './lib/journey-links';
 export default async function Page({
   searchParams,
 }: {
@@ -8,6 +9,8 @@ export default async function Page({
   const initialTab = typeof params.tab === 'string' ? params.tab : undefined;
   return (
     <App
+      initialArabic={params.lang === 'ar'}
+      initialOffer={selectedPlan(params.offer)}
       workspaceMode={params.app !== undefined || params.tab !== undefined}
       initialTab={initialTab}
     />

@@ -197,6 +197,7 @@ export async function POST(req: Request) {
       const request = {
         id,
         kind: b.kind,
+        language: b.language,
         name: b.name.slice(0, 120),
         phone: b.phone.slice(0, 40),
         slot: b.kind === 'rdv' ? b.slot : null,
@@ -206,7 +207,7 @@ export async function POST(req: Request) {
       await db().batch([
         db()
           .prepare(
-            'INSERT INTO requests(id,profile,kind,name,phone,message,slot,email,service,duration,status,created) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+            'INSERT INTO requests(id,profile,kind,name,phone,message,slot,email,service,duration,status,created,language) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
           )
           .bind(
             id,
@@ -221,6 +222,7 @@ export async function POST(req: Request) {
             duration,
             b.kind === 'contact' ? 'shared' : 'new',
             new Date().toISOString(),
+            b.language,
           ),
         ...(b.kind === 'contact' ? [] : mailStatement(env as any, p, request, 'new')),
       ]);
@@ -242,6 +244,23 @@ export async function POST(req: Request) {
         .prepare('SELECT * FROM profiles WHERE owner=?')
         .bind(user.userId)
         .first();
+      if (b.revision !== (p?.updated || null))
+        return json(
+          {
+            error: 'Votre carte a changé. Rechargez-la avant d’enregistrer.',
+            errorAr: 'الكارط تبدلات. عاود حمّلها قبل ما تسجّل.',
+          },
+          409,
+        );
+      if (b.published && p && !active(p))
+        return json(
+          {
+            error: 'Renouvelez votre abonnement avant de publier.',
+            errorAr: 'جدّد الاشتراك قبل ما تنشر الكارط.',
+          },
+          403,
+        );
+      const stamp = new Date(Math.max(Date.now(), (Date.parse(p?.updated) || 0) + 1)).toISOString();
       const id = p?.id || crypto.randomUUID();
       let d = b.data;
       d = normalizeAppearance(normalizeSchedule(d));
@@ -259,10 +278,10 @@ export async function POST(req: Request) {
           },
           409,
         );
-      if (!(await saveProfileWithMedia(user.userId, p, id, d, !!b.published, user.email)))
+      if (!(await saveProfileWithMedia(user.userId, p, id, d, !!b.published, user.email, stamp)))
         return json({ error: 'Votre carte a changé. Actualisez avant d’enregistrer.' }, 409);
       const cleaned = await cleanupMedia(user.userId);
-      return json({ ok: true, id, cleanupPending: !cleaned });
+      return json({ ok: true, id, revision: stamp, cleanupPending: !cleaned });
     }
     if (b.action === 'manual') {
       const p: any = await db()
@@ -292,7 +311,7 @@ export async function POST(req: Request) {
         await db().batch([
           db()
             .prepare(
-              'INSERT INTO requests(id,profile,kind,name,phone,message,slot,email,service,duration,status,created) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)',
+              'INSERT INTO requests(id,profile,kind,name,phone,message,slot,email,service,duration,status,created,language) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',
             )
             .bind(
               id,
@@ -307,6 +326,7 @@ export async function POST(req: Request) {
               service.duration,
               'confirmed',
               new Date().toISOString(),
+              d.defaultLanguage === 'ar' ? 'ar' : 'fr',
             ),
           ...blocks(b.slot, service.duration).map((slot, i) =>
             db()
@@ -322,6 +342,7 @@ export async function POST(req: Request) {
               phone: b.phone,
               email: b.email,
               kind: 'rdv',
+              language: d.defaultLanguage === 'ar' ? 'ar' : 'fr',
               slot: b.slot,
               service: service.name,
             },

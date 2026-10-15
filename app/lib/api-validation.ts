@@ -155,6 +155,7 @@ const requestObject = z.object({
   action: z.literal('request'),
   profile: id,
   kind: z.enum(['devis', 'commande', 'rdv', 'contact']),
+  language: z.enum(['fr', 'ar']).default('fr'),
   name: formText(120),
   phone: formText(40),
   email,
@@ -189,6 +190,7 @@ export const dataActionSchema = z
     requestObject,
     z.object({
       action: z.literal('save'),
+      revision: z.string().max(64).nullable(),
       data: profileDataSchema,
       published: z.boolean().default(false),
     }),
@@ -249,15 +251,26 @@ const authEmail = z
   .max(254)
   .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Renseignez une adresse e-mail valide.');
 const password = z.string().min(10).max(128);
-export const authActionSchema = z.discriminatedUnion('action', [
-  z.object({ action: z.literal('login'), email: authEmail, password: z.string().min(1).max(128) }),
-  z.object({ action: z.literal('signup'), email: authEmail, password }),
-  z.object({ action: z.literal('password'), password }),
-  z.object({ action: z.literal('reset'), email: authEmail }),
-  z.object({ action: z.literal('resend'), email: authEmail }),
-  z.object({ action: z.literal('logout') }),
-  z.object({ action: z.literal('legacy') }),
-]);
+export const authActionSchema = z
+  .discriminatedUnion('action', [
+    z.object({
+      action: z.literal('login'),
+      email: authEmail,
+      password: z.string().min(1).max(128),
+    }),
+    z.object({ action: z.literal('signup'), email: authEmail, password }),
+    z.object({ action: z.literal('password'), password }),
+    z.object({ action: z.literal('reset'), email: authEmail }),
+    z.object({ action: z.literal('resend'), email: authEmail }),
+    z.object({ action: z.literal('logout') }),
+    z.object({ action: z.literal('legacy') }),
+  ])
+  .and(
+    z.object({
+      lang: z.enum(['fr', 'ar']).default('fr'),
+      offer: z.enum(['Digital', 'Pack', 'Accompagnement', 'Pro']).optional(),
+    }),
+  );
 export const dataQuerySchema = z.object({ id: id.optional(), exchange: z.literal('1').optional() });
 export const availabilityQuerySchema = z.object({ id, date: calendarDate, service: serviceIndex });
 export const uploadQuerySchema = z

@@ -34,40 +34,53 @@ export function mailStatement(
   if (!mailReady(e) || !validEmail(recipient)) return [];
   const d = JSON.parse(p.data);
   const professional = String(d.business || d.name || 'Votre professionnel').slice(0, 120);
-  const slot = r.slot ? String(r.slot).replace('T', ' à ') + ' (heure du Maroc)' : '';
+  const ar =
+    event === 'new' ? d.defaultLanguage === 'ar' : (r.language || d.defaultLanguage) === 'ar';
+  const t = (fr: string, darija: string) => (ar ? darija : fr);
+  const kind = ar
+    ? ({ devis: 'طلب الثمن', commande: 'طلب', rdv: 'موعد' } as Record<string, string>)[r.kind] ||
+      'طلب'
+    : label(r.kind);
+  const slot = r.slot
+    ? String(r.slot).replace('T', t(' à ', ' مع ')) + t(' (heure du Maroc)', ' (بتوقيت المغرب)')
+    : '';
   const intro =
     event === 'new'
-      ? 'Une nouvelle demande de ' + label(r.kind) + ' vous attend.'
+      ? t(
+          'Une nouvelle demande de ' + kind + ' vous attend.',
+          'توصّلتي بـ' + kind + ' جديد. دخل للحساب ديالك باش تشوفو.',
+        )
       : event === 'confirmed'
-        ? 'Votre rendez-vous est confirmé.'
-        : 'Votre rendez-vous est annulé.';
+        ? t('Votre rendez-vous est confirmé.', 'الموعد ديالك تأكد.')
+        : t('Votre rendez-vous est annulé.', 'الموعد ديالك تلغى.');
   const subject =
     event === 'new'
-      ? 'SoraLink — Nouvelle demande de ' + label(r.kind)
-      : 'SoraLink — Rendez-vous ' + (event === 'confirmed' ? 'confirmé' : 'annulé');
-  const darija =
-    event === 'new'
-      ? 'توصّلتي بطلب جديد. دخل للحساب ديالك باش تشوفو.'
+      ? t('SoraLink - Nouvelle demande de ' + kind, 'SoraLink - ' + kind + ' جديد')
       : event === 'confirmed'
-        ? 'الموعد ديالك تأكد.'
-        : 'الموعد ديالك تلغى.';
+        ? t('SoraLink - Rendez-vous confirmé', 'SoraLink - تأكيد الموعد')
+        : t('SoraLink - Rendez-vous annulé', 'SoraLink - إلغاء الموعد');
   const body = [
     intro,
-    darija,
     '',
     professional,
-    event === 'new' ? 'Client : ' + r.name : 'Bonjour ' + r.name + ',',
-    r.service ? 'Prestation : ' + r.service : '',
+    event === 'new'
+      ? t('Client : ', 'الزبون: ') + r.name
+      : t('Bonjour ', 'السلام عليكم ') + r.name + ',',
+    r.service ? t('Prestation : ', 'الخدمة: ') + r.service : '',
     slot,
-    event === 'new' ? 'Téléphone : ' + r.phone : '',
+    event === 'new' ? t('Téléphone : ', 'التلفون: ') + r.phone : '',
     '',
     event === 'new'
-      ? 'Consultez et traitez cette demande dans votre espace : ' +
-        new URL('/?app=1', e.PUBLIC_SITE_URL).href
-      : 'Pour toute question, contactez votre professionnel via sa carte : ' +
-        new URL('/c/' + p.id, e.PUBLIC_SITE_URL).href,
+      ? t(
+          'Consultez et traitez cette demande dans votre espace : ',
+          'شوف وعالج هاد الطلب فالحساب ديالك: ',
+        ) + new URL('/?app=1&lang=' + (ar ? 'ar' : 'fr'), e.PUBLIC_SITE_URL).href
+      : t(
+          'Pour toute question, contactez votre professionnel via sa carte : ',
+          'إلى عندك شي سؤال تواصل مع المهني من الكارط ديالو: ',
+        ) + new URL('/c/' + p.id + '?lang=' + (ar ? 'ar' : 'fr'), e.PUBLIC_SITE_URL).href,
     '',
-    'SoraLink · سورالينك',
+    'SoraLink',
   ]
     .filter(Boolean)
     .join('\n');

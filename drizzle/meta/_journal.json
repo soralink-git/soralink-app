@@ -36,6 +36,13 @@
       "when": 1791843776488,
       "tag": "0004_profile_media",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1792071038888,
+      "tag": "0005_audit_hardening",
+      "breakpoints": true
     }
   ]
 }

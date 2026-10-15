@@ -55,7 +55,7 @@ export function whatsappNotification(r: Request, business: string, ar = false): 
   if (r.slot)
     lines.push(
       (ar ? 'الموعد: ' : 'Date : ') +
-        r.slot.replace('T', ' à ') +
+        r.slot.replace('T', ar ? ' مع ' : ' à ') +
         (ar ? ' (بتوقيت المغرب)' : ' (heure du Maroc)'),
     );
   lines.push(business || 'SoraLink');

@@ -15,6 +15,7 @@ function load(file, dependencies = {}) {
       exports: module.exports,
       Date,
       URL,
+      URLSearchParams,
       Response,
       Request,
       AbortSignal,
@@ -45,6 +46,7 @@ test('verified identity never queries or transfers profiles by email, including 
       },
       'next/headers': { cookies: async () => ({ get() {} }) },
       '../chatgpt-auth': { getChatGPTUser: async () => null },
+      './subscription': load('app/lib/subscription.ts'),
       './supabase': {
         authClient: async () => ({
           auth: {
@@ -228,4 +230,37 @@ test('scheduled worker drains the queue without a site request', async () => {
   }).default;
   await worker.scheduled({}, { DB: 'shared-db' });
   assert.equal(calls, 1);
+});
+
+test('notification text uses the professional language for new requests and visitor language for confirmations', () => {
+  const f = fixture();
+  let params;
+  f.env.DB = {
+    prepare: () => ({
+      bind: (...values) => {
+        params = values;
+        return {};
+      },
+    }),
+  };
+  const profile = {
+    id: 'card',
+    email: 'owner@example.test',
+    data: JSON.stringify({ name: 'SoraLink', defaultLanguage: 'ar' }),
+  };
+  const request = {
+    id: 'request',
+    name: 'Test',
+    email: 'visitor@example.test',
+    phone: '0660000000',
+    kind: 'rdv',
+    language: 'fr',
+  };
+  notifications.mailStatement(f.env, profile, request, 'new');
+  assert.match(params[5], /توصّلتي/);
+  assert.doesNotMatch(params[5], /Client :|Téléphone/);
+  notifications.mailStatement(f.env, profile, request, 'confirmed');
+  assert.match(params[5], /Votre rendez-vous est confirmé/);
+  assert.doesNotMatch(params[5], /الموعد/);
+  f.sqlite.close();
 });

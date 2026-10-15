@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cataloguePrice } from './lib/catalogue';
 import { defaults, moroccoNow } from './lib/schedule';
@@ -21,6 +21,7 @@ export default function PublicRequestModal({
   onMessage: (message: string) => void;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr);
+  const dialog = useRef<HTMLDivElement>(null);
   const [formError, setFormError] = useState('');
   const [busy, setBusy] = useState(false),
     [date, setDate] = useState(moroccoNow().slice(0, 10)),
@@ -30,6 +31,49 @@ export default function PublicRequestModal({
   const [myContactCard, setMyContactCard] = useState<any>(null),
     [useMyCard, setUseMyCard] = useState(false),
     [cardCheck, setCardCheck] = useState('');
+  useEffect(() => {
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    dialog.current?.focus();
+    return () => {
+      document.body.style.overflow = overflow;
+      previous?.focus();
+    };
+  }, []);
+  function keyboard(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key === 'Escape' && !busy) {
+      e.preventDefault();
+      onClose();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const nodes = Array.from(
+      dialog.current?.querySelectorAll<HTMLElement>(
+        'button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),a[href],[tabindex="0"]',
+      ) || [],
+    ).filter((node) => node.tabIndex >= 0 && node.getClientRects().length > 0);
+    if (!nodes.length) {
+      e.preventDefault();
+      dialog.current?.focus();
+      return;
+    }
+    const first = nodes[0],
+      last = nodes[nodes.length - 1];
+    if (
+      e.shiftKey &&
+      (document.activeElement === first || document.activeElement === dialog.current)
+    ) {
+      e.preventDefault();
+      last.focus();
+    } else if (
+      !e.shiftKey &&
+      (document.activeElement === last || document.activeElement === dialog.current)
+    ) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
   async function action(body: any) {
     setBusy(true);
     try {
@@ -42,7 +86,7 @@ export default function PublicRequestModal({
         error?: string;
         errorAr?: string;
       };
-      if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || 'ما قدرناش نكمّلو الطلب. عاود جرّب.' : b.error);
       return b;
     } finally {
       setBusy(false);
@@ -83,7 +127,8 @@ export default function PublicRequestModal({
     })
       .then(async (r) => {
         const b: any = await r.json();
-        if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
+        if (!r.ok)
+          throw new Error(ar ? b.errorAr || 'ما قدرناش نكمّلو الطلب. عاود جرّب.' : b.error);
         setSlots(b.slots);
       })
       .catch((e) => {
@@ -99,10 +144,20 @@ export default function PublicRequestModal({
   }, [modal, id, date, serviceIndex]);
   return (
     <div className="modal-backdrop">
-      <div className="modal" role="dialog" aria-modal="true" aria-label="Demande">
+      <div
+        ref={dialog}
+        tabIndex={-1}
+        onKeyDown={keyboard}
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('Demande', 'الطلب')}
+        dir={ar ? 'rtl' : 'ltr'}
+      >
         <button
           className="close"
-          aria-label="Fermer"
+          aria-label={t('Fermer', 'سدّ')}
+          disabled={busy}
           onClick={() => {
             onClose();
           }}
@@ -136,6 +191,7 @@ export default function PublicRequestModal({
                 action: 'request',
                 profile: id,
                 kind: modal,
+                language: ar ? 'ar' : 'fr',
                 name: f.get('name'),
                 phone: f.get('phone'),
                 message: f.get('message'),

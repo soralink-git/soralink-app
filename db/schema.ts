@@ -18,28 +18,40 @@ export const profiles = sqliteTable('profiles', {
   expires: text('expires'),
   proEnabled: integer('pro_enabled').notNull().default(0),
 });
-export const requests = sqliteTable('requests', {
-  id: text('id').primaryKey(),
-  profile: text('profile').notNull(),
-  kind: text('kind').notNull(),
-  name: text('name').notNull(),
-  phone: text('phone').notNull(),
-  message: text('message').notNull(),
-  slot: text('slot'),
-  email: text('email').notNull().default(''),
-  service: text('service').notNull().default(''),
-  duration: integer('duration').notNull().default(30),
-  notificationRevision: integer('notification_revision').notNull().default(0),
-  status: text('status').notNull().default('new'),
-  created: text('created').notNull(),
-});
-export const orders = sqliteTable('orders', {
-  id: text('id').primaryKey(),
-  owner: text('owner').notNull(),
-  plan: text('plan').notNull(),
-  status: text('status').notNull().default('pending'),
-  created: text('created').notNull(),
-});
+export const requests = sqliteTable(
+  'requests',
+  {
+    id: text('id').primaryKey(),
+    profile: text('profile').notNull(),
+    kind: text('kind').notNull(),
+    language: text('language').notNull().default('fr'),
+    name: text('name').notNull(),
+    phone: text('phone').notNull(),
+    message: text('message').notNull(),
+    slot: text('slot'),
+    email: text('email').notNull().default(''),
+    service: text('service').notNull().default(''),
+    duration: integer('duration').notNull().default(30),
+    notificationRevision: integer('notification_revision').notNull().default(0),
+    status: text('status').notNull().default('new'),
+    created: text('created').notNull(),
+  },
+  (t) => [
+    index('requests_profile_created').on(t.profile, t.created),
+    index('requests_profile_phone_created').on(t.profile, t.phone, t.created),
+  ],
+);
+export const orders = sqliteTable(
+  'orders',
+  {
+    id: text('id').primaryKey(),
+    owner: text('owner').notNull(),
+    plan: text('plan').notNull(),
+    status: text('status').notNull().default('pending'),
+    created: text('created').notNull(),
+  },
+  (t) => [index('orders_owner_created').on(t.owner, t.created)],
+);
 export const bookings = sqliteTable(
   'bookings',
   { id: text('id').primaryKey(), profile: text('profile').notNull(), slot: text('slot').notNull() },

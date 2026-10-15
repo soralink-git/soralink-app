@@ -30,6 +30,7 @@ function load(f) {
       },
       Date,
       URL,
+      URLSearchParams,
       Intl,
       setTimeout,
       clearTimeout,

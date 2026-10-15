@@ -24,7 +24,7 @@ before(async () => {
   db = await mf.getD1Database('DB');
   await db.batch([
     db.prepare(
-      "CREATE TABLE profiles(id TEXT PRIMARY KEY,owner TEXT NOT NULL UNIQUE,data TEXT NOT NULL,published INTEGER NOT NULL DEFAULT 0,updated TEXT NOT NULL,email TEXT NOT NULL DEFAULT '')",
+      "CREATE TABLE profiles(id TEXT PRIMARY KEY,owner TEXT NOT NULL UNIQUE,data TEXT NOT NULL,published INTEGER NOT NULL DEFAULT 0,updated TEXT NOT NULL,email TEXT NOT NULL DEFAULT '',expires TEXT)",
     ),
     db.prepare(
       'CREATE TABLE media_assets(key TEXT PRIMARY KEY,owner TEXT NOT NULL,bytes INTEGER NOT NULL,state TEXT NOT NULL,created TEXT NOT NULL)',
@@ -43,6 +43,7 @@ before(async () => {
       Date,
       Set,
       require: (name) => {
+        if (name === './subscription') return { trialExpiry: () => '2026-12-31T00:00:00Z' };
         if (name === './server') return { db: () => db };
         if (name === 'cloudflare:workers')
           return {
@@ -77,7 +78,7 @@ async function asset(key, owner = 'owner', state = 'ready', created = '2020-01-0
 }
 async function profile(id = 'card', owner = 'owner', data = {}) {
   await db
-    .prepare('INSERT INTO profiles VALUES(?,?,?,?,?,?)')
+    .prepare('INSERT INTO profiles(id,owner,data,published,updated,email) VALUES(?,?,?,?,?,?)')
     .bind(id, owner, JSON.stringify(data), 1, 'old', 'test@example.test')
     .run();
   return db.prepare('SELECT * FROM profiles WHERE id=?').bind(id).first();

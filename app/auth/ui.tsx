@@ -1,14 +1,17 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { workspacePath, selectedPlan, offerLabel } from '../lib/journey-links';
 import { Nfc, Globe, Mail, Lock, Eye, EyeOff, CheckCircle, ArrowLeft } from 'lucide-react';
 export default function Auth({
   reset = false,
   initialMode = 'login',
   initialArabic = false,
+  initialOffer,
 }: {
   reset?: boolean;
   initialMode?: 'signup' | 'login';
   initialArabic?: boolean;
+  initialOffer?: string;
 }) {
   const [ar, setAr] = useState(initialArabic),
     [mode, setMode] = useState(reset ? 'password' : initialMode),
@@ -16,13 +19,30 @@ export default function Auth({
     [message, setMessage] = useState(''),
     [error, setError] = useState(''),
     [visible, setVisible] = useState(false);
+  const offer = selectedPlan(initialOffer);
   const t = (f: string, a: string) => (ar ? a : f);
+  useEffect(() => {
+    document.documentElement.lang = ar ? 'ar' : 'fr';
+    document.documentElement.dir = ar ? 'rtl' : 'ltr';
+  }, [ar]);
+  function toggleLanguage() {
+    const next = !ar;
+    setAr(next);
+    const url = new URL(location.href);
+    url.searchParams.set('lang', next ? 'ar' : 'fr');
+    history.replaceState(null, '', url.pathname + url.search);
+    setMessage('');
+    setError('');
+  }
   useEffect(() => {
     if (!reset && new URLSearchParams(location.search).get('mode') === 'signup') setMode('signup');
     if (new URLSearchParams(location.search).get('lang') === 'ar') setAr(true);
     if (new URLSearchParams(location.search).has('error'))
       setError(
-        'Lien expiré ou ouvert dans un autre navigateur. Demandez un nouveau lien et ouvrez-le dans ce navigateur.',
+        t(
+          'Lien expiré ou ouvert dans un autre navigateur. Demandez un nouveau lien et ouvrez-le dans ce navigateur.',
+          'الرابط سالات المدة ديالو ولا تحل فمتصفح آخر. طلب رابط جديد وحلّو فنفس المتصفح.',
+        ),
       );
   }, []);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -40,16 +60,22 @@ export default function Auth({
       const r = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: mode, email: f.get('email'), password }),
+        body: JSON.stringify({
+          action: mode,
+          email: f.get('email'),
+          password,
+          lang: ar ? 'ar' : 'fr',
+          offer,
+        }),
       });
       const b: any = await r.json();
-      if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
       if (b.redirect) {
         location.assign(b.redirect);
         return;
       }
-      setMessage(b.message);
-      if (mode === 'password') setTimeout(() => location.assign('/?app=1'), 1200);
+      setMessage(ar ? b.messageAr || 'تمّ الطلب.' : b.message);
+      if (mode === 'password') setTimeout(() => location.assign(workspacePath(ar, offer)), 1200);
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -74,7 +100,7 @@ export default function Auth({
           </span>
           Sora<span>Link</span>
         </a>
-        <button className="language" onClick={() => setAr(!ar)}>
+        <button className="language" onClick={toggleLanguage}>
           <Globe size={17} />
           {ar ? 'Français' : 'العربية'}
         </button>
@@ -151,6 +177,12 @@ export default function Auth({
               </p>
             </div>
           )}
+          {offer && (
+            <p className="hint">
+              {t('Offre choisie : ', 'العرض اللي اخترتي: ')}
+              <strong>{offerLabel(offer, ar)}</strong>
+            </p>
+          )}
           <form key={mode} onSubmit={submit}>
             {mode !== 'password' && (
               <label className="field">
@@ -181,7 +213,11 @@ export default function Auth({
                     <button
                       type="button"
                       onClick={() => setVisible(!visible)}
-                      aria-label={visible ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+                      aria-label={
+                        visible
+                          ? t('Masquer le mot de passe', 'خبّي كلمة السر')
+                          : t('Afficher le mot de passe', 'بيّن كلمة السر')
+                      }
                     >
                       {visible ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -244,24 +280,15 @@ export default function Auth({
               'المعلومات الخاصة والطلبات ديالك كيبقاو فالحساب ديالك.',
             )}
           </p>
-          <details>
-            <summary>
-              {t('Vous aviez déjà une carte avec ChatGPT ?', 'عندك كارط بحساب ChatGPT؟')}
-            </summary>
-            <p className="hint">
-              {t(
-                'Connectez-vous à votre ancien espace pour enregistrer votre e-mail. Créez ensuite un compte avec la même adresse vérifiée pour retrouver votre carte.',
-                'دخل للحساب القديم باش يتسجّل الإيميل، ومن بعد صايب الحساب بنفس الإيميل المؤكد باش تلقى الكارط.',
-              )}
-            </p>
-            <a
-              className="secondary small"
-              href="/signin-with-chatgpt?return_to=%2F%3Fapp%3D1%26legacy%3D1"
-              target="_top"
-            >
-              {t('Accéder à mon ancien compte', 'دخل للحساب القديم')}
+          <p className="hint">
+            {t(
+              'Vous aviez une ancienne carte ? Contactez l’assistance pour une récupération vérifiée.',
+              'كانت عندك كارط قديمة؟ تواصل مع المساعدة باش نتحققو ونرجعو ليك الولوج.',
+            )}{' '}
+            <a href="https://wa.me/212661446664" target="_blank" rel="noreferrer">
+              {t('Contacter l’assistance', 'تواصل مع المساعدة')}
             </a>
-          </details>
+          </p>
         </section>
       </main>
     </div>

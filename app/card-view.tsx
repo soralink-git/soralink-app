@@ -302,7 +302,7 @@ export default function CardView({
               href="/"
               aria-label={t('SoraLink — Accueil', 'SoraLink — الرئيسية')}
             >
-              By Soralink <Nfc size={16} />
+              {t('Par SoraLink', 'من SoraLink')} <Nfc size={16} />
             </a>
           </div>
         </div>
@@ -667,7 +667,7 @@ export default function CardView({
                   <div className="gallery">
                     {d.photos.map((url: string) => (
                       <a key={url} href={url} target="_blank" rel="noreferrer">
-                        <img src={url} alt="Réalisation" />
+                        <img src={url} alt={t('Réalisation', 'خدمة منجزة')} loading="lazy" />
                       </a>
                     ))}
                   </div>
@@ -677,7 +677,13 @@ export default function CardView({
               return (
                 <div className="panel" key={key}>
                   <h2>{sectionHeading(d, 'pdf', t('Catalogue', 'الكاتالوگ'))}</h2>
-                  <iframe className="pdf" title="Catalogue PDF" src={d.pdf} />
+                  <iframe
+                    className="pdf"
+                    title={t('Catalogue PDF', 'كاتالوگ PDF')}
+                    src={d.pdf}
+                    loading="lazy"
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
               );
             if (key === 'video' && (d.video || recordedVideoUrl(d.recordedVideo))) {
@@ -715,7 +721,8 @@ export default function CardView({
                   {/^[\w-]{11}$/.test(youtubeId) && (
                     <iframe
                       className="video"
-                      title="Vidéo YouTube"
+                      title={t('Vidéo YouTube', 'فيديو يوتيوب')}
+                      loading="lazy"
                       src={'https://www.youtube-nocookie.com/embed/' + youtubeId}
                       allowFullScreen
                     />
