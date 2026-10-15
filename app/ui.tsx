@@ -1,6 +1,12 @@
 'use client';
 import { appendUnique, type History, type PageInfo } from './lib/pagination';
-import { selectedPlan, workspacePath, offerLabel, languagePath } from './lib/journey-links';
+import {
+  selectedPlan,
+  workspacePath,
+  accountPath,
+  offerLabel,
+  languagePath,
+} from './lib/journey-links';
 import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { X, Calendar, Check, Globe, Users, RotateCcw } from 'lucide-react';
@@ -542,9 +548,10 @@ export default function App({
     try {
       const r = await fetch('/api/auth', { cache: 'no-store' });
       if (!r.ok) throw new Error();
-      const b = (await r.json()) as { authenticated?: boolean; email?: unknown };
+      const b = (await r.json()) as { authenticated?: boolean; email?: unknown; admin?: boolean };
       if (epoch !== authEpoch.current) return;
       setAuth(b.authenticated === true);
+      setCanAdmin(b.admin === true);
       setAccountEmail(b.authenticated === true && typeof b.email === 'string' ? b.email : '');
       setSessionChecked(true);
     } catch {
@@ -1185,8 +1192,8 @@ export default function App({
               </span>
             ) : auth ? (
               <>
-                <a className="header-login" href={workspacePath(ar)}>
-                  {t('Mon espace', 'الحساب ديالي')}
+                <a className="header-login" href={accountPath(canAdmin, ar)}>
+                  {canAdmin ? t('Administration', 'الإدارة') : t('Mon espace', 'الحساب ديالي')}
                 </a>
                 <details className="account-menu">
                   <summary aria-label={t('Compte connecté', 'الحساب اللي داخل')}>
@@ -1199,7 +1206,11 @@ export default function App({
                     <span dir="ltr" className="account-email">
                       {accountEmail || t('Votre compte', 'الحساب ديالك')}
                     </span>
-                    <a href={workspacePath(ar)}>{t('Ouvrir mon espace', 'حل الحساب ديالي')}</a>
+                    <a href={accountPath(canAdmin, ar)}>
+                      {canAdmin
+                        ? t('Ouvrir l’administration', 'حل الإدارة')
+                        : t('Ouvrir mon espace', 'حل الحساب ديالي')}
+                    </a>
                     <button disabled={busy} onClick={logout}>
                       {t('Se déconnecter', 'خرج من الحساب')}
                     </button>
@@ -1211,7 +1222,7 @@ export default function App({
                 {t('Connexion', 'الدخول')}
               </a>
             )}
-            {view === 'home' && (
+            {view === 'home' && !canAdmin && (
               <a
                 className="primary small header-start"
                 href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}

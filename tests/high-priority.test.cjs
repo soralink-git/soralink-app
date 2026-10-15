@@ -66,6 +66,49 @@ test('verified identity never queries or transfers profiles by email, including 
   }
 });
 const notifications = load('app/lib/notifications.ts');
+test('admin authority requires the verified configured account and never a card or editable metadata', async () => {
+  for (const [email, confirmed, expected] of [
+    ['ADMIN@example.test', true, true],
+    ['admin@example.test', false, false],
+    ['client@example.test', true, false],
+  ]) {
+    const server = load('app/lib/server.ts', {
+      'cloudflare:workers': {
+        env: {
+          SUPABASE_URL: 'https://example.test',
+          SUPABASE_PUBLISHABLE_KEY: 'test',
+          SORATAP_ADMIN_EMAIL: 'admin@example.test',
+          DB: {
+            prepare() {
+              throw Error('Admin identity must not depend on a card');
+            },
+          },
+        },
+      },
+      'next/headers': { cookies: async () => ({ get() {} }) },
+      '../chatgpt-auth': { getChatGPTUser: async () => null },
+      './subscription': load('app/lib/subscription.ts'),
+      './supabase': {
+        authClient: async () => ({
+          auth: {
+            getUser: async () => ({
+              data: {
+                user: {
+                  id: 'account',
+                  email,
+                  email_confirmed_at: confirmed ? '2026-01-01' : null,
+                  user_metadata: { admin: true },
+                },
+              },
+              error: null,
+            }),
+          },
+        }),
+      },
+    });
+    assert.equal((await server.identity()).admin, expected);
+  }
+});
 function fixture() {
   const sqlite = new DatabaseSync(':memory:');
   sqlite.exec('CREATE TABLE requests(id TEXT PRIMARY KEY)');

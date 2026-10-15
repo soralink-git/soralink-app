@@ -1,8 +1,8 @@
 import { authActionSchema, readValidatedJSON, inputErrorResponse } from '../../lib/api-validation';
 import { authFailure } from '../../lib/auth-errors';
-import { workspacePath } from '../../lib/journey-links';
+import { accountPath } from '../../lib/journey-links';
 import { authClient } from '../../lib/supabase';
-import { json, identity } from '../../lib/server';
+import { json, identity, isAdministrator } from '../../lib/server';
 import { cookies } from 'next/headers';
 import { getChatGPTUser } from '../../chatgpt-auth';
 function failed(error: any, action: string) {
@@ -20,8 +20,8 @@ function failed(error: any, action: string) {
 }
 export async function GET() {
   try {
-    const { user } = await identity();
-    return json({ authenticated: !!user, email: user?.email || null });
+    const { user, admin } = await identity();
+    return json({ authenticated: !!user, email: user?.email || null, admin });
   } catch {
     return json({ error: 'Vérification de session indisponible' }, 503);
   }
@@ -64,6 +64,7 @@ export async function POST(req: Request) {
         ok: true,
         message: 'Mot de passe mis à jour.',
         messageAr: 'تبدلات كلمة السر.',
+        redirect: accountPath(isAdministrator(data.user.email), b.lang === 'ar', b.offer),
       });
     }
     const email = b.email;
@@ -112,7 +113,10 @@ export async function POST(req: Request) {
         return json({ error: 'Confirmez votre e-mail avant de vous connecter.' }, 403);
       }
       (await cookies()).delete('soratap_legacy');
-      return json({ ok: true, redirect: workspacePath(b.lang === 'ar', b.offer) });
+      return json({
+        ok: true,
+        redirect: accountPath(isAdministrator(data.user.email), b.lang === 'ar', b.offer),
+      });
     }
     return json({ error: 'Action inconnue' }, 400);
   } catch (error) {

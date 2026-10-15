@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import LoadMore from '../load-more';
 import { appendUnique } from '../lib/pagination';
-import { offerLabel } from '../lib/journey-links';
+import { offerLabel, adminSignInPath } from '../lib/journey-links';
 import { Nfc, Users, Package, Clock, RefreshCw, Shield, Save, Globe } from 'lucide-react';
 const statuses: any = {
   pending: 'En attente / فانتظار الأداء',
@@ -110,6 +110,23 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
       setBusy(false);
     }
   }
+  async function logout() {
+    setBusy(true);
+    try {
+      const r = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' }),
+      });
+      if (!r.ok)
+        throw new Error(t('Déconnexion impossible. Réessayez.', 'ما تخرجش الحساب. عاود حاول.'));
+      location.assign(adminSignInPath(ar));
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  }
   return (
     <div className="site" dir={ar ? 'rtl' : 'ltr'}>
       <header>
@@ -135,9 +152,12 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
           <Shield size={14} />
           {t('ADMINISTRATION', 'الإدارة')}
         </span>
-        <a className="secondary small" href={'/?app=1&lang=' + (ar ? 'ar' : 'fr')}>
-          {t('Mon espace', 'الحساب ديالي')}
+        <a className="secondary small" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
+          {t('Accueil', 'الرئيسية')}
         </a>
+        <button className="secondary small" disabled={busy} onClick={logout}>
+          {t('Se déconnecter', 'خرج من الحساب')}
+        </button>
       </header>
       <main className="section">
         <span className="eyebrow">{t('SORALINK / GESTION', 'SoraLink / التسيير')}</span>
@@ -150,8 +170,8 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
         </div>
         <p className="muted">
           {t(
-            'Accès réservé à l’administrateur · paiements manuels et suivi des supports.',
-            'ولوج خاص بالإدارة: الأداء اليدوي وتتبع الكارطات.',
+            'Gestion de la plateforme · accès indépendant des cartes et des abonnements clients.',
+            'تسيير المنصة · ولوج مستقل على كارطات واشتراكات الزبناء.',
           )}
         </p>
         {error && <div className="notice">{error}</div>}
@@ -165,7 +185,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                 'استعمل الحساب المؤكد والمسموح ليه بإدارة SoraLink.',
               )}
             </p>
-            <a className="primary" target="_top" href={'/auth?lang=' + (ar ? 'ar' : 'fr')}>
+            <a className="primary" target="_top" href={adminSignInPath(ar)}>
               {t('Se connecter', 'دخل للحساب')}
             </a>
           </div>

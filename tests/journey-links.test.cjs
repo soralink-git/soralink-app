@@ -3,6 +3,13 @@ const assert = require('node:assert/strict');
 const path = require('node:path');
 const { load, req } = require('./ts-loader.cjs');
 const { signupPath, workspacePath, selectedPlan } = load(path.resolve('app/lib/journey-links.ts'));
+test('administration is the admin account destination independently of card offers', () => {
+  const { accountPath, adminSignInPath } = load(path.resolve('app/lib/journey-links.ts'));
+  assert.equal(accountPath(true, false, 'Pack'), '/admin?lang=fr');
+  assert.equal(accountPath(true, true, 'Pro'), '/admin?lang=ar');
+  assert.equal(accountPath(false, true, 'Pack'), workspacePath(true, 'Pack'));
+  assert.equal(adminSignInPath(true), '/admin/connexion?lang=ar');
+});
 test('chosen offers and language survive authentication and unknown plans cannot redirect outside the app', () => {
   assert.equal(signupPath(true, 'Pack'), '/auth?mode=signup&lang=ar&offer=Pack');
   assert.equal(signupPath(true, 'Pack', true), '/?app=1&lang=ar&offer=Pack&tab=orders');
@@ -13,6 +20,19 @@ const React = req('react'),
   { renderToStaticMarkup } = req('react-dom/server');
 const Auth = load(path.resolve('app/auth/ui.tsx')).default;
 const LegalView = load(path.resolve('app/legal-view.tsx')).default;
+test('dedicated admin sign-in has no signup, card onboarding or selected offer', () => {
+  for (const ar of [true, false]) {
+    const html = renderToStaticMarkup(
+      React.createElement(Auth, { administrator: true, initialArabic: ar }),
+    );
+    assert.match(html, ar ? /دخول الإدارة/ : /Connexion administrateur/);
+    assert.doesNotMatch(
+      html,
+      /Créer un compte|Créer mon compte|Votre carte\.|Vos photos|ancienne carte|صايب حساب|التصاور والكاتالوگ/,
+    );
+    assert.match(html, ar ? /ما محتاج لا كارط/ : /Aucune carte ni aucun abonnement/);
+  }
+});
 test('Arabic auth shows chosen offer in Arabic and removes the unavailable historical sign-in link', () => {
   const html = renderToStaticMarkup(
     React.createElement(Auth, { initialArabic: true, initialOffer: 'Accompagnement' }),

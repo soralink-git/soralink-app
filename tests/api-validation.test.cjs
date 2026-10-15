@@ -47,6 +47,7 @@ function db() {
 }
 const server = {
   db,
+  isAdministrator: (email) => email === 'admin@example.test',
   identity: async () => {
     ctx.identities++;
     return { user: ctx.user, admin: ctx.admin, source: 'email' };
