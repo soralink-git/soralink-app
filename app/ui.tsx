@@ -1,6 +1,6 @@
 'use client';
 import { appendUnique, type History, type PageInfo } from './lib/pagination';
-import { selectedPlan, workspacePath, offerLabel } from './lib/journey-links';
+import { selectedPlan, workspacePath, offerLabel, languagePath } from './lib/journey-links';
 import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { X, Calendar, Check, Globe, Users, RotateCcw } from 'lucide-react';
@@ -620,6 +620,7 @@ export default function App({
   function toggleLanguage() {
     const nextAr = !ar;
     setAr(nextAr);
+    history.replaceState(null, '', languagePath(location.href, nextAr));
     setData((d: any) => ({ ...d, defaultLanguage: nextAr ? 'ar' : 'fr' }));
   }
   useEffect(() => {
@@ -1167,7 +1168,7 @@ export default function App({
                 ['exemples', 'Exemples', 'أمثلة'],
                 ['faq', 'FAQ', 'أسئلة'],
               ].map(([anchor, f, a]) => (
-                <a href={(view === 'home' ? '' : '/') + '#' + anchor} key={anchor}>
+                <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#' + anchor} key={anchor}>
                   {t(f, a)}
                 </a>
               ))}
@@ -1184,7 +1185,7 @@ export default function App({
               </span>
             ) : auth ? (
               <>
-                <a className="header-login" href="/?app=1">
+                <a className="header-login" href={workspacePath(ar)}>
                   {t('Mon espace', 'الحساب ديالي')}
                 </a>
                 <details className="account-menu">
@@ -1198,7 +1199,7 @@ export default function App({
                     <span dir="ltr" className="account-email">
                       {accountEmail || t('Votre compte', 'الحساب ديالك')}
                     </span>
-                    <a href="/?app=1">{t('Ouvrir mon espace', 'حل الحساب ديالي')}</a>
+                    <a href={workspacePath(ar)}>{t('Ouvrir mon espace', 'حل الحساب ديالي')}</a>
                     <button disabled={busy} onClick={logout}>
                       {t('Se déconnecter', 'خرج من الحساب')}
                     </button>

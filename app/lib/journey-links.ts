@@ -31,3 +31,8 @@ export function offerLabel(plan: string, ar = false) {
   };
   return labels[plan]?.[ar ? 1 : 0] || plan;
 }
+export function languagePath(currentUrl: string, ar: boolean): string {
+  const url = new URL(currentUrl, 'https://soralink.link');
+  url.searchParams.set('lang', ar ? 'ar' : 'fr');
+  return url.pathname + url.search + url.hash;
+}

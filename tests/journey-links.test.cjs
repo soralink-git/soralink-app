@@ -85,3 +85,15 @@ test('home footer, sign-in and card brand links preserve the selected language',
     assert.match(card, new RegExp('href="/\\?lang=' + lang + '"'));
   }
 });
+
+test('changing language updates the reload URL and preserves the selected offer, tab and anchor', () => {
+  const { languagePath } = load(path.resolve('app/lib/journey-links.ts'));
+  const current = 'https://soralink.link/?app=1&lang=ar&offer=Pack&tab=orders#tarifs';
+  const next = new URL(languagePath(current, false), 'https://soralink.link');
+  assert.equal(next.searchParams.get('lang'), 'fr');
+  assert.equal(next.searchParams.get('offer'), 'Pack');
+  assert.equal(next.searchParams.get('tab'), 'orders');
+  assert.equal(next.searchParams.get('app'), '1');
+  assert.equal(next.hash, '#tarifs');
+  assert.equal(new URL(languagePath(next.href, true), next.origin).searchParams.get('lang'), 'ar');
+});
