@@ -14,6 +14,12 @@ export function workspacePath(ar = false, offer?: unknown) {
   }
   return '/?' + params;
 }
+export function accountPath(admin: boolean, ar = false, offer?: unknown) {
+  return admin ? '/admin?lang=' + (ar ? 'ar' : 'fr') : workspacePath(ar, offer);
+}
+export function adminSignInPath(ar = false) {
+  return '/admin/connexion?lang=' + (ar ? 'ar' : 'fr');
+}
 export function signupPath(ar = false, offer?: unknown, connected = false) {
   if (connected) return workspacePath(ar, offer);
   const params = new URLSearchParams({ mode: 'signup' });

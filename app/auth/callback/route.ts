@@ -1,4 +1,5 @@
-import { selectedPlan, workspacePath } from '../../lib/journey-links';
+import { selectedPlan, accountPath } from '../../lib/journey-links';
+import { identity } from '../../lib/server';
 import { authClient } from '../../lib/supabase';
 function redirect(url: string) {
   return new Response(null, {
@@ -15,13 +16,15 @@ export async function GET(req: Request) {
     try {
       const s = await authClient();
       const { error } = await s.auth.exchangeCodeForSession(code);
-      if (!error)
+      if (!error) {
+        const { admin } = await identity();
         return redirect(
           u.origin +
             (u.searchParams.get('next') === 'reset'
               ? '/auth/reset?lang=' + (ar ? 'ar' : 'fr') + (offer ? '&offer=' + offer : '')
-              : workspacePath(ar, offer)),
+              : accountPath(admin, ar, offer)),
         );
+      }
     } catch {}
   }
   return redirect(

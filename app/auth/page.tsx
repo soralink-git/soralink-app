@@ -1,6 +1,6 @@
 import Auth from './ui';
-import { authClient } from '../lib/supabase';
-import { selectedPlan, workspacePath } from '../lib/journey-links';
+import { identity } from '../lib/server';
+import { selectedPlan, accountPath } from '../lib/journey-links';
 import { redirect } from 'next/navigation';
 export default async function Page({
   searchParams,
@@ -9,13 +9,14 @@ export default async function Page({
 }) {
   const params = await searchParams;
   let signedIn = false;
+  let admin = false;
   try {
-    const client = await authClient();
-    const { data, error } = await client.auth.getUser();
-    signedIn = !error && !!data.user?.email_confirmed_at;
+    const session = await identity();
+    signedIn = !!session.user;
+    admin = session.admin;
   } catch {}
   if (signedIn && !params.error)
-    redirect(workspacePath(params.lang === 'ar', selectedPlan(params.offer)));
+    redirect(accountPath(admin, params.lang === 'ar', selectedPlan(params.offer)));
   return (
     <Auth
       initialMode={params.mode === 'signup' ? 'signup' : 'login'}

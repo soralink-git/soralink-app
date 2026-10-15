@@ -6,6 +6,13 @@ export function db() {
   if (!env.DB) throw new Error('Storage unavailable');
   return env.DB;
 }
+export function isAdministrator(email?: string | null) {
+  return (
+    !!email &&
+    !!env.SORATAP_ADMIN_EMAIL &&
+    email.toLowerCase() === env.SORATAP_ADMIN_EMAIL.toLowerCase()
+  );
+}
 export async function identity() {
   let user: { userId: string; email: string; displayName: string } | null = null;
   let source = '';
@@ -27,10 +34,7 @@ export async function identity() {
   return {
     user,
     source,
-    admin:
-      !!user &&
-      !!env.SORATAP_ADMIN_EMAIL &&
-      user.email.toLowerCase() === env.SORATAP_ADMIN_EMAIL.toLowerCase(),
+    admin: !!user && isAdministrator(user.email),
   };
 }
 export const json = (v: unknown, s = 200) =>

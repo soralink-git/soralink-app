@@ -8,6 +8,8 @@ const root = path.resolve('dist/pages');
 const base = 'https://soralink.link';
 const userId = '11111111-1111-4111-8111-111111111111';
 const otherId = '22222222-2222-4222-8222-222222222222';
+const adminId = '33333333-3333-4333-8333-333333333333';
+const adminEmail = 'admin@example.test';
 const email = 'journey@example.test';
 let confirmed = false;
 const outgoing = [];
@@ -16,7 +18,7 @@ function user(id = userId) {
     id,
     aud: 'authenticated',
     role: 'authenticated',
-    email: id === userId ? email : 'other@example.test',
+    email: id === adminId ? adminEmail : id === userId ? email : 'other@example.test',
     email_confirmed_at: confirmed ? '2026-01-01T00:00:00Z' : null,
     app_metadata: { provider: 'email', providers: ['email'] },
     user_metadata: {},
@@ -60,6 +62,7 @@ const mf = new Miniflare({
   bindings: {
     SUPABASE_URL: 'https://qa.supabase.test',
     SUPABASE_PUBLISHABLE_KEY: 'local-test-only',
+    SORATAP_ADMIN_EMAIL: adminEmail,
   },
   serviceBindings: {
     ASSETS: async (request) => {
@@ -79,7 +82,10 @@ const mf = new Miniflare({
       'No actual outbound notification or auth request is permitted',
     );
     if (url.pathname === '/auth/v1/signup') return Response.json({ user: user(), session: null });
-    if (url.pathname === '/auth/v1/token') return Response.json(session());
+    if (url.pathname === '/auth/v1/token') {
+      const body = await request.json();
+      return Response.json(session(body.email === adminEmail ? adminId : userId));
+    }
     if (url.pathname === '/auth/v1/logout') return new Response(null, { status: 204 });
     if (url.pathname === '/auth/v1/user') {
       const token = request.headers.get('authorization')?.replace('Bearer ', '');
@@ -153,6 +159,39 @@ try {
   assert.equal(login.json.redirect, '/?app=1');
   assert(login.response.headers.get('set-cookie'), 'Sign-in must return a session cookie');
   assert.equal((await request('/api/auth', { auth: true })).json.email, email);
+  const adminLogin = await request('/api/auth', {
+    data: {
+      action: 'login',
+      email: adminEmail,
+      password: 'local-test-password',
+      lang: 'ar',
+      offer: 'Pack',
+    },
+  });
+  assert.equal(adminLogin.json.redirect, '/admin?lang=ar');
+  for (const endpoint of ['/auth?lang=ar&offer=Pack', '/admin/connexion?lang=ar']) {
+    // dispatchFetch follows the server redirect; verify the final admin page.
+    const redirect = await request(endpoint, { auth: true, id: adminId });
+    assert.match(redirect.text, /<h1>الإدارة<\/h1>/);
+    assert.doesNotMatch(redirect.text, /name="password"/);
+  }
+  assert.equal((await request('/api/auth', { auth: true, id: adminId })).json.admin, true);
+  assert.equal((await request('/api/auth', { auth: true })).json.admin, false);
+  await request('/api/admin', { status: 401 });
+  const standaloneAdmin = await request('/api/admin', { auth: true, id: adminId });
+  assert.equal(standaloneAdmin.json.stats.clients, 0);
+  assert.equal(
+    (
+      await db
+        .prepare('SELECT COUNT(*) n FROM profiles WHERE owner=?')
+        .bind('sb:' + adminId)
+        .first()
+    ).n,
+    0,
+  );
+  const adminEntry = await request('/admin/connexion?lang=fr');
+  assert.match(adminEntry.text, /Connexion administrateur/);
+  assert.doesNotMatch(adminEntry.text, /Créer mon compte/);
   const fields = {
     name: 'Journey card',
     business: 'Cabinet de test',
@@ -360,6 +399,16 @@ try {
   await request('/api/data?id=' + cardId, { status: 404 });
   await request(uploaded.json.url, { status: 404 });
   await request('/api/auth', { auth: true, data: { action: 'logout' } });
+  await request('/api/admin', { auth: true, id: adminId });
+  assert.equal(
+    (
+      await db
+        .prepare('SELECT COUNT(*) n FROM profiles WHERE owner=?')
+        .bind('sb:' + adminId)
+        .first()
+    ).n,
+    0,
+  );
   assert.equal((await request('/api/auth')).json.authenticated, false);
   assert.equal((await db.prepare('SELECT COUNT(*) n FROM notifications').first()).n, 0);
   console.log(

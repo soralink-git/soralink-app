@@ -3,11 +3,13 @@ import { useState, useEffect } from 'react';
 import { workspacePath, selectedPlan, offerLabel } from '../lib/journey-links';
 import { Nfc, Globe, Mail, Lock, Eye, EyeOff, CheckCircle, ArrowLeft } from 'lucide-react';
 export default function Auth({
+  administrator = false,
   reset = false,
   initialMode = 'login',
   initialArabic = false,
   initialOffer,
 }: {
+  administrator?: boolean;
   reset?: boolean;
   initialMode?: 'signup' | 'login';
   initialArabic?: boolean;
@@ -35,7 +37,8 @@ export default function Auth({
     setError('');
   }
   useEffect(() => {
-    if (!reset && new URLSearchParams(location.search).get('mode') === 'signup') setMode('signup');
+    if (!administrator && !reset && new URLSearchParams(location.search).get('mode') === 'signup')
+      setMode('signup');
     if (new URLSearchParams(location.search).get('lang') === 'ar') setAr(true);
     if (new URLSearchParams(location.search).has('error'))
       setError(
@@ -107,32 +110,49 @@ export default function Auth({
       </header>
       <main className="auth-layout">
         <section className="auth-intro">
-          <span className="eyebrow">SORALINK / {t('VOTRE ESPACE', 'الحساب ديالك')}</span>
-          <h1>
-            {t('Votre carte.', 'الكارط ديالك.')}
-            <br />
-            {t('Votre activité.', 'النشاط ديالك.')}
-            <br />
-            <em>{t('Votre espace.', 'الحساب ديالك.')}</em>
-          </h1>
-          <p>
-            {t(
-              'Personnalisez votre page, partagez vos contenus et retrouvez vos demandes au même endroit.',
-              'خصّص الصفحة ديالك، شارك المحتوى ولقى الطلبات فبلاصة وحدة.',
-            )}
-          </p>
-          <ul className="auth-benefits">
-            {[
-              t('Une carte qui évolue avec vous', 'كارط كتتبدّل معاك'),
-              t('Vos photos et votre catalogue', 'التصاور والكاتالوگ ديالك'),
-              t('Vos demandes et vos rendez-vous', 'الطلبات والمواعيد ديالك'),
-            ].map((v) => (
-              <li key={v}>
-                <CheckCircle size={18} />
-                {v}
-              </li>
-            ))}
-          </ul>
+          <span className="eyebrow">
+            SORALINK /{' '}
+            {administrator ? t('ADMINISTRATION', 'الإدارة') : t('VOTRE ESPACE', 'الحساب ديالك')}
+          </span>
+          {administrator ? (
+            <>
+              <h1>{t('Gérer SoraLink', 'تسيير SoraLink')}</h1>
+              <p>
+                {t(
+                  'Un accès réservé à la gestion des clients, des forfaits et des commandes. Aucune carte ni aucun abonnement client n’est nécessaire.',
+                  'ولوج خاص بتسيير الزبناء والعروض والطلبات. ما محتاج لا كارط لا اشتراك ديال الزبناء.',
+                )}
+              </p>
+            </>
+          ) : (
+            <>
+              <h1>
+                {t('Votre carte.', 'الكارط ديالك.')}
+                <br />
+                {t('Votre activité.', 'النشاط ديالك.')}
+                <br />
+                <em>{t('Votre espace.', 'الحساب ديالك.')}</em>
+              </h1>
+              <p>
+                {t(
+                  'Personnalisez votre page, partagez vos contenus et retrouvez vos demandes au même endroit.',
+                  'خصّص الصفحة ديالك، شارك المحتوى ولقى الطلبات فبلاصة وحدة.',
+                )}
+              </p>
+              <ul className="auth-benefits">
+                {[
+                  t('Une carte qui évolue avec vous', 'كارط كتتبدّل معاك'),
+                  t('Vos photos et votre catalogue', 'التصاور والكاتالوگ ديالك'),
+                  t('Vos demandes et vos rendez-vous', 'الطلبات والمواعيد ديالك'),
+                ].map((v) => (
+                  <li key={v}>
+                    <CheckCircle size={18} />
+                    {v}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </section>
         <section className="panel auth-panel">
           <h2>
@@ -144,7 +164,9 @@ export default function Auth({
                   ? t('Nouveau mot de passe', 'كلمة سر جديدة')
                   : mode === 'resend'
                     ? t('Renvoyer la confirmation', 'عاود سيفط التأكيد')
-                    : t('Bienvenue chez SoraLink', 'مرحبا بيك فـ SoraLink')}
+                    : administrator
+                      ? t('Connexion administrateur', 'دخول الإدارة')
+                      : t('Bienvenue chez SoraLink', 'مرحبا بيك فـ SoraLink')}
           </h2>
           <p className="hint">
             {mode === 'signup'
@@ -159,7 +181,12 @@ export default function Auth({
                   )
                 : mode === 'password'
                   ? t('Choisissez au moins 10 caractères.', 'اختار على الأقل 10 حروف ورموز.')
-                  : t('Accédez à votre carte et à vos demandes.', 'دخل للكارط والطلبات ديالك.')}
+                  : administrator
+                    ? t(
+                        'Utilisez le compte autorisé pour l’administration.',
+                        'استعمل الحساب المسموح ليه بالإدارة.',
+                      )
+                    : t('Accédez à votre carte et à vos demandes.', 'دخل للكارط والطلبات ديالك.')}
           </p>
           {error && (
             <div className="auth-error" role="alert">
@@ -255,40 +282,51 @@ export default function Auth({
                       : t('Se connecter', 'دخل للحساب')}
             </button>
           </form>
-          <div className="auth-switch">
-            {mode === 'login' ? (
-              <>
-                {t('Pas encore de compte ?', 'ما عندكش حساب؟')}{' '}
-                <button className="text-button" onClick={() => change('signup')}>
-                  {t('Créer un compte', 'صايب حساب')}
+          {(!administrator || mode !== 'login') && (
+            <div className="auth-switch">
+              {mode === 'login' ? (
+                <>
+                  {t('Pas encore de compte ?', 'ما عندكش حساب؟')}{' '}
+                  <button className="text-button" onClick={() => change('signup')}>
+                    {t('Créer un compte', 'صايب حساب')}
+                  </button>
+                </>
+              ) : (
+                <button className="text-button" onClick={() => change('login')}>
+                  {t('J’ai déjà un compte — Se connecter', 'عندي حساب — ندخل')}
                 </button>
-              </>
-            ) : (
-              <button className="text-button" onClick={() => change('login')}>
-                {t('J’ai déjà un compte — Se connecter', 'عندي حساب — ندخل')}
-              </button>
-            )}
-          </div>
+              )}
+            </div>
+          )}
           {mode === 'signup' && (
             <button className="text-button" onClick={() => change('resend')}>
               {t('Renvoyer l’e-mail de confirmation', 'عاود سيفط إيميل التأكيد')}
             </button>
           )}
-          <p className="hint">
-            {t(
-              'Vos coordonnées privées et vos demandes restent dans votre espace.',
-              'المعلومات الخاصة والطلبات ديالك كيبقاو فالحساب ديالك.',
-            )}
-          </p>
-          <p className="hint">
-            {t(
-              'Vous aviez une ancienne carte ? Contactez l’assistance pour une récupération vérifiée.',
-              'كانت عندك كارط قديمة؟ تواصل مع المساعدة باش نتحققو ونرجعو ليك الولوج.',
-            )}{' '}
-            <a href="https://wa.me/212661446664" target="_blank" rel="noreferrer">
-              {t('Contacter l’assistance', 'تواصل مع المساعدة')}
+          {!administrator && (
+            <p className="hint">
+              {t(
+                'Vos coordonnées privées et vos demandes restent dans votre espace.',
+                'المعلومات الخاصة والطلبات ديالك كيبقاو فالحساب ديالك.',
+              )}
+            </p>
+          )}
+          {administrator && (
+            <a className="text-button" href={'/auth?lang=' + (ar ? 'ar' : 'fr')}>
+              {t('Connexion à un compte client', 'الدخول لحساب زبون')}
             </a>
-          </p>
+          )}
+          {!administrator && (
+            <p className="hint">
+              {t(
+                'Vous aviez une ancienne carte ? Contactez l’assistance pour une récupération vérifiée.',
+                'كانت عندك كارط قديمة؟ تواصل مع المساعدة باش نتحققو ونرجعو ليك الولوج.',
+              )}{' '}
+              <a href="https://wa.me/212661446664" target="_blank" rel="noreferrer">
+                {t('Contacter l’assistance', 'تواصل مع المساعدة')}
+              </a>
+            </p>
+          )}
         </section>
       </main>
     </div>
