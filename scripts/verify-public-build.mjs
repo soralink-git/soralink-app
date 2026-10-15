@@ -103,6 +103,22 @@ try {
     '/confidentialite?lang=fr',
   ])
     assert.equal((await mf.dispatchFetch('https://soralink.link' + page)).status, 200, page);
+  for (const lang of ['fr', 'ar']) {
+    const response = await mf.dispatchFetch('https://soralink.link/api/manifest?lang=' + lang);
+    assert.equal(response.status, 200);
+    assert.match(response.headers.get('Content-Type'), /application\/manifest\+json/);
+    const manifest = await response.json();
+    assert.equal(manifest.start_url, '/?app=1&lang=' + lang);
+    assert.equal(manifest.id, '/');
+    const landing = await mf.dispatchFetch('https://soralink.link/?lang=' + lang);
+    const markup = await landing.text();
+    assert(
+      markup.includes('/api/manifest?lang=' + lang),
+      'Server HTML must link the selected install manifest',
+    );
+    for (const icon of manifest.icons)
+      assert.equal((await mf.dispatchFetch('https://soralink.link' + icon.src)).status, 200);
+  }
   console.log(
     'Public build: isolated JS graph, server-rendered card, private-field filtering, assets and main routes verified',
   );

@@ -5,17 +5,19 @@ export type MailEnv = {
   PUBLIC_SITE_URL?: string;
   NOTIFICATIONS_ENABLED?: string;
 };
-export function mailReady(e: MailEnv) {
+export function mailEnabled(e: MailEnv) {
   try {
     return (
       e.NOTIFICATIONS_ENABLED === 'true' &&
-      !!e.RESEND_API_KEY &&
       !!e.EMAIL_FROM &&
       new URL(e.PUBLIC_SITE_URL || '').protocol === 'https:'
     );
   } catch {
     return false;
   }
+}
+export function mailReady(e: MailEnv) {
+  return mailEnabled(e) && !!e.RESEND_API_KEY;
 }
 export function validEmail(v: unknown) {
   return typeof v === 'string' && v.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -31,7 +33,7 @@ export function mailStatement(
   revision = 0,
 ) {
   const recipient = event === 'new' ? p.email : r.email;
-  if (!mailReady(e) || !validEmail(recipient)) return [];
+  if (!mailEnabled(e) || !validEmail(recipient)) return [];
   const d = JSON.parse(p.data);
   const professional = String(d.business || d.name || 'Votre professionnel').slice(0, 120);
   const ar =

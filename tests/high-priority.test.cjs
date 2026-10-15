@@ -264,3 +264,51 @@ test('notification text uses the professional language for new requests and visi
   assert.doesNotMatch(params[5], /الموعد/);
   f.sqlite.close();
 });
+
+test('Pages queues notifications without a provider secret; only the dispatcher requires the key', async () => {
+  const f = fixture();
+  try {
+    const pages = { ...f.env, RESEND_API_KEY: undefined };
+    assert.equal(notifications.mailEnabled(pages), true);
+    assert.equal(notifications.mailReady(pages), false);
+    const statements = notifications.mailStatement(
+      pages,
+      { id: 'card', email: 'owner@example.test', data: JSON.stringify({ name: 'SoraLink' }) },
+      {
+        id: 'queued',
+        name: 'Test',
+        phone: '0600000000',
+        email: 'visitor@example.test',
+        kind: 'devis',
+      },
+      'new',
+    );
+    assert.equal(statements.length, 1);
+    await statements[0].run();
+    let sent = 0;
+    await notifications.sendPending(pages, async () => {
+      sent++;
+      return Response.json({ id: 'unexpected' });
+    });
+    assert.equal(sent, 0);
+    assert.equal(f.row('queued:new:0').state, 'pending');
+    await notifications.sendPending(f.env, async (_, request) => {
+      sent++;
+      assert.equal(request.headers['Idempotency-Key'], 'queued:new:0');
+      return Response.json({ id: 'provider-queued' });
+    });
+    assert.equal(sent, 1);
+    assert.equal(f.row('queued:new:0').state, 'accepted');
+    assert.equal(
+      notifications.mailStatement(
+        { ...pages, NOTIFICATIONS_ENABLED: 'false' },
+        { id: 'card', email: 'owner@example.test', data: '{}' },
+        { id: 'disabled' },
+        'new',
+      ).length,
+      0,
+    );
+  } finally {
+    f.sqlite.close();
+  }
+});

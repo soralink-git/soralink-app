@@ -63,7 +63,7 @@ et aucun message réel n’a été envoyé pendant cette préparation.
 5. Vérifier les bindings Pages `DB` et `BUCKET`, les variables Supabase et le compte admin.
    Les fichiers privés ne doivent pas être exposés par une autre URL publique du bucket.
 6. Pour l’envoi des notifications, suivre `HIGH-PRIORITY-FIXES.md` : même base D1 pour le
-   Worker planifié et Pages, secrets/configuration sur les deux services. Aucun secret
+   Worker planifié et Pages, configuration sur les deux services, secret Resend uniquement sur le Worker. Aucun secret
    n’est ajouté au dépôt. La configuration du Worker doit être complétée avant déploiement.
 7. Dans GitHub, protéger main et rendre le job `verify` obligatoire. Le dépôt n’expose pas
    d’opération d’administration permettant d’activer ce réglage dans cette session.

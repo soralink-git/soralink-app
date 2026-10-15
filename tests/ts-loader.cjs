@@ -38,6 +38,8 @@ function load(f) {
       clearInterval,
       console,
       Blob,
+      Response,
+      Request,
       crypto: globalThis.crypto,
     },
     { filename: f },

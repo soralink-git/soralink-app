@@ -22,7 +22,7 @@ import {
   catalogueRequestMessage,
 } from '../../lib/catalogue';
 import { env } from 'cloudflare:workers';
-import { mailStatement, mailReady } from '../../lib/notifications';
+import { mailStatement, mailEnabled } from '../../lib/notifications';
 import { normalizePromotions } from '../../lib/promotions';
 import { normalizeAppearance } from '../../lib/personalization';
 import { identity, db, json, active } from '../../lib/server';
@@ -82,7 +82,7 @@ export async function GET(req: Request) {
       requests: inbox.items,
       contacts: contacts.items,
       notifications,
-      mailConfigured: mailReady(env as any),
+      mailConfigured: mailEnabled(env as any),
       orders: orders.items,
       pages: Object.fromEntries(
         histories.map((kind, i) => [kind, { nextCursor: pages[i].nextCursor }]),

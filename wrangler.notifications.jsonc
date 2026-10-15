@@ -6,7 +6,19 @@
   "preview_urls": false,
   "triggers": { "crons": ["* * * * *"] },
   "observability": { "enabled": true },
-  // Add the existing Pages D1 database here as binding DB before deployment.
-  // Configure NOTIFICATIONS_ENABLED, PUBLIC_SITE_URL, EMAIL_FROM and RESEND_API_KEY
-  // on this worker as well as on Pages. No production credentials are stored here.
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "soralink-db",
+      "database_id": "dc3cf21f-b757-4c22-9961-76200ffba2f3",
+    },
+  ],
+  "vars": {
+    "NOTIFICATIONS_ENABLED": "false",
+    "PUBLIC_SITE_URL": "https://soralink.link",
+    "EMAIL_FROM": "SoraLink <notifications@soralink.link>",
+  },
+  // Verify the sender domain with Resend before activation.
+  // Store RESEND_API_KEY as a Worker secret, never in this file or on Pages.
+  // Enable this Worker first, then the Pages queue with the same sender/site URL.
 }

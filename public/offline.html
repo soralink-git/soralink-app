@@ -1,1 +1,61 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#101112"><title>SoraLink — Connexion indisponible</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#101112;color:#fff;font:18px system-ui}main{max-width:460px;padding:32px;text-align:center}h1{color:#d5b66f}p{line-height:1.6}button{padding:14px 22px;background:#d5b66f;border:0;border-radius:10px;font:inherit;color:#101112;cursor:pointer}</style></head><body><main><h1 dir="ltr">SoraLink</h1><p>Connexion indisponible. Retrouvez Internet pour consulter votre espace et enregistrer vos modifications.</p><p lang="ar" dir="rtl">ما كاينش الاتصال بالإنترنت. رجّع الاتصال باش تدخل للحساب ديالك وتسجّل التغييرات.</p><button onclick="location.reload()">Réessayer · عاود جرّب</button></main></body></html>
+<!doctype html>
+<html lang="fr" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#101112" />
+    <title>SoraLink — Connexion indisponible</title>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #101112; color: #fff; font: 18px system-ui, sans-serif; }
+      main { width: 100%; max-width: 460px; padding: 24px; text-align: center; }
+      h1 { color: #d5b66f; }
+      p { line-height: 1.6; }
+      button { min-height: 44px; max-width: 100%; margin: 6px; padding: 12px 20px; border: 0; border-radius: 10px; font: inherit; cursor: pointer; }
+      #retry { background: #d5b66f; color: #101112; }
+      #language { background: transparent; color: #d5b66f; border: 1px solid #d5b66f; }
+      button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1 dir="ltr">SoraLink</h1>
+      <p id="message">Connexion indisponible. Retrouvez Internet pour consulter votre espace et enregistrer vos modifications.</p>
+      <button id="retry" type="button">Réessayer</button>
+      <button id="language" type="button" lang="ar" dir="rtl">العربية</button>
+    </main>
+    <script>
+      (() => {
+        let stored;
+        try { stored = localStorage.getItem('soralink_language'); } catch {}
+        const explicit = new URLSearchParams(location.search).get('lang');
+        let ar = (explicit === 'ar' || explicit === 'fr' ? explicit : stored) === 'ar';
+        const message = document.getElementById('message');
+        const retry = document.getElementById('retry');
+        const language = document.getElementById('language');
+        function render() {
+          document.documentElement.lang = ar ? 'ar' : 'fr';
+          document.documentElement.dir = ar ? 'rtl' : 'ltr';
+          document.title = ar ? 'SoraLink — ما كاينش الاتصال' : 'SoraLink — Connexion indisponible';
+          message.textContent = ar
+            ? 'ما كاينش الاتصال بالإنترنت. رجّع الاتصال باش تدخل للحساب ديالك وتسجّل التغييرات.'
+            : 'Connexion indisponible. Retrouvez Internet pour consulter votre espace et enregistrer vos modifications.';
+          retry.textContent = ar ? 'عاود جرّب' : 'Réessayer';
+          language.textContent = ar ? 'Français' : 'العربية';
+          language.lang = ar ? 'fr' : 'ar';
+          language.dir = ar ? 'ltr' : 'rtl';
+        }
+        retry.addEventListener('click', () => location.reload());
+        language.addEventListener('click', () => {
+          ar = !ar;
+          try { localStorage.setItem('soralink_language', ar ? 'ar' : 'fr'); } catch {}
+          const url = new URL(location.href);
+          url.searchParams.set('lang', ar ? 'ar' : 'fr');
+          history.replaceState(null, '', url.pathname + url.search + url.hash);
+          render();
+        });
+        render();
+      })();
+    </script>
+  </body>
+</html>
