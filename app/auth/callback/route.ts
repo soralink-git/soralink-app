@@ -1,3 +1,4 @@
+import { selectedPlan, workspacePath } from '../../lib/journey-links';
 import { authClient } from '../../lib/supabase';
 function redirect(url: string) {
   return new Response(null, {
@@ -8,15 +9,25 @@ function redirect(url: string) {
 export async function GET(req: Request) {
   const u = new URL(req.url);
   const code = u.searchParams.get('code');
+  const ar = u.searchParams.get('lang') === 'ar';
+  const offer = selectedPlan(u.searchParams.get('offer'));
   if (code) {
     try {
       const s = await authClient();
       const { error } = await s.auth.exchangeCodeForSession(code);
       if (!error)
         return redirect(
-          u.origin + (u.searchParams.get('next') === 'reset' ? '/auth/reset' : '/?app=1'),
+          u.origin +
+            (u.searchParams.get('next') === 'reset'
+              ? '/auth/reset?lang=' + (ar ? 'ar' : 'fr') + (offer ? '&offer=' + offer : '')
+              : workspacePath(ar, offer)),
         );
     } catch {}
   }
-  return redirect(u.origin + '/auth?error=confirmation');
+  return redirect(
+    u.origin +
+      '/auth?error=confirmation&lang=' +
+      (ar ? 'ar' : 'fr') +
+      (offer ? '&offer=' + offer : ''),
+  );
 }

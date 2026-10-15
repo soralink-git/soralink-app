@@ -1,4 +1,5 @@
 'use client';
+import { selectedPlan, workspacePath, offerLabel } from './lib/journey-links';
 import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { X, Calendar, Check, Globe, Users, RotateCcw } from 'lucide-react';
@@ -404,13 +405,17 @@ export default function App({
   demoMode = false,
   workspaceMode = false,
   initialTab,
+  initialArabic = false,
+  initialOffer,
 }: {
   cardId?: string;
   demoMode?: boolean;
   workspaceMode?: boolean;
   initialTab?: string;
+  initialArabic?: boolean;
+  initialOffer?: string;
 }) {
-  const [ar, setAr] = useState(false),
+  const [ar, setAr] = useState(initialArabic),
     [view, setView] = useState(
       workspaceMode ? 'app' : demoMode ? 'demo' : cardId ? 'public' : 'home',
     ),
@@ -442,7 +447,9 @@ export default function App({
   const [storage, setStorage] = useState<any>(null);
   const [accountEmail, setAccountEmail] = useState(''),
     [sessionChecked, setSessionChecked] = useState(false);
+  const [pendingOffer, setPendingOffer] = useState(selectedPlan(initialOffer));
   const authEpoch = useRef(0);
+  const profileRevision = useRef<string | null>(null);
   const [authLoading, setAuthLoading] = useState(false),
     [authLoadError, setAuthLoadError] = useState(false);
   const [manualShareUrl, setManualShareUrl] = useState('');
@@ -665,17 +672,23 @@ export default function App({
         setAuth(false);
         setAccountEmail('');
         setSessionChecked(true);
-        location.assign('/auth?mode=' + authMode + (ar ? '&lang=ar' : ''));
+        location.assign(
+          '/auth?mode=' +
+            authMode +
+            (ar ? '&lang=ar' : '') +
+            (pendingOffer ? '&offer=' + pendingOffer : ''),
+        );
         return;
       } else if (!r.ok) {
         setAuthLoadError(true);
-        setMsg(b.error);
+        setMsg(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
       } else {
         setAuth(true);
         setAccountEmail(typeof b.email === 'string' ? b.email : b.profile?.email || '');
         setSessionChecked(true);
         setCanAdmin(!!b.admin);
         setSubscription(b.profile);
+        profileRevision.current = b.profile?.updated || null;
         if (b.profile) {
           const profileData = JSON.parse(b.profile.data);
           const hasQueryLang = new URLSearchParams(location.search).has('lang');
@@ -716,7 +729,7 @@ export default function App({
         body: JSON.stringify(body),
       });
       const b: any = await r.json();
-      if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || 'ما قدرناش نكمّلو الطلب. عاود جرّب.' : b.error);
       return b;
     } finally {
       setBusy(false);
@@ -725,7 +738,13 @@ export default function App({
   async function save() {
     try {
       const payloadData = { ...data, defaultLanguage: ar ? 'ar' : 'fr' };
-      const b = await action({ action: 'save', data: payloadData, published });
+      const b = await action({
+        action: 'save',
+        data: payloadData,
+        published,
+        revision: profileRevision.current,
+      });
+      profileRevision.current = b.revision;
       setId(b.id);
       setData(payloadData);
       setMsg(
@@ -750,7 +769,7 @@ export default function App({
       form.append('file', await compressPhoto(f));
       const r = await fetch('/api/upload', { method: 'POST', body: form });
       const b: any = await r.json();
-      if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || 'ما قدرناش نكمّلو الطلب. عاود جرّب.' : b.error);
       if (b.storage) setStorage(b.storage);
       setData((d: any) => ({
         ...d,
@@ -873,7 +892,8 @@ export default function App({
     })
       .then(async (r) => {
         const b: any = await r.json();
-        if (!r.ok) throw new Error(ar ? b.errorAr || b.error : b.error);
+        if (!r.ok)
+          throw new Error(ar ? b.errorAr || 'ما قدرناش نكمّلو الطلب. عاود جرّب.' : b.error);
         setSlots(b.slots);
       })
       .catch((e) => {
@@ -1315,12 +1335,52 @@ export default function App({
             <summary>{t('Renouvellement et assistance', 'التجديد والمساعدة')}</summary>
             <p>
               {t(
-                '12 mois à partir de l’activation. Aucun prélèvement automatique. 15 jours de grâce puis suspension ; conservation 90 jours après échéance. Assistance du lundi au vendredi, 10 h–18 h, première réponse sous deux jours ouvrés. Conditions commerciales à finaliser avant lancement.',
-                '12 شهر من التفعيل، بلا اقتطاع أوتوماتيكي. مهلة 15 يوم ومن بعدها التوقيف. المعلومات كتبقى 90 يوم من نهاية الاشتراك. المساعدة من الاثنين للجمعة من 10 حتى 18، أول جواب خلال يومين ديال الخدمة. الشروط النهائية قبل الإطلاق.',
+                '12 mois à partir de l’activation. Aucun prélèvement automatique. 15 jours de grâce puis suspension. La suppression des données se demande à l’assistance. Assistance du lundi au vendredi, 10 h–18 h, première réponse sous deux jours ouvrés. Conditions commerciales à finaliser avant lancement.',
+                '12 شهر من التفعيل، بلا اقتطاع أوتوماتيكي. مهلة 15 يوم ومن بعدها التوقيف. لحذف المعلومات تواصل مع المساعدة. المساعدة من الاثنين للجمعة من 10 حتى 18، أول جواب خلال يومين ديال الخدمة. الشروط النهائية قبل الإطلاق.',
               )}
             </p>
           </details>
         </main>
+      )}
+      {view === 'app' && auth && pendingOffer && (
+        <div className="panel" role="status" style={{ margin: '16px auto', maxWidth: 1100 }}>
+          <strong>
+            {t('Offre choisie : ', 'العرض اللي اخترتي: ')}
+            {offerLabel(pendingOffer, ar)}
+          </strong>
+          <p>
+            {t(
+              'Confirmez votre demande. Le paiement et l’activation sont traités manuellement.',
+              'أكّد الطلب ديالك. الأداء والتفعيل كيتعالجو يدوياً.',
+            )}
+          </p>
+          <button
+            className="primary"
+            disabled={busy}
+            onClick={async () => {
+              try {
+                await action({ action: 'order', plan: pendingOffer });
+                setPendingOffer(undefined);
+                history.replaceState(null, '', workspacePath(ar));
+                await load();
+                setMsg(t('Demande enregistrée.', 'تسجّل الطلب.'));
+              } catch (error: any) {
+                setMsg(error.message);
+              }
+            }}
+          >
+            {t('Confirmer cette offre', 'أكّد هاد العرض')}
+          </button>
+          <button
+            className="secondary"
+            onClick={() => {
+              setPendingOffer(undefined);
+              history.replaceState(null, '', workspacePath(ar));
+            }}
+          >
+            {t('Choisir plus tard', 'نختار من بعد')}
+          </button>
+        </div>
       )}
       {view === 'app' && (
         <Suspense

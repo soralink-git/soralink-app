@@ -1,4 +1,5 @@
 'use client';
+import { offerLabel } from './lib/journey-links';
 import type { JSX, Dispatch, SetStateAction, RefObject } from 'react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -1263,7 +1264,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               rel="noopener noreferrer"
                             >
                               <WhatsAppIcon />
-                              {t('Notifier par WhatsApp', 'خبر عبر واتساب')}
+                              {t('Préparer un message WhatsApp', 'وجد رسالة واتساب')}
                             </a>
                           ) : (
                             <span className="hint">
@@ -1548,7 +1549,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     <div className="callout">
                       <div>
                         <h3>
-                          {subscription.plan} ·{' '}
+                          {offerLabel(subscription.plan, ar)} ·{' '}
                           {subscription.state === 'active'
                             ? t('Actif', 'مفعّل')
                             : subscription.state === 'suspended'
@@ -1603,7 +1604,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                   </div>
                   {orders.map((o) => (
                     <div className="request" key={o.id}>
-                      <strong>{o.plan}</strong>
+                      <strong>{offerLabel(o.plan, ar)}</strong>
                       <span className="badge">
                         {t(
                           (

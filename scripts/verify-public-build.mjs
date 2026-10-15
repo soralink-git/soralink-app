@@ -67,7 +67,15 @@ try {
   };
   await db
     .prepare('INSERT INTO profiles VALUES(?,?,?,?,?,?,?)')
-    .bind('public-test', 'PRIVATE_OWNER', JSON.stringify(data), 1, 'active', null, 1)
+    .bind(
+      'public-test',
+      'PRIVATE_OWNER',
+      JSON.stringify(data),
+      1,
+      'active',
+      new Date(Date.now() + 86400000).toISOString(),
+      1,
+    )
     .run();
   const response = await mf.dispatchFetch('https://soralink.link/c/public-test');
   assert.equal(response.status, 200);
@@ -84,7 +92,16 @@ try {
     assert(!html.includes(secret), `${secret} must not be serialized`);
   const mainAsset = html.match(/src="([^\"]+\/index-[^\"]+\.js)"/)[1];
   assert.equal((await mf.dispatchFetch('https://soralink.link' + mainAsset)).status, 200);
-  for (const page of ['/', '/auth', '/demo', '/demo?lang=ar', '/?app=1'])
+  assert.equal((await mf.dispatchFetch('https://soralink.link/c/missing')).status, 404);
+  for (const page of [
+    '/',
+    '/auth',
+    '/demo',
+    '/demo?lang=ar',
+    '/?app=1',
+    '/conditions?lang=ar',
+    '/confidentialite?lang=fr',
+  ])
     assert.equal((await mf.dispatchFetch('https://soralink.link' + page)).status, 200, page);
   console.log(
     'Public build: isolated JS graph, server-rendered card, private-field filtering, assets and main routes verified',

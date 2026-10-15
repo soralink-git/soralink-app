@@ -37,6 +37,8 @@ export async function POST(req: Request) {
     if (!user || !admin) return json({ error: 'Accès refusé' }, 403);
     const b = await readValidatedJSON(req, adminActionSchema, 10000);
     if (b.action === 'profile') {
+      if (b.state !== 'suspended' && !b.expires)
+        return json({ error: 'Renseignez une échéance pour activer ce profil.' }, 400);
       const expires = b.expires ? new Date(b.expires + 'T23:59:59Z').toISOString() : null;
       await db()
         .prepare('UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=? WHERE id=?')

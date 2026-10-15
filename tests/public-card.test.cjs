@@ -23,13 +23,15 @@ function card(data, extra = {}) {
     ...extra,
   });
 }
-test('public card is present in server HTML without workspace or legal footer', () => {
+test('public card is present in server HTML with discreet language-aware legal links', () => {
   const html = render(PublicCardView, { cardId: 'public-card', initialData: demoCard });
   assert.match(html, /SoraLink/);
   assert.match(html, /unified-card/);
+  assert.match(html, /href="\/conditions\?lang=fr"/);
+  assert.match(html, /href="\/confidentialite\?lang=fr"/);
   assert.doesNotMatch(html, /card-language/);
   assert.match(html, /card-footer-brand/);
-  assert.match(html, /By Soralink/);
+  assert.match(html, /Par SoraLink/);
   assert.match(html, /Partager cette carte/);
   assert.match(html, /Échanger nos coordonnées/);
   assert.doesNotMatch(html, /workspace-editor-layout|ImageCropper|site-footer|<header/);

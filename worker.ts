@@ -1,4 +1,5 @@
 import handler from 'vinext/server/fetch-handler';
+import { mailReady, sendPending } from './app/lib/notifications';
 export default {
   async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext) {
     const url = new URL(request.url);
@@ -16,6 +17,21 @@ export default {
       ].includes(url.pathname)
     )
       return env.ASSETS.fetch(request);
-    return handler.fetch(request, env, ctx);
+    const response = await handler.fetch(request, env, ctx);
+    if (
+      request.method === 'POST' &&
+      url.pathname === '/api/data' &&
+      response.ok &&
+      env.DB &&
+      mailReady({ ...env, DB: env.DB })
+    ) {
+      // One bounded send fits the post-response lifetime; cron drains retries/backlogs.
+      ctx.waitUntil(
+        sendPending({ ...env, DB: env.DB }, fetch, 1).catch(() => {
+          console.error('soralink_notifications_dispatch_failed');
+        }),
+      );
+    }
+    return response;
   },
 };

@@ -7,7 +7,9 @@ import {
 } from '../../lib/api-validation';
 import { adoptLegacy, storageUsage, reserveMedia, cleanupMedia } from '../../lib/media-storage';
 import { env } from 'cloudflare:workers';
-import { identity, db } from '../../lib/server';
+import { identity, db, active } from '../../lib/server';
+import { publicCardData } from '../../lib/public-card';
+import { mediaKeys } from '../../lib/media-storage';
 import { byteRange, MAX_VIDEO_BYTES } from '../../lib/content-media';
 function bucket() {
   if (!env.BUCKET) throw new Error('Storage unavailable');
@@ -36,6 +38,14 @@ export async function POST(req: Request) {
       .prepare('SELECT * FROM profiles WHERE owner=?')
       .bind(u.userId)
       .first();
+    if (profile && !active(profile))
+      return Response.json(
+        {
+          error: 'Renouvelez votre abonnement pour importer des fichiers.',
+          errorAr: 'جدّد الاشتراك باش تزيد الملفات.',
+        },
+        { status: 403 },
+      );
     await adoptLegacy(u.userId, profile);
     await cleanupMedia(u.userId);
     const key = crypto.randomUUID();
@@ -86,11 +96,35 @@ export async function GET(req: Request) {
     const key = parsed.data.key;
     if (!key) return new Response(null, { status: 404 });
     const asset: any = await db()
-      .prepare('SELECT state FROM media_assets WHERE key=?')
+      .prepare('SELECT owner,state FROM media_assets WHERE key=?')
       .bind(key)
       .first();
     if (asset && asset.state !== 'ready')
       return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store' } });
+    const references = await db()
+      .prepare(
+        'SELECT p.* FROM profiles p JOIN profile_media m ON m.profile_id=p.id WHERE m.media_key=? AND p.published=1',
+      )
+      .bind(key)
+      .all();
+    const visible = references.results.some(
+      (p: any) =>
+        active(p) && mediaKeys(publicCardData(JSON.parse(p.data), !!p.pro_enabled)).includes(key),
+    );
+    if (!visible) {
+      const { user } = await identity();
+      const owned =
+        user &&
+        (asset?.owner === user.userId ||
+          (await db()
+            .prepare(
+              'SELECT p.id FROM profiles p JOIN profile_media m ON m.profile_id=p.id WHERE m.media_key=? AND p.owner=?',
+            )
+            .bind(key, user.userId)
+            .first()));
+      if (!owned)
+        return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store' } });
+    }
     const header = req.headers.get('range');
     let range: { offset: number; length: number } | undefined;
     if (header) {

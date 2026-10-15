@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { offerLabel } from '../lib/journey-links';
 import { Nfc, Users, Package, Clock, RefreshCw, Shield, Save, Globe } from 'lucide-react';
 const statuses: any = {
   pending: 'En attente / فانتظار الأداء',
@@ -11,18 +12,27 @@ const statuses: any = {
   delivered: 'Remise / تسلّمات',
   cancelled: 'Annulée / تلغات',
 };
-export default function Admin() {
+export default function Admin({ initialArabic = false }: { initialArabic?: boolean }) {
   const [data, setData] = useState<any>(null),
     [error, setError] = useState(''),
     [busy, setBusy] = useState(false),
     [tab, setTab] = useState('clients'),
-    [search, setSearch] = useState('');
+    [search, setSearch] = useState(''),
+    [ar, setAr] = useState(initialArabic);
+  const t = (fr: string, darija: string) => (ar ? darija : fr);
+  useEffect(() => {
+    setAr(new URLSearchParams(location.search).get('lang') === 'ar');
+  }, []);
+  useEffect(() => {
+    document.documentElement.lang = ar ? 'ar' : 'fr';
+    document.documentElement.dir = ar ? 'rtl' : 'ltr';
+  }, [ar]);
   async function load() {
     setBusy(true);
     try {
       const r = await fetch('/api/admin');
       const b: any = await r.json();
-      if (!r.ok) throw new Error(b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
       setData(b);
       setError('');
     } catch (e: any) {
@@ -65,7 +75,7 @@ export default function Admin() {
         body: JSON.stringify(body),
       });
       const b: any = await r.json();
-      if (!r.ok) throw new Error(b.error);
+      if (!r.ok) throw new Error(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
       await load();
     } catch (e: any) {
       setError(e.message);
@@ -74,8 +84,20 @@ export default function Admin() {
     }
   }
   return (
-    <div className="site">
+    <div className="site" dir={ar ? 'rtl' : 'ltr'}>
       <header>
+        <button
+          className="language"
+          onClick={() => {
+            const next = !ar;
+            setAr(next);
+            const u = new URL(location.href);
+            u.searchParams.set('lang', next ? 'ar' : 'fr');
+            history.replaceState(null, '', u.pathname + u.search);
+          }}
+        >
+          {ar ? 'Français' : 'العربية'}
+        </button>
         <a className="brand" dir="ltr" href="/">
           <span className="brand-icon">
             <Nfc />
@@ -83,32 +105,41 @@ export default function Admin() {
           Sora<span>Link</span>
         </a>
         <span className="badge">
-          <Shield size={14} /> ADMINISTRATION
+          <Shield size={14} />
+          {t('ADMINISTRATION', 'الإدارة')}
         </span>
-        <a className="secondary small" href="/?app=1">
-          Mon espace / الحساب ديالي
+        <a className="secondary small" href={'/?app=1&lang=' + (ar ? 'ar' : 'fr')}>
+          {t('Mon espace', 'الحساب ديالي')}
         </a>
       </header>
       <main className="section">
-        <span className="eyebrow">SORALINK / GESTION</span>
+        <span className="eyebrow">{t('SORALINK / GESTION', 'SoraLink / التسيير')}</span>
         <div className="workspace-head">
-          <h1>Administration · الإدارة</h1>
+          <h1>{t('Administration', 'الإدارة')}</h1>
           <button className="secondary" disabled={busy} onClick={load}>
             <RefreshCw size={16} />
-            Actualiser
+            {t('Actualiser', 'حدّث')}
           </button>
         </div>
         <p className="muted">
-          Accès réservé à l’administrateur · paiements manuels et suivi des supports.
+          {t(
+            'Accès réservé à l’administrateur · paiements manuels et suivi des supports.',
+            'ولوج خاص بالإدارة: الأداء اليدوي وتتبع الكارطات.',
+          )}
         </p>
         {error && <div className="notice">{error}</div>}
         {!data ? (
           <div className="empty">
             <Shield size={44} />
-            <h2>Connexion administrateur</h2>
-            <p>Utilisez le compte SoraLink vérifié autorisé pour l’administration.</p>
-            <a className="primary" target="_top" href="/auth">
-              Se connecter
+            <h2>{t('Connexion administrateur', 'دخول الإدارة')}</h2>
+            <p>
+              {t(
+                'Utilisez le compte SoraLink vérifié autorisé pour l’administration.',
+                'استعمل الحساب المؤكد والمسموح ليه بإدارة SoraLink.',
+              )}
+            </p>
+            <a className="primary" target="_top" href={'/auth?lang=' + (ar ? 'ar' : 'fr')}>
+              {t('Se connecter', 'دخل للحساب')}
             </a>
           </div>
         ) : (
@@ -117,12 +148,12 @@ export default function Admin() {
               <div className="panel">
                 <Users />
                 <b>{data.profiles.length}</b>
-                <span>Clients / الزبناء</span>
+                <span>{t('Clients', 'الزبناء')}</span>
               </div>
               <div className="panel">
                 <Package />
                 <b>{data.orders.filter((o: any) => o.status === 'pending').length}</b>
-                <span>Demandes en attente</span>
+                <span>{t('Demandes en attente', 'الطلبات المعلقة')}</span>
               </div>
               <div className="panel">
                 <Clock />
@@ -132,14 +163,14 @@ export default function Admin() {
                       .length
                   }
                 </b>
-                <span>Échéances dépassées</span>
+                <span>{t('Échéances dépassées', 'الاشتراكات اللي سالات')}</span>
               </div>
             </div>
             <div className="row admin-tabs">
               {[
-                ['clients', 'Clients / الزبناء'],
-                ['orders', 'Commandes / الطلبات'],
-                ['audit', 'Historique / التتبع'],
+                ['clients', t('Clients', 'الزبناء')],
+                ['orders', t('Commandes', 'الطلبات')],
+                ['audit', t('Historique', 'التتبع')],
               ].map(([v, l]) => (
                 <button
                   className={tab === v ? 'primary' : 'secondary'}
@@ -153,11 +184,11 @@ export default function Admin() {
             {tab === 'clients' && (
               <>
                 <label className="field">
-                  Rechercher / قلب
+                  {t('Rechercher', 'قلب')}
                   <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Nom ou e-mail"
+                    placeholder={t('Nom ou e-mail', 'الاسم ولا الإيميل')}
                   />
                 </label>
                 {data.profiles
@@ -187,32 +218,38 @@ export default function Admin() {
                         <div>
                           <h2>{JSON.parse(p.data).name}</h2>
                           <p className="hint">
-                            {p.email || 'E-mail renseigné à la prochaine connexion'}
+                            {p.email ||
+                              t(
+                                'E-mail renseigné à la prochaine connexion',
+                                'الإيميل غادي يتسجّل فالدخول الجاي',
+                              )}
                           </p>
                         </div>
                         <a className="secondary small" href={'/c/' + p.id} target="_blank">
-                          Voir la carte
+                          {t('Voir la carte', 'شوف الكارط')}
                         </a>
                       </div>
                       <div className="form-grid">
                         <label className="field">
-                          État
+                          {t('État', 'الحالة')}
                           <select name="state" defaultValue={p.state}>
-                            <option value="trial">Essai / تجربة</option>
-                            <option value="active">Actif / مفعّل</option>
-                            <option value="suspended">Suspendu / موقوف</option>
+                            <option value="trial">{t('Essai', 'تجربة')}</option>
+                            <option value="active">{t('Actif', 'مفعّل')}</option>
+                            <option value="suspended">{t('Suspendu', 'موقوف')}</option>
                           </select>
                         </label>
                         <label className="field">
-                          Offre
+                          {t('Offre', 'العرض')}
                           <select name="plan" defaultValue={p.plan}>
                             {['Digital', 'Pack', 'Accompagnement'].map((v) => (
-                              <option key={v}>{v}</option>
+                              <option key={v} value={v}>
+                                {offerLabel(v, ar)}
+                              </option>
                             ))}
                           </select>
                         </label>
                         <label className="field">
-                          Échéance / نهاية الاشتراك
+                          {t('Échéance', 'نهاية الاشتراك')}
                           <input
                             name="expires"
                             type="date"
@@ -221,22 +258,27 @@ export default function Admin() {
                         </label>
                         <label className="toggle">
                           <input name="pro" type="checkbox" defaultChecked={!!p.pro_enabled} />
-                          Pro Rendez-vous
+                          {t('Option Rendez-vous', 'خيار المواعيد')}
                         </label>
                       </div>
                       <p className="hint">
-                        Validez le paiement séparément dans Commandes, puis activez l’offre et son
-                        échéance ici.
+                        {t(
+                          'Validez le paiement séparément dans Commandes, puis activez l’offre et son échéance ici.',
+                          'أكّد الأداء فقسم الطلبات ومن بعد فعّل العرض والأجل ديالو هنا.',
+                        )}
                       </p>
                       <button className="primary" disabled={busy}>
                         <Save size={16} />
-                        Enregistrer
+                        {t('Enregistrer', 'سجّل')}
                       </button>
                     </form>
                   ))}
                 {!data.profiles.length && (
                   <div className="empty">
-                    Aucun client. Créez votre première carte dans Mon espace.
+                    {t(
+                      'Aucun client. Créez votre première carte dans Mon espace.',
+                      'ما كاين حتى زبون. صايب أول كارط فالحساب ديالك.',
+                    )}
                   </div>
                 )}
               </>
@@ -246,15 +288,17 @@ export default function Admin() {
                 {data.orders.map((o: any) => (
                   <article className="request" key={o.id}>
                     <div>
-                      <span className="eyebrow">{o.plan}</span>
-                      <h3>{o.data ? JSON.parse(o.data).name : 'Client sans carte'}</h3>
+                      <span className="eyebrow">{offerLabel(o.plan, ar)}</span>
+                      <h3>
+                        {o.data ? JSON.parse(o.data).name : t('Client sans carte', 'زبون بلا كارط')}
+                      </h3>
                       <p>{o.email}</p>
                       <p className="hint">
                         {o.created.slice(0, 10)} · {o.id.slice(0, 8)}
                       </p>
                     </div>
                     <label className="field">
-                      Statut
+                      {t('Statut', 'الحالة')}
                       <select
                         value={o.status}
                         disabled={busy}
@@ -264,14 +308,18 @@ export default function Admin() {
                       >
                         {Object.entries(statuses).map(([v, l]: any) => (
                           <option key={v} value={v}>
-                            {l}
+                            {String(l).split(' / ')[ar ? 1 : 0]}
                           </option>
                         ))}
                       </select>
                     </label>
                   </article>
                 ))}
-                {!data.orders.length && <div className="empty">Aucune demande de pack.</div>}
+                {!data.orders.length && (
+                  <div className="empty">
+                    {t('Aucune demande de pack.', 'ما كاين حتى طلب ديال الپاك.')}
+                  </div>
+                )}
               </section>
             )}
             {tab === 'audit' && (
@@ -292,7 +340,12 @@ export default function Admin() {
                   </div>
                 ))}
                 {!data.audit.length && (
-                  <div className="empty">Les actions administratives apparaîtront ici.</div>
+                  <div className="empty">
+                    {t(
+                      'Les actions administratives apparaîtront ici.',
+                      'الإجراءات ديال الإدارة غادي تبان هنا.',
+                    )}
+                  </div>
                 )}
               </section>
             )}

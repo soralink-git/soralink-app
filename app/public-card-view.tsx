@@ -92,6 +92,18 @@ export default function PublicCardView({
           </div>
         )}
       </main>
+      <footer
+        className="public-legal"
+        style={{ textAlign: 'center', padding: '16px', fontSize: '0.8rem' }}
+      >
+        <a href={'/conditions?lang=' + (ar ? 'ar' : 'fr')}>
+          {t('Conditions de service', 'شروط الخدمة')}
+        </a>
+        {' · '}
+        <a href={'/confidentialite?lang=' + (ar ? 'ar' : 'fr')}>
+          {t('Confidentialité', 'الخصوصية')}
+        </a>
+      </footer>
       {request && d && (
         <Suspense
           fallback={

@@ -87,6 +87,7 @@ function load(filename) {
       exports: module.exports,
       Date,
       URL,
+      URLSearchParams,
       Intl,
       Set,
       Map,
@@ -204,7 +205,7 @@ test('JSON actions reject primitives, arrays, unknown actions and malformed fiel
     { ...request, name: {} },
     { ...request, phone: 661446664 },
     { ...request, consent: 'true' },
-    { action: 'save', data: { name: 'Card' }, published: 'false' },
+    { action: 'save', revision: null, data: { name: 'Card' }, published: 'false' },
   ])
     assert(!valid(v.dataActionSchema, payload));
 });
@@ -393,7 +394,14 @@ test('origin check still precedes validation', async () => {
 });
 test('private actions still require login and administrator actions require admin', async () => {
   assert.equal(
-    (await post('data', { action: 'save', data: { name: 'Card' }, published: true })).status,
+    (
+      await post('data', {
+        action: 'save',
+        revision: null,
+        data: { name: 'Card' },
+        published: true,
+      })
+    ).status,
     401,
   );
   assert.equal((await post('data', { action: 'deleteContact', id: 'some-contact' })).status, 401);
@@ -407,7 +415,12 @@ test('private actions still require login and administrator actions require admi
 });
 test('saved profile Pro flag comes from the server and unavailable media is still rejected', async () => {
   user();
-  const body = { action: 'save', data: { name: 'Card', pro: true }, published: true };
+  const body = {
+    action: 'save',
+    revision: null,
+    data: { name: 'Card', pro: true },
+    published: true,
+  };
   assert.equal((await post('data', body)).status, 200);
   assert.equal(ctx.saved[0][3].pro, false);
   assert.equal(ctx.saved[0][0], 'owner');
@@ -563,8 +576,42 @@ test('deeply nested passthrough fields are rejected as input errors before seria
   for (let i = 0; i < 40; i++) nested = { child: nested };
   const response = await post('data', {
     action: 'save',
+    revision: null,
     data: { name: 'Card', futureSetting: nested },
   });
   assert.equal(response.status, 400);
   assert.equal(ctx.identities, 0);
+});
+
+test('stale browser revision cannot overwrite a saved profile and inactive profiles cannot publish', async () => {
+  user();
+  ctx.own.updated = '2026-10-15T12:00:00.000Z';
+  let body = { action: 'save', revision: null, data: { name: 'Card' }, published: true };
+  assert.equal((await post('data', body)).status, 409);
+  assert.equal(ctx.saved.length, 0);
+  body.revision = ctx.own.updated;
+  ctx.own.state = 'suspended';
+  assert.equal((await post('data', body)).status, 403);
+  assert.equal(ctx.saved.length, 0);
+  body.published = false;
+  assert.equal((await post('data', body)).status, 200);
+});
+test('Arabic auth returns translated success and retains the selected offer in its redirect', async () => {
+  const response = await post('auth', {
+    action: 'signup',
+    email: 'test@example.test',
+    password: 'test-password',
+    lang: 'ar',
+    offer: 'Pack',
+  });
+  const result = await response.json();
+  assert.match(result.messageAr, /الإيميل/);
+  const login = await post('auth', {
+    action: 'login',
+    email: 'test@example.test',
+    password: 'test-password',
+    lang: 'ar',
+    offer: 'Pack',
+  });
+  assert.equal((await login.json()).redirect, '/?app=1&lang=ar&offer=Pack&tab=orders');
 });

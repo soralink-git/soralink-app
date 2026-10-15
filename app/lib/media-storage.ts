@@ -1,5 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { db } from './server';
+import { trialExpiry } from './subscription';
 export const STORAGE_BYTES = 400 * 1024 * 1024;
 export const MAX_ASSETS = 80;
 export function mediaKeys(d: any): string[] {
@@ -121,12 +122,12 @@ export async function saveProfileWithMedia(
   d: any,
   published: boolean,
   email: string,
+  stamp = new Date().toISOString(),
 ) {
   const old = p ? JSON.parse(p.data) : {},
     keys = mediaKeys(d),
     removed = mediaKeys(old).filter((key) => !keys.includes(key));
-  const stamp = new Date().toISOString(),
-    data = JSON.stringify(d);
+  const data = JSON.stringify(d);
   const valid = keys.length
     ? 'NOT EXISTS(SELECT 1 FROM media_assets WHERE key IN (' +
       keys.map(() => '?').join(',') +
@@ -134,9 +135,9 @@ export async function saveProfileWithMedia(
     : '1=1';
   const save = db()
     .prepare(
-      'INSERT INTO profiles(id,owner,data,published,updated,email) SELECT ?,?,?,?,?,? WHERE ' +
+      'INSERT INTO profiles(id,owner,data,published,updated,email,expires) SELECT ?,?,?,?,?,?,? WHERE ' +
         valid +
-        ' ON CONFLICT(owner) DO UPDATE SET data=excluded.data,published=excluded.published,updated=excluded.updated,email=excluded.email WHERE profiles.updated=? AND profiles.data=? AND profiles.published=? RETURNING id',
+        ' ON CONFLICT(owner) DO UPDATE SET data=excluded.data,published=excluded.published,updated=excluded.updated,email=excluded.email,expires=COALESCE(profiles.expires,excluded.expires) WHERE profiles.updated=? AND profiles.data=? AND profiles.published=? RETURNING id',
     )
     .bind(
       id,
@@ -145,6 +146,7 @@ export async function saveProfileWithMedia(
       published ? 1 : 0,
       stamp,
       email,
+      p?.expires || (p ? null : trialExpiry()),
       ...keys,
       p?.updated || '',
       p?.data || '',

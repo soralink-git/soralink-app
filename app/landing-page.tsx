@@ -1,4 +1,5 @@
 'use client';
+import { signupPath } from './lib/journey-links';
 import { useState, type ComponentType } from 'react';
 import type { LucideIcon } from 'lucide-react';
 type LandingFeature = [LucideIcon, string, string, string, string, string];
@@ -531,7 +532,7 @@ export default function LandingPage({
             <span className="eyebrow">
               {t('L’essentiel 100 % en ligne', 'الأساسي 100% أونلاين')}
             </span>
-            <h3 dir="ltr">Digital</h3>
+            <h3>{t('Digital', 'الديجيتال')}</h3>
             <strong className="landing-price">
               149<small> DH</small>
             </strong>
@@ -553,8 +554,8 @@ export default function LandingPage({
                 </span>
               </li>
             </ul>
-            <a className="secondary full" href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}>
-              {t('Choisir Digital', 'اختار Digital')}
+            <a className="secondary full" href={signupPath(ar, 'Digital', auth)}>
+              {t('Choisir Digital', 'اختار الديجيتال')}
             </a>
             <small>{t('Renouvellement : 149 DH/an', 'التجديد: 149 درهم فالعام')}</small>
           </article>
@@ -566,7 +567,7 @@ export default function LandingPage({
             </div>
 
             <span className="eyebrow">{t('⭐ Le plus populaire', '⭐ الأكثر طلباً')}</span>
-            <h3 dir="ltr">Pack Hybride</h3>
+            <h3>{t('Pack Hybride', 'الپاك الهجين')}</h3>
             <div className="landing-price-tagline">
               {t(
                 'Le moderne + le classique pour ne rater aucun client',
@@ -576,10 +577,10 @@ export default function LandingPage({
 
             <div className="pack-hardware-preview">
               <div className="hardware-pill">
-                <Nfc size={15} /> 1 Carte NFC
+                <Nfc size={15} /> {t('1 Carte NFC', 'كارط NFC وحدة')}
               </div>
               <div className="hardware-pill">
-                <Layers size={15} /> 100 Cartes papier QR
+                <Layers size={15} /> {t('100 Cartes papier QR', '100 كارط ورقية QR')}
               </div>
             </div>
 
@@ -621,10 +622,7 @@ export default function LandingPage({
               </li>
             </ul>
 
-            <a
-              className="primary full btn-glow-gold"
-              href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}
-            >
+            <a className="primary full btn-glow-gold" href={signupPath(ar, 'Pack', auth)}>
               {t('Choisir le Pack', 'اختار هاد الپاك')}
             </a>
             <small>
@@ -640,7 +638,7 @@ export default function LandingPage({
             <span className="eyebrow">
               {t('On s’occupe de tout pour vous', 'كنتكلفو ليك بكلشي')}
             </span>
-            <h3 dir="ltr">Clé en main</h3>
+            <h3>{t('Clé en main', 'خدمة كاملة')}</h3>
             <div className="landing-price-tagline">
               {t('Accompagnement VIP', 'مرافقة VIP خاصة')}
             </div>
@@ -668,8 +666,8 @@ export default function LandingPage({
                 </span>
               </li>
             </ul>
-            <a className="secondary full" href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}>
-              {t('Choisir Clé en main', 'اختار Clé en main')}
+            <a className="secondary full" href={signupPath(ar, 'Accompagnement', auth)}>
+              {t('Choisir Clé en main', 'اختار الخدمة الكاملة')}
             </a>
             <small>
               {t(

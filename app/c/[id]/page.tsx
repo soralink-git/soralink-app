@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import PublicCardView from '../../public-card-view';
 import { db, active } from '../../lib/server';
 import { publicCardData } from '../../lib/public-card';
@@ -75,6 +76,8 @@ export default async function Page({
   } catch {
     initialError = 'service';
   }
+  if (!initialData && initialError === 'notfound') notFound();
+  if (initialError === 'service') throw new Error('Card storage unavailable');
   return (
     <PublicCardView
       cardId={id}

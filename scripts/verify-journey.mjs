@@ -136,7 +136,7 @@ try {
         .map((sql) => db.prepare(sql)),
     );
   await request('/api/data', {
-    data: { action: 'save', data: { name: 'Journey card' } },
+    data: { action: 'save', revision: null, data: { name: 'Journey card' } },
     status: 401,
   });
   await request('/api/auth', {
@@ -172,7 +172,7 @@ try {
   };
   const saved = await request('/api/data', {
     auth: true,
-    data: { action: 'save', data: fields, published: false },
+    data: { action: 'save', revision: null, data: fields, published: false },
   });
   const cardId = saved.json.id;
   await request('/api/data?id=' + cardId, { status: 404 });
@@ -180,12 +180,42 @@ try {
   const form = new FormData();
   form.set('file', new File([photo], 'test.png', { type: 'image/png' }));
   const uploaded = await request('/api/upload', { auth: true, method: 'POST', body: form });
+  await request(uploaded.json.url, { status: 404 });
+  await request(uploaded.json.url, { auth: true });
+  await request(uploaded.json.url, { auth: true, id: otherId, status: 404 });
+  const trial = await db
+    .prepare('SELECT state,expires FROM profiles WHERE id=?')
+    .bind(cardId)
+    .first();
+  assert.equal(trial.state, 'trial');
+  assert(Date.parse(trial.expires) > Date.now());
+  assert(Date.parse(trial.expires) < Date.now() + 15 * 86400000);
   fields.avatar = uploaded.json.url;
   fields.cover = uploaded.json.url;
   await request('/api/data', {
     auth: true,
-    data: { action: 'save', data: fields, published: true },
+    data: { action: 'save', revision: saved.json.revision, data: fields, published: true },
   });
+  await request('/api/data', {
+    auth: true,
+    data: {
+      action: 'save',
+      revision: saved.json.revision,
+      data: { ...fields, bio: 'Stale edit' },
+      published: true,
+    },
+    status: 409,
+  });
+  assert.equal(
+    JSON.parse((await db.prepare('SELECT data FROM profiles WHERE id=?').bind(cardId).first()).data)
+      .bio,
+    fields.bio,
+  );
+  await request(uploaded.json.url);
+  await db.prepare('UPDATE profiles SET published=0 WHERE id=?').bind(cardId).run();
+  await request(uploaded.json.url, { status: 404 });
+  await request(uploaded.json.url, { auth: true });
+  await db.prepare('UPDATE profiles SET published=1 WHERE id=?').bind(cardId).run();
   const publicData = JSON.parse((await request('/api/data?id=' + cardId)).json.data);
   assert.equal(publicData.name, fields.name);
   assert.equal(publicData.textColor, '#ffffff');
@@ -259,6 +289,37 @@ try {
   assert(
     (await request('/api/availability?id=' + cardId + '&date=' + date)).json.slots.includes(slot),
   );
+  const hiddenForm = new FormData();
+  hiddenForm.set('file', new File([photo], 'hidden.png', { type: 'image/png' }));
+  const hiddenUpload = await request('/api/upload', {
+    auth: true,
+    method: 'POST',
+    body: hiddenForm,
+  });
+  const revision = (await request('/api/data', { auth: true })).json.profile.updated;
+  await request('/api/data', {
+    auth: true,
+    data: {
+      action: 'save',
+      revision,
+      data: { ...fields, photos: [hiddenUpload.json.url], hiddenSections: ['photos'] },
+      published: true,
+    },
+  });
+  await request(hiddenUpload.json.url, { status: 404 });
+  await request(hiddenUpload.json.url, { auth: true });
+  await request(uploaded.json.url);
+  await db.prepare("UPDATE profiles SET state='suspended' WHERE id=?").bind(cardId).run();
+  await request(uploaded.json.url, { status: 404 });
+  const deniedUpload = new FormData();
+  deniedUpload.set('file', new File([photo], 'denied.png', { type: 'image/png' }));
+  await request('/api/upload', { auth: true, method: 'POST', body: deniedUpload, status: 403 });
+  await db
+    .prepare("UPDATE profiles SET state='trial',expires='2000-01-01T00:00:00.000Z' WHERE id=?")
+    .bind(cardId)
+    .run();
+  await request('/api/data?id=' + cardId, { status: 404 });
+  await request(uploaded.json.url, { status: 404 });
   await request('/api/auth', { auth: true, data: { action: 'logout' } });
   assert.equal((await request('/api/auth')).json.authenticated, false);
   assert.equal((await db.prepare('SELECT COUNT(*) n FROM notifications').first()).n, 0);
