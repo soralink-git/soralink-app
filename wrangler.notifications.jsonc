@@ -1,0 +1,12 @@
+{
+  "name": "soralink-notifications",
+  "main": "notifications-worker.ts",
+  "compatibility_date": "2026-05-15",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": { "crons": ["* * * * *"] },
+  "observability": { "enabled": true },
+  // Add the existing Pages D1 database here as binding DB before deployment.
+  // Configure NOTIFICATIONS_ENABLED, PUBLIC_SITE_URL, EMAIL_FROM and RESEND_API_KEY
+  // on this worker as well as on Pages. No production credentials are stored here.
+}

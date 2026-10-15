@@ -17,34 +17,7 @@ export async function identity() {
       const owner = 'sb:' + data.user.id;
       user = { userId: owner, email, displayName: email };
       source = 'email';
-      const existing = await db()
-        .prepare('SELECT id FROM profiles WHERE owner=?')
-        .bind(owner)
-        .first();
-      if (!existing) {
-        const matches = await db()
-          .prepare('SELECT id,owner FROM profiles WHERE lower(email)=? AND owner<>? LIMIT 2')
-          .bind(email, owner)
-          .all();
-        const old: any = matches.results.length === 1 ? matches.results[0] : null;
-        if (old) {
-          await db().batch([
-            db()
-              .prepare('UPDATE profiles SET owner=? WHERE id=? AND owner=?')
-              .bind(owner, old.id, old.owner),
-            db()
-              .prepare(
-                'UPDATE orders SET owner=? WHERE owner=? AND EXISTS (SELECT 1 FROM profiles WHERE id=? AND owner=?)',
-              )
-              .bind(owner, old.owner, old.id, owner),
-            db()
-              .prepare(
-                'UPDATE media_assets SET owner=? WHERE owner=? AND EXISTS (SELECT 1 FROM profiles WHERE id=? AND owner=?)',
-              )
-              .bind(owner, old.owner, old.id, owner),
-          ]);
-        }
-      }
+      // Ownership is bound to the verified user ID, never reclaimed by email.
     }
   }
   if (!user && (await cookies()).get('soratap_legacy')?.value === '1') {

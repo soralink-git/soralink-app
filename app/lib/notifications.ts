@@ -82,7 +82,7 @@ export function mailStatement(
   if (event !== 'new') args.push(r.id, event, revision);
   return [e.DB.prepare(sql).bind(...args)];
 }
-export async function sendPending(e: MailEnv, send: typeof fetch = fetch) {
+export async function sendPending(e: MailEnv, send: typeof fetch = fetch, limit = 10) {
   if (!mailReady(e)) return;
   const now = new Date().toISOString();
   // Do not replay ambiguous sends after the provider’s idempotency window.
@@ -92,9 +92,9 @@ export async function sendPending(e: MailEnv, send: typeof fetch = fetch) {
     .bind(new Date(Date.now() - 23 * 3600000).toISOString())
     .run();
   const rows = await e.DB.prepare(
-    "SELECT * FROM notifications WHERE state IN ('pending','processing') AND next_attempt<=? AND attempts<5 ORDER BY created LIMIT 10",
+    "SELECT * FROM notifications WHERE state IN ('pending','processing') AND next_attempt<=? AND attempts<5 ORDER BY created LIMIT ?",
   )
-    .bind(now)
+    .bind(now, Math.max(1, Math.min(10, Math.floor(limit))))
     .all<any>();
   for (const row of rows.results) {
     const lease = new Date(Date.now() + 120000).toISOString();
