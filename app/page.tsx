@@ -1,5 +1,14 @@
 import App from './ui';
 import { selectedPlan } from './lib/journey-links';
+import { manifestPath } from './lib/pwa-manifest';
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const params = await searchParams;
+  return { manifest: manifestPath(params.lang === 'ar') };
+}
 export default async function Page({
   searchParams,
 }: {

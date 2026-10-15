@@ -17,15 +17,25 @@ d’idempotence existants. Aucun envoi ne démarre si les notifications sont dé
 Le Worker `notifications-worker.ts` traite aussi dix messages par minute sans visite du site.
 Avant de le déployer avec `wrangler.notifications.jsonc` :
 
-1. Ajouter `d1_databases` avec `binding: "DB"`, le `database_name` et le `database_id`
-   **réels de la base déjà utilisée par Pages**. Ne pas créer une autre base.
-2. Configurer sur Pages et sur le Worker `NOTIFICATIONS_ENABLED=true`, `PUBLIC_SITE_URL`
-   (URL HTTPS du site), `EMAIL_FROM` (expéditeur validé) et le secret `RESEND_API_KEY`.
-3. Déployer le Worker séparément et le site Pages. La configuration fournie définit le
-   déclencheur chaque minute et désactive les URL publiques du Worker.
-4. Valider avec un destinataire de test autorisé : création d’une demande, confirmation,
-   annulation, reprise après erreur, état `accepted` et réception effective.
+1. La configuration du Worker référence maintenant la base D1 de production existante
+   `soralink-db`. Ne pas créer de base supplémentaire. L’envoi reste désactivé par défaut.
+2. Dans Resend, vérifier le domaine expéditeur et ses enregistrements DNS. L’adresse prévue
+   est `SoraLink <notifications@soralink.link>` ; elle doit appartenir au domaine validé.
+3. Sur le Worker `soralink-notifications` uniquement, ajouter `RESEND_API_KEY` en secret.
+   Ne jamais la copier dans le dépôt ni dans la conversation. Pages n’a pas besoin de cette clé.
+4. Configurer sur le Worker `PUBLIC_SITE_URL=https://soralink.link`, l’expéditeur vérifié
+   `EMAIL_FROM` et `NOTIFICATIONS_ENABLED=true`. Le déclencheur planifié traite la file.
+5. Une fois le Worker prêt, configurer sur Pages les mêmes `PUBLIC_SITE_URL`, `EMAIL_FROM`
+   et `NOTIFICATIONS_ENABLED=true`. Pages enregistre les notifications dans la même base ;
+   il ne détient pas le secret du fournisseur. L’activation du Worker doit précéder celle de Pages.
+6. Valider avec un destinataire de test autorisé : nouvelle demande au professionnel,
+   confirmation/annulation de rendez-vous au visiteur, reprise après erreur, état `accepted`
+   et réception effective. La clé d’idempotence reste identique entre les tentatives.
 
-Le fournisseur est simulé dans les tests : aucun e-mail réel n’est envoyé. Les messages
-anciens de plus de 23 heures sont marqués en échec pour éviter de rejouer des envois ambigus.
-La configuration des ressources et secrets en production n’est pas incluse dans le dépôt.
+Les e-mails d’inscription et de récupération de compte restent gérés par Supabase :
+ce mécanisme concerne les notifications des demandes, sans changer l’authentification.
+WhatsApp reste manuel : aucun compte Meta ni frais d’API WhatsApp n’est activé.
+
+Les simulations n’envoient aucun e-mail réel. Les messages de plus de 23 heures sont
+marqués en échec pour éviter de rejouer des envois ambigus. La configuration par défaut
+reste désactivée tant que le domaine et la clé du fournisseur ne sont pas prêts.

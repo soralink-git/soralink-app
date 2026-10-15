@@ -1,7 +1,7 @@
 {
   "name": "SoraLink",
   "short_name": "SoraLink",
-  "start_url": "/?app=1",
+  "start_url": "/?app=1&lang=fr",
   "display": "standalone",
   "background_color": "#0c0d0e",
   "theme_color": "#101112",
@@ -28,5 +28,6 @@
   "id": "/",
   "scope": "/",
   "lang": "fr",
-  "description": "Votre carte digitale, catalogue et rendez-vous SoraLink."
+  "description": "Votre carte digitale, catalogue et rendez-vous SoraLink.",
+  "dir": "ltr"
 }
