@@ -61,3 +61,27 @@ test('request status and prepared replies use one language and keep quotes separ
   );
   assert.equal(whatsappNotification({ ...request, phone: 'invalid' }, 'SoraLink'), '');
 });
+
+test('home footer, sign-in and card brand links preserve the selected language', () => {
+  const App = load(path.resolve('app/ui.tsx')).default;
+  const CardView = load(path.resolve('app/card-view.tsx')).default;
+  for (const ar of [true, false]) {
+    const lang = ar ? 'ar' : 'fr';
+    const home = renderToStaticMarkup(React.createElement(App, { initialArabic: ar }));
+    assert.match(home, new RegExp('href="/conditions\\?lang=' + lang + '"'));
+    assert.match(home, new RegExp('href="/confidentialite\\?lang=' + lang + '"'));
+    assert.match(home, new RegExp('href="/\\?lang=' + lang + '#tarifs"'));
+    const auth = renderToStaticMarkup(React.createElement(Auth, { initialArabic: ar }));
+    assert.match(auth, new RegExp('href="/\\?lang=' + lang + '"'));
+    const card = renderToStaticMarkup(
+      React.createElement(CardView, {
+        ar,
+        setAr() {},
+        onMessage() {},
+        onRequest() {},
+        d: { name: 'Example' },
+      }),
+    );
+    assert.match(card, new RegExp('href="/\\?lang=' + lang + '"'));
+  }
+});

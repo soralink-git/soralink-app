@@ -27,6 +27,10 @@ Les statuts de demande affichés en anglais sont remplacés par des libellés FR
 Les e-mails préparés manuellement suivent la langue choisie et le type de demande
 (devis, commande ou rendez-vous). Le bouton WhatsApp prépare toujours un message manuel.
 
+Le logo et les liens légaux / offres du pied de page conservent aussi la langue choisie,
+depuis l’accueil, la connexion, l’administration et la carte. Les libellés résiduels
+« LIVE », « Option Pro » et la ville du pied de page sont traduits selon la langue.
+
 Aucune migration ni suppression de données n’est nécessaire pour ce lot. Les index
 existants sont conservés. Le serveur retourne toujours les champs historiques initiaux ;
 les clients mis à jour utilisent en plus les métadonnées de pagination.

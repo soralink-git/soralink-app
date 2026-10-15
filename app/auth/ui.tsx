@@ -94,7 +94,7 @@ export default function Auth({
   return (
     <div className="site" dir={ar ? 'rtl' : 'ltr'}>
       <header>
-        <a className="brand" dir="ltr" href="/">
+        <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
           <span className="brand-icon">
             <Nfc size={23} />
           </span>

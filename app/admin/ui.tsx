@@ -125,7 +125,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
         >
           {ar ? 'Français' : 'العربية'}
         </button>
-        <a className="brand" dir="ltr" href="/">
+        <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
           <span className="brand-icon">
             <Nfc />
           </span>

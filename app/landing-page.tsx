@@ -146,7 +146,7 @@ export default function LandingPage({
             <span>{t('VOTRE UNIVERS PROFESSIONNEL EN 1 TAP', 'النشاط ديالك فـ نقرة وحدة')}</span>
             <div className="showcase-pulse-tag">
               <span className="pulse-dot" />
-              <span>NFC LIVE</span>
+              <span>{t('NFC EN DIRECT', 'NFC مباشرة')}</span>
             </div>
           </div>
 
@@ -169,7 +169,7 @@ export default function LandingPage({
                   phone: '+212600000000',
                   whatsapp: '+212661446664',
                   email: 'contact@soralink.ma',
-                  address: 'Boulevard d’Anfa, Casablanca',
+                  address: t('Boulevard d’Anfa, Casablanca', 'شارع أنفا، الدار البيضاء'),
                   website: 'https://soralink.link',
                   instagram: 'https://instagram.com/soralink',
                   linkedin: 'https://linkedin.com/company/soralink',
@@ -332,7 +332,7 @@ export default function LandingPage({
                 <span>🏗️</span>
                 <small>{t('Chantier & Déco', 'أشغال')}</small>
               </div>
-              <span className="bento-promo-badge">-20% PROMO</span>
+              <span className="bento-promo-badge">-20% {t('PROMO', 'تخفيض')}</span>
             </div>
           </article>
 
@@ -534,7 +534,7 @@ export default function LandingPage({
             </span>
             <h3>{t('Digital', 'الديجيتال')}</h3>
             <strong className="landing-price">
-              149<small> DH</small>
+              149<small> {t('DH', 'درهم')}</small>
             </strong>
             <p className="hint">{t('/ an', 'فالعام')}</p>
             <ul className="landing-price-features">
@@ -585,7 +585,7 @@ export default function LandingPage({
             </div>
 
             <strong className="landing-price">
-              349<small> DH</small>
+              349<small> {t('DH', 'درهم')}</small>
             </strong>
             <p className="hint">{t('la première année', 'فالعام الأول')}</p>
 
@@ -643,7 +643,7 @@ export default function LandingPage({
               {t('Accompagnement VIP', 'مرافقة VIP خاصة')}
             </div>
             <strong className="landing-price">
-              549<small> DH</small>
+              549<small> {t('DH', 'درهم')}</small>
             </strong>
             <p className="hint">{t('la première année', 'فالعام الأول')}</p>
             <ul className="landing-price-features">
@@ -703,7 +703,7 @@ export default function LandingPage({
               href={`https://wa.me/212661446664?text=${encodeURIComponent(
                 t(
                   'Bonjour SoraLink, je souhaite commander une carte spéciale sur-mesure (Avis Google, Menu, Santé, etc.). Pouvez-vous me renseigner ?',
-                  'السلام عليكم SoraLink، بغيت نطلب كارط خاصة على المقاس (Avis Google، مينو، صحة، إلخ). ممكن معلومات؟',
+                  'السلام عليكم SoraLink، بغيت نطلب كارط خاصة على المقاس (تقييمات Google، مينو، صحة، إلخ). ممكن معلومات؟',
                 ),
               )}`}
               target="_blank"
@@ -809,10 +809,7 @@ export default function LandingPage({
           <p>
             <Calendar size={18} />
             <strong>
-              {t(
-                'Option Pro (Rendez-vous) : +250 DH / an',
-                'Option Pro (المواعيد): +250 درهم فالعام',
-              )}
+              {t('Option Pro (Rendez-vous) : +250 DH / an', 'خيار Pro للمواعيد: +250 درهم فالعام')}
             </strong>{' '}
             {t(
               'Ajoutez un agenda de réservation en ligne (jusqu’à 5 prestations) à votre carte.',

@@ -32,7 +32,10 @@ test('entire French landing renders after lazy loading with all four selling poi
 test('entire Darija landing renders after lazy loading without French appointment heading', () => {
   const html = render(true);
   assert.match(html, /المواعيد مع Pro/);
-  assert.doesNotMatch(html, /Prise de rendez-vous \(Option Pro\)/);
+  assert.doesNotMatch(
+    html,
+    /Prise de rendez-vous \(Option Pro\)|NFC LIVE|PROMO|Option Pro|Boulevard d’Anfa/,
+  );
   assert.equal((html.match(/class="feature-index"/g) || []).length, 4);
   assert.match(html, /href="\/auth\?mode=signup&amp;lang=ar"/);
 });

@@ -1146,7 +1146,7 @@ export default function App({
     >
       {view !== 'public' && view !== 'demo' && (
         <header>
-          <a className="brand" dir="ltr" href="/">
+          <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
             <span className="brand-icon">
               <svg width="25" height="25" viewBox="0 0 64 64" fill="none" aria-hidden="true">
                 <path
@@ -1785,11 +1785,11 @@ export default function App({
       {view === 'public' || view === 'demo' ? null : (
         <footer className="site-footer">
           <div>
-            <a className="brand" dir="ltr" href="/">
+            <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
               Sora<span>Link</span>
             </a>
             <p>{t('Votre activité, à portée de main.', 'النشاط ديالك، قريب ليك.')}</p>
-            <span>Oujda · Maroc</span>
+            <span>{t('Oujda · Maroc', 'وجدة · المغرب')}</span>
           </div>
           <div className="footer-contact">
             <strong>{t('Parlons de votre carte', 'نهضرو على الكارط ديالك')}</strong>
@@ -1805,9 +1805,15 @@ export default function App({
             </a>
           </div>
           <div className="footer-links">
-            <a href="/conditions">{t('Conditions de service · pilote', 'شروط الخدمة · تجريبية')}</a>
-            <a href="/confidentialite">{t('Confidentialité', 'الخصوصية')}</a>
-            <a href="/#tarifs">{t('Offres et renouvellement', 'العروض والتجديد')}</a>
+            <a href={'/conditions?lang=' + (ar ? 'ar' : 'fr')}>
+              {t('Conditions de service · pilote', 'شروط الخدمة · تجريبية')}
+            </a>
+            <a href={'/confidentialite?lang=' + (ar ? 'ar' : 'fr')}>
+              {t('Confidentialité', 'الخصوصية')}
+            </a>
+            <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#tarifs'}>
+              {t('Offres et renouvellement', 'العروض والتجديد')}
+            </a>
             {!cardId && <Pwa ar={ar} />}
           </div>
         </footer>
