@@ -1,6 +1,13 @@
+import {
+  catalogDocumentSchema,
+  catalogSettingsSchema,
+  catalogCategoriesSchema,
+  catalogRightsSchema,
+  assetURL,
+} from './catalog-menu';
 import { z } from 'zod';
 import { cursorSchema } from './pagination';
-import { catalogueError, MAX_CATALOGUE_ITEMS } from './catalogue';
+import { catalogueError, HARD_CATALOGUE_ITEMS } from './catalogue';
 import { promotionError } from './promotions';
 import { recordedVideoUrl, mediaError } from './content-media';
 import { sectionKeys } from './personalization';
@@ -67,6 +74,9 @@ export const profileDataSchema = z
     ...profileFields,
     name: requiredText(120),
     photos: z.array(text(4000)).max(10).optional(),
+    catalogDocuments: z.array(catalogDocumentSchema).max(10).optional(),
+    catalogSettings: catalogSettingsSchema.optional(),
+    catalogCategories: catalogCategoriesSchema.optional(),
     services: z
       .array(
         z.union([
@@ -80,11 +90,27 @@ export const profileDataSchema = z
               category: text(80).nullish(),
               price: text(30).nullish(),
               image: text(4000).nullish(),
+              thumbnail: assetURL.optional(),
+              nameFr: text(120).nullish(),
+              nameAr: text(120).nullish(),
+              descriptionAr: text(800).nullish(),
+              categoryAr: text(80).nullish(),
+              categoryId: text(80).nullish(),
+              images: z
+                .array(assetURL.refine((v) => !!v))
+                .max(5)
+                .optional(),
+              oldPrice: text(30).nullish(),
+              reference: text(80).nullish(),
+              availability: z.enum(['available', 'soldout', 'hidden']).optional(),
+              promotion: z.boolean().optional(),
+              promoStart: text(10).nullish(),
+              promoEnd: text(10).nullish(),
             })
             .passthrough(),
         ]),
       )
-      .max(MAX_CATALOGUE_ITEMS)
+      .max(HARD_CATALOGUE_ITEMS)
       .optional(),
     promotions: z
       .array(
@@ -152,8 +178,8 @@ export const profileDataSchema = z
   .passthrough()
   .superRefine((d, ctx) => {
     const errors = [
-      JSON.stringify(d).length > 100000 ? 'Informations invalides : carte trop volumineuse.' : null,
-      catalogueError(d.services),
+      JSON.stringify(d).length > 700000 ? 'Informations invalides : carte trop volumineuse.' : null,
+      catalogueError(d.services, HARD_CATALOGUE_ITEMS),
       promotionError(d.promotions),
       d.recordedVideo && !recordedVideoUrl(d.recordedVideo) ? 'Lien de vidéo invalide' : null,
     ];
@@ -188,7 +214,8 @@ function requestRules(b: z.infer<typeof requestObject>, ctx: z.RefinementCtx, re
       ((!b.shareCard || resolved) && !whatsappNumber(b.phone)))
   )
     issue('Vérifiez vos coordonnées et votre accord de partage');
-  if (b.catalogueId != null && b.kind !== 'commande') issue('Type de demande invalide');
+  if (b.catalogueId != null && !['commande', 'devis'].includes(b.kind))
+    issue('Type de demande invalide');
   if (b.kind === 'rdv' && !slot.safeParse(b.slot).success) issue('Choisissez un créneau valide.');
 }
 export const resolvedRequestSchema = requestObject.superRefine((b, ctx) =>
@@ -227,6 +254,7 @@ export const dataActionSchema = z
     if (b.action === 'request') requestRules(b, ctx);
   });
 export const adminActionSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('catalogRights'), id, rights: catalogRightsSchema.nullable() }),
   z.object({
     action: z.literal('profile'),
     id,
@@ -359,7 +387,7 @@ export function inputErrorResponse(error: unknown) {
 export async function readValidatedJSON<S extends z.ZodTypeAny>(
   req: Request,
   schema: S,
-  maxBytes = 160000,
+  maxBytes = 1000000,
 ): Promise<z.infer<S>> {
   if (Number(req.headers.get('content-length')) > maxBytes)
     throw new ApiInputError('La demande est trop volumineuse.', 413);

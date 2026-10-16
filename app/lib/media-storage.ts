@@ -9,9 +9,18 @@ export function mediaKeys(d: any): string[] {
     d?.cover,
     d?.backgroundPhoto,
     d?.pdf,
+    ...(Array.isArray(d?.catalogDocuments)
+      ? d.catalogDocuments.flatMap((v: any) => [v.src, v.cover])
+      : []),
     d?.recordedVideo,
     ...(Array.isArray(d?.photos) ? d.photos : []),
-    ...(Array.isArray(d?.services) ? d.services.map((s: any) => s.image) : []),
+    ...(Array.isArray(d?.services)
+      ? d.services.flatMap((s: any) => [
+          s.image,
+          s.thumbnail,
+          ...(Array.isArray(s.images) ? s.images : []),
+        ])
+      : []),
     ...(Array.isArray(d?.promotions) ? d.promotions.map((p: any) => p.image) : []),
   ];
   return [
@@ -42,16 +51,26 @@ export async function adoptLegacy(owner: string, profile: any) {
       .run();
   }
 }
-export async function storageUsage(owner: string) {
+export async function storageUsage(owner: string, limits = { storageMB: 400, maxFiles: 80 }) {
   const row: any = await db()
     .prepare(
       "SELECT COALESCE(SUM(bytes),0) bytes,COUNT(*) files FROM media_assets WHERE owner=? AND state!='deleted'",
     )
     .bind(owner)
     .first();
-  return { bytes: row.bytes, files: row.files, limitBytes: STORAGE_BYTES, limitFiles: MAX_ASSETS };
+  return {
+    bytes: row.bytes,
+    files: row.files,
+    limitBytes: limits.storageMB * 1024 * 1024,
+    limitFiles: limits.maxFiles,
+  };
 }
-export async function reserveMedia(owner: string, key: string, bytes: number) {
+export async function reserveMedia(
+  owner: string,
+  key: string,
+  bytes: number,
+  limits = { storageMB: 400, maxFiles: 80 },
+) {
   const result = await db()
     .prepare(
       "INSERT INTO media_assets(key,owner,bytes,state,created) SELECT ?,?,?,'pending',? WHERE (SELECT COALESCE(SUM(bytes),0) FROM media_assets WHERE owner=? AND state!='deleted')+?<=? AND (SELECT COUNT(*) FROM media_assets WHERE owner=? AND state!='deleted')<?",
@@ -63,9 +82,9 @@ export async function reserveMedia(owner: string, key: string, bytes: number) {
       new Date().toISOString(),
       owner,
       bytes,
-      STORAGE_BYTES,
+      limits.storageMB * 1024 * 1024,
       owner,
-      MAX_ASSETS,
+      limits.maxFiles,
     )
     .run();
   return result.meta.changes === 1;

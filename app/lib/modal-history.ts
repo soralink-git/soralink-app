@@ -9,6 +9,7 @@ export function modalHistory(onClose: () => void, target: Window = window) {
     target.location.href,
   );
   const pop = () => {
+    if (current()) return;
     owned = false;
     onClose();
   };

@@ -23,14 +23,14 @@ test('paid catalogues retain forty illustrated articles while trials remain limi
   assert.match(catalogueError(items.slice(0, 11), 10), /10/);
   assert.equal(normalizeCatalogue(items).length, 40);
 });
-test('forty full descriptions can be saved without hitting the old profile size cap; item forty-one is rejected', () => {
+test('forty full descriptions fit; the schema allows admin overrides while default validation rejects forty-one', () => {
   const card = { name: 'Catalogue', services: items };
   assert(JSON.stringify(card).length > 35000);
   assert.equal(profileDataSchema.safeParse(card).success, true);
   assert.equal(
     profileDataSchema.safeParse({ ...card, services: [...items, { id: 'extra', name: 'Extra' }] })
       .success,
-    false,
+    true,
   );
   assert.match(catalogueError([...items, { name: 'Extra' }]), /40/);
 });

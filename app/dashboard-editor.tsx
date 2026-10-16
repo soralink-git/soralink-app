@@ -1,4 +1,5 @@
 'use client';
+import CatalogEditor from './catalog-editor';
 import BackgroundEditor from './background-editor';
 import type { CropTarget } from './lib/crop-geometry';
 import AddressEditor from './address-editor';
@@ -45,7 +46,7 @@ import {
   requestStatus,
   requestReply,
 } from './lib/whatsapp-notification';
-import { catalogueLimit } from './lib/catalogue';
+import { catalogRights } from './lib/catalog-menu';
 import { appearance } from './lib/personalization';
 import { MAX_PROMOTIONS, promotionStatus } from './lib/promotions';
 
@@ -168,7 +169,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
   } = context;
   const tabs = [
     ['coordinates', Phone, 'Coordonnées', 'معلومات التواصل', 'card'],
-    ['content', Package, 'Produits & services', 'المنتجات والخدمات', 'card'],
+    ['content', Package, 'Catalogue / Menu', 'الكاتالوگ / القائمة', 'card'],
     ['interface', Palette, 'Interface', 'الواجهة والمظهر', 'card'],
     ['contacts', Users, 'Mes contacts', 'الكونطاكت ديالي', 'clients'],
     ['requests', Calendar, 'Mes demandes', 'الطلبات ديالي', 'clients'],
@@ -184,7 +185,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         : tab === 'catalogue' || tab === 'promotions' || tab === 'media'
           ? 'content'
           : tab;
-  const catalogueMax = catalogueLimit(subscription);
+  const limits = catalogRights(subscription);
   const current = tabs.find(([key]) => key === activeTab) || tabs[0];
   return (
     <main className="workspace workspace-design">
@@ -485,136 +486,15 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 tab === 'promotions' ||
                 tab === 'media') && (
                 <>
-                  <section className="panel">
-                    <h2>
-                      {t('Produits et services (Catalogue)', 'المنتجات والخدمات (الكاتالوگ)')}
-                    </h2>
-                    <p className="hint">
-                      {t(
-                        `Présentez jusqu’à ${catalogueMax} produits ou services avec photo. Vos visiteurs peuvent commander ou demander un devis en un clic. Enregistrez vos changements.`,
-                        `قدّم حتى ${catalogueMax} منتجات ولا خدمات مع تصويرة. الزوار يقدرو يطلبو بنقرة وحدة. سجّل التغييرات.`,
-                      )}
-                    </p>
-                    {data.services.map((item: any, i: number) => (
-                      <div className="catalogue-editor" key={item.id}>
-                        <div className="panel-title">
-                          <h3>
-                            {t('Article ', 'عرض ')}
-                            {i + 1}
-                          </h3>
-                          <button
-                            className="secondary small"
-                            disabled={busy}
-                            onClick={() =>
-                              setData((d: any) => ({
-                                ...d,
-                                services: d.services.filter((v: any) => v.id !== item.id),
-                              }))
-                            }
-                          >
-                            {t('Supprimer', 'مسح')}
-                          </button>
-                        </div>
-                        <div className="form-grid">
-                          <label className="field">
-                            {t('Type', 'النوع')}
-                            <select
-                              value={item.type}
-                              onChange={(e) => updateCatalogue(item.id, 'type', e.target.value)}
-                            >
-                              <option value="product">{t('Produit', 'منتج')}</option>
-                              <option value="service">{t('Service', 'خدمة')}</option>
-                            </select>
-                          </label>
-                          <label className="field">
-                            {t('Nom *', 'الاسم *')}
-                            <input
-                              maxLength={120}
-                              value={item.name}
-                              onChange={(e) => updateCatalogue(item.id, 'name', e.target.value)}
-                            />
-                          </label>
-                          <label className="field">
-                            {t('Catégorie — facultative', 'الصنف — اختياري')}
-                            <input
-                              maxLength={80}
-                              value={item.category}
-                              onChange={(e) => updateCatalogue(item.id, 'category', e.target.value)}
-                            />
-                          </label>
-                          <label className="field">
-                            {t('Prix en DH — facultatif', 'الثمن بالدرهم — اختياري')}
-                            <input
-                              inputMode="decimal"
-                              maxLength={12}
-                              value={item.price}
-                              onChange={(e) => updateCatalogue(item.id, 'price', e.target.value)}
-                            />
-                          </label>
-                        </div>
-                        <label className="field">
-                          {t('Description', 'الوصف')}
-                          <textarea
-                            maxLength={800}
-                            value={item.description}
-                            onChange={(e) =>
-                              updateCatalogue(item.id, 'description', e.target.value)
-                            }
-                          />
-                        </label>
-                        <label className="field">
-                          {t('Photo — JPG, PNG, WebP · 10 Mo', 'تصويرة — JPG، PNG، WebP · 10 Mo')}
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp"
-                            disabled={busy}
-                            onChange={(e) => {
-                              const f = e.currentTarget.files?.[0];
-                              e.currentTarget.value = '';
-                              if (f) void uploadCatalogue(f, item.id);
-                            }}
-                          />
-                        </label>
-                        {item.image && (
-                          <div className="promotion-photo">
-                            <img src={item.image} alt={item.name || t('Article', 'عرض')} />
-                            <button
-                              className="secondary small"
-                              disabled={busy}
-                              onClick={() => updateCatalogue(item.id, 'image', '')}
-                            >
-                              {t('Retirer la photo', 'حيّد التصويرة')}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      className="secondary"
-                      disabled={busy || data.services.length >= catalogueMax}
-                      onClick={() =>
-                        setData((d: any) => ({
-                          ...d,
-                          services: [
-                            ...d.services,
-                            {
-                              id: crypto.randomUUID(),
-                              type: 'product',
-                              name: '',
-                              description: '',
-                              category: '',
-                              price: '',
-                              image: '',
-                            },
-                          ],
-                        }))
-                      }
-                    >
-                      <Plus size={16} />
-                      {t('Ajouter un produit ou service', 'زيد منتج ولا خدمة')} (
-                      {data.services.length}/{catalogueMax})
-                    </button>
-                  </section>
+                  <CatalogEditor
+                    data={data}
+                    setData={setData}
+                    subscription={subscription}
+                    ar={ar}
+                    busy={busy}
+                    save={save}
+                    onMessage={setMsg}
+                  />
 
                   <section className="panel">
                     <h2>{t('Promotions & Offres du moment', 'العروض والتخفيضات الحالية')}</h2>
@@ -784,15 +664,15 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           ? Math.ceil(storage.bytes / 1048576) +
                             ' / ' +
                             storage.limitBytes / 1048576 +
-                            ' Mo · ' +
+                            t(' Mo · ', ' ميغابايت · ') +
                             storage.files +
                             ' / ' +
                             storage.limitFiles +
                             ' ' +
                             t('fichiers', 'ملف')
                           : t(
-                              '400 Mo maximum par compte · 80 fichiers',
-                              'حتى 400 Mo لكل حساب · 80 ملف',
+                              `${limits.storageMB} Mo maximum par compte · ${limits.maxFiles} fichiers`,
+                              `حتى ${limits.storageMB} ميغابايت لكل حساب · ${limits.maxFiles} ملف`,
                             )}
                       </p>
                       <p className="hint">
@@ -884,15 +764,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </span>
                       </label>
                       <label className="field">
-                        {t('Catalogue PDF · maximum 10 Mo', 'كاتالوگ PDF · حتى 10 Mo')}
-                        <input
-                          type="file"
-                          disabled={busy}
-                          accept="application/pdf"
-                          onChange={(e) => e.target.files?.[0] && upload(e.target.files[0], 'pdf')}
-                        />
-                      </label>
-                      <label className="field">
                         {t(
                           'Vidéo enregistrée · 1 vidéo, maximum 50 Mo',
                           'فيديو مسجّل · فيديو واحد، حتى 50 Mo',
@@ -953,16 +824,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </div>
                       ))}
                     </div>
-                    {data.pdf && (
-                      <div className="row">
-                        <a href={data.pdf} target="_blank">
-                          {t('Voir le catalogue', 'شوف الكاتالوگ')}
-                        </a>
-                        <button onClick={() => setData({ ...data, pdf: '' })}>
-                          {t('Retirer', 'حيّد')}
-                        </button>
-                      </div>
-                    )}
                     <button className="primary full" disabled={busy} onClick={save}>
                       <Save size={17} />
                       {t('Enregistrer les modifications', 'سجّل التغييرات')}

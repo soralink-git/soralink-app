@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
+import PdfScrollReader from './pdf-scroll-reader';
 import { X } from 'lucide-react';
 import { modalHistory } from './lib/modal-history';
 import { bindPdfGestures } from './lib/pdf-gestures';
@@ -90,7 +91,7 @@ function PdfFullscreen({
           <X />
         </button>
       </div>
-      <PdfReader src={src} ar={ar} initialPage={page} onPage={onPage} />
+      <PdfScrollReader src={src} ar={ar} initialPage={page} onPage={onPage} />
     </dialog>
   );
 }

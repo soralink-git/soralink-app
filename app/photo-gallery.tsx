@@ -1,4 +1,5 @@
 'use client';
+import { modalHistory } from './lib/modal-history';
 import { useEffect, useRef, useState } from 'react';
 import { X, ZoomIn, ZoomOut } from 'lucide-react';
 
@@ -11,6 +12,9 @@ export function PhotoViewer({
   ar: boolean;
   onClose: () => void;
 }) {
+  const close = useRef<() => void>(() => {}),
+    finish = useRef(onClose);
+  finish.current = onClose;
   const dialog = useRef<HTMLDialogElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
@@ -20,6 +24,8 @@ export function PhotoViewer({
   const t = (fr: string, da: string) => (ar ? da : fr);
   useEffect(() => {
     const element = dialog.current!;
+    const history = modalHistory(() => finish.current());
+    close.current = history.close;
     const previous = document.activeElement as HTMLElement | null;
     const overflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -30,6 +36,7 @@ export function PhotoViewer({
     observer.observe(stage.current!);
     return () => {
       observer.disconnect();
+      history.dispose();
       element.close();
       document.body.style.overflow = overflow;
       previous?.focus();
@@ -47,10 +54,10 @@ export function PhotoViewer({
       dir={ar ? 'rtl' : 'ltr'}
       onCancel={(e) => {
         e.preventDefault();
-        onClose();
+        close.current();
       }}
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (e.target === e.currentTarget) close.current();
       }}
     >
       <div className="photo-viewer-toolbar">
@@ -75,7 +82,7 @@ export function PhotoViewer({
           type="button"
           className="photo-viewer-close"
           aria-label={t('Fermer', 'سدّ')}
-          onClick={onClose}
+          onClick={() => close.current()}
         >
           <X />
         </button>
@@ -140,7 +147,17 @@ export default function PhotoGallery({ photos, ar }: { photos: string[]; ar: boo
   );
 }
 
-export function PhotoPreview({ src, alt, ar }: { src: string; alt: string; ar: boolean }) {
+export function PhotoPreview({
+  src,
+  thumbnail,
+  alt,
+  ar,
+}: {
+  src: string;
+  thumbnail?: string;
+  alt: string;
+  ar: boolean;
+}) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -150,7 +167,7 @@ export function PhotoPreview({ src, alt, ar }: { src: string; alt: string; ar: b
         aria-label={(ar ? 'كبّر التصويرة: ' : 'Agrandir la photo : ') + alt}
         onClick={() => setOpen(true)}
       >
-        <img src={src} alt={alt} loading="lazy" />
+        <img src={thumbnail || src} alt={alt} loading="lazy" />
       </button>
       {open && <PhotoViewer src={src} ar={ar} onClose={() => setOpen(false)} />}
     </>

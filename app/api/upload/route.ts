@@ -1,3 +1,5 @@
+import { catalogRights, catalogDocuments } from '../../lib/catalog-menu';
+import { checkFileContent } from '../../lib/upload-content';
 import {
   mediaUploadSchema,
   uploadQuerySchema,
@@ -46,19 +48,41 @@ export async function POST(req: Request) {
         },
         { status: 403 },
       );
+    const rights = catalogRights(profile);
+    const purpose = form.get('purpose');
+    if (
+      (purpose === 'catalog-image' && (!rights.enabled || !rights.products)) ||
+      (purpose === 'catalog-cover' && (!rights.enabled || !rights.pdf)) ||
+      (entry.type === 'application/pdf' && (!rights.enabled || !rights.pdf))
+    )
+      return Response.json(
+        {
+          error: 'Cette fonction est désactivée pour votre offre.',
+          errorAr: 'هاد الخاصية ما مفعّلاش فالاشتراك ديالك.',
+        },
+        { status: 403 },
+      );
+    if (entry.type === 'application/pdf' && entry.size > rights.pdfMB * 1024 * 1024)
+      return Response.json(
+        { error: 'PDF trop volumineux pour votre offre.', errorAr: 'حجم الملف فايت الحد المسموح.' },
+        { status: 413 },
+      );
+    const metadata = await checkFileContent(entry, rights.pdfPages);
     await adoptLegacy(u.userId, profile);
     await cleanupMedia(u.userId);
     const key = crypto.randomUUID();
-    if (!(await reserveMedia(u.userId, key, entry.size)))
+    if (!(await reserveMedia(u.userId, key, entry.size, rights)))
       return Response.json(
         {
-          error:
-            'Stockage plein : 400 Mo ou 80 fichiers maximum. Retirez des médias puis enregistrez votre carte.',
+          error: `Stockage plein : ${rights.storageMB} Mo ou ${rights.maxFiles} fichiers maximum. Retirez des médias puis enregistrez votre carte.`,
         },
         { status: 413 },
       );
     try {
-      await bucket().put(key, entry.stream(), { httpMetadata: { contentType: entry.type } });
+      await bucket().put(key, entry.stream(), {
+        httpMetadata: { contentType: entry.type },
+        customMetadata: metadata,
+      });
       await db()
         .prepare("UPDATE media_assets SET state='ready' WHERE key=? AND state='pending'")
         .bind(key)
@@ -68,7 +92,10 @@ export async function POST(req: Request) {
       await cleanupMedia(u.userId);
       throw new Error('Upload failed');
     }
-    return Response.json({ url: '/api/upload?key=' + key, storage: await storageUsage(u.userId) });
+    return Response.json({
+      url: '/api/upload?key=' + key,
+      storage: await storageUsage(u.userId, rights),
+    });
   } catch (error) {
     const invalid = inputErrorResponse(error);
     if (invalid) return invalid;
@@ -89,7 +116,7 @@ export async function GET(req: Request) {
         .first();
       await adoptLegacy(user.userId, p);
       await cleanupMedia(user.userId);
-      return Response.json(await storageUsage(user.userId), {
+      return Response.json(await storageUsage(user.userId, catalogRights(p)), {
         headers: { 'Cache-Control': 'no-store' },
       });
     }
@@ -109,21 +136,37 @@ export async function GET(req: Request) {
       .all();
     const visible = references.results.some(
       (p: any) =>
-        active(p) && mediaKeys(publicCardData(JSON.parse(p.data), !!p.pro_enabled)).includes(key),
+        active(p) &&
+        mediaKeys(publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p))).includes(
+          key,
+        ),
     );
     if (!visible) {
       const { user } = await identity();
+      const linked: any = user
+        ? await db()
+            .prepare(
+              'SELECT p.data FROM profiles p JOIN profile_media m ON m.profile_id=p.id WHERE m.media_key=? AND p.owner=?',
+            )
+            .bind(key, user.userId)
+            .first()
+        : null;
       const owned =
         user &&
         (asset?.owner === user.userId ||
-          (await db()
-            .prepare(
-              'SELECT p.id FROM profiles p JOIN profile_media m ON m.profile_id=p.id WHERE m.media_key=? AND p.owner=?',
-            )
-            .bind(key, user.userId)
-            .first()));
+          (linked && mediaKeys(JSON.parse(linked.data)).includes(key)));
       if (!owned)
         return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store' } });
+    }
+    if (url.searchParams.get('download') === '1') {
+      const allowed = references.results.some(
+        (p: any) =>
+          active(p) &&
+          catalogDocuments(
+            publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p)),
+          ).some((d) => d.src === '/api/upload?key=' + key && d.allowDownload),
+      );
+      if (!allowed) return new Response(null, { status: 403 });
     }
     const header = req.headers.get('range');
     let range: { offset: number; length: number } | undefined;
@@ -147,6 +190,8 @@ export async function GET(req: Request) {
       'Cache-Control': 'no-store',
       'Content-Length': String(range?.length ?? f.size),
     });
+    if (url.searchParams.get('download') === '1')
+      headers.set('Content-Disposition', 'attachment; filename="catalogue.pdf"');
     if (range)
       headers.set(
         'Content-Range',

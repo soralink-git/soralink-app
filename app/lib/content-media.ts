@@ -4,8 +4,15 @@ export function mediaError(type: string, size: number) {
   const video = VIDEO_TYPES.includes(type);
   if (!video && !['image/jpeg', 'image/png', 'image/webp', 'application/pdf'].includes(type))
     return 'Format non accepté. Photos : JPG, PNG, WebP. Vidéos : MP4, WebM, MOV.';
-  if (size <= 0 || size > (video ? MAX_VIDEO_BYTES : 10 * 1024 * 1024))
-    return video ? 'Vidéo : maximum 50 Mo.' : 'Photo ou PDF : maximum 10 Mo.';
+  if (
+    size <= 0 ||
+    size > (video ? MAX_VIDEO_BYTES : (type === 'application/pdf' ? 25 : 10) * 1024 * 1024)
+  )
+    return video
+      ? 'Vidéo : maximum 50 Mo.'
+      : type === 'application/pdf'
+        ? 'PDF : maximum 25 Mo.'
+        : 'Photo : maximum 10 Mo.';
   return '';
 }
 export function recordedVideoUrl(value: unknown) {

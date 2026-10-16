@@ -18,6 +18,7 @@ export const profiles = sqliteTable('profiles', {
   plan: text('plan').notNull().default('Digital'),
   expires: text('expires'),
   proEnabled: integer('pro_enabled').notNull().default(0),
+  catalogRights: text('catalog_rights'),
 });
 export const requests = sqliteTable(
   'requests',

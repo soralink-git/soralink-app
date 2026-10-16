@@ -1,6 +1,6 @@
 const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 export const MAX_SOURCE_PHOTO_BYTES = 40 * 1024 * 1024;
-export async function compressPhoto(file: File): Promise<File> {
+export async function compressPhoto(file: File, maxEdge = 1600): Promise<File> {
   if (!PHOTO_TYPES.includes(file.type)) return file;
   if (file.size > MAX_SOURCE_PHOTO_BYTES)
     throw new Error('Photo trop volumineuse : 40 Mo maximum avant compression.');
@@ -16,7 +16,7 @@ export async function compressPhoto(file: File): Promise<File> {
     const w = image.naturalWidth,
       h = image.naturalHeight;
     if (!w || !h) throw new Error('Photo invalide.');
-    const scale = Math.min(1, 1600 / Math.max(w, h));
+    const scale = Math.min(1, maxEdge / Math.max(w, h));
     const canvas = document.createElement('canvas');
     canvas.width = Math.max(1, Math.round(w * scale));
     canvas.height = Math.max(1, Math.round(h * scale));

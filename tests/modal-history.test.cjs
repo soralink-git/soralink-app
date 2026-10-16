@@ -61,3 +61,21 @@ test('cleanup does not navigate back after another route replaced the modal entr
   modal.dispose();
   assert.equal(target.history.backCalls, 0);
 });
+
+test('Back from a nested photo closes only that photo before the product detail', () => {
+  const target = browser();
+  let parentClosed = 0,
+    childClosed = 0;
+  const parent = modalHistory(() => parentClosed++, target);
+  const parentState = target.history.state;
+  const child = modalHistory(() => childClosed++, target);
+  target.history.state = parentState;
+  for (const listener of target.listeners) listener();
+  assert.equal(childClosed, 1);
+  assert.equal(parentClosed, 0);
+  child.dispose();
+  target.pop();
+  assert.equal(parentClosed, 1);
+  parent.dispose();
+  assert.equal(target.history.backCalls, 0);
+});
