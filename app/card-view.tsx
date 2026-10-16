@@ -642,7 +642,7 @@ export default function CardView({
             if (['coordinates', 'social', 'appointments'].includes(key))
               return <CardSection key={key} d={d} section={key} preview={preview} />;
             if (key === 'services') {
-              const items = normalizeCatalogue(d.services).filter((item) => item.name);
+              const items = normalizeCatalogue(d.services).filter((item) => item.name && item.availability !== 'hidden');
               const promos = !a.hidden.includes('promotions')
                 ? activePromotions(d.promotions, promoToday)
                 : [];
@@ -710,6 +710,9 @@ export default function CardView({
                                     : t('Service', 'خدمة')}
                                 </span>
                                 <h3>{item.name}</h3>
+                                {item.availability === 'sold_out' && (
+                                  <span className="catalogue-kind">{t('Épuisé', 'سالَى')}</span>
+                                )}
                                 {item.description && <p>{item.description}</p>}
                                 {item.price && (
                                   <strong className="catalogue-price">
@@ -718,6 +721,7 @@ export default function CardView({
                                 )}
                                 <button
                                   className="secondary full"
+                                  disabled={item.availability === 'sold_out'}
                                   onClick={() => {
                                     if (preview) {
                                       setMsg(
