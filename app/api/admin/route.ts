@@ -1,3 +1,4 @@
+import { catalogRights } from '../../lib/catalog-menu';
 import { readPage } from '../../lib/pagination';
 import {
   adminActionSchema,
@@ -30,7 +31,7 @@ export async function GET(req: Request) {
           // instr treats %, _ and quotes literally and keeps the search parameterized.
           return readPage(
             db(),
-            'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated FROM profiles',
+            'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights FROM profiles',
             "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0)",
             [query.search, query.search, query.search],
             cursor,
@@ -61,7 +62,7 @@ export async function GET(req: Request) {
       .bind(new Date().toISOString())
       .first();
     return json({
-      profiles: profiles.items,
+      profiles: profiles.items.map((p: any) => ({ ...p, catalogRights: catalogRights(p) })),
       orders: orders.items,
       audit: audit.items,
       stats,
@@ -82,6 +83,15 @@ export async function POST(req: Request) {
     const { user, admin } = await identity();
     if (!user || !admin) return json({ error: 'Accès refusé' }, 403);
     const b = await readValidatedJSON(req, adminActionSchema, 10000);
+    if (b.action === 'catalogRights') {
+      const result = await db()
+        .prepare('UPDATE profiles SET catalog_rights=? WHERE id=?')
+        .bind(b.rights ? JSON.stringify(b.rights) : null, b.id)
+        .run();
+      if (!result.meta.changes) return json({ error: 'Profil introuvable' }, 404);
+      await log(user.email, 'Droits Catalogue / Menu', b.id);
+      return json({ ok: true });
+    }
     if (b.action === 'profile') {
       if (b.state !== 'suspended' && !b.expires)
         return json({ error: 'Renseignez une échéance pour activer ce profil.' }, 400);

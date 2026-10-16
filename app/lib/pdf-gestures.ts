@@ -6,7 +6,7 @@ const midpoint = (a: Point, b: Point) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) /
 // Transform the existing canvas while fingers move; redraw sharply once released.
 export function bindPdfGestures(
   stage: HTMLElement,
-  canvas: HTMLCanvasElement,
+  canvas: HTMLElement,
   zoom: number,
   commit: (zoom: number) => void,
   turnPage: (direction: -1 | 1) => void = () => {},

@@ -1,3 +1,11 @@
+import {
+  catalogRights,
+  catalogDocuments,
+  catalogContentIssue,
+  visibleProducts,
+  catalogText,
+  catalogCategories,
+} from '../../lib/catalog-menu';
 import { currentPublicName } from '../../lib/address-storage';
 import { readHistory, requestNotifications } from '../../lib/history';
 import {
@@ -49,7 +57,7 @@ export async function GET(req: Request) {
         .bind(id)
         .first();
       if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
-      const d = publicCardData(JSON.parse(p.data), !!p.pro_enabled);
+      const d = publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p));
       return json({
         id: p.id,
         publicName: await currentPublicName(db(), p.id),
@@ -74,6 +82,7 @@ export async function GET(req: Request) {
     }
     if (p) {
       p.publicName = await currentPublicName(db(), p.id);
+      p.catalogRights = catalogRights(p);
       await db().prepare('UPDATE profiles SET email=? WHERE id=?').bind(user.email, p.id).run();
       const d = JSON.parse(p.data);
       d.pro = !!p.pro_enabled;
@@ -148,13 +157,25 @@ export async function POST(req: Request) {
         service = sourceCardId,
         message = String(b.message || '');
       if (b.catalogueId !== undefined && b.catalogueId !== null) {
-        if (b.kind !== 'commande') return json({ error: 'Type de demande invalide' }, 400);
+        if (!['commande', 'devis'].includes(b.kind))
+          return json({ error: 'Type de demande invalide' }, 400);
         const catalogueData = JSON.parse(p.data);
-        const item = catalogueSelection(catalogueData.services, b.catalogueId);
+        const publishedCatalog = publicCardData(catalogueData, !!p.pro_enabled, catalogRights(p));
+        const item = catalogueSelection(publishedCatalog.services, b.catalogueId);
         if (!item || normalizeAppearance(catalogueData).hiddenSections.includes('services'))
           return json({ error: 'Cet article n’est plus disponible. Actualisez la carte.' }, 409);
         service = item.name;
-        message = catalogueRequestMessage(item, message);
+        const category = catalogCategories(publishedCatalog).find((c) => c.id === item.categoryId);
+        const arabic = b.language === 'ar';
+        const localized = {
+          ...item,
+          name: catalogText(item.nameFr, item.nameAr, arabic),
+          category: category
+            ? catalogText(category.nameFr, category.nameAr, arabic)
+            : catalogText(item.category, item.categoryAr, arabic, true),
+        };
+        service = localized.name;
+        message = catalogueRequestMessage(localized, message, arabic);
         if (message.length > 2000)
           return json({ error: 'Votre message est trop long pour cette demande.' }, 400);
       }
@@ -261,7 +282,24 @@ export async function POST(req: Request) {
           },
           403,
         );
-      const limit = catalogueLimit(p);
+      const rights = catalogRights(p);
+      const limit = Math.max(
+        rights.maxProducts,
+        normalizeCatalogue(p ? JSON.parse(p.data).services : []).length,
+      );
+      const old = p ? JSON.parse(p.data) : {};
+      const moduleIssue = catalogContentIssue(b.data, old, rights);
+      if (moduleIssue)
+        return json(
+          {
+            error: moduleIssue,
+            errorAr: 'هاد العملية ما مسموحاش حسب إعدادات الاشتراك. راجع المعلومات.',
+          },
+          (b.data.services?.length || 0) > rights.maxProducts ||
+            catalogDocuments(b.data).length > rights.maxDocuments
+            ? 400
+            : 403,
+        );
       const catalogueIssue = catalogueError(b.data.services, limit);
       if (catalogueIssue)
         return json(
@@ -279,8 +317,56 @@ export async function POST(req: Request) {
       d.promotions = normalizePromotions(d.promotions);
       d.pro = !!p?.pro_enabled;
       d.services = normalizeCatalogue(d.services);
+      d.catalogDocuments = catalogDocuments(d);
+      d.pdf = '';
       d.photos = Array.isArray(d.photos) ? d.photos.slice(0, 10) : [];
       await adoptLegacy(user.userId, p);
+      for (const doc of d.catalogDocuments) {
+        if (!doc.src)
+          return json(
+            { error: 'Importez un PDF pour chaque document.', errorAr: 'زيد ملف لكل وثيقة.' },
+            400,
+          );
+        const key = doc.src.split('key=')[1];
+        const object = await env.BUCKET?.head(key);
+        if (
+          !object ||
+          object.httpMetadata?.contentType !== 'application/pdf' ||
+          object.size > rights.pdfMB * 1024 * 1024
+        )
+          return json(
+            {
+              error: 'Ce PDF est invalide ou dépasse les limites de votre offre.',
+              errorAr: 'هاد الملف ما صالحش ولا فايت الحد المسموح.',
+            },
+            400,
+          );
+        const pages = Number(object.customMetadata?.pages);
+        // Previously stored PDFs are validated once on first attachment to the new module.
+        if (!Number.isInteger(pages) || pages < 1) {
+          const { PDFDocument } = await import('pdf-lib');
+          try {
+            const file = await env.BUCKET!.get(key);
+            const parsed = await PDFDocument.load(await file!.arrayBuffer());
+            if (parsed.getPageCount() < 1 || parsed.getPageCount() > rights.pdfPages) throw Error();
+          } catch {
+            return json(
+              {
+                error: 'PDF illisible ou trop de pages.',
+                errorAr: 'الملف ما كيتقراش ولا فيه صفحات بزاف.',
+              },
+              400,
+            );
+          }
+        } else if (pages > rights.pdfPages)
+          return json(
+            {
+              error: 'Ce PDF dépasse le nombre de pages autorisé.',
+              errorAr: 'عدد صفحات الملف فايت الحد المسموح.',
+            },
+            400,
+          );
+      }
       if (!(await validateMedia(user.userId, d, p ? JSON.parse(p.data) : {})))
         return json(
           {
@@ -289,6 +375,35 @@ export async function POST(req: Request) {
           },
           409,
         );
+      const images = [
+        ...new Set(
+          [
+            ...d.services.flatMap((v: any) => [v.image, v.thumbnail, ...v.images]),
+            ...d.catalogDocuments.map((v: any) => v.cover),
+          ].filter(Boolean),
+        ),
+      ] as string[];
+      for (let start = 0; start < images.length; start += 8) {
+        const metas = await Promise.all(
+          images.slice(start, start + 8).map((src) => env.BUCKET?.head(src.split('key=')[1])),
+        );
+        if (
+          metas.some(
+            (meta) =>
+              !meta ||
+              !['image/jpeg', 'image/png', 'image/webp'].includes(
+                meta.httpMetadata?.contentType || '',
+              ),
+          )
+        )
+          return json(
+            {
+              error: 'Une image du catalogue est invalide.',
+              errorAr: 'كاينة صورة ما صالحةش فالكاتالوگ.',
+            },
+            400,
+          );
+      }
       if (!(await saveProfileWithMedia(user.userId, p, id, d, !!b.published, user.email, stamp)))
         return json({ error: 'Votre carte a changé. Actualisez avant d’enregistrer.' }, 409);
       const cleaned = await cleanupMedia(user.userId);

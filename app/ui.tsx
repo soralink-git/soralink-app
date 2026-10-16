@@ -1551,11 +1551,11 @@ export default function App({
                       ? t('Votre demande de commande', 'الطلب ديالك')
                       : t('Demander un devis', 'طلب الثمن')}
             </h2>
-            {modal === 'commande' && selectedItem && (
+            {['commande', 'devis'].includes(modal || '') && selectedItem && (
               <div className="catalogue-selection">
                 <strong>{selectedItem.name}</strong>
                 {selectedItem.category && <span>{selectedItem.category}</span>}
-                {selectedItem.price && <span>{cataloguePrice(selectedItem.price)}</span>}
+                {selectedItem.price && <span>{cataloguePrice(selectedItem.price, ar)}</span>}
               </div>
             )}
             <form
@@ -1572,7 +1572,9 @@ export default function App({
                     message: f.get('message'),
                     email: f.get('email'),
                     service: serviceIndex,
-                    catalogueId: modal === 'commande' ? selectedItem?.id : undefined,
+                    catalogueId: ['commande', 'devis'].includes(modal || '')
+                      ? selectedItem?.id
+                      : undefined,
                     slot: f.get('slot'),
                     trap: f.get('company'),
                     shareCard: modal === 'contact' && useMyCard,

@@ -1,4 +1,6 @@
 'use client';
+import CatalogProducts, { CatalogDocuments } from './catalog-public';
+import { catalogDocuments } from './lib/catalog-menu';
 import { publicCardPath } from './lib/public-address';
 import { vcardText } from './lib/vcard';
 import { useState, useEffect } from 'react';
@@ -690,61 +692,14 @@ export default function CardView({
                       ))}
                     </section>
                   )}
-                  {categories.map((category) => (
-                    <section className="catalogue-category" key={category || 'uncategorized'}>
-                      {(category || categories.length > 1) && (
-                        <h3>{category || t('Autres', 'أخرى')}</h3>
-                      )}
-                      <div className="catalogue-grid">
-                        {items
-                          .filter((item) => item.category === category)
-                          .map((item) => (
-                            <article className="catalogue-item" key={item.id}>
-                              {item.image && (
-                                <PhotoPreview src={item.image} alt={item.name} ar={ar} />
-                              )}
-                              <div>
-                                <span className="catalogue-kind">
-                                  {item.type === 'product'
-                                    ? t('Produit', 'منتج')
-                                    : t('Service', 'خدمة')}
-                                </span>
-                                <h3>{item.name}</h3>
-                                {item.description && <p>{item.description}</p>}
-                                {item.price && (
-                                  <strong className="catalogue-price">
-                                    {cataloguePrice(item.price)}
-                                  </strong>
-                                )}
-                                <button
-                                  className="secondary full"
-                                  onClick={() => {
-                                    if (preview) {
-                                      setMsg(
-                                        t(
-                                          'Aperçu : les visiteurs pourront demander cet article sur votre carte publiée.',
-                                          'معاينة: الزوار يقدرو يطلبو هاد العرض فالصفحة المنشورة.',
-                                        ),
-                                      );
-                                      return;
-                                    }
-                                    if (view === 'demo') {
-                                      setMsg(t('Exemple de carte.', 'مثال ديال كارط.'));
-                                      return;
-                                    }
-                                    onRequest('commande', item);
-                                  }}
-                                >
-                                  {item.type === 'product'
-                                    ? t('Demander ce produit', 'طلب هاد المنتج')
-                                    : t('Demander ce service', 'طلب هاد الخدمة')}
-                                </button>
-                              </div>
-                            </article>
-                          ))}
-                      </div>
-                    </section>
-                  ))}
+                  <CatalogProducts
+                    data={d}
+                    id={id}
+                    ar={ar}
+                    preview={preview || view === 'demo'}
+                    onRequest={onRequest}
+                    onMessage={setMsg}
+                  />
                   {photos.length > 0 && (
                     <div className="catalogue-photos-integrated">
                       <h3>{sectionHeading(d, 'photos', t('En images', 'بالتصاور'))}</h3>
@@ -767,11 +722,10 @@ export default function CardView({
                 </div>
               );
             }
-            if (key === 'pdf' && d.pdf)
+            if (key === 'pdf' && catalogDocuments(d).length)
               return (
                 <div className="panel" key={key}>
-                  <h2>{sectionHeading(d, 'pdf', t('Catalogue', 'الكاتالوگ'))}</h2>
-                  <PdfCatalogue src={d.pdf} ar={ar} />
+                  <CatalogDocuments data={d} id={id} ar={ar} preview={preview} />
                 </div>
               );
             if (key === 'video' && (d.video || recordedVideoUrl(d.recordedVideo))) {

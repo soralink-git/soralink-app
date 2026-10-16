@@ -273,3 +273,36 @@ test('background photos are protected media references and cannot use another ac
   await media.cleanupMedia('owner');
   assert.equal(await state(A), 'ready');
 });
+
+test('multiple catalogue PDFs, covers, galleries and thumbnails remain owned and protected even when hidden', async () => {
+  await asset(A);
+  await asset(B);
+  await asset(C);
+  const data = {
+    catalogDocuments: [{ src: url(A), cover: url(B), visible: false }],
+    services: [{ image: url(B), images: [url(C)], thumbnail: url(A), availability: 'hidden' }],
+  };
+  assert.deepEqual(Array.from(media.mediaKeys(data)).sort(), [A, B, C]);
+  assert.equal(await media.validateMedia('other', data, {}), false);
+  const old = await profile('card', 'owner', {});
+  assert.equal(await media.saveProfileWithMedia('owner', old, 'card', data, false, ''), true);
+  await media.cleanupMedia('owner');
+  assert.deepEqual(deleted, []);
+  assert.deepEqual(await keys(), [A, B, C]);
+});
+test('concurrent reservations cannot exceed an administrator file quota', async () => {
+  const limit = { storageMB: 1, maxFiles: 1 };
+  const result = await Promise.all([
+    media.reserveMedia('owner', A, 100, limit),
+    media.reserveMedia('owner', B, 100, limit),
+  ]);
+  assert.equal(result.filter(Boolean).length, 1);
+  assert.equal((await media.storageUsage('owner', limit)).files, 1);
+  assert.equal((await media.storageUsage('owner', limit)).limitFiles, 1);
+});
+test('pending file sizes count toward an administrator storage quota', async () => {
+  const limit = { storageMB: 1, maxFiles: 20 };
+  assert.equal(await media.reserveMedia('owner', A, 700000, limit), true);
+  assert.equal(await media.reserveMedia('owner', B, 700000, limit), false);
+  assert.equal((await media.storageUsage('owner', limit)).bytes, 700000);
+});

@@ -1,3 +1,4 @@
+import { verifyCatalogMenu } from './verify-catalog-menu.mjs';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { readFile, readdir } from 'node:fs/promises';
@@ -300,7 +301,8 @@ try {
   const fortyPublic = JSON.parse((await request('/api/data?id=' + cardId)).json.data);
   assert.equal(fortyPublic.services.length, 40);
   assert.equal(fortyPublic.services[39].image, uploaded.json.url);
-  assert((await request('/c/' + cardId)).text.includes('Article 40'));
+  assert((await request('/c/' + cardId)).text.includes('Article 12'));
+  assert((await request('/c/' + cardId)).text.includes('Afficher plus d’articles'));
   await request('/api/data', {
     auth: true,
     data: {
@@ -569,6 +571,7 @@ try {
     .run();
   await request('/api/data?id=' + cardId, { status: 404 });
   await request(uploaded.json.url, { status: 404 });
+  await verifyCatalogMenu({ db, request, cardId, otherId, photo });
   await request('/api/auth', { auth: true, data: { action: 'logout' } });
   await request('/api/admin', { auth: true, id: adminId });
   assert.equal(

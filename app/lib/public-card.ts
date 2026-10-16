@@ -1,3 +1,12 @@
+import {
+  catalogDocuments,
+  catalogCategories,
+  catalogSettings,
+  catalogEnabled,
+  catalogRights,
+  visibleProducts,
+  type CatalogRights,
+} from './catalog-menu';
 import { normalizeAppearance } from './personalization';
 import { normalizeCatalogue } from './catalogue';
 import { activePromotions } from './promotions';
@@ -32,7 +41,11 @@ const textFields = [
 ];
 const socialFields = ['instagram', 'facebook', 'linkedin', 'tiktok', 'youtube', 'x'];
 // Explicit public projection: saved account data is never returned wholesale.
-export function publicCardData(saved: any, pro: boolean) {
+export function publicCardData(
+  saved: any,
+  pro: boolean,
+  rights: CatalogRights = catalogRights({ state: 'active' }),
+) {
   const d = normalizeAppearance(saved),
     out: Record<string, any> = {};
   for (const key of textFields) out[key] = typeof d[key] === 'string' ? d[key] : '';
@@ -62,6 +75,26 @@ export function publicCardData(saved: any, pro: boolean) {
   out.pro = pro;
   out.defaultLanguage = d.defaultLanguage === 'ar' || d.lang === 'ar' ? 'ar' : 'fr';
   out.services = normalizeCatalogue(d.services).filter((item) => item.name);
+  out.catalogSettings = {
+    ...catalogSettings(d),
+    enabled: rights.enabled && catalogSettings(d).enabled,
+    pdf: catalogEnabled(d, rights, 'pdf'),
+    products: catalogEnabled(d, rights, 'products'),
+    whatsapp: catalogEnabled(d, rights, 'whatsapp'),
+  };
+  out.catalogDocuments = catalogEnabled(d, rights, 'pdf')
+    ? catalogDocuments(d)
+        .filter((doc) => doc.visible)
+        .slice(0, rights.maxDocuments)
+        .map((doc) => ({ ...doc, allowDownload: doc.allowDownload && rights.downloads }))
+    : [];
+  out.pdf = '';
+  out.catalogCategories = catalogCategories(d).filter((c) => c.visible);
+  out.services = catalogEnabled(d, rights, 'products')
+    ? visibleProducts({ ...d, services: out.services }).slice(0, rights.maxProducts)
+    : [];
+  if (!out.catalogSettings.showPrices)
+    out.services = out.services.map((p: any) => ({ ...p, price: '', oldPrice: '' }));
   out.promotions = activePromotions(d.promotions);
   out.photos = Array.isArray(d.photos)
     ? d.photos.filter((p: unknown) => typeof p === 'string').slice(0, 10)
@@ -82,9 +115,15 @@ export function publicCardData(saved: any, pro: boolean) {
   if (hidden.has('appointments')) {
     out.appointmentServices = [];
   }
-  if (hidden.has('services')) out.services = [];
+  if (hidden.has('services')) {
+    out.services = [];
+    out.catalogCategories = [];
+  }
   if (hidden.has('photos')) out.photos = [];
-  if (hidden.has('pdf')) out.pdf = '';
+  if (hidden.has('pdf')) {
+    out.pdf = '';
+    out.catalogDocuments = [];
+  }
   if (hidden.has('video')) {
     out.video = '';
     out.recordedVideo = '';

@@ -185,10 +185,10 @@ test('PDF catalogue stays inside the card without a native PDF frame or navigati
       },
       { ar },
     );
-    assert.match(html, /pdf-catalogue/);
-    assert.match(html, /<canvas/);
+    assert.match(html, /catalog-document/);
+    assert.match(html, ar ? /قراءة الوثيقة/ : /Lire le document/);
     assert.doesNotMatch(html, /<iframe|href="\/api\/upload|src="\/api\/upload/);
-    assert.match(html, ar ? /لمس الوثيقة/ : /Touchez le document/);
+    assert.doesNotMatch(html, /<iframe/);
     assert.doesNotMatch(html, /Précédente|Suivante|التالية|السابقة/);
     assert.doesNotMatch(html, ar ? /Chargement du catalogue|Suivante/ : /الكاتالوگ|التالية/);
   }

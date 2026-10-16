@@ -50,6 +50,13 @@
       "when": 1792144422034,
       "tag": "0006_public_addresses",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1792164000000,
+      "tag": "0007_catalog_rights",
+      "breakpoints": true
     }
   ]
 }

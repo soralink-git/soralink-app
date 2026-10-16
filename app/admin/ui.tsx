@@ -1,4 +1,5 @@
 'use client';
+import CatalogRightsEditor from '../catalog-rights-editor';
 import { useEffect, useRef, useState } from 'react';
 import LoadMore from '../load-more';
 import { appendUnique } from '../lib/pagination';
@@ -252,80 +253,83 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                   </button>
                 </form>
                 {data.profiles.map((p: any) => (
-                  <form
-                    className="panel admin-client"
-                    key={p.id}
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const f = new FormData(e.currentTarget);
-                      save({
-                        action: 'profile',
-                        id: p.id,
-                        state: f.get('state'),
-                        plan: f.get('plan'),
-                        expires: f.get('expires'),
-                        pro: f.get('pro') === 'on',
-                      });
-                    }}
-                  >
-                    <div className="panel-title">
-                      <div>
-                        <h2>{JSON.parse(p.data).name}</h2>
-                        <p className="hint">
-                          {p.email ||
-                            t(
-                              'E-mail renseigné à la prochaine connexion',
-                              'الإيميل غادي يتسجّل فالدخول الجاي',
-                            )}
-                        </p>
+                  <div key={p.id}>
+                    <form
+                      className="panel admin-client"
+                      key={p.id}
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const f = new FormData(e.currentTarget);
+                        save({
+                          action: 'profile',
+                          id: p.id,
+                          state: f.get('state'),
+                          plan: f.get('plan'),
+                          expires: f.get('expires'),
+                          pro: f.get('pro') === 'on',
+                        });
+                      }}
+                    >
+                      <div className="panel-title">
+                        <div>
+                          <h2>{JSON.parse(p.data).name}</h2>
+                          <p className="hint">
+                            {p.email ||
+                              t(
+                                'E-mail renseigné à la prochaine connexion',
+                                'الإيميل غادي يتسجّل فالدخول الجاي',
+                              )}
+                          </p>
+                        </div>
+                        <a className="secondary small" href={'/c/' + p.id} target="_blank">
+                          {t('Voir la carte', 'شوف الكارط')}
+                        </a>
                       </div>
-                      <a className="secondary small" href={'/c/' + p.id} target="_blank">
-                        {t('Voir la carte', 'شوف الكارط')}
-                      </a>
-                    </div>
-                    <div className="form-grid">
-                      <label className="field">
-                        {t('État', 'الحالة')}
-                        <select name="state" defaultValue={p.state}>
-                          <option value="trial">{t('Essai', 'تجربة')}</option>
-                          <option value="active">{t('Actif', 'مفعّل')}</option>
-                          <option value="suspended">{t('Suspendu', 'موقوف')}</option>
-                        </select>
-                      </label>
-                      <label className="field">
-                        {t('Offre', 'العرض')}
-                        <select name="plan" defaultValue={p.plan}>
-                          {['Digital', 'Pack', 'Accompagnement'].map((v) => (
-                            <option key={v} value={v}>
-                              {offerLabel(v, ar)}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
-                      <label className="field">
-                        {t('Échéance', 'نهاية الاشتراك')}
-                        <input
-                          name="expires"
-                          type="date"
-                          defaultValue={p.expires?.slice(0, 10) || ''}
-                        />
-                      </label>
-                      <label className="toggle">
-                        <input name="pro" type="checkbox" defaultChecked={!!p.pro_enabled} />
-                        {t('Option Rendez-vous', 'خيار المواعيد')}
-                      </label>
-                    </div>
-                    <p className="hint">
-                      {t(
-                        'Validez le paiement séparément dans Commandes, puis activez l’offre et son échéance ici.',
-                        'أكّد الأداء فقسم الطلبات ومن بعد فعّل العرض والأجل ديالو هنا.',
-                      )}
-                    </p>
-                    <button className="primary" disabled={busy}>
-                      <Save size={16} />
-                      {t('Enregistrer', 'سجّل')}
-                    </button>
-                  </form>
+                      <div className="form-grid">
+                        <label className="field">
+                          {t('État', 'الحالة')}
+                          <select name="state" defaultValue={p.state}>
+                            <option value="trial">{t('Essai', 'تجربة')}</option>
+                            <option value="active">{t('Actif', 'مفعّل')}</option>
+                            <option value="suspended">{t('Suspendu', 'موقوف')}</option>
+                          </select>
+                        </label>
+                        <label className="field">
+                          {t('Offre', 'العرض')}
+                          <select name="plan" defaultValue={p.plan}>
+                            {['Digital', 'Pack', 'Accompagnement'].map((v) => (
+                              <option key={v} value={v}>
+                                {offerLabel(v, ar)}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label className="field">
+                          {t('Échéance', 'نهاية الاشتراك')}
+                          <input
+                            name="expires"
+                            type="date"
+                            defaultValue={p.expires?.slice(0, 10) || ''}
+                          />
+                        </label>
+                        <label className="toggle">
+                          <input name="pro" type="checkbox" defaultChecked={!!p.pro_enabled} />
+                          {t('Option Rendez-vous', 'خيار المواعيد')}
+                        </label>
+                      </div>
+                      <p className="hint">
+                        {t(
+                          'Validez le paiement séparément dans Commandes, puis activez l’offre et son échéance ici.',
+                          'أكّد الأداء فقسم الطلبات ومن بعد فعّل العرض والأجل ديالو هنا.',
+                        )}
+                      </p>
+                      <button className="primary" disabled={busy}>
+                        <Save size={16} />
+                        {t('Enregistrer', 'سجّل')}
+                      </button>
+                    </form>
+                    <CatalogRightsEditor profile={p} ar={ar} busy={busy} onSave={save} />
+                  </div>
                 ))}
                 {!data.profiles.length && (
                   <div className="empty">

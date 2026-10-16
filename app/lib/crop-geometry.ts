@@ -1,4 +1,4 @@
-export type CropTarget = 'avatar' | 'cover' | 'backgroundPhoto';
+export type CropTarget = 'avatar' | 'cover' | 'backgroundPhoto' | 'product';
 export function cropSettings(target: CropTarget) {
   return {
     ratio: target === 'backgroundPhoto' ? 3 / 4 : target === 'cover' ? 2.2 : 1,

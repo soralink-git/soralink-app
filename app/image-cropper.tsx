@@ -195,11 +195,13 @@ export default function ImageCropper({
         onKeyDown={keyboard}
       >
         <h2 id="crop-title">
-          {target === 'backgroundPhoto'
-            ? t('Recadrer la photo de fond', 'قصّ تصويرة الخلفية')
-            : target === 'cover'
-              ? t('Recadrer la couverture', 'قصّ تصويرة الغلاف')
-              : t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
+          {target === 'product'
+            ? t('Recadrer la photo du catalogue', 'تأطير صورة الكاتالوگ')
+            : target === 'backgroundPhoto'
+              ? t('Recadrer la photo de fond', 'قصّ تصويرة الخلفية')
+              : target === 'cover'
+                ? t('Recadrer la couverture', 'قصّ تصويرة الغلاف')
+                : t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
         </h2>
         <p>
           {t(
@@ -207,58 +209,60 @@ export default function ImageCropper({
             'حرّك التصويرة بالماوس ولا بالصبع، ومن بعد عدّل الزوم.',
           )}
         </p>
-        <div className="crop-live-preview">
-          <div className="crop-live-badge">
-            <span className="live-dot" />
-            {t('Rendu en direct sur votre carte', 'معاينة مباشرة على الكارط')}
-          </div>
-          <div className="crop-mockup-card">
-            <CardBackground
-              src={
-                target === 'backgroundPhoto'
-                  ? livePreviewUrl
-                  : appearance(cardData || {}).backgroundPhoto
-              }
-              opacity={appearance(cardData || {}).backgroundOpacity}
-            />
-            <div
-              className="crop-mockup-cover"
-              style={{
-                aspectRatio: '2.2 / 1',
-                backgroundImage:
-                  target === 'cover'
+        {target !== 'product' && (
+          <div className="crop-live-preview">
+            <div className="crop-live-badge">
+              <span className="live-dot" />
+              {t('Rendu en direct sur votre carte', 'معاينة مباشرة على الكارط')}
+            </div>
+            <div className="crop-mockup-card">
+              <CardBackground
+                src={
+                  target === 'backgroundPhoto'
                     ? livePreviewUrl
-                      ? `url(${livePreviewUrl})`
-                      : 'none'
-                    : cardData?.cover
-                      ? `url(${cardData.cover})`
-                      : 'none',
-              }}
-            />
-            <div className="crop-mockup-identity">
-              <div className={'crop-mockup-avatar ' + (circle ? 'is-circle' : 'is-square')}>
-                {target === 'avatar' && livePreviewUrl ? (
-                  <img src={livePreviewUrl} alt="" />
-                ) : cardData?.avatar ? (
-                  <img src={cardData.avatar} alt="" />
-                ) : (
-                  <span>
-                    {(cardData?.name || 'SL')
-                      .split(' ')
-                      .filter(Boolean)
-                      .slice(0, 2)
-                      .map((s: string) => s[0])
-                      .join('') || 'SL'}
-                  </span>
-                )}
-              </div>
-              <div className="crop-mockup-meta">
-                <strong>{cardData?.name || t('Votre nom', 'الاسم ديالك')}</strong>
-                <span>{cardData?.job || t('Votre métier', 'المهنة ديالك')}</span>
+                    : appearance(cardData || {}).backgroundPhoto
+                }
+                opacity={appearance(cardData || {}).backgroundOpacity}
+              />
+              <div
+                className="crop-mockup-cover"
+                style={{
+                  aspectRatio: '2.2 / 1',
+                  backgroundImage:
+                    target === 'cover'
+                      ? livePreviewUrl
+                        ? `url(${livePreviewUrl})`
+                        : 'none'
+                      : cardData?.cover
+                        ? `url(${cardData.cover})`
+                        : 'none',
+                }}
+              />
+              <div className="crop-mockup-identity">
+                <div className={'crop-mockup-avatar ' + (circle ? 'is-circle' : 'is-square')}>
+                  {target === 'avatar' && livePreviewUrl ? (
+                    <img src={livePreviewUrl} alt="" />
+                  ) : cardData?.avatar ? (
+                    <img src={cardData.avatar} alt="" />
+                  ) : (
+                    <span>
+                      {(cardData?.name || 'SL')
+                        .split(' ')
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .map((s: string) => s[0])
+                        .join('') || 'SL'}
+                    </span>
+                  )}
+                </div>
+                <div className="crop-mockup-meta">
+                  <strong>{cardData?.name || t('Votre nom', 'الاسم ديالك')}</strong>
+                  <span>{cardData?.job || t('Votre métier', 'المهنة ديالك')}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
         <div
           className={'crop-frame ' + (target === 'avatar' && circle ? 'crop-circle' : '')}
           style={{ aspectRatio: ratio }}

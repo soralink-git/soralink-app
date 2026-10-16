@@ -1,3 +1,4 @@
+import { catalogRights } from './catalog-menu';
 import { notFound } from 'next/navigation';
 import PublicCardView from '../public-card-view';
 import { db, active } from './server';
@@ -25,7 +26,11 @@ export async function publicProfileMetadata(key: ProfileKey) {
   try {
     const profile = await readProfile(key);
     if (profile && active(profile)) {
-      const d = publicCardData(JSON.parse(profile.data), !!profile.pro_enabled);
+      const d = publicCardData(
+        JSON.parse(profile.data),
+        !!profile.pro_enabled,
+        catalogRights(profile),
+      );
       const title =
         String(d.business || d.name || 'Carte professionnelle').slice(0, 120) + ' — SoraLink';
       const description = String(
@@ -82,7 +87,11 @@ export async function publicProfilePage(key: ProfileKey, lang?: string) {
     if (profile && active(profile)) {
       cardId = profile.id;
       publicName = await currentPublicName(db(), profile.id);
-      initialData = publicCardData(JSON.parse(profile.data), !!profile.pro_enabled);
+      initialData = publicCardData(
+        JSON.parse(profile.data),
+        !!profile.pro_enabled,
+        catalogRights(profile),
+      );
       initialError = '';
     }
   } catch {
