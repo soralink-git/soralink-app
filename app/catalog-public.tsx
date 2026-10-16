@@ -224,6 +224,10 @@ export default function CatalogProducts({
         settings.accent
           ? ({
               '--catalog-accent': settings.accent,
+              '--button-bg': settings.accent,
+              '--button-text': accentText(settings.accent),
+              '--accent': settings.accent,
+              '--accent-text': accentText(settings.accent),
               '--catalog-accent-text': accentText(settings.accent),
             } as React.CSSProperties)
           : undefined
