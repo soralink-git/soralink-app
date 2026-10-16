@@ -485,165 +485,174 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     save={save}
                     onMessage={setMsg}
                     mediaEditor={<CatalogMediaEditor context={context} />}
-                    initialTab={tab === 'media' ? 'media' : undefined}
-                  />
-
-                  <section className="panel">
-                    <h2>{t('Promotions & Offres du moment', 'العروض والتخفيضات الحالية')}</h2>
-                    <p className="hint">
-                      {t(
-                        'Vos offres apparaissent en tête de votre catalogue sous Produits et services. Les dates suivent l’heure du Maroc ; la date de fin est incluse. Enregistrez pour publier vos changements.',
-                        'العروض كيبانو فالأول ديال الكاتالوگ تحت قسم المنتجات والخدمات. التواريخ بتوقيت المغرب، ونهار النهاية داخل فالعرض. سجّل باش تبان التغييرات.',
-                      )}
-                    </p>
-                    {data.promotions.map((p: any, i: number) => (
-                      <div className="promotion-editor" key={p.id}>
-                        <div className="panel-title">
-                          <h3>
-                            {t('Promotion ', 'عرض ')}
-                            {i + 1}
-                          </h3>
-                          <span className="badge">
-                            {t(...promoStatusLabels[promotionStatus(p, promoToday)])}
-                          </span>
-                        </div>
-                        <label className="toggle">
-                          <input
-                            type="checkbox"
-                            checked={p.enabled}
-                            onChange={(e) => updatePromotion(p.id, 'enabled', e.target.checked)}
-                          />
-                          {t('Activer cette promotion', 'فعّل هاد العرض')}
-                        </label>
-                        <label className="field">
-                          {t('Titre *', 'العنوان *')}
-                          <input
-                            maxLength={120}
-                            value={p.title}
-                            onChange={(e) => updatePromotion(p.id, 'title', e.target.value)}
-                          />
-                        </label>
-                        <label className="field">
-                          {t('Description', 'الوصف')}
-                          <textarea
-                            maxLength={800}
-                            value={p.description}
-                            onChange={(e) => updatePromotion(p.id, 'description', e.target.value)}
-                          />
-                        </label>
-                        <div className="form-grid">
-                          {[
-                            [
-                              'regularPrice',
-                              'Prix habituel (DH) — facultatif',
-                              'الثمن العادي (درهم) — اختياري',
-                            ],
-                            [
-                              'promoPrice',
-                              'Prix promotionnel (DH) — facultatif',
-                              'ثمن العرض (درهم) — اختياري',
-                            ],
-                          ].map(([key, fr, da]) => (
-                            <label className="field" key={key}>
-                              {t(fr, da)}
-                              <input
-                                inputMode="decimal"
-                                maxLength={12}
-                                value={p[key]}
-                                onChange={(e) => updatePromotion(p.id, key, e.target.value)}
-                              />
-                            </label>
-                          ))}
-                          {[
-                            ['startDate', 'Date de début — facultative', 'نهار البداية — اختياري'],
-                            ['endDate', 'Date de fin — facultative', 'نهار النهاية — اختياري'],
-                          ].map(([key, fr, da]) => (
-                            <label className="field" key={key}>
-                              {t(fr, da)}
-                              <input
-                                type="date"
-                                value={p[key]}
-                                min={key === 'endDate' ? p.startDate : undefined}
-                                onChange={(e) => updatePromotion(p.id, key, e.target.value)}
-                              />
-                            </label>
-                          ))}
-                        </div>
-                        <label className="field">
+                    initialTab={
+                      tab === 'media' ? 'media' : tab === 'promotions' ? 'promotions' : undefined
+                    }
+                    promotionsEditor={
+                      <section className="catalog-promotions-editor">
+                        <h2>{t('Promotions & Offres du moment', 'العروض والتخفيضات الحالية')}</h2>
+                        <p className="hint">
                           {t(
-                            'Photo de la promotion — JPG, PNG, WebP · 10 Mo',
-                            'تصويرة العرض — JPG، PNG، WebP · 10 Mo',
+                            'Vos offres apparaissent en tête de votre catalogue sous Produits et services. Les dates suivent l’heure du Maroc ; la date de fin est incluse. Enregistrez pour publier vos changements.',
+                            'العروض كيبانو فالأول ديال الكاتالوگ تحت قسم المنتجات والخدمات. التواريخ بتوقيت المغرب، ونهار النهاية داخل فالعرض. سجّل باش تبان التغييرات.',
                           )}
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp"
-                            disabled={busy}
-                            onChange={(e) => {
-                              const f = e.currentTarget.files?.[0];
-                              e.currentTarget.value = '';
-                              if (f) void uploadPromotion(f, p.id);
-                            }}
-                          />
-                        </label>
-                        {p.image && (
-                          <div className="promotion-photo">
-                            <img src={p.image} alt={p.title || t('Promotion', 'عرض')} />
+                        </p>
+                        {data.promotions.map((p: any, i: number) => (
+                          <div className="promotion-editor" key={p.id}>
+                            <div className="panel-title">
+                              <h3>
+                                {t('Promotion ', 'عرض ')}
+                                {i + 1}
+                              </h3>
+                              <span className="badge">
+                                {t(...promoStatusLabels[promotionStatus(p, promoToday)])}
+                              </span>
+                            </div>
+                            <label className="toggle">
+                              <input
+                                type="checkbox"
+                                checked={p.enabled}
+                                onChange={(e) => updatePromotion(p.id, 'enabled', e.target.checked)}
+                              />
+                              {t('Activer cette promotion', 'فعّل هاد العرض')}
+                            </label>
+                            <label className="field">
+                              {t('Titre *', 'العنوان *')}
+                              <input
+                                maxLength={120}
+                                value={p.title}
+                                onChange={(e) => updatePromotion(p.id, 'title', e.target.value)}
+                              />
+                            </label>
+                            <label className="field">
+                              {t('Description', 'الوصف')}
+                              <textarea
+                                maxLength={800}
+                                value={p.description}
+                                onChange={(e) =>
+                                  updatePromotion(p.id, 'description', e.target.value)
+                                }
+                              />
+                            </label>
+                            <div className="form-grid">
+                              {[
+                                [
+                                  'regularPrice',
+                                  'Prix habituel (DH) — facultatif',
+                                  'الثمن العادي (درهم) — اختياري',
+                                ],
+                                [
+                                  'promoPrice',
+                                  'Prix promotionnel (DH) — facultatif',
+                                  'ثمن العرض (درهم) — اختياري',
+                                ],
+                              ].map(([key, fr, da]) => (
+                                <label className="field" key={key}>
+                                  {t(fr, da)}
+                                  <input
+                                    inputMode="decimal"
+                                    maxLength={12}
+                                    value={p[key]}
+                                    onChange={(e) => updatePromotion(p.id, key, e.target.value)}
+                                  />
+                                </label>
+                              ))}
+                              {[
+                                [
+                                  'startDate',
+                                  'Date de début — facultative',
+                                  'نهار البداية — اختياري',
+                                ],
+                                ['endDate', 'Date de fin — facultative', 'نهار النهاية — اختياري'],
+                              ].map(([key, fr, da]) => (
+                                <label className="field" key={key}>
+                                  {t(fr, da)}
+                                  <input
+                                    type="date"
+                                    value={p[key]}
+                                    min={key === 'endDate' ? p.startDate : undefined}
+                                    onChange={(e) => updatePromotion(p.id, key, e.target.value)}
+                                  />
+                                </label>
+                              ))}
+                            </div>
+                            <label className="field">
+                              {t(
+                                'Photo de la promotion — JPG, PNG, WebP · 10 Mo',
+                                'تصويرة العرض — JPG، PNG، WebP · 10 Mo',
+                              )}
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp"
+                                disabled={busy}
+                                onChange={(e) => {
+                                  const f = e.currentTarget.files?.[0];
+                                  e.currentTarget.value = '';
+                                  if (f) void uploadPromotion(f, p.id);
+                                }}
+                              />
+                            </label>
+                            {p.image && (
+                              <div className="promotion-photo">
+                                <img src={p.image} alt={p.title || t('Promotion', 'عرض')} />
+                                <button
+                                  className="secondary small"
+                                  disabled={busy}
+                                  onClick={() => updatePromotion(p.id, 'image', '')}
+                                >
+                                  {t('Retirer la photo', 'حيّد التصويرة')}
+                                </button>
+                              </div>
+                            )}
                             <button
-                              className="secondary small"
+                              className="text-button"
                               disabled={busy}
-                              onClick={() => updatePromotion(p.id, 'image', '')}
+                              onClick={() =>
+                                setData((d: any) => ({
+                                  ...d,
+                                  promotions: d.promotions.filter((x: any) => x.id !== p.id),
+                                }))
+                              }
                             >
-                              {t('Retirer la photo', 'حيّد التصويرة')}
+                              {t('Supprimer cette promotion', 'مسح هاد العرض')}
                             </button>
                           </div>
-                        )}
+                        ))}
                         <button
-                          className="text-button"
-                          disabled={busy}
+                          className="secondary"
+                          disabled={busy || data.promotions.length >= MAX_PROMOTIONS}
                           onClick={() =>
                             setData((d: any) => ({
                               ...d,
-                              promotions: d.promotions.filter((x: any) => x.id !== p.id),
+                              promotions: [
+                                ...d.promotions,
+                                {
+                                  id: crypto.randomUUID(),
+                                  title: '',
+                                  description: '',
+                                  image: '',
+                                  regularPrice: '',
+                                  promoPrice: '',
+                                  startDate: '',
+                                  endDate: '',
+                                  enabled: true,
+                                },
+                              ],
                             }))
                           }
                         >
-                          {t('Supprimer cette promotion', 'مسح هاد العرض')}
+                          <Plus size={16} />
+                          {t('Ajouter une promo', 'زيد عرض')} ({data.promotions.length}/
+                          {MAX_PROMOTIONS})
                         </button>
-                      </div>
-                    ))}
-                    <button
-                      className="secondary"
-                      disabled={busy || data.promotions.length >= MAX_PROMOTIONS}
-                      onClick={() =>
-                        setData((d: any) => ({
-                          ...d,
-                          promotions: [
-                            ...d.promotions,
-                            {
-                              id: crypto.randomUUID(),
-                              title: '',
-                              description: '',
-                              image: '',
-                              regularPrice: '',
-                              promoPrice: '',
-                              startDate: '',
-                              endDate: '',
-                              enabled: true,
-                            },
-                          ],
-                        }))
-                      }
-                    >
-                      <Plus size={16} />
-                      {t('Ajouter une promo', 'زيد عرض')} ({data.promotions.length}/{MAX_PROMOTIONS}
-                      )
-                    </button>
-                    {!data.promotions.length && (
-                      <p className="hint">
-                        {t('Ajoutez votre première offre spéciale.', 'زيد أول عرض خاص ديالك.')}
-                      </p>
-                    )}
-                  </section>
+                        {!data.promotions.length && (
+                          <p className="hint">
+                            {t('Ajoutez votre première offre spéciale.', 'زيد أول عرض خاص ديالك.')}
+                          </p>
+                        )}
+                      </section>
+                    }
+                  />
                 </>
               )}
               {(activeTab === 'interface' || tab === 'sections') && (
