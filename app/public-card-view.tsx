@@ -5,12 +5,14 @@ import CardView from './card-view';
 const PublicRequestModal = lazy(() => import('./public-request-modal'));
 export default function PublicCardView({
   cardId = '',
+  publicName = '',
   initialData,
   initialError = '',
   initialAr,
   demoArabic,
 }: {
   cardId?: string;
+  publicName?: string;
   initialData: any;
   initialError?: string;
   initialAr?: boolean;
@@ -73,6 +75,7 @@ export default function PublicCardView({
             setAr={setAr}
             view={view}
             id={cardId}
+            publicName={publicName}
             onMessage={setMsg}
             onRequest={(kind, item) => setRequest({ kind, item })}
             withSections

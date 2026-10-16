@@ -50,6 +50,11 @@ try {
       'CREATE TABLE profiles(id TEXT PRIMARY KEY, owner TEXT, data TEXT, published INTEGER, state TEXT, expires TEXT, pro_enabled INTEGER)',
     )
     .run();
+  for (const sql of (await readFile('drizzle/0006_public_addresses.sql', 'utf8')).split(
+    '--> statement-breakpoint',
+  )) {
+    if (sql.trim()) await db.prepare(sql).run();
+  }
   const data = {
     name: 'Public rendering test',
     business: 'Public business',

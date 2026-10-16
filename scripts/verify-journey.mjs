@@ -220,6 +220,40 @@ try {
   });
   const cardId = saved.json.id;
   await request('/api/data?id=' + cardId, { status: 404 });
+  // Named addresses are chosen by the authenticated owner; draft content stays private.
+  await request('/api/address?name=journey-name', { status: 401 });
+  await request('/api/address', { data: { name: 'journey-name' }, status: 401 });
+  await request('/api/address', {
+    auth: true,
+    data: { name: 'journey-name' },
+    headers: { Origin: 'https://other.example.test' },
+    status: 403,
+  });
+  for (const name of [
+    'admin',
+    'auth',
+    'api',
+    'demo',
+    'contact',
+    'ab',
+    'bad name',
+    'école',
+    '-debut',
+    'fin-',
+    '../auth',
+  ]) {
+    await request('/api/address', { auth: true, data: { name }, status: 400 });
+  }
+  assert.equal(
+    (await request('/api/address?name=journey-name', { auth: true })).json.available,
+    true,
+  );
+  assert.equal(
+    (await request('/api/address', { auth: true, data: { name: '  Journey-Name  ' } })).json.name,
+    'journey-name',
+  );
+  await request('/journey-name', { status: 404 });
+
   const photo = await readFile('public/icons/icon-192.png');
   const form = new FormData();
   form.set('file', new File([photo], 'test.png', { type: 'image/png' }));
@@ -277,6 +311,87 @@ try {
     assert(page.text.includes('https://soralink.link/og-soralink.png'));
   }
   assert((await request('/c/' + cardId + '?lang=ar')).text.includes('dir="rtl"'));
+  assert((await request('/journey-name')).text.includes('Journey card'));
+  assert((await request('/journey-name?lang=ar')).text.includes('dir="rtl"'));
+  assert((await request('/c/' + cardId)).text.includes('https://soralink.link/journey-name'));
+  assert.equal(
+    (await request('/api/data', { auth: true })).json.profile.publicName,
+    'journey-name',
+  );
+  assert.equal((await request('/api/data?id=' + cardId)).json.publicName, 'journey-name');
+  const second = await request('/api/data', {
+    auth: true,
+    id: otherId,
+    data: {
+      action: 'save',
+      revision: null,
+      data: { name: 'Address competitor' },
+      published: false,
+    },
+  });
+  await request('/api/address', { auth: true, id: otherId, data: { name: 'competitor-name' } });
+  assert.equal(
+    (await request('/api/address?name=journey-name', { auth: true, id: otherId })).json.available,
+    false,
+  );
+  await request('/api/address', {
+    auth: true,
+    id: otherId,
+    data: { name: 'journey-name' },
+    status: 409,
+  });
+  assert.equal(
+    (await request('/api/data', { auth: true, id: otherId })).json.profile.publicName,
+    'competitor-name',
+  );
+  await request('/api/address', { auth: true, data: { name: 'journey-renamed' } });
+  assert((await request('/journey-name')).text.includes('Journey card'));
+  assert((await request('/journey-renamed')).text.includes('Journey card'));
+  assert((await request('/journey-name')).text.includes('https://soralink.link/journey-renamed'));
+  await request('/api/address', {
+    auth: true,
+    id: otherId,
+    data: { name: 'journey-name' },
+    status: 409,
+  });
+  const concurrent = await Promise.all(
+    [userId, otherId].map((id) =>
+      mf.dispatchFetch(base + '/api/address', {
+        method: 'POST',
+        headers: { Origin: base, Cookie: cookie(id), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: 'simultaneous-name' }),
+      }),
+    ),
+  );
+  assert.deepEqual(concurrent.map((r) => r.status).sort(), [200, 409]);
+  assert.equal(
+    (
+      await db
+        .prepare('SELECT COUNT(*) n FROM profile_addresses WHERE name=?')
+        .bind('simultaneous-name')
+        .first()
+    ).n,
+    1,
+  );
+  // A previous name can be selected again by the same owner.
+  await request('/api/address', { auth: true, data: { name: 'journey-name' } });
+  assert.equal(
+    (await request('/api/data', { auth: true })).json.profile.publicName,
+    'journey-name',
+  );
+  await db.prepare('UPDATE profiles SET published=0 WHERE id=?').bind(cardId).run();
+  await request('/journey-name', { status: 404 });
+  await request('/journey-renamed', { status: 404 });
+  await db
+    .prepare("UPDATE profiles SET published=1,state='suspended' WHERE id=?")
+    .bind(cardId)
+    .run();
+  await request('/journey-name', { status: 404 });
+  await db.prepare("UPDATE profiles SET state='trial' WHERE id=?").bind(cardId).run();
+  await request('/journey-name');
+  await db.prepare('DELETE FROM profile_addresses WHERE profile=?').bind(second.json.id).run();
+  await db.prepare('DELETE FROM profiles WHERE id=?').bind(second.json.id).run();
+
   await request('/api/data', {
     data: {
       action: 'request',
