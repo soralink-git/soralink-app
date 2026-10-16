@@ -139,3 +139,20 @@ export default function PhotoGallery({ photos, ar }: { photos: string[]; ar: boo
     </>
   );
 }
+
+export function PhotoPreview({ src, alt, ar }: { src: string; alt: string; ar: boolean }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        className="photo-preview"
+        aria-label={(ar ? 'كبّر التصويرة: ' : 'Agrandir la photo : ') + alt}
+        onClick={() => setOpen(true)}
+      >
+        <img src={src} alt={alt} loading="lazy" />
+      </button>
+      {open && <PhotoViewer src={src} ar={ar} onClose={() => setOpen(false)} />}
+    </>
+  );
+}

@@ -7,7 +7,7 @@ import { appearance } from './lib/personalization';
 import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
 import { activePromotions, promotionPrice, todayMorocco } from './lib/promotions';
 import { recordedVideoUrl } from './lib/content-media';
-import PhotoGallery from './photo-gallery';
+import PhotoGallery, { PhotoPreview } from './photo-gallery';
 import {
   socialFields,
   webLink,
@@ -477,7 +477,7 @@ export default function CardView({
               <h3>{sectionHeading(d, section, t('Nos promos', 'العروض ديالنا'))}</h3>
               {activePromotions(d.promotions, promoToday).map((p) => (
                 <article className="promotion-item" key={p.id}>
-                  {p.image && <img src={p.image} alt={p.title} loading="lazy" />}
+                  {p.image && <PhotoPreview src={p.image} alt={p.title} ar={ar} />}
                   <div>
                     <span className="promotion-label">{t('OFFRE SPÉCIALE', 'عرض خاص')}</span>
                     <h4>{p.title}</h4>
@@ -614,7 +614,7 @@ export default function CardView({
                           .map((item) => (
                             <article className="catalogue-item" key={item.id}>
                               {item.image && (
-                                <img src={item.image} alt={item.name} loading="lazy" />
+                                <PhotoPreview src={item.image} alt={item.name} ar={ar} />
                               )}
                               <div>
                                 <span className="catalogue-kind">

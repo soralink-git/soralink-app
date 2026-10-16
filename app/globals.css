@@ -799,6 +799,15 @@ hr {
 .photo-gallery img {
   display: block;
 }
+.photo-preview {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
 .photo-viewer {
   width: min(1200px, calc(100vw - 24px));
   height: calc(100dvh - 24px);
@@ -1764,7 +1773,8 @@ textarea::placeholder {
   background: var(--card-bg);
   color: var(--card-fg);
 }
-.promotion-item > img {
+.promotion-item > img,
+.promotion-item > .photo-preview > img {
   width: 100%;
   max-height: 220px;
   object-fit: contain;
@@ -1856,7 +1866,8 @@ textarea::placeholder {
   overflow: hidden;
   min-width: 0;
 }
-.catalogue-item > img {
+.catalogue-item > img,
+.catalogue-item > .photo-preview > img {
   width: 100%;
   height: 180px;
   object-fit: contain;
