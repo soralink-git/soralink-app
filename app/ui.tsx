@@ -1,4 +1,5 @@
 'use client';
+import { publicCardPath } from './lib/public-address';
 import { appendUnique, type History, type PageInfo } from './lib/pagination';
 import {
   selectedPlan,
@@ -432,6 +433,7 @@ export default function App({
     [data, setData] = useState<any>(demoMode ? { ...blank, ...demoCard } : blank),
     [published, setPublished] = useState(false),
     [id, setId] = useState(''),
+    [publicName, setPublicName] = useState(''),
     [inbox, setInbox] = useState<any[]>([]),
     [orders, setOrders] = useState<any[]>([]),
     [msg, setMsg] = useState(''),
@@ -655,6 +657,7 @@ export default function App({
               setAr(parsed.defaultLanguage === 'ar' || parsed.lang === 'ar');
             }
             setId(p.id);
+            setPublicName(p.publicName || '');
           } else setMsg(p.error);
           setLoaded(true);
         });
@@ -667,8 +670,18 @@ export default function App({
     }
   }, []);
   useEffect(() => {
-    if (id) QRCode.toDataURL(location.origin + '/c/' + id, { width: 240, margin: 2 }).then(setQr);
-  }, [id]);
+    let cancelled = false;
+    if (id)
+      QRCode.toDataURL(location.origin + publicCardPath(id, publicName), {
+        width: 240,
+        margin: 2,
+      }).then((value) => {
+        if (!cancelled) setQr(value);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [id, publicName]);
   const [historyPages, setHistoryPages] = useState<Partial<Record<History, PageInfo>>>({});
   const [historyBusy, setHistoryBusy] = useState(false);
   const historyEpoch = useRef(0);
@@ -743,6 +756,7 @@ export default function App({
             services: normalizeCatalogue(profileData.services),
           });
           setId(b.profile.id);
+          setPublicName(b.profile.publicName || '');
           setPublished(!!b.profile.published);
         }
         setHistoryPages(b.pages || {});
@@ -1079,7 +1093,7 @@ export default function App({
       );
       return;
     }
-    const url = location.origin + '/c/' + encodeURIComponent(id);
+    const url = location.origin + publicCardPath(id, publicName);
     setManualShareUrl('');
     if (typeof navigator.share === 'function') {
       try {
@@ -1115,6 +1129,7 @@ export default function App({
         setAr={setAr}
         view={view}
         id={id}
+        publicName={publicName}
         onMessage={setMsg}
         onRequest={(kind, item) => {
           setServiceIndex(0);
@@ -1443,6 +1458,8 @@ export default function App({
               download,
               field,
               id,
+              publicName,
+              setPublicName,
               inbox,
               historyPages,
               historyBusy,

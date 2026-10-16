@@ -4948,3 +4948,28 @@ header nav {
   color: #cbd5e1;
   margin: 0 0 8px;
 }
+.address-editor {
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.address-input {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  padding-left: 12px;
+  overflow: hidden;
+}
+.address-input > span {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.address-input input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  border-radius: 0;
+}

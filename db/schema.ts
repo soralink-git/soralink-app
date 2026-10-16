@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import {
   sqliteTable,
   text,
@@ -111,5 +112,23 @@ export const profileMedia = sqliteTable(
   (t) => [
     primaryKey({ columns: [t.profileId, t.mediaKey] }),
     index('profile_media_key').on(t.mediaKey),
+  ],
+);
+
+export const profileAddresses = sqliteTable(
+  'profile_addresses',
+  {
+    name: text('name').primaryKey(),
+    profile: text('profile')
+      .notNull()
+      .references(() => profiles.id),
+    isCurrent: integer('is_current').notNull().default(1),
+    created: text('created').notNull(),
+  },
+  (t) => [
+    uniqueIndex('profile_current_address')
+      .on(t.profile)
+      .where(sql`${t.isCurrent}=1`),
+    index('profile_address_history').on(t.profile),
   ],
 );

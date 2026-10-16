@@ -1,4 +1,6 @@
 'use client';
+import AddressEditor from './address-editor';
+import { publicCardPath } from './lib/public-address';
 import LoadMore from './load-more';
 import type { History, PageInfo } from './lib/pagination';
 import { offerLabel } from './lib/journey-links';
@@ -61,6 +63,8 @@ export type DashboardContext = {
   download: (blob: Blob, name: string) => void;
   field: (key: string, label: string, type?: string) => JSX.Element;
   id: string;
+  publicName?: string;
+  setPublicName?: (name: string) => void;
   inbox: any[];
   historyPages?: Partial<Record<History, PageInfo>>;
   historyBusy?: boolean;
@@ -117,6 +121,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     download,
     field,
     id,
+    publicName = '',
+    setPublicName = () => {},
     inbox,
     historyPages,
     historyBusy,
@@ -1482,6 +1488,12 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               )}
               {tab === 'share' && (
                 <section className="panel">
+                  <AddressEditor
+                    current={publicName}
+                    onChange={setPublicName}
+                    ar={ar}
+                    disabled={!id || busy}
+                  />
                   <h2>
                     {t(
                       'Une page. Plusieurs façons de la partager.',
@@ -1498,7 +1510,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             <input
                               readOnly
                               value={
-                                typeof window !== 'undefined' ? location.origin + '/c/' + id : ''
+                                typeof window !== 'undefined'
+                                  ? location.origin + publicCardPath(id, publicName)
+                                  : ''
                               }
                             />
                           </label>
@@ -1507,17 +1521,25 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               className="primary"
                               onClick={async () => {
                                 try {
-                                  await navigator.clipboard.writeText(location.origin + '/c/' + id);
+                                  await navigator.clipboard.writeText(
+                                    location.origin + publicCardPath(id, publicName),
+                                  );
                                   setMsg(t('Lien copié', 'تنسخ الرابط'));
                                 } catch {
-                                  setMsg('Copiez le lien depuis le champ');
+                                  setMsg(
+                                    t('Copiez le lien depuis le champ.', 'نسخ الرابط من الخانة.'),
+                                  );
                                 }
                               }}
                             >
                               <Copy size={16} />
                               {t('Copier', 'نسخ')}
                             </button>
-                            <a className="secondary" href={'/c/' + id} target="_blank">
+                            <a
+                              className="secondary"
+                              href={publicCardPath(id, publicName)}
+                              target="_blank"
+                            >
                               {t('Ouvrir', 'فتح')}
                               <ExternalLink size={15} />
                             </a>

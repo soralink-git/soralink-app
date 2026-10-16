@@ -1,3 +1,4 @@
+import { currentPublicName } from '../../lib/address-storage';
 import { readHistory, requestNotifications } from '../../lib/history';
 import {
   dataActionSchema,
@@ -47,7 +48,11 @@ export async function GET(req: Request) {
         .first();
       if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
       const d = publicCardData(JSON.parse(p.data), !!p.pro_enabled);
-      return json({ id: p.id, data: JSON.stringify(d) });
+      return json({
+        id: p.id,
+        publicName: await currentPublicName(db(), p.id),
+        data: JSON.stringify(d),
+      });
     }
     if (!user) return json({ error: 'Connexion requise' }, 401);
     const p: any = await db()
@@ -66,6 +71,7 @@ export async function GET(req: Request) {
       });
     }
     if (p) {
+      p.publicName = await currentPublicName(db(), p.id);
       await db().prepare('UPDATE profiles SET email=? WHERE id=?').bind(user.email, p.id).run();
       const d = JSON.parse(p.data);
       d.pro = !!p.pro_enabled;

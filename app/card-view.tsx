@@ -1,4 +1,5 @@
 'use client';
+import { publicCardPath } from './lib/public-address';
 import { vcardText } from './lib/vcard';
 import { useState, useEffect } from 'react';
 import { Nfc, Phone, Mail, MapPin, Download, Globe, Users, Share2 } from 'lucide-react';
@@ -30,6 +31,7 @@ export default function CardView({
   setAr,
   view = 'public',
   id = '',
+  publicName = '',
   onMessage,
   onRequest,
   onDiscover,
@@ -39,6 +41,7 @@ export default function CardView({
   setAr: (value: boolean) => void;
   view?: string;
   id?: string;
+  publicName?: string;
   onMessage: (message: string) => void;
   onRequest: (kind: string, item?: any) => void;
   onDiscover?: (d: any) => void;
@@ -62,7 +65,7 @@ export default function CardView({
       );
       return;
     }
-    const url = location.origin + '/c/' + encodeURIComponent(id);
+    const url = location.origin + publicCardPath(id, publicName);
     setManualShareUrl('');
     if (typeof navigator.share === 'function') {
       try {
