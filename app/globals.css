@@ -4860,3 +4860,76 @@ header nav {
   margin: 0 auto;
   max-width: none;
 }
+.pdf-catalogue-controls .pdf-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid currentColor;
+  border-radius: 8px;
+}
+.pdf-fullscreen {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  box-sizing: border-box;
+  border: 0;
+  color: #f8fafc;
+  background: #111827;
+}
+.pdf-fullscreen[open] {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pdf-fullscreen::backdrop {
+  background: #111827;
+}
+.pdf-fullscreen-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.pdf-fullscreen-heading button {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: #334155;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.pdf-fullscreen .pdf-catalogue {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.pdf-fullscreen .pdf-catalogue-controls {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+.pdf-fullscreen .pdf-catalogue-controls button {
+  background: #334155;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.pdf-fullscreen .pdf-catalogue-controls button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.pdf-fullscreen .pdf-catalogue-page {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
