@@ -1,4 +1,5 @@
 'use client';
+import { accentText } from './card-helpers';
 import { useEffect, useRef, useState } from 'react';
 import { normalizeCatalogue, cataloguePrice, type CatalogueItem } from './lib/catalogue';
 import {
@@ -213,11 +214,18 @@ export default function CatalogProducts({
   if (!settings.enabled || !settings.products || !items.length) return null;
   return (
     <div
-      className={'catalog-interactive catalog-layout-' + settings.layout}
+      className={
+        'catalog-interactive catalog-layout-' +
+        settings.layout +
+        (settings.accent ? ' has-catalog-accent' : '')
+      }
       dir={ar ? 'rtl' : 'ltr'}
       style={
         settings.accent
-          ? ({ '--catalog-accent': settings.accent } as React.CSSProperties)
+          ? ({
+              '--catalog-accent': settings.accent,
+              '--catalog-accent-text': accentText(settings.accent),
+            } as React.CSSProperties)
           : undefined
       }
     >

@@ -34,15 +34,23 @@ export function catalogRights(profile?: any): CatalogRights {
     pdfMB: 25,
     pdfPages: 100,
   };
+  const raw = profile?.catalog_rights ?? profile?.catalogRights;
+  if (raw == null) return defaults;
+  const denied = {
+    ...defaults,
+    enabled: false,
+    pdf: false,
+    products: false,
+    whatsapp: false,
+    downloads: false,
+    maxDocuments: 0,
+    maxProducts: 0,
+  };
   try {
-    const parsed = catalogRightsSchema.safeParse(
-      typeof profile?.catalog_rights === 'string'
-        ? JSON.parse(profile.catalog_rights)
-        : profile?.catalogRights,
-    );
-    return parsed.success ? parsed.data : defaults;
+    const parsed = catalogRightsSchema.safeParse(typeof raw === 'string' ? JSON.parse(raw) : raw);
+    return parsed.success ? parsed.data : denied;
   } catch {
-    return defaults;
+    return denied;
   }
 }
 export const catalogDocumentSchema = z.object({

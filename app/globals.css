@@ -5217,6 +5217,9 @@ header nav {
   margin-inline-start: 8px;
 }
 .catalog-product-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
   width: min(94vw, 680px);
   max-height: 90dvh;
   box-sizing: border-box;
@@ -5304,4 +5307,11 @@ header nav {
   .catalog-layout-list .catalogue-item {
     grid-template-columns: 1fr;
   }
+}
+
+.catalog-interactive.has-catalog-accent .secondary,
+.catalog-interactive.has-catalog-accent .primary {
+  background: var(--catalog-accent);
+  color: var(--catalog-accent-text);
+  border-color: var(--catalog-accent);
 }

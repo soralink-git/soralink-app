@@ -203,3 +203,13 @@ test('owner can add an empty product draft, type either language, and partially 
   assert.equal(catalogueError(edited), null);
   assert(catalogueError([{ ...draft, images: [url] }]));
 });
+
+test('malformed stored administrator rights fail closed while a missing override uses the plan', () => {
+  for (const raw of ['bad json', '{}', JSON.stringify({ ...rights, maxProducts: 9999 })]) {
+    const effective = menu.catalogRights({ state: 'active', catalog_rights: raw });
+    assert.equal(effective.enabled, false);
+    assert.equal(effective.pdf, false);
+    assert.equal(effective.products, false);
+  }
+  assert.equal(menu.catalogRights({ state: 'active', catalog_rights: null }).enabled, true);
+});
