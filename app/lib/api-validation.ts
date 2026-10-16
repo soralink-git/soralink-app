@@ -67,7 +67,10 @@ export const profileDataSchema = z
     ...profileFields,
     name: requiredText(120),
     photos: z.array(text(4000)).max(10).optional(),
-    pdfDocuments: z.array(z.object({ id: text(80), title: text(120), url: text(4000) })).max(5).optional(),
+    pdfDocuments: z
+      .array(z.object({ id: text(80), title: text(120), url: text(4000) }))
+      .max(5)
+      .optional(),
     services: z
       .array(
         z.union([

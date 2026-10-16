@@ -555,7 +555,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             {t('Disponibilité', 'التوفر')}
                             <select
                               value={item.availability || 'available'}
-                              onChange={(e) => updateCatalogue(item.id, 'availability', e.target.value)}
+                              onChange={(e) =>
+                                updateCatalogue(item.id, 'availability', e.target.value)
+                              }
                             >
                               <option value="available">{t('Disponible', 'موجود')}</option>
                               <option value="sold_out">{t('Épuisé', 'سالَى')}</option>
@@ -896,12 +898,19 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </span>
                       </label>
                       <label className="field">
-                        {t('Documents PDF · 5 fichiers maximum de 10 Mo', 'وثائق PDF · حتى 5 ملفات ديال 10 Mo')}
+                        {t(
+                          'Documents PDF · 5 fichiers maximum de 10 Mo',
+                          'وثائق PDF · حتى 5 ملفات ديال 10 Mo',
+                        )}
                         <input
                           type="file"
                           disabled={busy || (data.pdfDocuments || []).length >= 5}
                           accept="application/pdf"
-                          onChange={(e) => { const f = e.currentTarget.files?.[0]; e.currentTarget.value = ''; if (f) void upload(f, 'pdf'); }}
+                          onChange={(e) => {
+                            const f = e.currentTarget.files?.[0];
+                            e.currentTarget.value = '';
+                            if (f) void upload(f, 'pdf');
+                          }}
                         />
                       </label>
                       <label className="field">
@@ -967,8 +976,32 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     </div>
                     {(data.pdfDocuments || []).map((doc: any) => (
                       <div className="row" key={doc.id}>
-                        <input aria-label={t('Titre du PDF', 'عنوان PDF')} maxLength={120} value={doc.title} onChange={(e) => setData((d: any) => ({ ...d, pdfDocuments: (d.pdfDocuments || []).map((p: any) => p.id === doc.id ? { ...p, title: e.target.value } : p) }))}/>
-                        <button className="secondary small" onClick={() => setData((d: any) => ({ ...d, pdfDocuments: (d.pdfDocuments || []).filter((p: any) => p.id !== doc.id) }))}>{t('Supprimer', 'مسح')}</button>
+                        <input
+                          aria-label={t('Titre du PDF', 'عنوان PDF')}
+                          maxLength={120}
+                          value={doc.title}
+                          onChange={(e) =>
+                            setData((d: any) => ({
+                              ...d,
+                              pdfDocuments: (d.pdfDocuments || []).map((p: any) =>
+                                p.id === doc.id ? { ...p, title: e.target.value } : p,
+                              ),
+                            }))
+                          }
+                        />
+                        <button
+                          className="secondary small"
+                          onClick={() =>
+                            setData((d: any) => ({
+                              ...d,
+                              pdfDocuments: (d.pdfDocuments || []).filter(
+                                (p: any) => p.id !== doc.id,
+                              ),
+                            }))
+                          }
+                        >
+                          {t('Supprimer', 'مسح')}
+                        </button>
                       </div>
                     ))}
                     {data.pdf && (

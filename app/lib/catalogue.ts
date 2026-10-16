@@ -52,7 +52,10 @@ export function catalogueError(value: unknown, limit = MAX_CATALOGUE_ITEMS) {
       return 'Une catégorie ne doit pas dépasser 80 caractères.';
     if (!priceValid(text(item.price, 30)))
       return 'Renseignez un prix positif avec deux décimales maximum, ou laissez le prix vide.';
-    if (item.availability !== undefined && !['available', 'sold_out', 'hidden'].includes(item.availability))
+    if (
+      item.availability !== undefined &&
+      !['available', 'sold_out', 'hidden'].includes(item.availability)
+    )
       return 'Statut de disponibilité invalide.';
     if (item.image && !imageValid(item.image))
       return 'Ajoutez les photos du catalogue avec le bouton prévu.';
@@ -78,7 +81,9 @@ export function normalizeCatalogue(value: unknown): CatalogueItem[] {
       category: text(item.category, 80),
       price: priceValid(text(item.price, 30)) ? text(item.price, 30).replace(',', '.') : '',
       image: imageValid(item.image) ? item.image : '',
-      availability: ['sold_out', 'hidden'].includes(item.availability) ? item.availability : 'available',
+      availability: ['sold_out', 'hidden'].includes(item.availability)
+        ? item.availability
+        : 'available',
     }));
 }
 export function cataloguePrice(value: string) {
@@ -91,7 +96,9 @@ export function cataloguePrice(value: string) {
 }
 export function catalogueSelection(value: unknown, id: unknown) {
   return typeof id === 'string'
-    ? normalizeCatalogue(value).find((item) => item.id === id && item.name && item.availability === 'available')
+    ? normalizeCatalogue(value).find(
+        (item) => item.id === id && item.name && item.availability === 'available',
+      )
     : undefined;
 }
 export function catalogueRequestMessage(item: CatalogueItem, message: string) {

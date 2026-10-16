@@ -60,7 +60,17 @@ export function publicCardData(saved: any, pro: boolean) {
   ])
     out[key] = d[key];
   out.pdfDocuments = Array.isArray(d.pdfDocuments)
-    ? d.pdfDocuments.slice(0, 5).filter((p: any) => p && typeof p.url === 'string' && /^\/api\/upload\?key=[a-f0-9-]{36}$/.test(p.url)).map((p: any) => ({ id: String(p.id || '').slice(0, 80), title: String(p.title || '').slice(0, 120), url: p.url }))
+    ? d.pdfDocuments
+        .slice(0, 5)
+        .filter(
+          (p: any) =>
+            p && typeof p.url === 'string' && /^\/api\/upload\?key=[a-f0-9-]{36}$/.test(p.url),
+        )
+        .map((p: any) => ({
+          id: String(p.id || '').slice(0, 80),
+          title: String(p.title || '').slice(0, 120),
+          url: p.url,
+        }))
     : [];
   out.pro = pro;
   out.defaultLanguage = d.defaultLanguage === 'ar' || d.lang === 'ar' ? 'ar' : 'fr';
@@ -87,7 +97,10 @@ export function publicCardData(saved: any, pro: boolean) {
   }
   if (hidden.has('services')) out.services = [];
   if (hidden.has('photos')) out.photos = [];
-  if (hidden.has('pdf')) { out.pdf = ''; out.pdfDocuments = []; }
+  if (hidden.has('pdf')) {
+    out.pdf = '';
+    out.pdfDocuments = [];
+  }
   if (hidden.has('video')) {
     out.video = '';
     out.recordedVideo = '';

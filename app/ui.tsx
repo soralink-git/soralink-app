@@ -834,7 +834,8 @@ export default function App({
       if (b.storage) setStorage(b.storage);
       setData((d: any) => ({
         ...d,
-        [field]: field === 'photos' ? [...d.photos, b.url].slice(0, 10) : field === 'pdf' ? '' : b.url,
+        [field]:
+          field === 'photos' ? [...d.photos, b.url].slice(0, 10) : field === 'pdf' ? '' : b.url,
         ...(field === 'pdf'
           ? {
               pdfDocuments: [
