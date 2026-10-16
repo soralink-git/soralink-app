@@ -23,9 +23,11 @@ export default function CatalogEditor({
   onMessage,
   mediaEditor,
   initialTab,
+  promotionsEditor,
 }: {
   mediaEditor?: ReactNode;
-  initialTab?: 'pdf' | 'products' | 'media' | 'appearance';
+  initialTab?: 'pdf' | 'products' | 'media' | 'appearance' | 'promotions';
+  promotionsEditor?: ReactNode;
   data: any;
   setData: Dispatch<SetStateAction<any>>;
   subscription: any;
@@ -40,7 +42,10 @@ export default function CatalogEditor({
     docs = catalogDocuments(data),
     cats = catalogCategories(data),
     items = normalizeCatalogue(data.services, true);
-  const [tab, setTab] = useState<string>(initialTab || 'pdf'),
+  const [tab, setTab] = useState<string>(initialTab || 'products'),
+    [language, setLanguage] = useState<'Fr' | 'Ar'>(ar ? 'Ar' : 'Fr'),
+    [expandedItem, setExpandedItem] = useState(() => items.find((p) => !p.name)?.id || ''),
+    [expandedDoc, setExpandedDoc] = useState(''),
     [working, setWorking] = useState(false),
     [preview, setPreview] = useState(''),
     [crop, setCrop] = useState<{ source: File | string; apply: (f: File) => Promise<void> } | null>(
@@ -240,8 +245,8 @@ export default function CatalogEditor({
       <h2>{t('Produits et services', 'المنتجات والخدمات')}</h2>
       <p className="hint">
         {t(
-          'Les contenus français et arabes se saisissent séparément. Aucune traduction automatique. Enregistrez pour publier.',
-          'دخل المحتوى الفرنسي والعربي بشكل مستقل. ما كايناش ترجمة تلقائية. سجّل باش تنشر.',
+          'Ajoutez ce que vous proposez, puis enregistrez pour le publier sur votre carte.',
+          'زيد المنتجات والخدمات ديالك، ومن بعد سجّل باش يبانو فالبطاقة.',
         )}
       </p>
       {!rights.enabled && (
@@ -258,10 +263,11 @@ export default function CatalogEditor({
         aria-label={t('Gestion du catalogue', 'إدارة الكاتالوگ')}
       >
         {[
-          ['pdf', 'PDF', 'ملفات'],
-          ['products', 'Produits', 'المنتجات'],
+          ['products', 'Produits / services', 'منتجات وخدمات'],
           ['media', 'Photos et vidéos', 'الصور والفيديوهات'],
-          ['appearance', 'Apparence', 'المظهر'],
+          ['pdf', 'Documents PDF', 'وثائق PDF'],
+          ...(promotionsEditor ? [['promotions', 'Offres', 'العروض']] : []),
+          ['appearance', 'Réglages', 'الإعدادات'],
         ].map(([key, fr, a]) => (
           <button
             type="button"
@@ -270,13 +276,47 @@ export default function CatalogEditor({
             id={'catalog-tab-' + key}
             aria-controls={'catalog-panel-' + key}
             aria-selected={tab === key}
+            tabIndex={tab === key ? 0 : -1}
+            onKeyDown={(e) => {
+              const buttons = Array.from(
+                e.currentTarget.parentElement!.querySelectorAll<HTMLButtonElement>('[role="tab"]'),
+              );
+              const index = buttons.indexOf(e.currentTarget);
+              let next = index;
+              if (e.key === 'Home') next = 0;
+              else if (e.key === 'End') next = buttons.length - 1;
+              else if (e.key === 'ArrowRight')
+                next = (index + (ar ? -1 : 1) + buttons.length) % buttons.length;
+              else if (e.key === 'ArrowLeft')
+                next = (index + (ar ? 1 : -1) + buttons.length) % buttons.length;
+              else return;
+              e.preventDefault();
+              buttons[next].click();
+              buttons[next].focus();
+            }}
             onClick={() => setTab(key)}
           >
             {t(fr, a)}
           </button>
         ))}
       </div>
+      {(tab === 'products' || tab === 'pdf') && (
+        <label className="field catalog-language">
+          {t('Langue du contenu à modifier', 'لغة المحتوى اللي بغيتي تبدّل')}
+          <select value={language} onChange={(e) => setLanguage(e.target.value as 'Fr' | 'Ar')}>
+            <option value="Fr">{t('Français', 'الفرنسية')}</option>
+            <option value="Ar">{t('Arabe', 'العربية')}</option>
+          </select>
+          <span className="hint">
+            {t(
+              'La traduction est facultative et se saisit séparément.',
+              'الترجمة اختيارية وكتدخلها بوحدها.',
+            )}
+          </span>
+        </label>
+      )}
       <div role="tabpanel" id={'catalog-panel-' + tab} aria-labelledby={'catalog-tab-' + tab}>
+        {tab === 'promotions' && promotionsEditor}
         {tab === 'media' && (
           <fieldset disabled={locked || !rights.enabled}>
             <legend>{t('Médias du catalogue', 'وسائط الكاتالوگ')}</legend>
@@ -293,57 +333,70 @@ export default function CatalogEditor({
               )}
             </p>
             {docs.map((doc, i) => (
-              <article className="catalogue-editor" key={doc.id}>
+              <details
+                className="catalogue-editor"
+                key={doc.id}
+                open={expandedDoc === doc.id}
+                onToggle={(e) => {
+                  const open = e.currentTarget.open;
+                  setExpandedDoc((current) => (open ? doc.id : current === doc.id ? '' : current));
+                }}
+              >
+                <summary>
+                  {catalogText(doc.titleFr, doc.titleAr, ar, true) ||
+                    t('Nouveau document', 'وثيقة جديدة')}
+                </summary>
                 <div className="panel-title">
                   <h3>
                     {t('Document', 'وثيقة')} {i + 1}
                   </h3>
                   {moves('catalogDocuments', i, docs.length)}
                 </div>
-                <div className="form-grid">
-                  {input(
-                    t('Titre en français', 'العنوان بالفرنسية'),
-                    doc.titleFr,
-                    (v) => updateDoc(doc.id, 'titleFr', v),
-                    { maxLength: 120, lang: 'fr', dir: 'ltr' },
+                {input(
+                  t('Titre', 'العنوان'),
+                  language === 'Fr' ? doc.titleFr : doc.titleAr,
+                  (v) => updateDoc(doc.id, 'title' + language, v),
+                  {
+                    maxLength: 120,
+                    lang: language.toLowerCase(),
+                    dir: language === 'Ar' ? 'rtl' : 'ltr',
+                  },
+                )}
+                <details className="catalog-options">
+                  <summary>
+                    {t('Description, couverture et téléchargement', 'الوصف والغلاف والتحميل')}
+                  </summary>
+                  {[language].map((lang) => (
+                    <label className="field" key={lang}>
+                      {lang === 'Fr'
+                        ? t('Description en français', 'الوصف بالفرنسية')
+                        : t('Description en arabe', 'الوصف بالعربية')}
+                      <textarea
+                        maxLength={800}
+                        lang={lang === 'Fr' ? 'fr' : 'ar'}
+                        dir={lang === 'Fr' ? 'ltr' : 'rtl'}
+                        value={doc[('description' + lang) as 'descriptionFr']}
+                        onChange={(e) => updateDoc(doc.id, 'description' + lang, e.target.value)}
+                      />
+                    </label>
+                  ))}
+                  {media(
+                    doc.cover,
+                    (v) => updateDoc(doc.id, 'cover', v),
+                    false,
+                    undefined,
+                    'catalog-cover',
                   )}
-                  {input(
-                    t('Titre en arabe', 'العنوان بالعربية'),
-                    doc.titleAr,
-                    (v) => updateDoc(doc.id, 'titleAr', v),
-                    { maxLength: 120, lang: 'ar', dir: 'rtl' },
+                  {toggle(t('Document visible', 'الوثيقة ظاهرة'), doc.visible, (v) =>
+                    updateDoc(doc.id, 'visible', v),
                   )}
-                </div>
-                {(['Fr', 'Ar'] as const).map((lang) => (
-                  <label className="field" key={lang}>
-                    {lang === 'Fr'
-                      ? t('Description en français', 'الوصف بالفرنسية')
-                      : t('Description en arabe', 'الوصف بالعربية')}
-                    <textarea
-                      maxLength={800}
-                      lang={lang === 'Fr' ? 'fr' : 'ar'}
-                      dir={lang === 'Fr' ? 'ltr' : 'rtl'}
-                      value={doc[('description' + lang) as 'descriptionFr']}
-                      onChange={(e) => updateDoc(doc.id, 'description' + lang, e.target.value)}
-                    />
-                  </label>
-                ))}
-                {media(
-                  doc.cover,
-                  (v) => updateDoc(doc.id, 'cover', v),
-                  false,
-                  undefined,
-                  'catalog-cover',
-                )}
-                {toggle(t('Document visible', 'الوثيقة ظاهرة'), doc.visible, (v) =>
-                  updateDoc(doc.id, 'visible', v),
-                )}
-                {toggle(
-                  t('Autoriser le téléchargement volontaire', 'السماح بتحميل الملف'),
-                  doc.allowDownload,
-                  (v) => updateDoc(doc.id, 'allowDownload', v),
-                  !rights.downloads,
-                )}
+                  {toggle(
+                    t('Autoriser le téléchargement volontaire', 'السماح بتحميل الملف'),
+                    doc.allowDownload,
+                    (v) => updateDoc(doc.id, 'allowDownload', v),
+                    !rights.downloads,
+                  )}
+                </details>
                 <label className="field">
                   {t('Remplacer le PDF (adresse conservée)', 'تبديل الملف مع الحفاظ على الرابط')}
                   <input
@@ -388,7 +441,7 @@ export default function CatalogEditor({
                   </button>
                 </div>
                 {preview === doc.id && <PdfCatalogue src={doc.src} ar={ar} />}
-              </article>
+              </details>
             ))}
             <label className="field">
               {t('Importer un ou plusieurs PDF', 'استيراد ملف واحد أو أكثر')}
@@ -426,6 +479,7 @@ export default function CatalogEditor({
                         pdf: '',
                         catalogDocuments: [...catalogDocuments(d), doc],
                       }));
+                      setExpandedDoc(doc.id);
                     }
                   });
                 }}
@@ -435,35 +489,278 @@ export default function CatalogEditor({
         )}
         {tab === 'products' && (
           <fieldset disabled={locked || !rights.enabled || !rights.products}>
-            <legend>{t('Catégories et articles', 'الفئات والمنتجات')}</legend>
+            <legend>
+              {t('Votre liste de produits et services', 'لائحة المنتجات والخدمات ديالك')}
+            </legend>
+            <p>
+              {items.length}/{rights.maxProducts} {t('articles', 'منتجات')}
+            </p>
+            <button
+              type="button"
+              disabled={locked || items.length >= rights.maxProducts}
+              className="secondary"
+              onClick={() => {
+                const id = crypto.randomUUID();
+                setExpandedItem(id);
+                patch('services', [
+                  ...items,
+                  {
+                    id,
+                    name: '',
+                    nameFr: '',
+                    nameAr: '',
+                    description: '',
+                    descriptionAr: '',
+                    category: '',
+                    price: '',
+                    image: '',
+                    images: [],
+                    type: 'product',
+                    availability: 'available',
+                  },
+                ]);
+              }}
+            >
+              {t('Ajouter un produit ou service', 'إضافة منتج أو خدمة')}
+            </button>
+            {!items.length && (
+              <p className="catalog-empty">
+                {t(
+                  'Commencez par un nom, une photo et un prix si vous le souhaitez.',
+                  'بدا بالاسم وتصويرة والثمن إلا بغيتي.',
+                )}
+              </p>
+            )}
+            {items.map((item, i) => (
+              <details
+                className="catalogue-editor"
+                key={item.id}
+                open={expandedItem === item.id}
+                onToggle={(e) => {
+                  const open = e.currentTarget.open;
+                  setExpandedItem((current) =>
+                    open ? item.id : current === item.id ? '' : current,
+                  );
+                }}
+              >
+                <summary>
+                  {!item.nameFr && !item.nameAr
+                    ? t('Nouveau produit ou service', 'منتج أو خدمة جديدة')
+                    : catalogText(item.nameFr, item.nameAr, ar)}
+                </summary>
+                {input(
+                  t('Nom du produit ou service *', 'اسم المنتج أو الخدمة *'),
+                  language === 'Fr' ? item.nameFr : item.nameAr,
+                  (v) => updateItem(item.id, language === 'Fr' ? 'nameFr' : 'nameAr', v),
+                  {
+                    maxLength: 120,
+                    lang: language.toLowerCase(),
+                    dir: language === 'Ar' ? 'rtl' : 'ltr',
+                  },
+                )}
+                <label className="field">
+                  {t('Description (facultative)', 'الوصف (اختياري)')}
+                  <textarea
+                    lang={language.toLowerCase()}
+                    dir={language === 'Ar' ? 'rtl' : 'ltr'}
+                    maxLength={800}
+                    value={language === 'Fr' ? item.description : item.descriptionAr}
+                    onChange={(e) =>
+                      updateItem(
+                        item.id,
+                        language === 'Fr' ? 'description' : 'descriptionAr',
+                        e.target.value,
+                      )
+                    }
+                  />
+                </label>
+                <div className="form-grid">
+                  <label className="field">
+                    {t('Type', 'النوع')}
+                    <select
+                      value={item.type}
+                      onChange={(e) => updateItem(item.id, 'type', e.target.value)}
+                    >
+                      <option value="product">{t('Produit', 'منتج')}</option>
+                      <option value="service">{t('Service', 'خدمة')}</option>
+                    </select>
+                  </label>
+                  {input(
+                    t('Prix en dirhams (facultatif)', 'الثمن بالدرهم (اختياري)'),
+                    item.price,
+                    (v) => updateItem(item.id, 'price', v),
+                    { inputMode: 'decimal', maxLength: 30 },
+                  )}
+                  <label className="field">
+                    {t('Disponibilité', 'التوفر')}
+                    <select
+                      value={item.availability}
+                      onChange={(e) => updateItem(item.id, 'availability', e.target.value)}
+                    >
+                      <option value="available">{t('Disponible', 'متوفر')}</option>
+                      <option value="soldout">{t('Épuisé', 'نفد')}</option>
+                      <option value="hidden">{t('Masqué', 'مخفي')}</option>
+                    </select>
+                  </label>
+                </div>
+                <h4>{t('Image principale', 'الصورة الرئيسية')}</h4>
+                {media(
+                  item.image,
+                  (v) => updateItem(item.id, 'image', v),
+                  false,
+                  (v) => updateItem(item.id, 'thumbnail', v),
+                )}
+                <details className="catalog-options">
+                  <summary>
+                    {t('Plus de photos, catégorie et promotion', 'صور إضافية والفئة والتخفيض')}
+                  </summary>
+                  <div className="form-grid">
+                    <label className="field">
+                      {t('Catégorie', 'الفئة')}
+                      <select
+                        value={item.categoryId}
+                        onChange={(e) => updateItem(item.id, 'categoryId', e.target.value)}
+                      >
+                        <option value="">{t('Sans catégorie', 'بلا فئة')}</option>
+                        {cats.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {catalogText(c.nameFr, c.nameAr, ar)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    {input(
+                      t('Référence', 'المرجع'),
+                      item.reference,
+                      (v) => updateItem(item.id, 'reference', v),
+                      { maxLength: 80 },
+                    )}
+                    {input(
+                      t('Ancien prix (facultatif)', 'الثمن القديم (اختياري)'),
+                      item.oldPrice,
+                      (v) => updateItem(item.id, 'oldPrice', v),
+                      { inputMode: 'decimal', maxLength: 30 },
+                    )}
+                  </div>
+                  {toggle(t('Badge promotion', 'شارة التخفيض'), item.promotion, (v) =>
+                    updateItem(item.id, 'promotion', v),
+                  )}
+                  {item.promotion && (
+                    <div className="form-grid">
+                      {input(
+                        t('Début de promotion', 'بداية التخفيض'),
+                        item.promoStart,
+                        (v) => updateItem(item.id, 'promoStart', v),
+                        { type: 'date' },
+                      )}
+                      {input(
+                        t('Fin de promotion', 'نهاية التخفيض'),
+                        item.promoEnd,
+                        (v) => updateItem(item.id, 'promoEnd', v),
+                        { type: 'date' },
+                      )}
+                    </div>
+                  )}
+                  <h4>{t('Galerie (5 photos supplémentaires)', 'الصور الإضافية (حتى 5)')}</h4>
+                  <div className="catalog-gallery-editor">
+                    {item.images.map((src, n) => (
+                      <div key={src}>
+                        {media(src, (v) =>
+                          updateItem(
+                            item.id,
+                            'images',
+                            v
+                              ? item.images.map((u, k) => (k === n ? v : u))
+                              : item.images.filter((_, k) => k !== n),
+                          ),
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <label className="field">
+                    {t('Importer plusieurs photos', 'استيراد عدة صور')}
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/jpeg,image/png,image/webp"
+                      disabled={locked || item.images.length >= 5}
+                      onChange={(e) => {
+                        const files = Array.from(e.currentTarget.files || []);
+                        e.currentTarget.value = '';
+                        void run(async () => {
+                          if (item.images.length + files.length > 5)
+                            throw Error(
+                              t(
+                                'Cinq photos supplémentaires maximum.',
+                                'الحد الأقصى خمس صور إضافية.',
+                              ),
+                            );
+                          for (const f of files) {
+                            const src = await photo(f);
+                            setData((d: any) => ({
+                              ...d,
+                              services: normalizeCatalogue(d.services, true).map((p) =>
+                                p.id === item.id ? { ...p, images: [...p.images, src] } : p,
+                              ),
+                            }));
+                          }
+                        });
+                      }}
+                    />
+                  </label>
+                </details>
+                <details className="catalog-options">
+                  <summary>
+                    {t('Organiser ou supprimer cet article', 'ترتيب أو حذف هاد المنتج')}
+                  </summary>
+                  <div className="catalog-actions">
+                    {moves('services', i, items.length)}
+                    <button
+                      type="button"
+                      disabled={locked || items.length >= rights.maxProducts}
+                      onClick={() =>
+                        patch('services', [...items, { ...item, id: crypto.randomUUID() }])
+                      }
+                    >
+                      {t('Dupliquer', 'نسخ')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(t('Supprimer cet article ?', 'حذف هاد المنتج؟')))
+                          patch(
+                            'services',
+                            items.filter((p) => p.id !== item.id),
+                          );
+                      }}
+                    >
+                      {t('Supprimer', 'حذف')}
+                    </button>
+                  </div>
+                </details>
+              </details>
+            ))}
+
             <details>
               <summary>
                 {t('Gérer les catégories', 'إدارة الفئات')} ({cats.length}/40)
               </summary>
               {cats.map((cat, i) => (
                 <div className="catalogue-editor" key={cat.id}>
-                  <div className="form-grid">
-                    {input(
-                      t('Nom français', 'الاسم بالفرنسية'),
-                      cat.nameFr,
-                      (v) =>
-                        patch(
-                          'catalogCategories',
-                          cats.map((c) => (c.id === cat.id ? { ...c, nameFr: v } : c)),
-                        ),
-                      { maxLength: 120, lang: 'fr', dir: 'ltr' },
-                    )}
-                    {input(
-                      t('Nom arabe', 'الاسم بالعربية'),
-                      cat.nameAr,
-                      (v) =>
-                        patch(
-                          'catalogCategories',
-                          cats.map((c) => (c.id === cat.id ? { ...c, nameAr: v } : c)),
-                        ),
-                      { maxLength: 120, lang: 'ar', dir: 'rtl' },
-                    )}
-                  </div>
+                  {input(
+                    t('Nom de la catégorie', 'اسم الفئة'),
+                    language === 'Fr' ? cat.nameFr : cat.nameAr,
+                    (v) =>
+                      patch(
+                        'catalogCategories',
+                        cats.map((c) => (c.id === cat.id ? { ...c, ['name' + language]: v } : c)),
+                      ),
+                    {
+                      maxLength: 120,
+                      lang: language.toLowerCase(),
+                      dir: language === 'Ar' ? 'rtl' : 'ltr',
+                    },
+                  )}
                   {toggle(t('Catégorie visible', 'الفئة ظاهرة'), cat.visible, (v) =>
                     patch(
                       'catalogCategories',
@@ -508,236 +805,6 @@ export default function CatalogEditor({
                 {t('Ajouter une catégorie', 'إضافة فئة')}
               </button>
             </details>
-            <p>
-              {items.length}/{rights.maxProducts} {t('articles', 'منتجات')}
-            </p>
-            {items.map((item, i) => (
-              <details className="catalogue-editor" key={item.id} open={!item.name}>
-                <summary>
-                  {catalogText(item.nameFr, item.nameAr, ar)} · {i + 1}
-                </summary>
-                <div className="catalog-actions">
-                  {moves('services', i, items.length)}
-                  <button
-                    type="button"
-                    disabled={locked || items.length >= rights.maxProducts}
-                    onClick={() =>
-                      patch('services', [...items, { ...item, id: crypto.randomUUID() }])
-                    }
-                  >
-                    {t('Dupliquer', 'نسخ')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (window.confirm(t('Supprimer cet article ?', 'حذف هاد المنتج؟')))
-                        patch(
-                          'services',
-                          items.filter((p) => p.id !== item.id),
-                        );
-                    }}
-                  >
-                    {t('Supprimer', 'حذف')}
-                  </button>
-                </div>
-                <div className="form-grid">
-                  {input(
-                    t('Nom en français', 'الاسم بالفرنسية'),
-                    item.nameFr,
-                    (v) => {
-                      setData((d: any) => ({
-                        ...d,
-                        services: normalizeCatalogue(d.services, true).map((p) =>
-                          p.id === item.id ? { ...p, nameFr: v, name: v || p.nameAr } : p,
-                        ),
-                      }));
-                    },
-                    { maxLength: 120, lang: 'fr', dir: 'ltr' },
-                  )}
-                  {input(
-                    t('Nom en arabe', 'الاسم بالعربية'),
-                    item.nameAr,
-                    (v) => updateItem(item.id, 'nameAr', v),
-                    { maxLength: 120, lang: 'ar', dir: 'rtl' },
-                  )}
-                </div>
-                <div className="form-grid">
-                  <label className="field">
-                    {t('Description en français', 'الوصف بالفرنسية')}
-                    <textarea
-                      lang="fr"
-                      dir="ltr"
-                      maxLength={800}
-                      value={item.description}
-                      onChange={(e) => updateItem(item.id, 'description', e.target.value)}
-                    />
-                  </label>
-                  <label className="field">
-                    {t('Description en arabe', 'الوصف بالعربية')}
-                    <textarea
-                      lang="ar"
-                      dir="rtl"
-                      maxLength={800}
-                      value={item.descriptionAr}
-                      onChange={(e) => updateItem(item.id, 'descriptionAr', e.target.value)}
-                    />
-                  </label>
-                </div>
-                <div className="form-grid">
-                  <label className="field">
-                    {t('Type', 'النوع')}
-                    <select
-                      value={item.type}
-                      onChange={(e) => updateItem(item.id, 'type', e.target.value)}
-                    >
-                      <option value="product">{t('Produit', 'منتج')}</option>
-                      <option value="service">{t('Service', 'خدمة')}</option>
-                    </select>
-                  </label>
-                  <label className="field">
-                    {t('Catégorie', 'الفئة')}
-                    <select
-                      value={item.categoryId}
-                      onChange={(e) => updateItem(item.id, 'categoryId', e.target.value)}
-                    >
-                      <option value="">{t('Sans catégorie', 'بلا فئة')}</option>
-                      {cats.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {catalogText(c.nameFr, c.nameAr, ar)}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                  {input(
-                    t('Référence', 'المرجع'),
-                    item.reference,
-                    (v) => updateItem(item.id, 'reference', v),
-                    { maxLength: 80 },
-                  )}
-                  {input(
-                    t('Prix en dirhams (facultatif)', 'الثمن بالدرهم (اختياري)'),
-                    item.price,
-                    (v) => updateItem(item.id, 'price', v),
-                    { inputMode: 'decimal', maxLength: 30 },
-                  )}
-                  {input(
-                    t('Ancien prix (facultatif)', 'الثمن القديم (اختياري)'),
-                    item.oldPrice,
-                    (v) => updateItem(item.id, 'oldPrice', v),
-                    { inputMode: 'decimal', maxLength: 30 },
-                  )}
-                  <label className="field">
-                    {t('Disponibilité', 'التوفر')}
-                    <select
-                      value={item.availability}
-                      onChange={(e) => updateItem(item.id, 'availability', e.target.value)}
-                    >
-                      <option value="available">{t('Disponible', 'متوفر')}</option>
-                      <option value="soldout">{t('Épuisé', 'نفد')}</option>
-                      <option value="hidden">{t('Masqué', 'مخفي')}</option>
-                    </select>
-                  </label>
-                </div>
-                {toggle(t('Badge promotion', 'شارة التخفيض'), item.promotion, (v) =>
-                  updateItem(item.id, 'promotion', v),
-                )}
-                {item.promotion && (
-                  <div className="form-grid">
-                    {input(
-                      t('Début de promotion', 'بداية التخفيض'),
-                      item.promoStart,
-                      (v) => updateItem(item.id, 'promoStart', v),
-                      { type: 'date' },
-                    )}
-                    {input(
-                      t('Fin de promotion', 'نهاية التخفيض'),
-                      item.promoEnd,
-                      (v) => updateItem(item.id, 'promoEnd', v),
-                      { type: 'date' },
-                    )}
-                  </div>
-                )}
-                <h4>{t('Image principale', 'الصورة الرئيسية')}</h4>
-                {media(
-                  item.image,
-                  (v) => updateItem(item.id, 'image', v),
-                  false,
-                  (v) => updateItem(item.id, 'thumbnail', v),
-                )}
-                <h4>{t('Galerie (5 photos supplémentaires)', 'الصور الإضافية (حتى 5)')}</h4>
-                <div className="catalog-gallery-editor">
-                  {item.images.map((src, n) => (
-                    <div key={src}>
-                      {media(src, (v) =>
-                        updateItem(
-                          item.id,
-                          'images',
-                          v
-                            ? item.images.map((u, k) => (k === n ? v : u))
-                            : item.images.filter((_, k) => k !== n),
-                        ),
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <label className="field">
-                  {t('Importer plusieurs photos', 'استيراد عدة صور')}
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/jpeg,image/png,image/webp"
-                    disabled={locked || item.images.length >= 5}
-                    onChange={(e) => {
-                      const files = Array.from(e.currentTarget.files || []);
-                      e.currentTarget.value = '';
-                      void run(async () => {
-                        if (item.images.length + files.length > 5)
-                          throw Error(
-                            t(
-                              'Cinq photos supplémentaires maximum.',
-                              'الحد الأقصى خمس صور إضافية.',
-                            ),
-                          );
-                        for (const f of files) {
-                          const src = await photo(f);
-                          setData((d: any) => ({
-                            ...d,
-                            services: normalizeCatalogue(d.services, true).map((p) =>
-                              p.id === item.id ? { ...p, images: [...p.images, src] } : p,
-                            ),
-                          }));
-                        }
-                      });
-                    }}
-                  />
-                </label>
-              </details>
-            ))}
-            <button
-              type="button"
-              disabled={locked || items.length >= rights.maxProducts}
-              onClick={() =>
-                patch('services', [
-                  ...items,
-                  {
-                    id: crypto.randomUUID(),
-                    name: '',
-                    nameFr: '',
-                    nameAr: '',
-                    description: '',
-                    descriptionAr: '',
-                    category: '',
-                    price: '',
-                    image: '',
-                    images: [],
-                    type: 'product',
-                    availability: 'available',
-                  },
-                ])
-              }
-            >
-              {t('Ajouter un produit ou service', 'إضافة منتج أو خدمة')}
-            </button>
           </fieldset>
         )}
         {tab === 'appearance' && (
@@ -790,12 +857,14 @@ export default function CatalogEditor({
           </fieldset>
         )}
       </div>
-      <p className="hint">
-        {t(
-          `Stockage partagé avec votre carte : ${rights.storageMB} Mo, ${rights.maxFiles} fichiers maximum.`,
-          `التخزين مشترك مع البطاقة: ${rights.storageMB} ميغابايت و${rights.maxFiles} ملف كحد أقصى.`,
-        )}
-      </p>
+      {tab === 'appearance' && (
+        <p className="hint">
+          {t(
+            `Stockage partagé avec votre carte : ${rights.storageMB} Mo, ${rights.maxFiles} fichiers maximum.`,
+            `التخزين مشترك مع البطاقة: ${rights.storageMB} ميغابايت و${rights.maxFiles} ملف كحد أقصى.`,
+          )}
+        </p>
+      )}
       <button type="button" className="primary full" disabled={locked} onClick={save}>
         {working
           ? t('Importation…', 'جاري الاستيراد…')

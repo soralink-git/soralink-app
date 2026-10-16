@@ -25,73 +25,6 @@ export default function CatalogMediaEditor({ context }: { context: DashboardCont
     <section className="catalog-media-editor-panel">
       <h3>{t('Photos et vidéos', 'الصور والفيديوهات')}</h3>
 
-      {(['photos', 'video'] as const).map((key) => (
-        <div key={key} className="catalog-media-visibility">
-          <label className="toggle">
-            <input
-              type="checkbox"
-              checked={!appearance(data).hidden.includes(key)}
-              onChange={(e) => {
-                const visible = e.target.checked;
-                setData((d: any) => ({
-                  ...d,
-                  hiddenSections: visible
-                    ? appearance(d).hidden.filter((k: string) => k !== key)
-                    : [...appearance(d).hidden, key],
-                }));
-              }}
-            />
-            {key === 'photos'
-              ? t('Afficher les photos dans le catalogue', 'إظهار الصور فالكاتالوگ')
-              : t('Afficher les vidéos dans le catalogue', 'إظهار الفيديوهات فالكاتالوگ')}
-          </label>
-          <label className="field">
-            {t('Titre dans la langue actuelle', 'العنوان باللغة الحالية')}
-            <input
-              maxLength={120}
-              value={data.sectionTitles?.[ar ? 'ar' : 'fr']?.[key] || ''}
-              placeholder={
-                key === 'photos' ? t('En images', 'بالتصاور') : t('En vidéo', 'بالفيديو')
-              }
-              onChange={(e) => {
-                const value = e.target.value;
-                setData((d: any) => ({
-                  ...d,
-                  sectionTitles: {
-                    ...d.sectionTitles,
-                    [ar ? 'ar' : 'fr']: { ...d.sectionTitles?.[ar ? 'ar' : 'fr'], [key]: value },
-                  },
-                }));
-              }}
-            />
-          </label>
-        </div>
-      ))}
-      <div className="storage-summary">
-        <strong>{t('Stockage du compte', 'التخزين ديال الحساب')}</strong>
-        <p>
-          {storage
-            ? Math.ceil(storage.bytes / 1048576) +
-              ' / ' +
-              storage.limitBytes / 1048576 +
-              t(' Mo · ', ' ميغابايت · ') +
-              storage.files +
-              ' / ' +
-              storage.limitFiles +
-              ' ' +
-              t('fichiers', 'ملف')
-            : t(
-                `${limits.storageMB} Mo maximum par compte · ${limits.maxFiles} fichiers`,
-                `حتى ${limits.storageMB} ميغابايت لكل حساب · ${limits.maxFiles} ملف`,
-              )}
-        </p>
-        <p className="hint">
-          {t(
-            'Après enregistrement, les médias retirés sont supprimés s’ils ne sont plus utilisés sur une carte. Les imports abandonnés depuis plus de 24 h sont nettoyés lors d’une prochaine action.',
-            'من بعد التسجيل، الملفات اللي حيّدتي كيتحيدو نهائياً إلا ما بقاوش مستعملين فشي كارط. الملفات اللي ترفعو وما تستعملوش كيتنقّاو من بعد 24 ساعة فإجراء جاي.',
-          )}
-        </p>
-      </div>
       <div className="camera-actions">
         <button
           className="secondary"
@@ -136,8 +69,8 @@ export default function CatalogMediaEditor({ context }: { context: DashboardCont
       </div>
       <p className="hint">
         {t(
-          'Sur téléphone, utilisez la caméra. Sur PC, choisissez un fichier enregistré. Photos compressées automatiquement à 1 600 pixels maximum (40 Mo avant compression). Vidéo : 50 Mo maximum, format MP4 conseillé. Enregistrez ensuite votre carte.',
-          'فالتلفون استعمل الكاميرا. فالكمبيوتر اختار ملف مسجّل. التصاور كيتضغطو أوتوماتيكياً حتى 1600 بيكسل (حتى 40 Mo قبل الضغط) والفيديو حتى 50 Mo، والأفضل MP4. ومن بعد سجّل الكارط.',
+          'Ajoutez des photos de votre activité ou une vidéo. Enregistrez ensuite pour les publier.',
+          'زيد تصاور ديال الخدمة أو فيديو. ومن بعد سجّل باش يبانو فالبطاقة.',
         )}
       </p>
       <div className="form-grid">
@@ -228,6 +161,76 @@ export default function CatalogMediaEditor({ context }: { context: DashboardCont
           </div>
         ))}
       </div>
+      <details className="catalog-options">
+        <summary>{t('Visibilité, titres et stockage', 'الظهور والعناوين والتخزين')}</summary>
+        {(['photos', 'video'] as const).map((key) => (
+          <div key={key} className="catalog-media-visibility">
+            <label className="toggle">
+              <input
+                type="checkbox"
+                checked={!appearance(data).hidden.includes(key)}
+                onChange={(e) => {
+                  const visible = e.target.checked;
+                  setData((d: any) => ({
+                    ...d,
+                    hiddenSections: visible
+                      ? appearance(d).hidden.filter((k: string) => k !== key)
+                      : [...appearance(d).hidden, key],
+                  }));
+                }}
+              />
+              {key === 'photos'
+                ? t('Afficher les photos dans le catalogue', 'إظهار الصور فالكاتالوگ')
+                : t('Afficher les vidéos dans le catalogue', 'إظهار الفيديوهات فالكاتالوگ')}
+            </label>
+            <label className="field">
+              {t('Titre dans la langue actuelle', 'العنوان باللغة الحالية')}
+              <input
+                maxLength={120}
+                value={data.sectionTitles?.[ar ? 'ar' : 'fr']?.[key] || ''}
+                placeholder={
+                  key === 'photos' ? t('En images', 'بالتصاور') : t('En vidéo', 'بالفيديو')
+                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setData((d: any) => ({
+                    ...d,
+                    sectionTitles: {
+                      ...d.sectionTitles,
+                      [ar ? 'ar' : 'fr']: { ...d.sectionTitles?.[ar ? 'ar' : 'fr'], [key]: value },
+                    },
+                  }));
+                }}
+              />
+            </label>
+          </div>
+        ))}
+        <div className="storage-summary">
+          <strong>{t('Stockage du compte', 'التخزين ديال الحساب')}</strong>
+          <p>
+            {storage
+              ? Math.ceil(storage.bytes / 1048576) +
+                ' / ' +
+                storage.limitBytes / 1048576 +
+                t(' Mo · ', ' ميغابايت · ') +
+                storage.files +
+                ' / ' +
+                storage.limitFiles +
+                ' ' +
+                t('fichiers', 'ملف')
+              : t(
+                  `${limits.storageMB} Mo maximum par compte · ${limits.maxFiles} fichiers`,
+                  `حتى ${limits.storageMB} ميغابايت لكل حساب · ${limits.maxFiles} ملف`,
+                )}
+          </p>
+          <p className="hint">
+            {t(
+              'Après enregistrement, les médias retirés sont supprimés s’ils ne sont plus utilisés sur une carte. Les imports abandonnés depuis plus de 24 h sont nettoyés lors d’une prochaine action.',
+              'من بعد التسجيل، الملفات اللي حيّدتي كيتحيدو نهائياً إلا ما بقاوش مستعملين فشي كارط. الملفات اللي ترفعو وما تستعملوش كيتنقّاو من بعد 24 ساعة فإجراء جاي.',
+            )}
+          </p>
+        </div>
+      </details>
     </section>
   );
 }

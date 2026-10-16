@@ -5315,3 +5315,23 @@ header nav {
   color: var(--catalog-accent-text);
   border-color: var(--catalog-accent);
 }
+
+/* Owner catalogue: show the main task before optional details. */
+.catalog-editor .catalog-language {
+  max-width: 360px;
+  margin-block: 18px;
+}
+.catalog-editor .catalog-options {
+  border-block-start: 1px solid #dbe4e8;
+  padding-block: 4px;
+}
+.catalog-editor .catalog-options > summary {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.catalog-editor .catalog-empty {
+  padding: 18px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  margin-block: 16px;
+}

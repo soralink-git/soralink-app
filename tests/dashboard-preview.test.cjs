@@ -178,3 +178,48 @@ test('photo and video section controls are grouped into the catalogue rather tha
   assert.doesNotMatch(html, /aria-label="Position de photos"|aria-label="Position de video"/);
   assert.match(html, /aria-label="Position de services"/);
 });
+
+test('catalogue opens on products with a clear first action and isolates offers from the initial form', () => {
+  for (const ar of [false, true]) {
+    const c = context('content', ar);
+    c.data = { ...c.data, services: [] };
+    const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
+    assert.match(html, /id="catalog-panel-products"/);
+    assert.match(html, ar ? /إضافة منتج أو خدمة/ : /Ajouter un produit ou service/);
+    assert.match(html, /id="catalog-tab-promotions"/);
+    // Promotions and PDF inputs do not crowd the initial product workflow.
+    assert.doesNotMatch(html, /class="promotion-editor"|accept="application\/pdf"/);
+    assert.match(html, ar ? /بدا بالاسم/ : /Commencez par un nom/);
+    const offers = renderToStaticMarkup(
+      React.createElement(DashboardEditor, { context: context('promotions', ar) }),
+    );
+    assert.match(offers, /id="catalog-panel-promotions"/);
+    assert.match(offers, /class="promotion-editor"/);
+    assert.doesNotMatch(offers, /id="catalog-panel-products"/);
+  }
+});
+
+test('product editing exposes one content language and keeps advanced controls collapsed', () => {
+  const Editor = load(path.resolve('app/catalog-editor.tsx')).default;
+  for (const ar of [false, true]) {
+    const html = renderToStaticMarkup(
+      React.createElement(Editor, {
+        data: { services: [{ id: 'draft', name: '', nameFr: '', nameAr: '' }] },
+        setData: noop,
+        ar,
+        busy: false,
+        save: noop,
+        onMessage: noop,
+      }),
+    );
+    assert.match(html, /class="catalogue-editor" open=""/);
+    assert.match(
+      html,
+      new RegExp('lang="' + (ar ? 'ar' : 'fr') + '" dir="' + (ar ? 'rtl' : 'ltr') + '"'),
+    );
+    assert.doesNotMatch(html, new RegExp('lang="' + (ar ? 'fr' : 'ar') + '"'));
+    assert.match(html, /<details class="catalog-options">/);
+    assert.doesNotMatch(html, /<details class="catalog-options" open/);
+    assert.match(html, ar ? /حفظ التغييرات/ : /Enregistrer les modifications/);
+  }
+});

@@ -65,3 +65,15 @@ Avant validation définitive sur téléphone : importer sur Android puis iPhone,
 Vérification visuelle en prévisualisation sur navigateur de bureau : recherche, fiche produit FR/AR, sélection de deux articles, photo imbriquée puis Retour vers la fiche, passage fiche → formulaire sans soumission, ouverture PDF, défilement jusqu’à la page 2, double toucher à 200 %, Retour vers l’aperçu de la page 2. Les gestes multitactiles physiques Android/iPhone et la PWA restent à valider sur appareils.
 
 Les contrôles de visibilité et les titres des photos/vidéos sont accessibles dans l’onglet Photos et vidéos. Leur position suit le bloc Produits et services ; ils ne figurent plus comme sections indépendantes dans Interface. Masquer ce bloc ou désactiver le module retire aussi ces médias de la projection publique et de la lecture anonyme des fichiers. Désactiver le module administrativement interdit leurs modifications tout en conservant les fichiers enregistrés. Les quotas et les contrôles de propriété existants restent appliqués.
+
+### Prise en main du propriétaire
+
+La section s’ouvre sur les produits et services, avec une action d’ajout en tête de liste.
+Les documents PDF, photos et vidéos, offres et réglages sont consultés séparément.
+Les offres ne sont plus affichées sous chaque écran du module.
+Une seule langue de contenu est éditée à la fois, initialement celle de l’interface ;
+changer la langue de saisie conserve les textes déjà renseignés dans l’autre langue.
+Les options de classement, promotion, galerie supplémentaire et suppression se déplient
+à la demande. Une seule fiche produit ou document est ouverte à la fois ; saisir son
+nom ne ferme pas la fiche. Les réglages des médias et les informations de stockage
+sont repliés. L’enregistrement commun et l’aperçu de carte restent accessibles.
