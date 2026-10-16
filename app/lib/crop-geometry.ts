@@ -1,3 +1,10 @@
+export type CropTarget = 'avatar' | 'cover' | 'backgroundPhoto';
+export function cropSettings(target: CropTarget) {
+  return {
+    ratio: target === 'backgroundPhoto' ? 3 / 4 : target === 'cover' ? 2.2 : 1,
+    maxWidth: target === 'avatar' ? 600 : 1600,
+  };
+}
 export function cropRect(
   width: number,
   height: number,

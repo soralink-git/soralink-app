@@ -104,6 +104,13 @@ export const profileDataSchema = z
       .max(10)
       .optional(),
     color,
+    backgroundPhoto: z
+      .string()
+      .regex(
+        /^(?:|\/api\/upload\?key=[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/,
+      )
+      .optional(),
+    backgroundOpacity: z.number().min(0).max(100).optional(),
     fondColor: color,
     blockColor: color,
     textColor: color,

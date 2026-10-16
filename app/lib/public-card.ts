@@ -25,6 +25,7 @@ const textFields = [
   'template',
   'avatar',
   'cover',
+  'backgroundPhoto',
   'pdf',
   'video',
 ];
@@ -36,6 +37,7 @@ export function publicCardData(saved: any, pro: boolean) {
   for (const key of textFields) out[key] = typeof d[key] === 'string' ? d[key] : '';
   for (const key of [
     'fondColor',
+    'backgroundOpacity',
     'blockColor',
     'textColor',
     'buttonColor',

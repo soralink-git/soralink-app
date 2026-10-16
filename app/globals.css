@@ -4973,3 +4973,40 @@ header nav {
   border: 0;
   border-radius: 0;
 }
+
+/* A separate image layer changes photo opacity without fading text or actions. */
+.profile-card.has-photo-background,
+.public-layout > .unified-card.has-photo-background,
+.crop-mockup-card {
+  position: relative;
+  isolation: isolate;
+}
+.card-background-photo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
+  border-radius: inherit;
+}
+.background-editor {
+  margin: 16px 0 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.background-editor-thumbnail {
+  display: block;
+  width: 100%;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 10px 0;
+}
+.background-editor input[type='range'] {
+  width: 100%;
+}

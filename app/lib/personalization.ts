@@ -24,6 +24,16 @@ export function appearance(d: any) {
     ? d.hiddenSections.filter((k: any) => sectionKeys.includes(k))
     : [];
   return {
+    backgroundPhoto:
+      typeof d.backgroundPhoto === 'string' &&
+      (/^\/api\/upload\?key=[a-f0-9-]{36}$/.test(d.backgroundPhoto) ||
+        /^data:image\/(webp|png|jpeg);base64,[a-zA-Z0-9+/=]+$/.test(d.backgroundPhoto))
+        ? d.backgroundPhoto
+        : '',
+    backgroundOpacity:
+      typeof d.backgroundOpacity === 'number' && Number.isFinite(d.backgroundOpacity)
+        ? Math.max(0, Math.min(100, d.backgroundOpacity))
+        : 35,
     theme,
     font,
     shape,
@@ -58,6 +68,8 @@ export function normalizeAppearance(d: any) {
   return {
     ...d,
     sectionTitles: sectionTitles(d.sectionTitles),
+    backgroundPhoto: a.backgroundPhoto,
+    backgroundOpacity: a.backgroundOpacity,
     fondColor: a.fondColor,
     blockColor: a.blockColor,
     textColor: a.textColor,

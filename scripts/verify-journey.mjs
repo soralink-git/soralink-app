@@ -270,6 +270,8 @@ try {
   assert(Date.parse(trial.expires) < Date.now() + 15 * 86400000);
   fields.avatar = uploaded.json.url;
   fields.cover = uploaded.json.url;
+  fields.backgroundPhoto = uploaded.json.url;
+  fields.backgroundOpacity = 48;
   await request('/api/data', {
     auth: true,
     data: { action: 'save', revision: saved.json.revision, data: fields, published: true },
@@ -298,6 +300,8 @@ try {
   assert.equal(publicData.name, fields.name);
   assert.equal(publicData.textColor, '#ffffff');
   assert.equal(publicData.avatar, fields.avatar);
+  assert.equal(publicData.backgroundPhoto, fields.backgroundPhoto);
+  assert.equal(publicData.backgroundOpacity, 48);
   const stats = (await request('/api/upload?stats=1', { auth: true })).json;
   assert.equal(stats.files, 1);
   assert.equal(stats.bytes, photo.length);
@@ -307,6 +311,8 @@ try {
   ]) {
     const page = await request('/c/' + cardId, { headers: { 'User-Agent': agent } });
     assert(page.text.includes('Journey card'));
+    assert(page.text.includes('card-background-photo'));
+    assert(page.text.includes('opacity:0.48'));
     assert(page.text.includes('theme-dark text-size-large'));
     assert(page.text.includes('https://soralink.link/og-soralink.png'));
   }

@@ -14,6 +14,7 @@ import { X, Calendar, Check, Globe, Users, RotateCcw } from 'lucide-react';
 import QRCode from 'qrcode';
 import Pwa from './pwa';
 import ImageCropper from './image-cropper';
+import type { CropTarget } from './lib/crop-geometry';
 import CardView, { type CardViewProps } from './card-view';
 import { WhatsAppIcon } from './card-helpers';
 import { demoCard, demoCardArabic } from './lib/demo-card';
@@ -101,6 +102,8 @@ const blank = {
   recordedVideo: '',
   avatar: '',
   cover: '',
+  backgroundPhoto: '',
+  backgroundOpacity: 35,
   defaultLanguage: 'fr',
   pro: false,
   ...defaults,
@@ -463,15 +466,17 @@ export default function App({
     [authLoadError, setAuthLoadError] = useState(false);
   const [manualShareUrl, setManualShareUrl] = useState('');
   const [emailActions, setEmailActions] = useState(false);
-  const [rawSources, setRawSources] = useState<{ avatar?: File | string; cover?: File | string }>(
-    {},
-  );
+  const [rawSources, setRawSources] = useState<{
+    avatar?: File | string;
+    cover?: File | string;
+    backgroundPhoto?: File | string;
+  }>({});
   const [crop, setCrop] = useState<{
     source: File | string;
-    target: 'avatar' | 'cover';
+    target: CropTarget;
     previousValue?: string;
   } | null>(null);
-  function startCrop(source: File | string, target: 'avatar' | 'cover') {
+  function startCrop(source: File | string, target: CropTarget) {
     if (busy) return;
     if (
       typeof source !== 'string' &&
