@@ -1,5 +1,6 @@
 'use client';
 import CatalogEditor from './catalog-editor';
+import CatalogMediaEditor from './catalog-media-editor';
 import BackgroundEditor from './background-editor';
 import type { CropTarget } from './lib/crop-geometry';
 import AddressEditor from './address-editor';
@@ -30,14 +31,11 @@ import {
   Copy,
   Camera,
   Crop,
-  Video,
   Package,
 } from 'lucide-react';
 
 import { type CardViewProps } from './card-view';
 import { WhatsAppIcon } from './card-helpers';
-
-import { recordedVideoUrl } from './lib/content-media';
 
 import {
   whatsappNumber,
@@ -46,7 +44,6 @@ import {
   requestStatus,
   requestReply,
 } from './lib/whatsapp-notification';
-import { catalogRights } from './lib/catalog-menu';
 import { appearance } from './lib/personalization';
 import { MAX_PROMOTIONS, promotionStatus } from './lib/promotions';
 
@@ -136,7 +133,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     mailConfigured,
     notifications,
     orders,
-    photoCaptureRef,
     promoStatusLabels,
     promoToday,
     published,
@@ -153,7 +149,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     setTab,
     socialFields,
     startCrop,
-    storage,
     subscription,
     t,
     tab,
@@ -161,11 +156,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     updatePromotion,
     upload,
     uploadCatalogue,
-    uploadPhotos,
-    uploadProgress,
     uploadPromotion,
-    uploadVideo,
-    videoCaptureRef,
   } = context;
   const tabs = [
     ['coordinates', Phone, 'Coordonnées', 'معلومات التواصل', 'card'],
@@ -185,7 +176,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         : tab === 'catalogue' || tab === 'promotions' || tab === 'media'
           ? 'content'
           : tab;
-  const limits = catalogRights(subscription);
   const current = tabs.find(([key]) => key === activeTab) || tabs[0];
   return (
     <main className="workspace workspace-design">
@@ -494,6 +484,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     busy={busy}
                     save={save}
                     onMessage={setMsg}
+                    mediaEditor={<CatalogMediaEditor context={context} />}
+                    initialTab={tab === 'media' ? 'media' : undefined}
                   />
 
                   <section className="panel">
@@ -652,183 +644,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </p>
                     )}
                   </section>
-
-                  <section className="panel">
-                    <h2>
-                      {t('Galerie photos & Documents intégrés', 'معرض الصور والملفات المدمجة')}
-                    </h2>
-                    <div className="storage-summary">
-                      <strong>{t('Stockage du compte', 'التخزين ديال الحساب')}</strong>
-                      <p>
-                        {storage
-                          ? Math.ceil(storage.bytes / 1048576) +
-                            ' / ' +
-                            storage.limitBytes / 1048576 +
-                            t(' Mo · ', ' ميغابايت · ') +
-                            storage.files +
-                            ' / ' +
-                            storage.limitFiles +
-                            ' ' +
-                            t('fichiers', 'ملف')
-                          : t(
-                              `${limits.storageMB} Mo maximum par compte · ${limits.maxFiles} fichiers`,
-                              `حتى ${limits.storageMB} ميغابايت لكل حساب · ${limits.maxFiles} ملف`,
-                            )}
-                      </p>
-                      <p className="hint">
-                        {t(
-                          'Après enregistrement, les médias retirés sont supprimés s’ils ne sont plus utilisés sur une carte. Les imports abandonnés depuis plus de 24 h sont nettoyés lors d’une prochaine action.',
-                          'من بعد التسجيل، الملفات اللي حيّدتي كيتحيدو نهائياً إلا ما بقاوش مستعملين فشي كارط. الملفات اللي ترفعو وما تستعملوش كيتنقّاو من بعد 24 ساعة فإجراء جاي.',
-                        )}
-                      </p>
-                    </div>
-                    <div className="camera-actions">
-                      <button
-                        className="secondary"
-                        disabled={busy || data.photos.length >= 10}
-                        onClick={() => photoCaptureRef.current?.click()}
-                      >
-                        <Camera size={18} />
-                        {t('Prendre une photo', 'خد تصويرة')}
-                      </button>
-                      <button
-                        className="secondary"
-                        disabled={busy}
-                        onClick={() => videoCaptureRef.current?.click()}
-                      >
-                        <Video size={18} />
-                        {t('Filmer une vidéo', 'صوّر فيديو')}
-                      </button>
-                      <input
-                        hidden
-                        ref={photoCaptureRef}
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        capture="environment"
-                        onChange={(e) => {
-                          const file = e.currentTarget.files?.[0];
-                          e.currentTarget.value = '';
-                          if (file) void uploadPhotos([file]);
-                        }}
-                      />
-                      <input
-                        hidden
-                        ref={videoCaptureRef}
-                        type="file"
-                        accept="video/*"
-                        capture="environment"
-                        onChange={(e) => {
-                          const file = e.currentTarget.files?.[0];
-                          e.currentTarget.value = '';
-                          if (file) void uploadVideo(file);
-                        }}
-                      />
-                    </div>
-                    <p className="hint">
-                      {t(
-                        'Sur téléphone, utilisez la caméra. Sur PC, choisissez un fichier enregistré. Photos compressées automatiquement à 1 600 pixels maximum (40 Mo avant compression). Vidéo : 50 Mo maximum, format MP4 conseillé. Enregistrez ensuite votre carte.',
-                        'فالتلفون استعمل الكاميرا. فالكمبيوتر اختار ملف مسجّل. التصاور كيتضغطو أوتوماتيكياً حتى 1600 بيكسل (حتى 40 Mo قبل الضغط) والفيديو حتى 50 Mo، والأفضل MP4. ومن بعد سجّل الكارط.',
-                      )}
-                    </p>
-                    <div className="form-grid">
-                      <label className="field">
-                        {t('Galerie · 10 photos maximum', 'الگالوري · حتى 10 تصاور')}
-                        <input
-                          type="file"
-                          multiple
-                          accept="image/jpeg,image/png,image/webp"
-                          disabled={busy || data.photos.length >= 10}
-                          onChange={(e) => {
-                            const files = Array.from(e.currentTarget.files || []);
-                            e.currentTarget.value = '';
-                            void uploadPhotos(files);
-                          }}
-                        />
-                        <span className="hint">
-                          {uploadProgress
-                            ? t(
-                                'Importation : ' + uploadProgress.done + '/' + uploadProgress.total,
-                                'كنزيدو التصاور : ' +
-                                  uploadProgress.done +
-                                  '/' +
-                                  uploadProgress.total,
-                              )
-                            : t(
-                                'Sélectionnez plusieurs photos · JPG, PNG, WebP · 10 Mo par photo · ' +
-                                  data.photos.length +
-                                  '/10 utilisées',
-                                'اختار تصاور بزاف · JPG، PNG، WebP · 10 Mo لكل تصويرة · ' +
-                                  data.photos.length +
-                                  '/10 مستعملين',
-                              )}
-                        </span>
-                      </label>
-                      <label className="field">
-                        {t(
-                          'Vidéo enregistrée · 1 vidéo, maximum 50 Mo',
-                          'فيديو مسجّل · فيديو واحد، حتى 50 Mo',
-                        )}
-                        <input
-                          type="file"
-                          accept="video/mp4,video/webm,video/quicktime"
-                          disabled={busy}
-                          onChange={(e) => {
-                            const file = e.currentTarget.files?.[0];
-                            e.currentTarget.value = '';
-                            if (file) void uploadVideo(file);
-                          }}
-                        />
-                        <span className="hint">
-                          {t(
-                            'Une nouvelle vidéo remplace la vidéo actuelle sur votre carte après enregistrement.',
-                            'الفيديو الجديد كيبدّل الفيديو الحالي فالـكارط من بعد التسجيل.',
-                          )}
-                        </span>
-                      </label>
-                      {field('video', t('Lien YouTube', 'رابط YouTube'), 'url')}
-                    </div>
-                    {recordedVideoUrl(data.recordedVideo) && (
-                      <div className="recorded-video-preview">
-                        <video
-                          className="content-video"
-                          src={data.recordedVideo}
-                          controls
-                          playsInline
-                          preload="metadata"
-                          aria-label={t('Aperçu de la vidéo', 'معاينة الفيديو')}
-                        />
-                        <button
-                          className="secondary small"
-                          disabled={busy}
-                          onClick={() => setData({ ...data, recordedVideo: '' })}
-                        >
-                          {t('Retirer la vidéo', 'حيّد الفيديو')}
-                        </button>
-                      </div>
-                    )}
-                    <div className="gallery">
-                      {data.photos.map((p: string, i: number) => (
-                        <div key={p}>
-                          <img src={p} alt={'Photo ' + (i + 1)} />
-                          <button
-                            onClick={() =>
-                              setData({
-                                ...data,
-                                photos: data.photos.filter((_: any, n: number) => i !== n),
-                              })
-                            }
-                            aria-label="Supprimer"
-                          >
-                            <X size={16} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    <button className="primary full" disabled={busy} onClick={save}>
-                      <Save size={17} />
-                      {t('Enregistrer les modifications', 'سجّل التغييرات')}
-                    </button>
-                  </section>
                 </>
               )}
               {(activeTab === 'interface' || tab === 'sections') && (
@@ -865,94 +680,103 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         'اختار الأقسام اللي يبانوا وترتيبهم. المعلومات كتبقى فاللول والأقسام الخاوية ما كيبانوش. سجّل باش يتطبق التغيير فالصفحة العمومية.',
                       )}
                     </p>
-                    {appearance(data).order.map((key, i) => {
-                      const a = appearance(data),
-                        locked = key === 'appointments' && !data.pro;
-                      const destinations: Record<string, string> = {
-                        coordinates: 'coordinates',
-                        social: 'coordinates',
-                        promotions: 'content',
-                        services: 'content',
-                        photos: 'content',
-                        pdf: 'content',
-                        video: 'content',
-                        links: 'coordinates',
-                        appointments: 'schedule',
-                      };
-                      return (
-                        <div className="section-editor-row" key={key}>
-                          <div className="section-control">
-                            <label>
+                    {appearance(data)
+                      .order.filter((key) => !['photos', 'video'].includes(key))
+                      .map((key, i) => {
+                        const a = {
+                            ...appearance(data),
+                            order: appearance(data).order.filter(
+                              (key) => !['photos', 'video'].includes(key),
+                            ),
+                          },
+                          locked = key === 'appointments' && !data.pro;
+                        const destinations: Record<string, string> = {
+                          coordinates: 'coordinates',
+                          social: 'coordinates',
+                          promotions: 'content',
+                          services: 'content',
+                          photos: 'content',
+                          pdf: 'content',
+                          video: 'content',
+                          links: 'coordinates',
+                          appointments: 'schedule',
+                        };
+                        return (
+                          <div className="section-editor-row" key={key}>
+                            <div className="section-control">
+                              <label>
+                                <input
+                                  type="checkbox"
+                                  disabled={locked}
+                                  checked={!locked && !a.hidden.includes(key)}
+                                  onChange={(e) =>
+                                    setData((d: any) => ({
+                                      ...d,
+                                      hiddenSections: e.target.checked
+                                        ? a.hidden.filter((k: string) => k !== key)
+                                        : [...a.hidden, key],
+                                    }))
+                                  }
+                                />
+                                {t(...sectionLabels[key])}
+                                {locked && <small> · {t('Option Pro requise', 'خاص Pro')}</small>}
+                              </label>
+                              <label className="section-position">
+                                {t('Position', 'الترتيب')}
+                                <select
+                                  value={i}
+                                  disabled={locked}
+                                  aria-label={
+                                    t('Position de ', 'ترتيب ') + t(...sectionLabels[key])
+                                  }
+                                  onChange={(e) => {
+                                    const index = Number(e.target.value);
+                                    const order = [...a.order];
+                                    order.splice(i, 1);
+                                    order.splice(index, 0, key);
+                                    setData((d: any) => ({ ...d, sectionOrder: order }));
+                                  }}
+                                >
+                                  {a.order.map((_, n) => (
+                                    <option key={n} value={n}>
+                                      {n + 1}
+                                    </option>
+                                  ))}
+                                </select>
+                              </label>
+                            </div>
+                            <label className="field">
+                              {t('Titre personnalisé · français', 'عنوان شخصي · الدارجة')}
                               <input
-                                type="checkbox"
+                                maxLength={120}
                                 disabled={locked}
-                                checked={!locked && !a.hidden.includes(key)}
-                                onChange={(e) =>
+                                value={data.sectionTitles?.[ar ? 'ar' : 'fr']?.[key] || ''}
+                                placeholder={t(...sectionLabels[key])}
+                                onChange={(e) => {
+                                  const value = e.target.value;
                                   setData((d: any) => ({
                                     ...d,
-                                    hiddenSections: e.target.checked
-                                      ? a.hidden.filter((k: string) => k !== key)
-                                      : [...a.hidden, key],
-                                  }))
-                                }
-                              />
-                              {t(...sectionLabels[key])}
-                              {locked && <small> · {t('Option Pro requise', 'خاص Pro')}</small>}
-                            </label>
-                            <label className="section-position">
-                              {t('Position', 'الترتيب')}
-                              <select
-                                value={i}
-                                disabled={locked}
-                                aria-label={t('Position de ', 'ترتيب ') + t(...sectionLabels[key])}
-                                onChange={(e) => {
-                                  const index = Number(e.target.value);
-                                  const order = [...a.order];
-                                  order.splice(i, 1);
-                                  order.splice(index, 0, key);
-                                  setData((d: any) => ({ ...d, sectionOrder: order }));
-                                }}
-                              >
-                                {a.order.map((_, n) => (
-                                  <option key={n} value={n}>
-                                    {n + 1}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-                          </div>
-                          <label className="field">
-                            {t('Titre personnalisé · français', 'عنوان شخصي · الدارجة')}
-                            <input
-                              maxLength={120}
-                              disabled={locked}
-                              value={data.sectionTitles?.[ar ? 'ar' : 'fr']?.[key] || ''}
-                              placeholder={t(...sectionLabels[key])}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                setData((d: any) => ({
-                                  ...d,
-                                  sectionTitles: {
-                                    ...d.sectionTitles,
-                                    [ar ? 'ar' : 'fr']: {
-                                      ...d.sectionTitles?.[ar ? 'ar' : 'fr'],
-                                      [key]: value,
+                                    sectionTitles: {
+                                      ...d.sectionTitles,
+                                      [ar ? 'ar' : 'fr']: {
+                                        ...d.sectionTitles?.[ar ? 'ar' : 'fr'],
+                                        [key]: value,
+                                      },
                                     },
-                                  },
-                                }));
-                              }}
-                            />
-                          </label>
-                          <button
-                            className="text-button"
-                            disabled={locked}
-                            onClick={() => setTab(destinations[key])}
-                          >
-                            {t('Modifier le contenu', 'بدّل المحتوى')}
-                          </button>
-                        </div>
-                      );
-                    })}
+                                  }));
+                                }}
+                              />
+                            </label>
+                            <button
+                              className="text-button"
+                              disabled={locked}
+                              onClick={() => setTab(destinations[key])}
+                            >
+                              {t('Modifier le contenu', 'بدّل المحتوى')}
+                            </button>
+                          </div>
+                        );
+                      })}
                     <button className="primary full" disabled={busy} onClick={save}>
                       <Save size={17} />
                       {t('Enregistrer les modifications', 'سجّل التغييرات')}

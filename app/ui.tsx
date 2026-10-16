@@ -1153,7 +1153,7 @@ export default function App({
     coordinates: ['Coordonnées', 'معلومات التواصل'],
     social: ['Réseaux sociaux', 'مواقع التواصل'],
     promotions: ['Promotions', 'العروض'],
-    services: ['Catalogue produits / services', 'كاتالوگ المنتجات / الخدمات'],
+    services: ['Produits et services', 'المنتجات والخدمات'],
     photos: ['Galerie photos', 'التصاور'],
     pdf: ['Catalogue PDF', 'كاتالوگ PDF'],
     video: ['Vidéo', 'الفيديو'],

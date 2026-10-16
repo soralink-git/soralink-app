@@ -213,3 +213,22 @@ test('malformed stored administrator rights fail closed while a missing override
   }
   assert.equal(menu.catalogRights({ state: 'active', catalog_rights: null }).enabled, true);
 });
+
+test('integrated media respect catalogue visibility and cannot be changed when admin disables the module', () => {
+  const media = { photos: [url], recordedVideo: url, video: 'https://youtu.be/abcdefghijk' };
+  for (const overrides of [
+    { catalogSettings: { enabled: false } },
+    { hiddenSections: ['services'] },
+  ]) {
+    const out = publicCardData({ ...media, ...overrides }, false, rights);
+    assert.equal(out.photos.length, 0);
+    assert.equal(out.video, '');
+    assert.equal(out.recordedVideo, '');
+  }
+  const off = { ...rights, enabled: false };
+  const out = publicCardData(media, false, off);
+  assert.equal(out.photos.length, 0);
+  assert.equal(out.recordedVideo, '');
+  assert(menu.catalogContentIssue(media, {}, off));
+  assert.equal(menu.catalogContentIssue({ ...media, bio: 'updated' }, media, off), '');
+});

@@ -142,3 +142,39 @@ for (const ar of [false, true])
     assert.doesNotMatch(article(previewHtml), /compact/);
     assert.doesNotMatch(article(previewHtml), /card-language/);
   });
+
+test('media controls live in the catalogue media tab rather than in a separate dashboard panel', () => {
+  const ctx = context('content');
+  const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: ctx }));
+  assert.match(html, /id="catalog-tab-media"/);
+  assert.doesNotMatch(html, /Galerie photos &amp; Documents intégrés/);
+  const Editor = load(path.resolve('app/catalog-editor.tsx')).default;
+  const Media = load(path.resolve('app/catalog-media-editor.tsx')).default;
+  for (const ar of [false, true]) {
+    const c = context('media', ar);
+    const panel = renderToStaticMarkup(
+      React.createElement(Editor, {
+        data: c.data,
+        setData: noop,
+        ar,
+        busy: false,
+        save: noop,
+        onMessage: noop,
+        initialTab: 'media',
+        mediaEditor: React.createElement(Media, { context: c }),
+      }),
+    );
+    assert.match(panel, /id="catalog-panel-media"/);
+    assert.match(panel, ar ? /صوّر فيديو/ : /Filmer une vidéo/);
+    assert.match(panel, ar ? /خد تصويرة/ : /Prendre une photo/);
+    assert.match(panel, /capture="environment"/);
+    assert.match(panel, ar ? /إظهار الصور فالكاتالوگ/ : /Afficher les photos dans le catalogue/);
+    assert.doesNotMatch(panel, ar ? /Prendre une photo|Filmer une vidéo/ : /خد تصويرة|صوّر فيديو/);
+  }
+});
+test('photo and video section controls are grouped into the catalogue rather than ordered separately', () => {
+  const ctx = context('interface');
+  const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: ctx }));
+  assert.doesNotMatch(html, /aria-label="Position de photos"|aria-label="Position de video"/);
+  assert.match(html, /aria-label="Position de services"/);
+});

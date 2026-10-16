@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import type { Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction, ReactNode } from 'react';
 import {
   catalogRights,
   catalogDocuments,
@@ -21,7 +21,11 @@ export default function CatalogEditor({
   busy,
   save,
   onMessage,
+  mediaEditor,
+  initialTab,
 }: {
+  mediaEditor?: ReactNode;
+  initialTab?: 'pdf' | 'products' | 'media' | 'appearance';
   data: any;
   setData: Dispatch<SetStateAction<any>>;
   subscription: any;
@@ -36,7 +40,7 @@ export default function CatalogEditor({
     docs = catalogDocuments(data),
     cats = catalogCategories(data),
     items = normalizeCatalogue(data.services, true);
-  const [tab, setTab] = useState('pdf'),
+  const [tab, setTab] = useState<string>(initialTab || 'pdf'),
     [working, setWorking] = useState(false),
     [preview, setPreview] = useState(''),
     [crop, setCrop] = useState<{ source: File | string; apply: (f: File) => Promise<void> } | null>(
@@ -256,6 +260,7 @@ export default function CatalogEditor({
         {[
           ['pdf', 'PDF', 'ملفات'],
           ['products', 'Produits', 'المنتجات'],
+          ['media', 'Photos et vidéos', 'الصور والفيديوهات'],
           ['appearance', 'Apparence', 'المظهر'],
         ].map(([key, fr, a]) => (
           <button
@@ -272,6 +277,12 @@ export default function CatalogEditor({
         ))}
       </div>
       <div role="tabpanel" id={'catalog-panel-' + tab} aria-labelledby={'catalog-tab-' + tab}>
+        {tab === 'media' && (
+          <fieldset disabled={locked || !rights.enabled}>
+            <legend>{t('Médias du catalogue', 'وسائط الكاتالوگ')}</legend>
+            {mediaEditor}
+          </fieldset>
+        )}
         {tab === 'pdf' && (
           <fieldset disabled={locked || !rights.enabled || !rights.pdf}>
             <legend>{t('Documents PDF', 'الوثائق')}</legend>

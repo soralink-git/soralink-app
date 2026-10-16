@@ -209,3 +209,35 @@ test('google review renders golden star action and review badge in both language
     assert.match(html, ar ? /قيّمنا 5 نجوم على Google/ : /Laissez-nous un avis 5★ sur Google/);
   }
 });
+
+test('catalogue includes photos and video once, including a card containing only a video', () => {
+  const video = '/api/upload?key=12345678-1234-1234-1234-123456789abc';
+  const data = {
+    ...demoCard,
+    services: [],
+    promotions: [],
+    photos: [video],
+    recordedVideo: video,
+    video: 'https://youtu.be/abcdefghijk',
+  };
+  const html = card(data);
+  assert.equal((html.match(/<h2>Produits et services<\/h2>/g) || []).length, 1);
+  assert.equal((html.match(/catalogue-photos-integrated/g) || []).length, 1);
+  assert.equal((html.match(/catalogue-videos-integrated/g) || []).length, 1);
+  assert.equal((html.match(/<video\b/g) || []).length, 1);
+  assert.match(html, /<h3>En vidéo<\/h3>/);
+  assert.doesNotMatch(html, /<h2>En vidéo<\/h2>|<h2>En images<\/h2>/);
+  assert.match(card({ ...data, photos: [] }), /catalogue-videos-integrated/);
+  assert.doesNotMatch(
+    card({ ...data, hiddenSections: ['services'] }),
+    /catalogue-photos-integrated|catalogue-videos-integrated|<video\b/,
+  );
+});
+test('individual media visibility is preserved inside the catalogue', () => {
+  const src = '/api/upload?key=12345678-1234-1234-1234-123456789abc';
+  const d = { ...demoCard, photos: [src], recordedVideo: src };
+  assert.doesNotMatch(card({ ...d, hiddenSections: ['video'] }), /catalogue-videos-integrated/);
+  assert.match(card({ ...d, hiddenSections: ['video'] }), /catalogue-photos-integrated/);
+  assert.doesNotMatch(card({ ...d, hiddenSections: ['photos'] }), /catalogue-photos-integrated/);
+  assert.match(card({ ...d, hiddenSections: ['photos'] }), /catalogue-videos-integrated/);
+});

@@ -2,7 +2,7 @@
 
 ## Parcours et limites
 
-Mon espace → Catalogue / Menu → PDF, Produits ou Apparence. Chaque enregistrement publie les changements sur une carte déjà publiée ; une carte en brouillon reste privée. Le panneau existant conserve les promotions, la galerie et la vidéo pour ne pas supprimer les contenus des clients.
+Mon espace → Produits et services → PDF, Produits, Photos et vidéos ou Apparence. Chaque enregistrement publie les changements sur une carte déjà publiée ; une carte en brouillon reste privée. La galerie et les vidéos se gèrent dans l’onglet Photos et vidéos du catalogue et apparaissent dans le bloc Produits et services sur la carte publique. Les fichiers existants sont réutilisés. Les anciennes sections Photos et Vidéo ne sont plus affichées séparément. Les promotions restent accessibles dans leur panneau de gestion.
 
 Valeurs initiales : 40 articles pour une offre payante, 10 en essai ; 3 PDF par carte, 25 Mio et 100 pages par PDF ; 400 Mio de stockage partagé, 160 fichiers pour une offre payante et 80 en essai. Les fichiers en cours de chargement comptent dans les quotas. Une image principale, sa miniature et jusqu’à 5 images supplémentaires sont possibles par article, dans les limites du stockage partagé. Jusqu’à 40 catégories.
 
@@ -63,3 +63,5 @@ Tests unitaires : schémas, limites, langues sans repli vers l’autre langue, d
 Avant validation définitive sur téléphone : importer sur Android puis iPhone, lire plusieurs pages, pincer/zoomer sur un détail, revenir en arrière deux fois avec une fiche/photo imbriquée, puis répéter dans la PWA installée. Les tests avec User-Agent mobile ne remplacent pas les tests tactiles sur appareils réels.
 
 Vérification visuelle en prévisualisation sur navigateur de bureau : recherche, fiche produit FR/AR, sélection de deux articles, photo imbriquée puis Retour vers la fiche, passage fiche → formulaire sans soumission, ouverture PDF, défilement jusqu’à la page 2, double toucher à 200 %, Retour vers l’aperçu de la page 2. Les gestes multitactiles physiques Android/iPhone et la PWA restent à valider sur appareils.
+
+Les contrôles de visibilité et les titres des photos/vidéos sont accessibles dans l’onglet Photos et vidéos. Leur position suit le bloc Produits et services ; ils ne figurent plus comme sections indépendantes dans Interface. Masquer ce bloc ou désactiver le module retire aussi ces médias de la projection publique et de la lecture anonyme des fichiers. Désactiver le module administrativement interdit leurs modifications tout en conservant les fichiers enregistrés. Les quotas et les contrôles de propriété existants restent appliqués.
