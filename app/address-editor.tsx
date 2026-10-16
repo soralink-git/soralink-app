@@ -109,7 +109,7 @@ export default function AddressEditor({
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
-            placeholder="mon-activite"
+            placeholder="soraprint"
             aria-describedby="address-hint address-status"
           />
         </span>
