@@ -771,11 +771,16 @@ export default function CardView({
                 </div>
               );
             }
-            if (key === 'pdf' && d.pdf)
+            if (key === 'pdf' && (d.pdf || d.pdfDocuments?.length))
               return (
                 <div className="panel" key={key}>
                   <h2>{sectionHeading(d, 'pdf', t('Catalogue', 'الكاتالوگ'))}</h2>
-                  <PdfCatalogue src={d.pdf} ar={ar} />
+                  {(d.pdfDocuments?.length ? d.pdfDocuments : [{ id: 'legacy', title: t('Catalogue', 'الكاتالوگ'), url: d.pdf }]).map((doc: any) => (
+                    <div key={doc.id || doc.url}>
+                      <h3>{doc.title || t('Document', 'وثيقة')}</h3>
+                      <PdfCatalogue src={doc.url} ar={ar} />
+                    </div>
+                  ))}
                 </div>
               );
             if (key === 'video' && (d.video || recordedVideoUrl(d.recordedVideo))) {
