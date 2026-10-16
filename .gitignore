@@ -4,5 +4,4 @@ dist/
 .env*
 .dev.vars*
 *.tsbuildinfo
-
 .next/
