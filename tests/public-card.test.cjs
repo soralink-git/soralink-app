@@ -161,3 +161,21 @@ test('primary card actions precede content and remain unique', () => {
   }
   assert.match(html, /class="card-button card-save"/);
 });
+
+test('PDF catalogue stays inside the card without a native PDF frame or navigation link', () => {
+  for (const ar of [false, true]) {
+    const html = card(
+      {
+        ...demoCard,
+        pdf: '/api/upload?key=12345678-1234-1234-1234-123456789abc',
+        sections: ['pdf'],
+      },
+      { ar },
+    );
+    assert.match(html, /pdf-catalogue/);
+    assert.match(html, /<canvas/);
+    assert.doesNotMatch(html, /<iframe|href="\/api\/upload|src="\/api\/upload/);
+    assert.match(html, ar ? /التالية/ : /Suivante/);
+    assert.doesNotMatch(html, ar ? /Chargement du catalogue|Suivante/ : /الكاتالوگ|التالية/);
+  }
+});

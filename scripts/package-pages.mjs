@@ -6,6 +6,18 @@ const { build } = createRequire(require.resolve('wrangler'))('esbuild');
 await rm('dist/pages', { recursive: true, force: true });
 await mkdir('dist/pages', { recursive: true });
 await cp('dist/client', 'dist/pages', { recursive: true });
+const pdfRoot = new URL('../node_modules/pdfjs-dist/', import.meta.url);
+await mkdir('dist/pages/assets/pdfjs', { recursive: true });
+await cp(
+  new URL('build/pdf.worker.min.mjs', pdfRoot),
+  'dist/pages/assets/pdfjs/pdf.worker.min.mjs',
+);
+for (const directory of ['cmaps', 'standard_fonts', 'wasm']) {
+  await cp(new URL(directory, pdfRoot), `dist/pages/assets/pdfjs/${directory}`, {
+    recursive: true,
+  });
+}
+
 // Publish one module instead of a directory of separately attached RSC chunks.
 await build({
   entryPoints: ['dist/server/index.js'],
