@@ -2,7 +2,7 @@
 import { publicCardPath } from './lib/public-address';
 import { vcardText } from './lib/vcard';
 import { useState, useEffect } from 'react';
-import { Nfc, Phone, Mail, MapPin, Download, Globe, Users, Share2 } from 'lucide-react';
+import { Nfc, Phone, Mail, MapPin, Download, Globe, Users, Share2, Star } from 'lucide-react';
 import { socialLink } from './lib/social-links';
 import { appearance } from './lib/personalization';
 import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
@@ -338,7 +338,8 @@ export default function CardView({
           (!a.hidePhone && d.phone) ||
           (!a.hideEmail && d.email) ||
           (!a.hideWhatsApp && d.whatsapp) ||
-          (!a.hideLocation && location.maps)
+          (!a.hideLocation && location.maps) ||
+          d.googleReview
         )
       )
         return null;
@@ -397,6 +398,19 @@ export default function CardView({
                 <span className="contact-label">{t('Itinéraire', 'كيفاش توصل')}</span>
               </a>
             )}
+            {d.googleReview && (
+              <a
+                href={webLink(d.googleReview)}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={t('Avis Google 5★', 'تقييم Google 5★')}
+                title={t('Laisser un avis Google 5 étoiles', 'خلّي تقييم 5 نجوم على Google')}
+                className="google-review-contact-btn"
+              >
+                <Star size={22} fill="currentColor" />
+                <span className="contact-label">{t('Avis 5★', 'تقييم 5★')}</span>
+              </a>
+            )}
           </div>
           {emailActions && !a.hideEmail && d.email && (
             <div className="email-actions">
@@ -444,6 +458,32 @@ export default function CardView({
           {!a.hideLocation && d.address && (
             <div className="location-links">
               <p className="muted">{d.address}</p>
+            </div>
+          )}
+          {d.googleReview && (
+            <div className="google-review-panel-card">
+              <a
+                href={webLink(d.googleReview)}
+                target="_blank"
+                rel="noreferrer"
+                className="google-review-action"
+              >
+                <div className="google-review-stars" aria-hidden="true">
+                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
+                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
+                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
+                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
+                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
+                </div>
+                <div className="google-review-content">
+                  <span className="google-review-title">
+                    {t('Laissez-nous un avis 5★ sur Google', 'قيّمنا 5 نجوم على Google')}
+                  </span>
+                  <span className="google-review-subtitle">
+                    {t('Votre recommandation compte beaucoup !', 'الرأي ديالك كيهمنا بزاف!')}
+                  </span>
+                </div>
+              </a>
             </div>
           )}
         </div>

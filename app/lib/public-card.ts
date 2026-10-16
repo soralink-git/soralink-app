@@ -21,6 +21,7 @@ const textFields = [
   'x',
   'mapsUrl',
   'mapDestination',
+  'googleReview',
   'color',
   'template',
   'avatar',

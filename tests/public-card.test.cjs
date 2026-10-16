@@ -180,3 +180,19 @@ test('PDF catalogue stays inside the card without a native PDF frame or navigati
     assert.doesNotMatch(html, ar ? /Chargement du catalogue|Suivante/ : /الكاتالوگ|التالية/);
   }
 });
+
+test('google review renders golden star action and review badge in both languages', () => {
+  for (const ar of [false, true]) {
+    const html = card(
+      {
+        ...demoCard,
+        googleReview: 'https://g.page/r/example/review',
+      },
+      { ar },
+    );
+    assert.match(html, /google-review-contact-btn/);
+    assert.match(html, /google-review-panel-card/);
+    assert.match(html, /href="https:\/\/g\.page\/r\/example\/review"/);
+    assert.match(html, ar ? /قيّمنا 5 نجوم على Google/ : /Laissez-nous un avis 5★ sur Google/);
+  }
+});

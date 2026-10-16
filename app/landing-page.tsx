@@ -171,6 +171,7 @@ export default function LandingPage({
                   email: 'contact@soralink.ma',
                   address: t('Boulevard d’Anfa, Casablanca', 'شارع أنفا، الدار البيضاء'),
                   website: 'https://soralink.link',
+                  googleReview: 'https://g.page/r/soralink/review',
                   instagram: 'https://instagram.com/soralink',
                   linkedin: 'https://linkedin.com/company/soralink',
                   cardTheme: 'dark',

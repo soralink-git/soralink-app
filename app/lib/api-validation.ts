@@ -51,6 +51,7 @@ for (const key of [
   'x',
   'mapsUrl',
   'mapDestination',
+  'googleReview',
   'template',
   'pdf',
   'video',

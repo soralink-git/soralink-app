@@ -445,6 +445,20 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         'لسق الرابط من Google Maps. باش يكون الطريق دقيق، كتب العنوان كامل مع المدينة ولا إحداثيات GPS. إلا خليتيه خاوي، كنستعملو العنوان ديالك.',
                       )}
                     </p>
+                    <h3>{t('Avis Google (Réputation)', 'تقييمات Google (السمعة)')}</h3>
+                    <div className="form-grid">
+                      {field(
+                        'googleReview',
+                        t('Lien direct d’avis Google', 'رابط مباشر لتقييمات Google'),
+                        'url',
+                      )}
+                    </div>
+                    <p className="hint">
+                      {t(
+                        'Collez votre lien d’avis Google Business (ex: https://g.page/r/.../review). Un badge 5 étoiles s’affichera sur votre carte pour inciter vos clients à vous laisser un avis positif.',
+                        'لسق رابط تقييم Google ديال المحل ديالك. غادي يبان بانر ديال 5 نجوم باش يشجع الزبناء يخليو ليك تقييم.',
+                      )}
+                    </p>
                     <label className="field">
                       {t('Présentation', 'التقديم')}
                       <textarea
@@ -1505,6 +1519,26 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     ar={ar}
                     disabled={!id || busy}
                   />
+                  <div className="impact-stats-grid">
+                    <div className="impact-stat-card">
+                      <span className="impact-stat-value">{contacts.length}</span>
+                      <span className="impact-stat-label">
+                        {t('Contacts collectés', 'جهات اتصال مستلمة')}
+                      </span>
+                    </div>
+                    <div className="impact-stat-card">
+                      <span className="impact-stat-value">{inbox.length}</span>
+                      <span className="impact-stat-label">
+                        {t('Demandes reçues', 'طلبات متوصل بها')}
+                      </span>
+                    </div>
+                    <div className="impact-stat-card">
+                      <span className="impact-stat-value">{published ? '100%' : '0%'}</span>
+                      <span className="impact-stat-label">
+                        {published ? t('Page en ligne', 'الصفحة منشورة') : t('Brouillon', 'مسودة')}
+                      </span>
+                    </div>
+                  </div>
                   <h2>
                     {t(
                       'Une page. Plusieurs façons de la partager.',
