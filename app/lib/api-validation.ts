@@ -81,6 +81,7 @@ export const profileDataSchema = z
               category: text(80).nullish(),
               price: text(30).nullish(),
               image: text(4000).nullish(),
+              availability: z.enum(['available', 'sold_out', 'hidden']).optional(),
             })
             .passthrough(),
         ]),
