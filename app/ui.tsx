@@ -834,8 +834,8 @@ export default function App({
       if (b.storage) setStorage(b.storage);
       setData((d: any) => ({
         ...d,
-        [field]: field === 'photos' ? [...d.photos, b.url].slice(0, 10) : b.url,
-        ...(field === 'pdf' ? { pdfDocuments: [...(d.pdfDocuments || []), { id: crypto.randomUUID(), title: f.name.replace(/\.pdf$/i, ''), url: b.url }].slice(0, 5) } : {}),
+        [field]: field === 'photos' ? [...d.photos, b.url].slice(0, 10) : field === 'pdf' ? '' : b.url,
+        ...(field === 'pdf' ? { pdfDocuments: [...(d.pdfDocuments || []).length ? d.pdfDocuments : d.pdf ? [{ id: crypto.randomUUID(), title: 'Catalogue', url: d.pdf }] : []), { id: crypto.randomUUID(), title: f.name.replace(/\.pdf$/i, ''), url: b.url }].slice(0, 5) } : {}),
       }));
       setMsg(t('Fichier ajouté. Enregistrez votre carte.', 'تزّاد الملف. سجّل الكارط ديالك.'));
       return true;
