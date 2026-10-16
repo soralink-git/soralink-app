@@ -851,7 +851,7 @@ export default function App({
               ].slice(0, 5),
             }
           : {}),
-      }));;
+      }));
       setMsg(t('Fichier ajouté. Enregistrez votre carte.', 'تزّاد الملف. سجّل الكارط ديالك.'));
       return true;
     } catch (e: any) {
