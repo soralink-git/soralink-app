@@ -160,7 +160,13 @@ export default function CatalogProducts({
       else window.location.assign(b.url);
     } catch (e: any) {
       popup?.close();
-      onMessage(e.message);
+      onMessage(
+        ar && !/[\u0600-\u06ff]/.test(e.message || '')
+          ? 'تعذر الإرسال. راجع الاتصال وعاود جرّب.'
+          : e.name === 'TypeError'
+            ? 'Envoi impossible. Vérifiez votre connexion et réessayez.'
+            : e.message,
+      );
     } finally {
       setOrdering(false);
     }

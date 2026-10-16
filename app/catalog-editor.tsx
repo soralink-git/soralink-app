@@ -93,7 +93,13 @@ export default function CatalogEditor({
         ),
       );
     } catch (e: any) {
-      onMessage(e.message);
+      onMessage(
+        ar && !/[\u0600-\u06ff]/.test(e.message || '')
+          ? 'تعذر الاستيراد. تأكد من صيغة الملف وحجمه والاتصال وعاود جرّب.'
+          : e.name === 'TypeError'
+            ? 'Importation impossible. Vérifiez le fichier et votre connexion, puis réessayez.'
+            : e.message,
+      );
     } finally {
       setWorking(false);
     }
