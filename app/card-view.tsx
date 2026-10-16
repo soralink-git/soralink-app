@@ -642,7 +642,9 @@ export default function CardView({
             if (['coordinates', 'social', 'appointments'].includes(key))
               return <CardSection key={key} d={d} section={key} preview={preview} />;
             if (key === 'services') {
-              const items = normalizeCatalogue(d.services).filter((item) => item.name);
+              const items = normalizeCatalogue(d.services).filter(
+                (item) => item.name && item.availability !== 'hidden',
+              );
               const promos = !a.hidden.includes('promotions')
                 ? activePromotions(d.promotions, promoToday)
                 : [];
@@ -710,6 +712,9 @@ export default function CardView({
                                     : t('Service', 'خدمة')}
                                 </span>
                                 <h3>{item.name}</h3>
+                                {item.availability === 'sold_out' && (
+                                  <span className="catalogue-kind">{t('Épuisé', 'سالَى')}</span>
+                                )}
                                 {item.description && <p>{item.description}</p>}
                                 {item.price && (
                                   <strong className="catalogue-price">
@@ -718,6 +723,7 @@ export default function CardView({
                                 )}
                                 <button
                                   className="secondary full"
+                                  disabled={item.availability === 'sold_out'}
                                   onClick={() => {
                                     if (preview) {
                                       setMsg(
@@ -767,11 +773,19 @@ export default function CardView({
                 </div>
               );
             }
-            if (key === 'pdf' && d.pdf)
+            if (key === 'pdf' && (d.pdf || d.pdfDocuments?.length))
               return (
                 <div className="panel" key={key}>
                   <h2>{sectionHeading(d, 'pdf', t('Catalogue', 'الكاتالوگ'))}</h2>
-                  <PdfCatalogue src={d.pdf} ar={ar} />
+                  {(d.pdfDocuments?.length
+                    ? d.pdfDocuments
+                    : [{ id: 'legacy', title: t('Catalogue', 'الكاتالوگ'), url: d.pdf }]
+                  ).map((doc: any) => (
+                    <div key={doc.id || doc.url}>
+                      <h3>{doc.title || t('Document', 'وثيقة')}</h3>
+                      <PdfCatalogue src={doc.url} ar={ar} />
+                    </div>
+                  ))}
                 </div>
               );
             if (key === 'video' && (d.video || recordedVideoUrl(d.recordedVideo))) {

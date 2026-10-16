@@ -551,6 +551,19 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               onChange={(e) => updateCatalogue(item.id, 'price', e.target.value)}
                             />
                           </label>
+                          <label className="field">
+                            {t('Disponibilité', 'التوفر')}
+                            <select
+                              value={item.availability || 'available'}
+                              onChange={(e) =>
+                                updateCatalogue(item.id, 'availability', e.target.value)
+                              }
+                            >
+                              <option value="available">{t('Disponible', 'موجود')}</option>
+                              <option value="sold_out">{t('Épuisé', 'سالَى')}</option>
+                              <option value="hidden">{t('Masqué', 'مخبي')}</option>
+                            </select>
+                          </label>
                         </div>
                         <label className="field">
                           {t('Description', 'الوصف')}
@@ -605,6 +618,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               category: '',
                               price: '',
                               image: '',
+                              availability: 'available',
                             },
                           ],
                         }))
@@ -884,12 +898,19 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </span>
                       </label>
                       <label className="field">
-                        {t('Catalogue PDF · maximum 10 Mo', 'كاتالوگ PDF · حتى 10 Mo')}
+                        {t(
+                          'Documents PDF · 5 fichiers maximum de 10 Mo',
+                          'وثائق PDF · حتى 5 ملفات ديال 10 Mo',
+                        )}
                         <input
                           type="file"
-                          disabled={busy}
+                          disabled={busy || (data.pdfDocuments || []).length >= 5}
                           accept="application/pdf"
-                          onChange={(e) => e.target.files?.[0] && upload(e.target.files[0], 'pdf')}
+                          onChange={(e) => {
+                            const f = e.currentTarget.files?.[0];
+                            e.currentTarget.value = '';
+                            if (f) void upload(f, 'pdf');
+                          }}
                         />
                       </label>
                       <label className="field">
@@ -953,6 +974,36 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </div>
                       ))}
                     </div>
+                    {(data.pdfDocuments || []).map((doc: any) => (
+                      <div className="row" key={doc.id}>
+                        <input
+                          aria-label={t('Titre du PDF', 'عنوان PDF')}
+                          maxLength={120}
+                          value={doc.title}
+                          onChange={(e) =>
+                            setData((d: any) => ({
+                              ...d,
+                              pdfDocuments: (d.pdfDocuments || []).map((p: any) =>
+                                p.id === doc.id ? { ...p, title: e.target.value } : p,
+                              ),
+                            }))
+                          }
+                        />
+                        <button
+                          className="secondary small"
+                          onClick={() =>
+                            setData((d: any) => ({
+                              ...d,
+                              pdfDocuments: (d.pdfDocuments || []).filter(
+                                (p: any) => p.id !== doc.id,
+                              ),
+                            }))
+                          }
+                        >
+                          {t('Supprimer', 'مسح')}
+                        </button>
+                      </div>
+                    ))}
                     {data.pdf && (
                       <div className="row">
                         <a href={data.pdf} target="_blank">
