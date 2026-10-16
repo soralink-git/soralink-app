@@ -9,6 +9,7 @@ export function mediaKeys(d: any): string[] {
     d?.cover,
     d?.backgroundPhoto,
     d?.pdf,
+    ...(Array.isArray(d?.pdfDocuments) ? d.pdfDocuments.map((p: any) => p.url) : []),
     d?.recordedVideo,
     ...(Array.isArray(d?.photos) ? d.photos : []),
     ...(Array.isArray(d?.services) ? d.services.map((s: any) => s.image) : []),
