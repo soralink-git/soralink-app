@@ -6,7 +6,8 @@ const { bindPdfGestures } = load(path.resolve('app/lib/pdf-gestures.ts'));
 function reader() {
   const listeners = new Map(),
     captured = new Set(),
-    commits = [];
+    commits = [],
+    turns = [];
   const stage = {
     scrollLeft: 0,
     scrollTop: 0,
@@ -20,7 +21,13 @@ function reader() {
     removeEventListener: (type) => listeners.delete(type),
   };
   const canvas = { style: { width: '300px', height: '600px' }, offsetLeft: 0, offsetTop: 0 };
-  const dispose = bindPdfGestures(stage, canvas, 1, (z) => commits.push(z));
+  const dispose = bindPdfGestures(
+    stage,
+    canvas,
+    1,
+    (z) => commits.push(z),
+    (step) => turns.push(step),
+  );
   const event = (type, id, x, y, extra = {}) =>
     listeners.get(type)?.({
       type,
@@ -31,7 +38,7 @@ function reader() {
       preventDefault() {},
       ...extra,
     });
-  return { stage, canvas, commits, event, dispose, captured, listeners };
+  return { stage, canvas, commits, turns, event, dispose, captured, listeners };
 }
 test('two fingers resize the PDF while moving and commit one sharp render after release', () => {
   const r = reader();
@@ -91,5 +98,35 @@ test('keyboard zoom remains available without zoom buttons', () => {
   assert.equal(r.canvas.style.width, '450px');
   r.event('keydown', 0, 0, 0, { key: '0' });
   assert.equal(r.canvas.style.width, '300px');
+  r.dispose();
+});
+
+test('horizontal swipes change pages but vertical drags and cancellation do not', () => {
+  const r = reader();
+  r.event('pointerdown', 1, 200, 100);
+  r.event('pointermove', 1, 100, 105);
+  r.event('pointerup', 1, 100, 105);
+  r.event('pointerdown', 1, 100, 100);
+  r.event('pointermove', 1, 200, 100);
+  r.event('pointerup', 1, 200, 100);
+  assert.deepEqual(r.turns, [1, -1]);
+  r.event('pointerdown', 1, 200, 100);
+  r.event('pointermove', 1, 180, 250);
+  r.event('pointerup', 1, 180, 250);
+  r.event('pointerdown', 1, 200, 100);
+  r.event('pointermove', 1, 100, 100);
+  r.event('pointercancel', 1, 100, 100);
+  assert.equal(r.turns.length, 2);
+  r.dispose();
+});
+test('a horizontal drag after pinching pans without changing page', () => {
+  const r = reader();
+  r.event('pointerdown', 1, 50, 100);
+  r.event('pointerdown', 2, 150, 100);
+  r.event('pointermove', 2, 250, 100);
+  r.event('pointerup', 2, 250, 100);
+  r.event('pointermove', 1, -100, 100);
+  r.event('pointerup', 1, -100, 100);
+  assert.equal(r.turns.length, 0);
   r.dispose();
 });

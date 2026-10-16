@@ -9,10 +9,12 @@ export function bindPdfGestures(
   canvas: HTMLCanvasElement,
   zoom: number,
   commit: (zoom: number) => void,
+  turnPage: (direction: -1 | 1) => void = () => {},
 ) {
   const points = new Map<number, Point>();
   let shown = zoom;
   let moved = false;
+  let pinched = false;
   let lastTap = 0;
   let start: Point | null = null;
   let pinch: { distance: number; zoom: number } | null = null;
@@ -36,14 +38,17 @@ export function bindPdfGestures(
   let center: Point | null = null;
   const down = (event: PointerEvent) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (points.size >= 2) return;
     points.set(event.pointerId, local(event));
     stage.setPointerCapture(event.pointerId);
     if (points.size === 1) {
       start = local(event);
       moved = false;
+      pinched = false;
     }
     if (points.size === 2) {
       const [a, b] = [...points.values()];
+      pinched = true;
       pinch = { distance: Math.max(distance(a, b), 1), zoom: shown };
       center = midpoint(a, b);
       moved = true;
@@ -74,6 +79,12 @@ export function bindPdfGestures(
     center = null;
     if (stage.hasPointerCapture(event.pointerId)) stage.releasePointerCapture(event.pointerId);
     if (points.size === 0) {
+      if (!pinched && start && shown <= 1.01 && event.type !== 'pointercancel') {
+        const dx = point.x - start.x;
+        const dy = point.y - start.y;
+        if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 1.5) turnPage(dx < 0 ? 1 : -1);
+      }
+
       if (!moved && event.type !== 'pointercancel') {
         const now = Date.now();
         if (now - lastTap < 300) {
@@ -85,6 +96,11 @@ export function bindPdfGestures(
     }
   };
   const key = (event: KeyboardEvent) => {
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      turnPage(event.key === 'ArrowRight' ? 1 : -1);
+    }
+
     if (['+', '=', '-', '0'].includes(event.key)) {
       event.preventDefault();
       scale(event.key === '0' ? 1 : shown + (event.key === '-' ? -0.5 : 0.5), {

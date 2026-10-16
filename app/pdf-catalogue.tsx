@@ -221,39 +221,29 @@ function PdfReader({
   }, [pdf, page, zoom, width]);
   useEffect(() => {
     if (onExpand || busy || failed || !stage.current || !canvas.current) return;
-    return bindPdfGestures(stage.current, canvas.current, zoom, setZoom);
-  }, [onExpand, busy, failed, zoom]);
+    return bindPdfGestures(stage.current, canvas.current, zoom, setZoom, (direction) => {
+      setPage((current) =>
+        Math.max(1, Math.min(pdf?.numPages || 1, current + (ar ? -direction : direction))),
+      );
+    });
+  }, [onExpand, busy, failed, zoom, pdf, ar]);
   return (
     <div className="pdf-catalogue" ref={host} dir={ar ? 'rtl' : 'ltr'}>
       <div
         className="pdf-catalogue-controls"
         aria-label={t('Lecture du catalogue', 'قراية الكاتالوگ')}
       >
-        <button
-          type="button"
-          disabled={!pdf || busy || page <= 1}
-          onClick={() => setPage((p) => p - 1)}
-        >
-          {t('Précédente', 'السابقة')}
-        </button>
         <span aria-live="polite">
           {t('Page', 'الصفحة')} {page}
           {pdf ? ` / ${pdf.numPages}` : ''}
         </span>
-        <button
-          type="button"
-          disabled={!pdf || busy || page >= pdf.numPages}
-          onClick={() => setPage((p) => p + 1)}
-        >
-          {t('Suivante', 'التالية')}
-        </button>
       </div>
       <p className="pdf-gesture-hint">
         {onExpand
           ? t('Touchez le document pour l’agrandir.', 'لمس الوثيقة باش تكبّرها.')
           : t(
-              'Écartez deux doigts pour zoomer. Glissez pour déplacer. Deux touches pour agrandir ou réduire.',
-              'بعّد جوج صبيعات باش تكبّر. جرّ باش تحرّك. لمس جوج مرات باش تكبّر ولا تصغّر.',
+              'Balayez de côté pour changer de page. Pincez pour zoomer, puis glissez pour voir les détails. Deux touches pour rétablir la taille.',
+              'جرّ للجنب باش تبدّل الصفحة. كبّر بجوج صبيعات وجرّ باش تشوف التفاصيل. لمس جوج مرات باش ترجع للحجم الأول.',
             )}
       </p>
       {busy && !failed && (
@@ -283,8 +273,8 @@ function PdfReader({
             onExpand
               ? t('Agrandir le catalogue', 'كبّر الكاتالوگ')
               : t(
-                  'Document : zoom tactile ou touches +, − et 0',
-                  'الوثيقة: كبّر بصبيعاتك ولا بمفاتيح + و − و 0',
+                  'Document : balayage pour les pages, pincement pour zoomer. Clavier : flèches, +, − et 0',
+                  'الوثيقة: جرّ للجنب للصفحات وكبّر بصبيعاتك. مفاتيح: السهمين و + و − و 0',
                 )
           }
           onClick={onExpand}
