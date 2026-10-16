@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
+import type { PDFDocumentProxy, PDFPageProxy, RenderTask } from 'pdfjs-dist';
 import { bindPdfGestures } from './lib/pdf-gestures';
 export default function PdfScrollReader({
   src,
@@ -231,12 +231,16 @@ function LazyPage({
   useEffect(() => {
     if (!near || !width) return;
     let gone = false,
-      render: RenderTask | undefined;
+      render: RenderTask | undefined,
+      sheet: PDFPageProxy | undefined;
     setFailed(false);
     void (async () => {
       try {
-        const sheet = await pdf.getPage(page);
-        if (gone) return;
+        sheet = await pdf.getPage(page);
+        if (gone) {
+          sheet.cleanup();
+          return;
+        }
         const base = sheet.getViewport({ scale: 1 });
         cb.current(base.height / base.width);
         const viewport = sheet.getViewport({ scale: width / base.width });
@@ -257,6 +261,7 @@ function LazyPage({
     return () => {
       gone = true;
       render?.cancel();
+      sheet?.cleanup();
     };
   }, [near, pdf, page, width]);
   return (
