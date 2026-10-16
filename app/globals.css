@@ -5093,3 +5093,14 @@ header nav {
   color: var(--muted, #94a3b8);
   margin-top: 4px;
 }
+
+/* Integrated Photo Gallery in Catalogue */
+.catalogue-photos-integrated {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--card-line, rgba(255, 255, 255, 0.1));
+}
+.catalogue-photos-integrated > h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}

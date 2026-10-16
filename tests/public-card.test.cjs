@@ -78,6 +78,19 @@ test('empty content produces no catalogue panels', () => {
     /catalogue-item|card-promotions|class="gallery"/,
   );
 });
+
+test('promotions and photo gallery are regrouped under the Produits et services panel', () => {
+  const html = card(demoCard);
+  const servicesHeadingIndex = html.indexOf('<h2>Produits et services</h2>');
+  const promotionsIndex = html.indexOf('class="card-promotions"');
+  const catalogueIndex = html.indexOf('class="catalogue-grid"');
+  const galleryIndex = html.indexOf('class="catalogue-photos-integrated"');
+
+  assert.ok(servicesHeadingIndex !== -1, 'Produits et services heading must be present');
+  assert.ok(promotionsIndex > servicesHeadingIndex, 'promotions must be inside the services panel');
+  assert.ok(catalogueIndex > promotionsIndex, 'catalogue grid follows promotions');
+  assert.ok(galleryIndex > catalogueIndex, 'gallery is integrated inside services panel');
+});
 test('shared renderer preserves theme, sizing, color and shape customization', () => {
   const html = card({
     ...demoCard,

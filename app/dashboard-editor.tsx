@@ -168,7 +168,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
   } = context;
   const tabs = [
     ['coordinates', Phone, 'Coordonnées', 'معلومات التواصل', 'card'],
-    ['content', Package, 'Contenu', 'المحتوى', 'card'],
+    ['content', Package, 'Produits & services', 'المنتجات والخدمات', 'card'],
     ['interface', Palette, 'Interface', 'الواجهة والمظهر', 'card'],
     ['contacts', Users, 'Mes contacts', 'الكونطاكت ديالي', 'clients'],
     ['requests', Calendar, 'Mes demandes', 'الطلبات ديالي', 'clients'],
@@ -486,11 +486,13 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 tab === 'media') && (
                 <>
                   <section className="panel">
-                    <h2>{t('Mon catalogue', 'الكاتالوگ ديالي')}</h2>
+                    <h2>
+                      {t('Produits et services (Catalogue)', 'المنتجات والخدمات (الكاتالوگ)')}
+                    </h2>
                     <p className="hint">
                       {t(
-                        `Présentez jusqu’à ${catalogueMax} produits ou services avec photo. Les visiteurs peuvent demander un article précis ; vous retrouvez sa référence dans Mes demandes. Enregistrez vos changements.`,
-                        `قدّم حتى ${catalogueMax} منتجات ولا خدمات مع تصويرة. الزوار يقدرو يطلبو عرض معيّن، وكتلقاه فـ الطلبات ديالي. سجّل التغييرات.`,
+                        `Présentez jusqu’à ${catalogueMax} produits ou services avec photo. Vos visiteurs peuvent commander ou demander un devis en un clic. Enregistrez vos changements.`,
+                        `قدّم حتى ${catalogueMax} منتجات ولا خدمات مع تصويرة. الزوار يقدرو يطلبو بنقرة وحدة. سجّل التغييرات.`,
                       )}
                     </p>
                     {data.services.map((item: any, i: number) => (
@@ -615,11 +617,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                   </section>
 
                   <section className="panel">
-                    <h2>{t('Mes promos', 'العروض ديالي')}</h2>
+                    <h2>{t('Promotions & Offres du moment', 'العروض والتخفيضات الحالية')}</h2>
                     <p className="hint">
                       {t(
-                        'Vos offres apparaissent sous votre présentation. Les dates suivent l’heure du Maroc ; la date de fin est incluse. Enregistrez pour publier vos changements.',
-                        'العروض كيبانو تحت التقديم ديالك. التواريخ بتوقيت المغرب، ونهار النهاية داخل فالعرض. سجّل باش تبان التغييرات.',
+                        'Vos offres apparaissent en tête de votre catalogue sous Produits et services. Les dates suivent l’heure du Maroc ; la date de fin est incluse. Enregistrez pour publier vos changements.',
+                        'العروض كيبانو فالأول ديال الكاتالوگ تحت قسم المنتجات والخدمات. التواريخ بتوقيت المغرب، ونهار النهاية داخل فالعرض. سجّل باش تبان التغييرات.',
                       )}
                     </p>
                     {data.promotions.map((p: any, i: number) => (
@@ -772,7 +774,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                   </section>
 
                   <section className="panel">
-                    <h2>{t('Médias et documents', 'الوسائط والملفات')}</h2>
+                    <h2>
+                      {t('Galerie photos & Documents intégrés', 'معرض الصور والملفات المدمجة')}
+                    </h2>
                     <div className="storage-summary">
                       <strong>{t('Stockage du compte', 'التخزين ديال الحساب')}</strong>
                       <p>

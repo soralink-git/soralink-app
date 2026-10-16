@@ -639,17 +639,57 @@ export default function CardView({
         {a.order
           .filter((key) => !a.hidden.includes(key))
           .map((key) => {
-            if (['coordinates', 'social', 'promotions', 'appointments'].includes(key))
+            if (['coordinates', 'social', 'appointments'].includes(key))
               return <CardSection key={key} d={d} section={key} preview={preview} />;
-            if (key === 'services' && d.services?.length) {
+            if (key === 'services') {
               const items = normalizeCatalogue(d.services).filter((item) => item.name);
-              if (!items.length) return null;
+              const promos = !a.hidden.includes('promotions')
+                ? activePromotions(d.promotions, promoToday)
+                : [];
+              const photos =
+                !a.hidden.includes('photos') && Array.isArray(d.photos)
+                  ? d.photos.filter(Boolean)
+                  : [];
+              if (!items.length && !promos.length && !photos.length) return null;
               const categories = [...new Set(items.map((item) => item.category))];
               return (
                 <div className="panel" key={key}>
                   <h2>
                     {sectionHeading(d, 'services', t('Produits et services', 'المنتجات والخدمات'))}
                   </h2>
+                  {promos.length > 0 && (
+                    <section className="card-promotions" aria-label={t('Promotions', 'العروض')}>
+                      <h3>{sectionHeading(d, 'promotions', t('Nos promos', 'العروض ديالنا'))}</h3>
+                      {promos.map((p) => (
+                        <article className="promotion-item" key={p.id}>
+                          {p.image && <PhotoPreview src={p.image} alt={p.title} ar={ar} />}
+                          <div>
+                            <span className="promotion-label">
+                              {t('OFFRE SPÉCIALE', 'عرض خاص')}
+                            </span>
+                            <h4>{p.title}</h4>
+                            {p.description && <p>{p.description}</p>}
+                            {(p.regularPrice || p.promoPrice) && (
+                              <div className="promotion-prices">
+                                {p.regularPrice && p.promoPrice ? (
+                                  <del>{promotionPrice(p.regularPrice)}</del>
+                                ) : null}
+                                <strong>{promotionPrice(p.promoPrice || p.regularPrice)}</strong>
+                              </div>
+                            )}
+                            {p.endDate && (
+                              <small>
+                                {t('Jusqu’au ', 'حتى ')}
+                                <time dateTime={p.endDate}>
+                                  {p.endDate.split('-').reverse().join('/')}
+                                </time>
+                              </small>
+                            )}
+                          </div>
+                        </article>
+                      ))}
+                    </section>
+                  )}
                   {categories.map((category) => (
                     <section className="catalogue-category" key={category || 'uncategorized'}>
                       {(category || categories.length > 1) && (
@@ -705,16 +745,28 @@ export default function CardView({
                       </div>
                     </section>
                   ))}
+                  {photos.length > 0 && (
+                    <div className="catalogue-photos-integrated">
+                      <h3>{sectionHeading(d, 'photos', t('En images', 'بالتصاور'))}</h3>
+                      <PhotoGallery photos={photos} ar={ar} />
+                    </div>
+                  )}
                 </div>
               );
             }
-            if (key === 'photos' && d.photos?.length)
+            if (key === 'promotions') {
+              if (!a.hidden.includes('services')) return null;
+              return <CardSection key={key} d={d} section={key} preview={preview} />;
+            }
+            if (key === 'photos') {
+              if (!a.hidden.includes('services') || !d.photos?.length) return null;
               return (
                 <div className="panel" key={key}>
                   <h2>{sectionHeading(d, 'photos', t('En images', 'بالتصاور'))}</h2>
                   <PhotoGallery photos={d.photos} ar={ar} />
                 </div>
               );
+            }
             if (key === 'pdf' && d.pdf)
               return (
                 <div className="panel" key={key}>
