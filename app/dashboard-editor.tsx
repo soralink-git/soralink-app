@@ -551,6 +551,17 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               onChange={(e) => updateCatalogue(item.id, 'price', e.target.value)}
                             />
                           </label>
+                          <label className="field">
+                            {t('Disponibilité', 'التوفر')}
+                            <select
+                              value={item.availability || 'available'}
+                              onChange={(e) => updateCatalogue(item.id, 'availability', e.target.value)}
+                            >
+                              <option value="available">{t('Disponible', 'موجود')}</option>
+                              <option value="sold_out">{t('Épuisé', 'سالَى')}</option>
+                              <option value="hidden">{t('Masqué', 'مخبي')}</option>
+                            </select>
+                          </label>
                         </div>
                         <label className="field">
                           {t('Description', 'الوصف')}
@@ -605,6 +616,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               category: '',
                               price: '',
                               image: '',
+                              availability: 'available',
                             },
                           ],
                         }))
