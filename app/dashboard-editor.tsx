@@ -313,91 +313,12 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         {t('Page publiée', 'الصفحة منشورة')}
                       </label>
                     </div>
-                    <h3>{t('Portrait, logo et couverture', 'التصويرة، اللوگو والغلاف')}</h3>
-                    <div className="form-grid">
-                      <label className="field">
-                        {t('Portrait / logo', 'التصويرة / اللوگو')}
-                        <input
-                          type="file"
-                          disabled={busy}
-                          accept="image/png,image/jpeg,image/webp"
-                          onChange={(e) => {
-                            const f = e.currentTarget.files?.[0];
-                            e.currentTarget.value = '';
-                            if (f) startCrop(f, 'avatar');
-                          }}
-                        />
-                        {data.avatar && (
-                          <div
-                            style={{
-                              display: 'flex',
-                              gap: '8px',
-                              alignItems: 'center',
-                              marginTop: '6px',
-                            }}
-                          >
-                            <button
-                              type="button"
-                              className="secondary small"
-                              disabled={busy}
-                              onClick={() => startCrop(rawSources?.avatar || data.avatar, 'avatar')}
-                            >
-                              <Crop size={15} />
-                              {t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
-                            </button>
-                            <button
-                              type="button"
-                              className="text-button"
-                              disabled={busy}
-                              onClick={() => setData({ ...data, avatar: '' })}
-                            >
-                              {t('Retirer', 'حيّد')}
-                            </button>
-                          </div>
-                        )}
-                      </label>
-                      <label className="field">
-                        {t('Image de couverture', 'تصويرة الغلاف')}
-                        <input
-                          type="file"
-                          disabled={busy}
-                          accept="image/jpeg,image/png,image/webp"
-                          onChange={(e) => {
-                            const f = e.currentTarget.files?.[0];
-                            e.currentTarget.value = '';
-                            if (f) startCrop(f, 'cover');
-                          }}
-                        />
-                        {data.cover && (
-                          <div
-                            style={{
-                              display: 'flex',
-                              gap: '8px',
-                              alignItems: 'center',
-                              marginTop: '6px',
-                            }}
-                          >
-                            <button
-                              type="button"
-                              className="secondary small"
-                              disabled={busy}
-                              onClick={() => startCrop(rawSources?.cover || data.cover, 'cover')}
-                            >
-                              <Crop size={15} />
-                              {t('Recadrer la couverture', 'قصّ الغلاف')}
-                            </button>
-                            <button
-                              type="button"
-                              className="text-button"
-                              disabled={busy}
-                              onClick={() => setData({ ...data, cover: '' })}
-                            >
-                              {t('Retirer', 'حيّد')}
-                            </button>
-                          </div>
-                        )}
-                      </label>
-                    </div>
+                    <p className="hint">
+                      {t(
+                        'Pour modifier votre logo, couverture ou apparence, utilisez l’onglet Interface.',
+                        'باش تبدّل اللوگو، الغلاف ولا المظهر، استعمل قسم الواجهة.',
+                      )}
+                    </p>
                     <h3>{t('Informations professionnelles', 'المعلومات المهنية')}</h3>
                     <div className="form-grid">
                       {field('name', t('Nom complet *', 'الاسم الكامل *'))}
@@ -665,6 +586,113 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         'خصّص المظهر، الألوان، الخطوط وطريقة العرض فالكارط ديالك.',
                       )}
                     </p>
+                    <h3>{t('Portrait, logo et couverture', 'التصويرة، اللوگو والغلاف')}</h3>
+                    <div className="form-grid" style={{ marginBottom: '16px' }}>
+                      <label className="field">
+                        {t('Portrait / logo', 'التصويرة / اللوگو')}
+                        <input
+                          type="file"
+                          disabled={busy}
+                          accept="image/png,image/jpeg,image/webp"
+                          onChange={(e) => {
+                            const f = e.currentTarget.files?.[0];
+                            e.currentTarget.value = '';
+                            if (f) startCrop(f, 'avatar');
+                          }}
+                        />
+                        {data.avatar && (
+                          <div
+                            style={{
+                              display: 'flex',
+                              gap: '8px',
+                              alignItems: 'center',
+                              marginTop: '6px',
+                            }}
+                          >
+                            <img
+                              src={data.avatar}
+                              alt=""
+                              style={{
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: data.avatarShape === 'square' ? '6px' : '50%',
+                                objectFit: 'cover',
+                                border: '1px solid var(--line, rgba(255,255,255,0.15))',
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="secondary small"
+                              disabled={busy}
+                              onClick={() => startCrop(rawSources?.avatar || data.avatar, 'avatar')}
+                            >
+                              <Crop size={15} />
+                              {t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
+                            </button>
+                            <button
+                              type="button"
+                              className="text-button"
+                              disabled={busy}
+                              onClick={() => setData({ ...data, avatar: '' })}
+                            >
+                              {t('Retirer', 'حيّد')}
+                            </button>
+                          </div>
+                        )}
+                      </label>
+                      <label className="field">
+                        {t('Image de couverture', 'تصويرة الغلاف')}
+                        <input
+                          type="file"
+                          disabled={busy}
+                          accept="image/jpeg,image/png,image/webp"
+                          onChange={(e) => {
+                            const f = e.currentTarget.files?.[0];
+                            e.currentTarget.value = '';
+                            if (f) startCrop(f, 'cover');
+                          }}
+                        />
+                        {data.cover && (
+                          <div
+                            style={{
+                              display: 'flex',
+                              gap: '8px',
+                              alignItems: 'center',
+                              marginTop: '6px',
+                            }}
+                          >
+                            <img
+                              src={data.cover}
+                              alt=""
+                              style={{
+                                width: '56px',
+                                height: '28px',
+                                borderRadius: '4px',
+                                objectFit: 'cover',
+                                border: '1px solid var(--line, rgba(255,255,255,0.15))',
+                              }}
+                            />
+                            <button
+                              type="button"
+                              className="secondary small"
+                              disabled={busy}
+                              onClick={() => startCrop(rawSources?.cover || data.cover, 'cover')}
+                            >
+                              <Crop size={15} />
+                              {t('Recadrer la couverture', 'قصّ الغلاف')}
+                            </button>
+                            <button
+                              type="button"
+                              className="text-button"
+                              disabled={busy}
+                              onClick={() => setData({ ...data, cover: '' })}
+                            >
+                              {t('Retirer', 'حيّد')}
+                            </button>
+                          </div>
+                        )}
+                      </label>
+                    </div>
                     <BackgroundEditor
                       data={data}
                       setData={setData}

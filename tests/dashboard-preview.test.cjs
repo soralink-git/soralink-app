@@ -110,6 +110,15 @@ for (const tab of [
     assert.match(html, /workspace-tab-content/);
   });
 
+test('logo and cover controls are rendered in the Interface tab', () => {
+  const html = renderToStaticMarkup(
+    React.createElement(DashboardEditor, { context: context('interface') }),
+  );
+  assert.match(html, /Portrait \/ logo/);
+  assert.match(html, /Image de couverture/);
+  assert.match(html, /Portrait, logo et couverture/);
+});
+
 for (const ar of [false, true])
   test(`workspace groups and selected section render in ${ar ? 'Arabic' : 'French'}`, () => {
     const html = renderToStaticMarkup(
