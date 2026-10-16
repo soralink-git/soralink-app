@@ -4024,6 +4024,29 @@ header nav {
 .session-loading {
   min-height: 320px;
 }
+.route-loading {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: #0f172a;
+  color: #f8fafc;
+  font-size: 20px;
+}
+.route-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+}
+.route-loading-spinner {
+  width: 26px;
+  height: 26px;
+  border: 2px solid #475569;
+  border-top-color: #d5b66f;
+  border-radius: 50%;
+  animation: session-spin 1s linear infinite;
+}
 .session-loading-dot {
   display: inline-block;
   width: 26px;
@@ -4043,7 +4066,8 @@ header nav {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .session-loading-dot {
+  .session-loading-dot,
+  .route-loading-spinner {
     animation: none;
   }
 }

@@ -22,7 +22,7 @@ import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
 import { appearance } from './lib/personalization';
 import { normalizePromotions, todayMorocco } from './lib/promotions';
 import { defaults, moroccoNow } from './lib/schedule';
-const LandingPage = lazy(() => import('./landing-page'));
+import LandingPage from './landing-page';
 const DashboardEditor = lazy(() => import('./dashboard-editor'));
 const socialFields = [
   ['instagram', 'Instagram'],
@@ -1222,7 +1222,7 @@ export default function App({
                 {t('Connexion', 'الدخول')}
               </a>
             )}
-            {view === 'home' && !canAdmin && (
+            {view === 'home' && sessionChecked && !canAdmin && (
               <a
                 className="primary small header-start"
                 href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}
@@ -1276,21 +1276,13 @@ export default function App({
         </div>
       )}
       {view === 'home' && (
-        <Suspense
-          fallback={
-            <main className="landing" role="status">
-              {t('Chargement…', 'كنحمّلو…')}
-            </main>
-          }
-        >
-          <LandingPage
-            ar={ar}
-            auth={auth}
-            Card={Card}
-            blank={blank}
-            onPricing={() => setView('pricing')}
-          />
-        </Suspense>
+        <LandingPage
+          ar={ar}
+          auth={auth}
+          Card={Card}
+          blank={blank}
+          onPricing={() => setView('pricing')}
+        />
       )}
       {view === 'pricing' && (
         <main className="section">

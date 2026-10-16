@@ -170,9 +170,14 @@ try {
   });
   assert.equal(adminLogin.json.redirect, '/admin?lang=ar');
   for (const endpoint of ['/auth?lang=ar&offer=Pack', '/admin/connexion?lang=ar']) {
-    // dispatchFetch follows the server redirect; verify the final admin page.
+    // A loading boundary may stream the redirect after sending the HTML headers.
     const redirect = await request(endpoint, { auth: true, id: adminId });
-    assert.match(redirect.text, /<h1>الإدارة<\/h1>/);
+    if (!redirect.text.includes('<h1>الإدارة</h1>')) {
+      assert.match(redirect.text, /http-equiv="refresh" content="\d+;url=\/admin\?lang=ar"/);
+      assert.match(redirect.text, /class="route-loading"/);
+      const destination = await request('/admin?lang=ar', { auth: true, id: adminId });
+      assert.match(destination.text, /<h1>الإدارة<\/h1>/);
+    }
     assert.doesNotMatch(redirect.text, /name="password"/);
   }
   assert.equal((await request('/api/auth', { auth: true, id: adminId })).json.admin, true);

@@ -17,6 +17,7 @@ const statuses: any = {
 export default function Admin({ initialArabic = false }: { initialArabic?: boolean }) {
   const [data, setData] = useState<any>(null),
     [error, setError] = useState(''),
+    [checked, setChecked] = useState(false),
     [busy, setBusy] = useState(false),
     [tab, setTab] = useState('clients'),
     [search, setSearch] = useState(''),
@@ -63,6 +64,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
       if (epoch === loadEpoch.current) setError(e.message);
     } finally {
       if (epoch === loadEpoch.current) {
+        setChecked(true);
         loading.current = false;
         setBusy(false);
       }
@@ -175,7 +177,12 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
           )}
         </p>
         {error && <div className="notice">{error}</div>}
-        {!data ? (
+        {!checked ? (
+          <div className="empty session-loading" role="status">
+            <span className="session-loading-dot" aria-hidden="true" />
+            <p>{t('Chargement de l’administration…', 'كنحمّلو الإدارة…')}</p>
+          </div>
+        ) : !data ? (
           <div className="empty">
             <Shield size={44} />
             <h2>{t('Connexion administrateur', 'دخول الإدارة')}</h2>
