@@ -19,6 +19,8 @@ import { recordedVideoUrl } from '../../lib/content-media';
 import { contactCard } from '../../lib/contact-card';
 import {
   normalizeCatalogue,
+  catalogueError,
+  catalogueLimit,
   catalogueSelection,
   catalogueRequestMessage,
 } from '../../lib/catalogue';
@@ -258,6 +260,16 @@ export async function POST(req: Request) {
             errorAr: 'جدّد الاشتراك قبل ما تنشر الكارط.',
           },
           403,
+        );
+      const limit = catalogueLimit(p);
+      const catalogueIssue = catalogueError(b.data.services, limit);
+      if (catalogueIssue)
+        return json(
+          {
+            error: catalogueIssue,
+            errorAr: `الكاتالوگ يقدر يكون فيه حتى ${limit} منتجات ولا خدمات.`,
+          },
+          400,
         );
       const stamp = new Date(Math.max(Date.now(), (Date.parse(p?.updated) || 0) + 1)).toISOString();
       const id = p?.id || crypto.randomUUID();

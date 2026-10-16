@@ -1,4 +1,10 @@
-export const MAX_CATALOGUE_ITEMS = 10;
+export const MAX_CATALOGUE_ITEMS = 40;
+export const TRIAL_CATALOGUE_ITEMS = 10;
+export function catalogueLimit(profile: { state?: string } | null | undefined) {
+  return profile && ['active', 'suspended'].includes(profile.state || '')
+    ? MAX_CATALOGUE_ITEMS
+    : TRIAL_CATALOGUE_ITEMS;
+}
 export type CatalogueItem = {
   id: string;
   type: 'product' | 'service';
@@ -23,10 +29,10 @@ const emptyDraft = (item: any) =>
       (typeof item[key] === 'string' && !item[key].trim()),
   );
 const legacyItem = (item: unknown) => (typeof item === 'string' ? { name: item } : item);
-export function catalogueError(value: unknown) {
+export function catalogueError(value: unknown, limit = MAX_CATALOGUE_ITEMS) {
   if (value === undefined) return null;
-  if (!Array.isArray(value) || value.length > MAX_CATALOGUE_ITEMS)
-    return 'Le catalogue peut contenir jusqu’à 10 produits ou services.';
+  if (!Array.isArray(value) || value.length > limit)
+    return `Le catalogue peut contenir jusqu’à ${limit} produits ou services.`;
   const ids = new Set<string>();
   for (const [i, raw] of value.entries()) {
     const item: any = legacyItem(raw);

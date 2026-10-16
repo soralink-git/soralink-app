@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { cursorSchema } from './pagination';
-import { catalogueError } from './catalogue';
+import { catalogueError, MAX_CATALOGUE_ITEMS } from './catalogue';
 import { promotionError } from './promotions';
 import { recordedVideoUrl, mediaError } from './content-media';
 import { sectionKeys } from './personalization';
@@ -83,7 +83,7 @@ export const profileDataSchema = z
             .passthrough(),
         ]),
       )
-      .max(10)
+      .max(MAX_CATALOGUE_ITEMS)
       .optional(),
     promotions: z
       .array(
@@ -151,7 +151,7 @@ export const profileDataSchema = z
   .passthrough()
   .superRefine((d, ctx) => {
     const errors = [
-      JSON.stringify(d).length > 35000 ? 'Informations invalides : carte trop volumineuse.' : null,
+      JSON.stringify(d).length > 100000 ? 'Informations invalides : carte trop volumineuse.' : null,
       catalogueError(d.services),
       promotionError(d.promotions),
       d.recordedVideo && !recordedVideoUrl(d.recordedVideo) ? 'Lien de vidéo invalide' : null,

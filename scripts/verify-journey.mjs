@@ -268,6 +268,51 @@ try {
   assert.equal(trial.state, 'trial');
   assert(Date.parse(trial.expires) > Date.now());
   assert(Date.parse(trial.expires) < Date.now() + 15 * 86400000);
+
+  const catalogue40 = Array.from({ length: 40 }, (_, i) => ({
+    id: 'item-' + i,
+    name: 'Article ' + (i + 1),
+    type: 'product',
+    description: 'D'.repeat(800),
+    image: uploaded.json.url,
+    price: '25',
+  }));
+  await request('/api/data', {
+    auth: true,
+    data: {
+      action: 'save',
+      revision: saved.json.revision,
+      data: { ...fields, services: catalogue40.slice(0, 11) },
+      published: false,
+    },
+    status: 400,
+  });
+  await db.prepare("UPDATE profiles SET state='active' WHERE id=?").bind(cardId).run();
+  const fortySaved = await request('/api/data', {
+    auth: true,
+    data: {
+      action: 'save',
+      revision: saved.json.revision,
+      data: { ...fields, services: catalogue40 },
+      published: true,
+    },
+  });
+  const fortyPublic = JSON.parse((await request('/api/data?id=' + cardId)).json.data);
+  assert.equal(fortyPublic.services.length, 40);
+  assert.equal(fortyPublic.services[39].image, uploaded.json.url);
+  assert((await request('/c/' + cardId)).text.includes('Article 40'));
+  await request('/api/data', {
+    auth: true,
+    data: {
+      action: 'save',
+      revision: fortySaved.json.revision,
+      data: { ...fields, services: [...catalogue40, { id: 'item-41', name: 'Article 41' }] },
+      published: true,
+    },
+    status: 400,
+  });
+  saved.json.revision = fortySaved.json.revision;
+  await db.prepare("UPDATE profiles SET state='trial',published=0 WHERE id=?").bind(cardId).run();
   fields.avatar = uploaded.json.url;
   fields.cover = uploaded.json.url;
   fields.backgroundPhoto = uploaded.json.url;

@@ -45,7 +45,7 @@ import {
   requestStatus,
   requestReply,
 } from './lib/whatsapp-notification';
-import { MAX_CATALOGUE_ITEMS } from './lib/catalogue';
+import { catalogueLimit } from './lib/catalogue';
 import { appearance } from './lib/personalization';
 import { MAX_PROMOTIONS, promotionStatus } from './lib/promotions';
 
@@ -184,6 +184,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         : tab === 'catalogue' || tab === 'promotions' || tab === 'media'
           ? 'content'
           : tab;
+  const catalogueMax = catalogueLimit(subscription);
   const current = tabs.find(([key]) => key === activeTab) || tabs[0];
   return (
     <main className="workspace workspace-design">
@@ -474,8 +475,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     <h2>{t('Mon catalogue', 'الكاتالوگ ديالي')}</h2>
                     <p className="hint">
                       {t(
-                        'Présentez jusqu’à 10 produits ou services. Les visiteurs peuvent demander un article précis ; vous retrouvez sa référence dans Mes demandes. Enregistrez vos changements.',
-                        'قدّم حتى 10 منتجات ولا خدمات. الزوار يقدرو يطلبو عرض معيّن، وكتلقاه فـ الطلبات ديالي. سجّل التغييرات.',
+                        `Présentez jusqu’à ${catalogueMax} produits ou services avec photo. Les visiteurs peuvent demander un article précis ; vous retrouvez sa référence dans Mes demandes. Enregistrez vos changements.`,
+                        `قدّم حتى ${catalogueMax} منتجات ولا خدمات مع تصويرة. الزوار يقدرو يطلبو عرض معيّن، وكتلقاه فـ الطلبات ديالي. سجّل التغييرات.`,
                       )}
                     </p>
                     {data.services.map((item: any, i: number) => (
@@ -574,7 +575,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     ))}
                     <button
                       className="secondary"
-                      disabled={busy || data.services.length >= MAX_CATALOGUE_ITEMS}
+                      disabled={busy || data.services.length >= catalogueMax}
                       onClick={() =>
                         setData((d: any) => ({
                           ...d,
@@ -595,7 +596,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     >
                       <Plus size={16} />
                       {t('Ajouter un produit ou service', 'زيد منتج ولا خدمة')} (
-                      {data.services.length}/{MAX_CATALOGUE_ITEMS})
+                      {data.services.length}/{catalogueMax})
                     </button>
                   </section>
 

@@ -315,8 +315,8 @@ export default function LandingPage({
             <h3>{t('Catalogue & Devis intégrés', 'كاتالوگ وطلبات أثمان مدمجة')}</h3>
             <p>
               {t(
-                'Exposez jusqu’à 10 articles/photos, affichez vos promos du moment et recevez des demandes de devis ou commandes directement.',
-                'قدّم حتى 10 منتجات/تصاور، بيّن عروضك الترويجية واستقبل طلبات الدوڤي ولا الشراء مباشرة.',
+                'Exposez jusqu’à 40 articles avec photo dans les offres payantes, affichez vos promos du moment et recevez des demandes de devis ou commandes directement.',
+                'قدّم حتى 40 منتج مع تصويرة فالعروض المؤدى عنها، بيّن عروضك الترويجية واستقبل طلبات الدوڤي ولا الشراء مباشرة.',
               )}
             </p>
             <div className="bento-preview bento-preview-catalogue">
