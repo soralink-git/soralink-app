@@ -119,6 +119,11 @@ export function publicCardData(
     out.services = [];
     out.catalogCategories = [];
   }
+  if (!out.catalogSettings.enabled || hidden.has('services')) {
+    out.photos = [];
+    out.video = '';
+    out.recordedVideo = '';
+  }
   if (hidden.has('photos')) out.photos = [];
   if (hidden.has('pdf')) {
     out.pdf = '';

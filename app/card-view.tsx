@@ -1,4 +1,6 @@
 'use client';
+import CatalogVideos, { catalogVideoSources } from './catalog-videos';
+import { catalogSettings } from './lib/catalog-menu';
 import CatalogProducts, { CatalogDocuments } from './catalog-public';
 import { catalogDocuments } from './lib/catalog-menu';
 import { publicCardPath } from './lib/public-address';
@@ -648,12 +650,17 @@ export default function CardView({
               const promos = !a.hidden.includes('promotions')
                 ? activePromotions(d.promotions, promoToday)
                 : [];
+              const mediaVisible = catalogSettings(d).enabled;
+              const videoSources =
+                !a.hidden.includes('video') && mediaVisible
+                  ? catalogVideoSources(d)
+                  : { localVideo: '', youtubeId: '' };
+              const hasVideo = !!(videoSources.localVideo || videoSources.youtubeId);
               const photos =
-                !a.hidden.includes('photos') && Array.isArray(d.photos)
+                mediaVisible && !a.hidden.includes('photos') && Array.isArray(d.photos)
                   ? d.photos.filter(Boolean)
                   : [];
-              if (!items.length && !promos.length && !photos.length) return null;
-              const categories = [...new Set(items.map((item) => item.category))];
+              if (!items.length && !promos.length && !photos.length && !hasVideo) return null;
               return (
                 <div className="panel" key={key}>
                   <h2>
@@ -706,6 +713,13 @@ export default function CardView({
                       <PhotoGallery photos={photos} ar={ar} />
                     </div>
                   )}
+                  {hasVideo && (
+                    <CatalogVideos
+                      data={d}
+                      ar={ar}
+                      title={sectionHeading(d, 'video', t('En vidéo', 'بالفيديو'))}
+                    />
+                  )}
                 </div>
               );
             }
@@ -713,65 +727,14 @@ export default function CardView({
               if (!a.hidden.includes('services')) return null;
               return <CardSection key={key} d={d} section={key} preview={preview} />;
             }
-            if (key === 'photos') {
-              if (!a.hidden.includes('services') || !d.photos?.length) return null;
-              return (
-                <div className="panel" key={key}>
-                  <h2>{sectionHeading(d, 'photos', t('En images', 'بالتصاور'))}</h2>
-                  <PhotoGallery photos={d.photos} ar={ar} />
-                </div>
-              );
-            }
+            if (key === 'photos') return null;
             if (key === 'pdf' && catalogDocuments(d).length)
               return (
                 <div className="panel" key={key}>
                   <CatalogDocuments data={d} id={id} ar={ar} preview={preview} />
                 </div>
               );
-            if (key === 'video' && (d.video || recordedVideoUrl(d.recordedVideo))) {
-              let youtubeId = '';
-              try {
-                const u = new URL(d.video);
-                youtubeId =
-                  (u.hostname === 'youtu.be'
-                    ? u.pathname.slice(1)
-                    : ['youtube.com', 'www.youtube.com'].includes(u.hostname)
-                      ? u.searchParams.get('v')
-                      : null) || '';
-              } catch {}
-              const localVideo = recordedVideoUrl(d.recordedVideo);
-              if (!localVideo && !/^[\w-]{11}$/.test(youtubeId)) return null;
-              return (
-                <div className="panel" key={key}>
-                  <h2>{sectionHeading(d, 'video', t('En vidéo', 'بالفيديو'))}</h2>
-                  {localVideo && (
-                    <video
-                      className="content-video"
-                      src={localVideo}
-                      controls
-                      playsInline
-                      preload="metadata"
-                      aria-label={t('Vidéo de présentation', 'فيديو للتقديم')}
-                    >
-                      {t(
-                        'Votre navigateur ne prend pas en charge cette vidéo.',
-                        'المتصفح ديالك ما كيدعمش هاد الفيديو.',
-                      )}
-                      <a href={localVideo}>{t('Ouvrir la vidéo', 'حل الفيديو')}</a>
-                    </video>
-                  )}
-                  {/^[\w-]{11}$/.test(youtubeId) && (
-                    <iframe
-                      className="video"
-                      title={t('Vidéo YouTube', 'فيديو يوتيوب')}
-                      loading="lazy"
-                      src={'https://www.youtube-nocookie.com/embed/' + youtubeId}
-                      allowFullScreen
-                    />
-                  )}
-                </div>
-              );
-            }
+            if (key === 'video') return null;
             if (key === 'links' && webLink(d.website))
               return (
                 <a

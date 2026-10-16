@@ -162,6 +162,13 @@ export function catalogContentIssue(data: any, previous: any, rights: CatalogRig
       JSON.stringify([normalizeCatalogue(previous.services), catalogCategories(previous)])
   )
     return 'Le catalogue interactif est désactivé pour votre compte.';
+  const media = (d: any) => [
+    Array.isArray(d.photos) ? d.photos : [],
+    d.video || '',
+    d.recordedVideo || '',
+  ];
+  if (!rights.enabled && JSON.stringify(media(data)) !== JSON.stringify(media(previous)))
+    return 'Les médias du catalogue sont désactivés pour votre compte.';
   const old = catalogSettings(previous),
     next = catalogSettings(data);
   if (!rights.whatsapp && next.whatsapp !== old.whatsapp && next.whatsapp)
