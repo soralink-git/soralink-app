@@ -169,7 +169,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
   } = context;
   const tabs = [
     ['coordinates', Phone, 'Coordonnées', 'معلومات التواصل', 'card'],
-    ['content', Package, 'Catalogue / Menu', 'الكاتالوگ / القائمة', 'card'],
+    ['content', Package, 'Produits et services', 'المنتجات والخدمات', 'card'],
     ['interface', Palette, 'Interface', 'الواجهة والمظهر', 'card'],
     ['contacts', Users, 'Mes contacts', 'الكونطاكت ديالي', 'clients'],
     ['requests', Calendar, 'Mes demandes', 'الطلبات ديالي', 'clients'],

@@ -15,7 +15,7 @@ export default function CatalogRightsEditor({
   const [rights, setRights] = useState<CatalogRights>(() => catalogRights(profile));
   const t = (fr: string, a: string) => (ar ? a : fr);
   const booleans = [
-    ['enabled', 'Activer Catalogue / Menu', 'تفعيل الكاتالوگ / القائمة'],
+    ['enabled', 'Activer les produits et services', 'تفعيل المنتجات والخدمات'],
     ['pdf', 'Lecture et gestion PDF', 'قراءة وإدارة الوثائق'],
     ['products', 'Catalogue interactif', 'الكاتالوگ التفاعلي'],
     ['whatsapp', 'Commandes WhatsApp', 'طلبات واتساب'],
@@ -38,7 +38,7 @@ export default function CatalogRightsEditor({
       }}
     >
       <details>
-        <summary>{t('Droits Catalogue / Menu', 'صلاحيات الكاتالوگ / القائمة')}</summary>
+        <summary>{t('Droits des produits et services', 'صلاحيات المنتجات والخدمات')}</summary>
         <p className="hint">
           {t(
             'Ces droits s’appliquent côté serveur et immédiatement à cette carte. Une baisse de quota conserve les données enregistrées, limite leur affichage public et bloque les ajouts.',

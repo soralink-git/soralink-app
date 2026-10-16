@@ -89,7 +89,7 @@ export async function POST(req: Request) {
         .bind(b.rights ? JSON.stringify(b.rights) : null, b.id)
         .run();
       if (!result.meta.changes) return json({ error: 'Profil introuvable' }, 404);
-      await log(user.email, 'Droits Catalogue / Menu', b.id);
+      await log(user.email, 'Droits des produits et services', b.id);
       return json({ ok: true });
     }
     if (b.action === 'profile') {
