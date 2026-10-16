@@ -1222,7 +1222,7 @@ export default function App({
                 {t('Connexion', 'الدخول')}
               </a>
             )}
-            {view === 'home' && !canAdmin && (
+            {view === 'home' && sessionChecked && !canAdmin && (
               <a
                 className="primary small header-start"
                 href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './interface.css';
 import './landing.css';
+import NavigationProgress from './navigation-progress';
 
 export const viewport: Viewport = { themeColor: '#101112' };
 
@@ -44,7 +45,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <NavigationProgress />
+        {children}
+      </body>
     </html>
   );
 }

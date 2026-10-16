@@ -16,11 +16,13 @@ export default async function Page({
 }) {
   const params = await searchParams;
   const initialTab = typeof params.tab === 'string' ? params.tab : undefined;
+  const workspaceMode = params.app !== undefined || params.tab !== undefined;
   return (
     <App
+      key={workspaceMode ? 'workspace' : 'home'}
       initialArabic={params.lang === 'ar'}
       initialOffer={selectedPlan(params.offer)}
-      workspaceMode={params.app !== undefined || params.tab !== undefined}
+      workspaceMode={workspaceMode}
       initialTab={initialTab}
     />
   );

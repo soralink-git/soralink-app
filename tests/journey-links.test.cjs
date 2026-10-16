@@ -54,11 +54,35 @@ test('legal view renders exactly the selected language', () => {
   }
 });
 
-test('administrator connection screen follows its initial language', () => {
+test('administrator checks access before displaying a sign-in screen, in the selected language', () => {
   const Admin = load(path.resolve('app/admin/ui.tsx')).default;
   const html = renderToStaticMarkup(React.createElement(Admin, { initialArabic: true }));
-  assert.match(html, /دخول الإدارة/);
+  assert.match(html, /كنحمّلو الإدارة…/);
+  assert.doesNotMatch(html, /دخول الإدارة/);
   assert.doesNotMatch(html, /Connexion administrateur|Mon espace/);
+});
+
+test('page loading excludes external services and in-page anchors, but covers query-only workspace navigation', () => {
+  const { isPageNavigation } = load(path.resolve('app/navigation-progress.tsx'));
+  const current = 'https://soralink.link/?lang=fr';
+  assert.equal(isPageNavigation('/admin?lang=fr', current), true);
+  assert.equal(isPageNavigation('/?app=1&lang=fr', current), true);
+  assert.equal(isPageNavigation('/?lang=fr#tarifs', current), false);
+  assert.equal(isPageNavigation('/?lang=fr', current + '#tarifs'), false);
+  assert.equal(isPageNavigation('https://wa.me/212661446664', current), false);
+  assert.equal(isPageNavigation('mailto:contact@soralink.link', current), false);
+  assert.equal(isPageNavigation('tel:+212661446664', current), false);
+});
+
+test('home and workspace have separate state identities while editor tab and language changes preserve it', async () => {
+  const Page = load(path.resolve('app/page.tsx')).default;
+  const page = (params) => Page({ searchParams: Promise.resolve(params) });
+  const home = await page({ lang: 'fr' });
+  const workspace = await page({ app: '1', tab: 'photos', lang: 'fr' });
+  assert.notEqual(home.key, workspace.key);
+  assert.equal(workspace.key, (await page({ app: '1', tab: 'services', lang: 'ar' })).key);
+  assert.equal(home.props.workspaceMode, false);
+  assert.equal(workspace.props.workspaceMode, true);
 });
 
 test('request status and prepared replies use one language and keep quotes separate from appointments', () => {
