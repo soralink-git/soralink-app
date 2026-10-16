@@ -8,6 +8,7 @@ import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
 import { activePromotions, promotionPrice, todayMorocco } from './lib/promotions';
 import { recordedVideoUrl } from './lib/content-media';
 import PhotoGallery, { PhotoPreview } from './photo-gallery';
+import PdfCatalogue from './pdf-catalogue';
 import {
   socialFields,
   webLink,
@@ -672,13 +673,7 @@ export default function CardView({
               return (
                 <div className="panel" key={key}>
                   <h2>{sectionHeading(d, 'pdf', t('Catalogue', 'الكاتالوگ'))}</h2>
-                  <iframe
-                    className="pdf"
-                    title={t('Catalogue PDF', 'كاتالوگ PDF')}
-                    src={d.pdf}
-                    loading="lazy"
-                    referrerPolicy="no-referrer"
-                  />
+                  <PdfCatalogue src={d.pdf} ar={ar} />
                 </div>
               );
             if (key === 'video' && (d.video || recordedVideoUrl(d.recordedVideo))) {
