@@ -7,6 +7,7 @@ export function mediaKeys(d: any): string[] {
   const values = [
     d?.avatar,
     d?.cover,
+    d?.backgroundPhoto,
     d?.pdf,
     d?.recordedVideo,
     ...(Array.isArray(d?.photos) ? d.photos : []),

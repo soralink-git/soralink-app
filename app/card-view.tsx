@@ -10,6 +10,7 @@ import { activePromotions, promotionPrice, todayMorocco } from './lib/promotions
 import { recordedVideoUrl } from './lib/content-media';
 import PhotoGallery, { PhotoPreview } from './photo-gallery';
 import PdfCatalogue from './pdf-catalogue';
+import CardBackground from './card-background';
 import {
   socialFields,
   webLink,
@@ -126,7 +127,8 @@ export default function CardView({
           a.font +
           ' ' +
           (small ? 'compact' : '') +
-          (withSections ? ' unified-card' : '')
+          (withSections ? ' unified-card' : '') +
+          (a.backgroundPhoto ? ' has-photo-background' : '')
         }
         style={
           {
@@ -160,6 +162,7 @@ export default function CardView({
           } as any
         }
       >
+        <CardBackground src={a.backgroundPhoto} opacity={a.backgroundOpacity} />
         <div className="card-cover" style={d.cover ? { backgroundImage: `url(${d.cover})` } : {}} />
         <div className="card-content">
           <section className="card-identity">

@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { cropRect } from './lib/crop-geometry';
+import { cropRect, cropSettings, type CropTarget } from './lib/crop-geometry';
+import CardBackground from './card-background';
+import { appearance } from './lib/personalization';
 export default function ImageCropper({
   source,
   target,
@@ -12,7 +14,7 @@ export default function ImageCropper({
   onApply,
 }: {
   source: File | string;
-  target: 'avatar' | 'cover';
+  target: CropTarget;
   ar: boolean;
   circle: boolean;
   cardData?: any;
@@ -21,7 +23,9 @@ export default function ImageCropper({
   onApply: (file: File) => Promise<void>;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr),
-    ratio = target === 'cover' ? 2.2 : 1;
+    { ratio, maxWidth } = cropSettings(target);
+  const previewCallback = useRef(onLivePreview);
+  previewCallback.current = onLivePreview;
   const canvas = useRef<HTMLCanvasElement>(null),
     image = useRef<HTMLImageElement | null>(null),
     dialog = useRef<HTMLDivElement>(null),
@@ -123,11 +127,9 @@ export default function ImageCropper({
     try {
       const pUrl = c.toDataURL('image/webp', 0.85);
       setLivePreviewUrl(pUrl);
-      if (onLivePreview) {
-        onLivePreview(pUrl);
-      }
+      previewCallback.current?.(pUrl);
     } catch {}
-  }, [ready, zoom, x, y, ratio, onLivePreview]);
+  }, [ready, zoom, x, y, ratio]);
   async function apply() {
     if (!image.current || busy) return;
     setBusy(true);
@@ -136,7 +138,7 @@ export default function ImageCropper({
     try {
       const img = image.current,
         r = cropRect(img.naturalWidth, img.naturalHeight, ratio, zoom, x, y);
-      c.width = Math.max(1, Math.round(Math.min(target === 'cover' ? 1600 : 600, r.sw)));
+      c.width = Math.max(1, Math.round(Math.min(maxWidth, r.sw)));
       c.height = Math.max(1, Math.round(c.width / ratio));
       const ctx = c.getContext('2d');
       if (!ctx) throw Error();
@@ -193,9 +195,11 @@ export default function ImageCropper({
         onKeyDown={keyboard}
       >
         <h2 id="crop-title">
-          {target === 'cover'
-            ? t('Recadrer la couverture', 'قصّ تصويرة الغلاف')
-            : t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
+          {target === 'backgroundPhoto'
+            ? t('Recadrer la photo de fond', 'قصّ تصويرة الخلفية')
+            : target === 'cover'
+              ? t('Recadrer la couverture', 'قصّ تصويرة الغلاف')
+              : t('Recadrer le portrait / logo', 'قصّ التصويرة / اللوگو')}
         </h2>
         <p>
           {t(
@@ -209,6 +213,14 @@ export default function ImageCropper({
             {t('Rendu en direct sur votre carte', 'معاينة مباشرة على الكارط')}
           </div>
           <div className="crop-mockup-card">
+            <CardBackground
+              src={
+                target === 'backgroundPhoto'
+                  ? livePreviewUrl
+                  : appearance(cardData || {}).backgroundPhoto
+              }
+              opacity={appearance(cardData || {}).backgroundOpacity}
+            />
             <div
               className="crop-mockup-cover"
               style={{

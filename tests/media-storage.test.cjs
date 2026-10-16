@@ -251,3 +251,25 @@ test('concurrent cleanup and save cannot delete a file accepted by the profile s
     assert.equal(await state(A), 'deleted');
   }
 });
+
+test('background photos are protected media references and cannot use another account upload', async () => {
+  await asset(A);
+  await asset(B, 'other');
+  assert.equal(await media.validateMedia('owner', { backgroundPhoto: url(B) }, {}), false);
+  assert.equal(await media.validateMedia('owner', { backgroundPhoto: url(A) }, {}), true);
+  const old = await profile('card', 'owner', {});
+  assert.equal(
+    await media.saveProfileWithMedia(
+      'owner',
+      old,
+      'card',
+      { backgroundPhoto: url(A), backgroundOpacity: 0 },
+      true,
+      '',
+    ),
+    true,
+  );
+  assert.deepEqual(await keys(), [A]);
+  await media.cleanupMedia('owner');
+  assert.equal(await state(A), 'ready');
+});

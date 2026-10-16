@@ -1,4 +1,6 @@
 'use client';
+import BackgroundEditor from './background-editor';
+import type { CropTarget } from './lib/crop-geometry';
 import AddressEditor from './address-editor';
 import { publicCardPath } from './lib/public-address';
 import LoadMore from './load-more';
@@ -80,7 +82,7 @@ export type DashboardContext = {
   promoToday: string;
   published: boolean;
   qr: string;
-  rawSources?: { avatar?: File | string; cover?: File | string };
+  rawSources?: { avatar?: File | string; cover?: File | string; backgroundPhoto?: File | string };
   save: () => Promise<void>;
   sectionLabels: Record<string, [string, string]>;
   setData: Dispatch<any>;
@@ -90,7 +92,7 @@ export type DashboardContext = {
   setServiceIndex: Dispatch<SetStateAction<number>>;
   setTab: Dispatch<SetStateAction<string>>;
   socialFields: string[][];
-  startCrop: (source: string | File, target: 'avatar' | 'cover') => void;
+  startCrop: (source: string | File, target: CropTarget) => void;
   storage: any;
   subscription: any;
   t: (fr: string, da: string) => string;
@@ -959,6 +961,14 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         'خصّص المظهر، الألوان، الخطوط وطريقة العرض فالكارط ديالك.',
                       )}
                     </p>
+                    <BackgroundEditor
+                      data={data}
+                      setData={setData}
+                      ar={ar}
+                      busy={busy}
+                      startCrop={startCrop}
+                      source={rawSources?.backgroundPhoto}
+                    />
                     <Customization data={data} setData={setData} ar={ar} setAr={setAr} t={t} />
                     <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
                       <button disabled={busy} className="primary" onClick={save}>
