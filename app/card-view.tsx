@@ -7,6 +7,7 @@ import { appearance } from './lib/personalization';
 import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
 import { activePromotions, promotionPrice, todayMorocco } from './lib/promotions';
 import { recordedVideoUrl } from './lib/content-media';
+import PhotoGallery from './photo-gallery';
 import {
   socialFields,
   webLink,
@@ -664,13 +665,7 @@ export default function CardView({
               return (
                 <div className="panel" key={key}>
                   <h2>{sectionHeading(d, 'photos', t('En images', 'بالتصاور'))}</h2>
-                  <div className="gallery">
-                    {d.photos.map((url: string) => (
-                      <a key={url} href={url} target="_blank" rel="noreferrer">
-                        <img src={url} alt={t('Réalisation', 'خدمة منجزة')} loading="lazy" />
-                      </a>
-                    ))}
-                  </div>
+                  <PhotoGallery photos={d.photos} ar={ar} />
                 </div>
               );
             if (key === 'pdf' && d.pdf)
