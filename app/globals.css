@@ -4860,13 +4860,6 @@ header nav {
   margin: 0 auto;
   max-width: none;
 }
-.pdf-catalogue-controls .pdf-expand {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid currentColor;
-  border-radius: 8px;
-}
 .pdf-fullscreen {
   position: fixed;
   inset: 0;
@@ -4932,4 +4925,26 @@ header nav {
   flex: 1;
   min-height: 0;
   max-height: none;
+}
+
+.pdf-tap-preview {
+  cursor: zoom-in;
+  touch-action: pan-y;
+}
+.pdf-touch-reader {
+  touch-action: none;
+  overscroll-behavior: contain;
+  cursor: grab;
+}
+.pdf-touch-reader:active {
+  cursor: grabbing;
+}
+.pdf-gesture-hint {
+  font-size: 12px;
+  text-align: center;
+}
+.pdf-fullscreen .pdf-gesture-hint {
+  flex-shrink: 0;
+  color: #cbd5e1;
+  margin: 0 0 8px;
 }

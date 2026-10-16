@@ -1,8 +1,9 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
-import { Maximize, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { modalHistory } from './lib/modal-history';
+import { bindPdfGestures } from './lib/pdf-gestures';
 
 export default function PdfCatalogue({ src, ar }: { src: string; ar: boolean }) {
   return <Catalogue key={src} src={src} ar={ar} />;
@@ -109,6 +110,7 @@ function PdfReader({
 }) {
   const host = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const stage = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null);
   const [page, setPage] = useState(initialPage);
@@ -217,6 +219,10 @@ function PdfReader({
       rendering?.cancel();
     };
   }, [pdf, page, zoom, width]);
+  useEffect(() => {
+    if (onExpand || busy || failed || !stage.current || !canvas.current) return;
+    return bindPdfGestures(stage.current, canvas.current, zoom, setZoom);
+  }, [onExpand, busy, failed, zoom]);
   return (
     <div className="pdf-catalogue" ref={host} dir={ar ? 'rtl' : 'ltr'}>
       <div
@@ -241,30 +247,15 @@ function PdfReader({
         >
           {t('Suivante', 'التالية')}
         </button>
-        <button
-          type="button"
-          aria-label={t('Réduire', 'صغّر')}
-          disabled={!pdf || busy || zoom <= 1}
-          onClick={() => setZoom((z) => z - 0.5)}
-        >
-          −
-        </button>
-        <span>{Math.round(zoom * 100)} %</span>
-        <button
-          type="button"
-          aria-label={t('Agrandir', 'كبّر')}
-          disabled={!pdf || busy || zoom >= 3}
-          onClick={() => setZoom((z) => z + 0.5)}
-        >
-          +
-        </button>
-        {onExpand && (
-          <button type="button" className="pdf-expand" onClick={onExpand}>
-            <Maximize size={18} />
-            {t('Plein écran', 'الشاشة كاملة')}
-          </button>
-        )}
       </div>
+      <p className="pdf-gesture-hint">
+        {onExpand
+          ? t('Touchez le document pour l’agrandir.', 'لمس الوثيقة باش تكبّرها.')
+          : t(
+              'Écartez deux doigts pour zoomer. Glissez pour déplacer. Deux touches pour agrandir ou réduire.',
+              'بعّد جوج صبيعات باش تكبّر. جرّ باش تحرّك. لمس جوج مرات باش تكبّر ولا تصغّر.',
+            )}
+      </p>
       {busy && !failed && (
         <p role="status">{t('Chargement du catalogue…', 'الكاتالوگ كيتحمّل…')}</p>
       )}
@@ -281,7 +272,29 @@ function PdfReader({
           </button>
         </div>
       ) : (
-        <div className="pdf-catalogue-page" aria-busy={busy} dir="ltr">
+        <div
+          ref={stage}
+          className={'pdf-catalogue-page' + (onExpand ? ' pdf-tap-preview' : ' pdf-touch-reader')}
+          aria-busy={busy}
+          dir="ltr"
+          role={onExpand ? 'button' : 'region'}
+          tabIndex={0}
+          aria-label={
+            onExpand
+              ? t('Agrandir le catalogue', 'كبّر الكاتالوگ')
+              : t(
+                  'Document : zoom tactile ou touches +, − et 0',
+                  'الوثيقة: كبّر بصبيعاتك ولا بمفاتيح + و − و 0',
+                )
+          }
+          onClick={onExpand}
+          onKeyDown={(event) => {
+            if (onExpand && ['Enter', ' '].includes(event.key)) {
+              event.preventDefault();
+              onExpand();
+            }
+          }}
+        >
           <canvas
             ref={canvas}
             role="img"
