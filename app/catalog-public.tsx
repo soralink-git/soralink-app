@@ -33,7 +33,7 @@ export function CatalogDocuments({
   if (!settings.enabled || !settings.pdf || !docs.length) return null;
   return (
     <div className="catalog-documents">
-      <h2>{t('Catalogue / Menu', 'الكاتالوگ / القائمة')}</h2>
+      <h2>{t('Produits et services', 'المنتجات والخدمات')}</h2>
       {docs.map((d, i) => {
         const title =
           d.titleFr || d.titleAr

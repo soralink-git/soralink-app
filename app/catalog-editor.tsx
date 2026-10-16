@@ -233,7 +233,7 @@ export default function CatalogEditor({
   );
   return (
     <section className="panel catalog-editor" dir={ar ? 'rtl' : 'ltr'}>
-      <h2>{t('Catalogue / Menu', 'الكاتالوگ / القائمة')}</h2>
+      <h2>{t('Produits et services', 'المنتجات والخدمات')}</h2>
       <p className="hint">
         {t(
           'Les contenus français et arabes se saisissent séparément. Aucune traduction automatique. Enregistrez pour publier.',

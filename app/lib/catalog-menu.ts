@@ -153,7 +153,7 @@ export function catalogContentIssue(data: any, previous: any, rights: CatalogRig
         catalogSettings(previous),
       ])
   )
-    return 'Le module Catalogue / Menu est désactivé pour votre compte.';
+    return 'Le module Produits et services est désactivé pour votre compte.';
   if (!rights.pdf && JSON.stringify(docs) !== JSON.stringify(catalogDocuments(previous)))
     return 'La gestion PDF est désactivée pour votre compte.';
   if (
