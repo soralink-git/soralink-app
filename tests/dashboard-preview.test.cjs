@@ -89,6 +89,8 @@ function context(tab, ar = false) {
 for (const tab of [
   'coordinates',
   'content',
+  'actions',
+  'links',
   'interface',
   'contacts',
   'requests',
@@ -125,7 +127,7 @@ for (const ar of [false, true])
       React.createElement(DashboardEditor, { context: context('contacts', ar) }),
     );
     assert.equal((html.match(/aria-pressed="true"/g) || []).length, 1);
-    assert.equal((html.match(/aria-pressed="false"/g) || []).length, 7);
+    assert.equal((html.match(/aria-pressed="false"/g) || []).length, 9);
     assert.match(html, ar ? /<h1>الكونطاكت ديالي<\/h1>/ : /<h1>Mes contacts<\/h1>/);
     assert.match(html, ar ? /خصّص الكارط/ : /Personnaliser/);
     assert.match(html, ar ? /الزبناء ديالي/ : /Mes clients/);
@@ -230,5 +232,46 @@ test('product editing exposes one content language and keeps advanced controls c
     assert.match(html, /<details class="catalog-options">/);
     assert.doesNotMatch(html, /<details class="catalog-options" open/);
     assert.match(html, ar ? /حفظ التغييرات/ : /Enregistrer les modifications/);
+  }
+});
+
+test('new owners get guided creation while saved cards keep ordinary management', () => {
+  for (const ar of [false, true]) {
+    const c = context('coordinates', ar);
+    c.id = '';
+    c.data = { ...c.data, name: '' };
+    const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
+    assert.match(html, /class="panel card-setup"/);
+    assert.equal((html.match(/class="card-style-choice"/g) || []).length, 4);
+    assert.match(html, /aria-current="step"/);
+    assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
+    assert.doesNotMatch(html, /Vos coordonnées et identité|معلومات التواصل والهوية/);
+    assert.doesNotMatch(
+      html,
+      ar ? /Créer pas à pas|Choisissez un point de départ/ : /صايب خطوة بخطوة|اختار الستايل/,
+    );
+    const existing = renderToStaticMarkup(
+      React.createElement(DashboardEditor, { context: context('coordinates', ar) }),
+    );
+    assert.doesNotMatch(existing, /class="panel card-setup"/);
+  }
+});
+
+test('identity, direct contact and network tools are separated without dropping their controls', () => {
+  for (const ar of [false, true]) {
+    const identity = renderToStaticMarkup(
+      React.createElement(DashboardEditor, { context: context('coordinates', ar) }),
+    );
+    assert.doesNotMatch(identity, /class="contact-action-editor"|class="social-links-editor"/);
+    const actions = renderToStaticMarkup(
+      React.createElement(DashboardEditor, { context: context('actions', ar) }),
+    );
+    assert.match(actions, /class="contact-action-editor"/);
+    assert.doesNotMatch(actions, /class="social-links-editor"/);
+    const networks = renderToStaticMarkup(
+      React.createElement(DashboardEditor, { context: context('links', ar) }),
+    );
+    assert.match(networks, /class="social-links-editor"/);
+    assert.match(networks, ar ? /طلّع|هبّط/ : /Monter|Descendre/);
   }
 });

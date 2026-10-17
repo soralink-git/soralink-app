@@ -23,3 +23,20 @@ test('contact text cannot inject additional vCard lines', () => {
   });
   assert.equal((text.match(/\r\nTEL:/g) || []).length, 1);
 });
+
+test('vCard exports organization, role, address and a safe website and folds long UTF-8 lines', () => {
+  const text = vcardText({
+    name: 'سورالينك '.repeat(30),
+    business: 'SoraPrint',
+    job: 'Gérant',
+    address: '139 rue Marrakech, Oujda',
+    website: 'https://soralink.link',
+  });
+  assert.match(
+    text,
+    /ORG:SoraPrint\r\nTITLE:Gérant\r\nADR:;;139 rue Marrakech  Oujda;;;;\r\nURL:https:\/\/soralink.link/,
+  );
+  for (const line of text.split('\r\n')) assert(Buffer.byteLength(line, 'utf8') <= 75);
+  assert(text.replace(/\r\n /g, '').includes('FN:' + 'سورالينك '.repeat(30)));
+  assert.doesNotMatch(vcardText({ website: 'javascript:alert(1)' }), /URL:/);
+});

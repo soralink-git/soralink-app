@@ -63,6 +63,7 @@ export function publicCardData(
     'buttonShape',
     'avatarShape',
     'sectionOrder',
+    'socialOrder',
     'hiddenSections',
     'sectionTitles',
     'hidePhone',

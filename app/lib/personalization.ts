@@ -1,3 +1,4 @@
+import { socialOrder } from './card-styles';
 export const sectionKeys = [
   'coordinates',
   'social',
@@ -80,6 +81,7 @@ export function normalizeAppearance(d: any) {
     cardTheme: a.theme,
     cardFont: a.font,
     buttonShape: a.shape,
+    socialOrder: socialOrder(d.socialOrder),
     sectionOrder: a.order,
     hiddenSections: a.hidden,
     avatarShape: a.avatarShape,
