@@ -90,3 +90,14 @@ masquées. La fiche vCard contient les téléphones, e-mails, adresses et sites 
 WhatsApp identique à un téléphone n’est pas dupliqué. Les anciennes cartes gardent leur rendu
 jusqu’à la modification de leurs liens. Les tests incluent sauvegarde D1, lecture publique,
 réseaux et numéros multiples, confidentialité, limites et conservation de l’état propriétaire.
+
+### Retrait des contenus ajoutés
+
+Les images de l’assistant et le lien YouTube disposent d’une action de retrait explicite,
+comme les médias, documents, produits, catégories, promotions et liens existants.
+Dans l’agenda, chaque date de fermeture et prestation peut être supprimée ; une pause
+retirée est enregistrée par deux valeurs vides, sans rétablissement automatique à midi.
+L’agenda possède son propre bouton d’enregistrement. Le dernier élément d’une liste peut
+être retiré sans réapparition des données historiques. Ces changements de configuration
+sont publiés après enregistrement ; les contrôles de nettoyage des fichiers inutilisés et
+de protection des fichiers encore référencés restent appliqués côté serveur.

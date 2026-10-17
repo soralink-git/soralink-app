@@ -1195,7 +1195,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                                 key={i}
                                 type="time"
                                 step="900"
-                                aria-label={i ? 'Fermeture' : 'Ouverture'}
+                                aria-label={
+                                  i ? t('Fermeture', 'الإغلاق') : t('Ouverture', 'الافتتاح')
+                                }
                                 value={data.hours[n][i]}
                                 onChange={(e) => {
                                   const hours = { ...data.hours, [n]: [...data.hours[n]] };
@@ -1211,6 +1213,18 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         {field('breakStart', t('Début de pause', 'بداية الاستراحة'), 'time')}
                         {field('breakEnd', t('Fin de pause', 'نهاية الاستراحة'), 'time')}
                       </div>
+                      {(data.breakStart || data.breakEnd) && (
+                        <button
+                          type="button"
+                          className="text-button"
+                          disabled={busy}
+                          onClick={() =>
+                            setData((d: any) => ({ ...d, breakStart: '', breakEnd: '' }))
+                          }
+                        >
+                          {t('Supprimer la pause', 'حذف الاستراحة')}
+                        </button>
+                      )}
                       <label className="field">
                         {t(
                           'Jours de fermeture · une date par ligne (AAAA-MM-JJ)',
@@ -1223,11 +1237,39 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           }
                         />
                       </label>
+                      <div className="closure-remove-list">
+                        {[
+                          ...new Set<string>(
+                            (data.closures || []).filter((date: string) => date.trim()),
+                          ),
+                        ].map((date: string, index: number) => (
+                          <button
+                            type="button"
+                            key={index}
+                            className="secondary small"
+                            disabled={busy}
+                            aria-label={
+                              t('Supprimer la date de fermeture ', 'حذف يوم الإغلاق ') + date
+                            }
+                            onClick={() =>
+                              setData((d: any) => ({
+                                ...d,
+                                closures: d.closures.filter(
+                                  (value: string) => value.trim() && value !== date,
+                                ),
+                              }))
+                            }
+                          >
+                            <span dir="ltr">{date}</span>
+                            <X size={16} />
+                          </button>
+                        ))}
+                      </div>
                       <h3>{t('Types de rendez-vous · maximum 5', 'أنواع المواعيد · حتى 5')}</h3>
                       {(data.appointmentServices || []).map((v: any, i: number) => (
                         <div className="service-edit" key={i}>
                           <input
-                            aria-label="Prestation"
+                            aria-label={t('Prestation', 'الخدمة')}
                             value={v.name}
                             onChange={(e) => {
                               const a = [...data.appointmentServices];
@@ -1236,7 +1278,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             }}
                           />
                           <select
-                            aria-label="Durée"
+                            aria-label={t('Durée', 'المدة')}
                             value={v.duration}
                             onChange={(e) => {
                               const a = [...data.appointmentServices];
@@ -1251,7 +1293,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             ))}
                           </select>
                           <button
-                            aria-label="Retirer"
+                            type="button"
+                            disabled={busy}
+                            aria-label={
+                              t('Supprimer la prestation ', 'حذف الخدمة ') + (v.name || i + 1)
+                            }
                             onClick={() =>
                               setData({
                                 ...data,
@@ -1267,7 +1313,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       ))}
                       <button
                         className="secondary"
-                        disabled={(data.appointmentServices || []).length >= 5}
+                        disabled={busy || (data.appointmentServices || []).length >= 5}
                         onClick={() =>
                           setData({
                             ...data,
@@ -1287,6 +1333,10 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           'خاص SoraLink يفعّل Pro باش يبان الوقت للزوار.',
                         )}
                       </p>
+                      <button type="button" className="primary full" disabled={busy} onClick={save}>
+                        <Save size={17} />
+                        {t('Enregistrer les modifications', 'سجّل التغييرات')}
+                      </button>
                     </section>
                   )}
                   {tab === 'share' && (

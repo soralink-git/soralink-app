@@ -281,3 +281,38 @@ test('identity, direct contact and network tools are separated without dropping 
     assert.match(networks, ar ? /طلّع|هبّط/ : /Monter|Descendre/);
   }
 });
+
+test('uploaded identity images can be removed from the guided editor in both languages', () => {
+  const Setup = load(path.resolve('app/card-setup.tsx')).default;
+  for (const ar of [false, true]) {
+    const c = context('interface', ar);
+    c.data = {
+      ...c.data,
+      avatar: '/api/upload?key=aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+      cover: '/api/upload?key=bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+    };
+    const html = renderToStaticMarkup(React.createElement(Setup, { context: c, onExit: noop }));
+    assert.match(html, ar ? /حيّد اللوگو ولا التصويرة/ : /Retirer le logo ou portrait/);
+    assert.match(html, ar ? /حيّد الغلاف/ : /Retirer la couverture/);
+  }
+});
+test('YouTube link and agenda additions have explicit removal and save controls', () => {
+  const Media = load(path.resolve('app/catalog-media-editor.tsx')).default;
+  for (const ar of [false, true]) {
+    const c = context('schedule', ar);
+    c.data = {
+      ...c.data,
+      video: 'https://youtu.be/abcdefghijk',
+      closures: ['2026-10-20'],
+      breakStart: '12:00',
+      breakEnd: '14:00',
+    };
+    const media = renderToStaticMarkup(React.createElement(Media, { context: c }));
+    assert.match(media, ar ? /حيّد رابط YouTube/ : /Retirer le lien YouTube/);
+    const agenda = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
+    assert.match(agenda, ar ? /حذف الاستراحة/ : /Supprimer la pause/);
+    assert.match(agenda, ar ? /حذف يوم الإغلاق/ : /Supprimer la date de fermeture/);
+    assert.match(agenda, ar ? /حذف الخدمة/ : /Supprimer la prestation/);
+    assert.match(agenda, ar ? /سجّل التغييرات/ : /Enregistrer les modifications/);
+  }
+});

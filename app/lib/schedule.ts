@@ -61,8 +61,9 @@ export function normalizeSchedule(d: any) {
           .slice(0, 180)
       : [],
     appointmentServices: services,
-    breakStart: Number.isFinite(minutes(d.breakStart)) ? d.breakStart : '12:00',
-    breakEnd: Number.isFinite(minutes(d.breakEnd)) ? d.breakEnd : '14:00',
+    breakStart:
+      d.breakStart === '' ? '' : Number.isFinite(minutes(d.breakStart)) ? d.breakStart : '12:00',
+    breakEnd: d.breakEnd === '' ? '' : Number.isFinite(minutes(d.breakEnd)) ? d.breakEnd : '14:00',
   };
 }
 export function blocks(slot: string, duration: number) {

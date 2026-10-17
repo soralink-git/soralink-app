@@ -643,6 +643,54 @@ try {
   await request('/api/data?id=' + cardId, { status: 404 });
   await request(uploaded.json.url, { status: 404 });
   await verifyCatalogMenu({ db, request, cardId, otherId, photo });
+  // Removing the final configured item must persist through save, reload and public projection.
+  await db
+    .prepare("UPDATE profiles SET state='active',expires=?,published=1 WHERE id=?")
+    .bind(new Date(Date.now() + 365 * 86400000).toISOString(), cardId)
+    .run();
+  const beforeRemoval = (await request('/api/data', { auth: true })).json.profile;
+  const cleared = {
+    ...JSON.parse(beforeRemoval.data),
+    avatar: '',
+    cover: '',
+    backgroundPhoto: '',
+    photos: [],
+    video: '',
+    recordedVideo: '',
+    pdf: '',
+    catalogDocuments: [],
+    catalogCategories: [],
+    services: [],
+    promotions: [],
+    profileLinks: [],
+    appointmentServices: [],
+    closures: [],
+    breakStart: '',
+    breakEnd: '',
+  };
+  await request('/api/data', {
+    auth: true,
+    data: { action: 'save', revision: beforeRemoval.updated, data: cleared, published: true },
+  });
+  const clearedOwner = JSON.parse((await request('/api/data', { auth: true })).json.profile.data);
+  const clearedPublic = JSON.parse((await request('/api/data?id=' + cardId)).json.data);
+  for (const result of [clearedOwner, clearedPublic]) {
+    for (const key of ['avatar', 'cover', 'backgroundPhoto', 'video', 'recordedVideo', 'pdf'])
+      assert.equal(result[key], '');
+    for (const key of [
+      'photos',
+      'catalogDocuments',
+      'catalogCategories',
+      'services',
+      'promotions',
+      'profileLinks',
+      'appointmentServices',
+    ])
+      assert.equal(result[key].length, 0);
+  }
+  assert.equal(clearedOwner.breakStart, '');
+  assert.equal(clearedOwner.breakEnd, '');
+
   await request('/api/auth', { auth: true, data: { action: 'logout' } });
   await request('/api/admin', { auth: true, id: adminId });
   assert.equal(

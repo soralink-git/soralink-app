@@ -122,7 +122,19 @@ export default function CatalogMediaEditor({ context }: { context: DashboardCont
             )}
           </span>
         </label>
-        {field('video', t('Lien YouTube', 'رابط YouTube'), 'url')}
+        <div>
+          {field('video', t('Lien YouTube', 'رابط YouTube'), 'url')}
+          {!!data.video && (
+            <button
+              type="button"
+              className="text-button"
+              disabled={busy}
+              onClick={() => setData((d: any) => ({ ...d, video: '' }))}
+            >
+              {t('Retirer le lien YouTube', 'حيّد رابط YouTube')}
+            </button>
+          )}
+        </div>
       </div>
       {recordedVideoUrl(data.recordedVideo) && (
         <div className="recorded-video-preview">

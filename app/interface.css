@@ -1350,3 +1350,21 @@
 .network-link-card > .toggle {
   margin-block: 12px 0;
 }
+.setup-image-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.closure-remove-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-block: 12px;
+}
+.closure-remove-list button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
