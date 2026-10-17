@@ -2,9 +2,11 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './interface.css';
 import './landing.css';
+import './docare.css';
+import { AppearanceProvider } from './theme-toggle';
 import NavigationProgress from './navigation-progress';
 
-export const viewport: Viewport = { themeColor: '#101112' };
+export const viewport: Viewport = { themeColor: '#121b1b' };
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://soralink.link'),
@@ -44,10 +46,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" data-theme="dark" suppressHydrationWarning>
       <body className="antialiased">
-        <NavigationProgress />
-        {children}
+        <AppearanceProvider>
+          <NavigationProgress />
+          {children}
+        </AppearanceProvider>
       </body>
     </html>
   );

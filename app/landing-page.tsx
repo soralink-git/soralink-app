@@ -174,24 +174,24 @@ export default function LandingPage({
                   googleReview: 'https://g.page/r/soralink/review',
                   instagram: 'https://instagram.com/soralink',
                   linkedin: 'https://linkedin.com/company/soralink',
-                  cardTheme: 'teal',
+                  cardTheme: 'light',
                   color: '#00b5ad',
-                  fondColor: '#f0fdfa',
+                  fondColor: '#ffffff',
                   blockColor: '#ffffff',
                   buttonColor: '#00b5ad',
                   textColor: '#0f172a',
                   buttonShape: 'pill',
                   avatarShape: 'circle',
                   pro: true,
-                  cover:
-                    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="220" viewBox="0 0 600 220"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231a2332"/><stop offset="50%" stop-color="%23263346"/><stop offset="100%" stop-color="%230f1622"/></linearGradient></defs><rect width="600" height="220" fill="url(%23g)"/><circle cx="120" cy="110" r="140" fill="%23d5b66f" opacity="0.12"/><circle cx="500" cy="90" r="160" fill="%23d5b66f" opacity="0.08"/></svg>',
-                  avatar:
-                    'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><linearGradient id="abg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%231e293b"/><stop offset="100%" stop-color="%230f172a"/></linearGradient><linearGradient id="face" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23fed7aa"/><stop offset="100%" stop-color="%23fba572"/></linearGradient><linearGradient id="hair" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23334155"/><stop offset="100%" stop-color="%230f172a"/></linearGradient></defs><rect width="200" height="200" fill="url(%23abg)"/><path d="M52 185c0-28 22-48 48-48s48 20 48 48" fill="%232563eb"/><path d="M85 137l15 22 15-22h-30z" fill="%23ffffff"/><path d="M96 150v35M104 150v35" stroke="%23cbd5e1" stroke-width="2"/><path d="M78 140c-2 18 10 32 22 32s24-14 22-32" stroke="%2338bdf8" stroke-width="3" fill="none"/><circle cx="100" cy="88" r="38" fill="url(%23face)"/><path d="M68 80c0-22 14-36 32-36s32 14 32 36c-6-6-14-10-22-10-8 0-14 4-20 8-8 4-14 2-22 2z" fill="url(%23hair)"/><circle cx="88" cy="85" r="4.5" fill="%231e293b"/><circle cx="112" cy="85" r="4.5" fill="%231e293b"/><path d="M90 102c5 6 15 6 20 0" stroke="%23dc2626" stroke-width="3.5" stroke-linecap="round" fill="none"/><path d="M93 103c4 3 10 3 14 0" fill="%23ffffff"/></svg>',
+                  cover: '',
+                  avatar: '',
                   services: [
                     {
                       id: 's1',
                       type: 'service',
-                      name: t('Consultation & Bilan', 'استشارة وتشخيص'),
+                      name: 'Consultation & Bilan',
+                      nameFr: 'Consultation & Bilan',
+                      nameAr: 'استشارة وتشخيص',
                       price: '300 DH',
                       description: t(
                         'Examen complet et plan de traitement personnalisé.',
@@ -203,7 +203,9 @@ export default function LandingPage({
                     {
                       id: 's2',
                       type: 'service',
-                      name: t('Blanchiment & Esthétique', 'تبييض وتجميل'),
+                      name: 'Blanchiment & Esthétique',
+                      nameFr: 'Blanchiment & Esthétique',
+                      nameAr: 'تبييض وتجميل',
                       price: '800 DH',
                       description: t(
                         'Éclaircissement dentaire haute performance.',
