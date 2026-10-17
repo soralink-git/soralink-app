@@ -130,7 +130,9 @@ export default function LandingPage({
               className="primary"
               href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}
             >
-              {t('Créer ma carte', 'صايب الكارط ديالي')}
+              {auth
+                ? t('Accéder à mon tableau de bord', 'ندخل للوحة التحكم')
+                : t('Créer ma carte', 'صايب الكارط ديالي')}
               <Plus size={18} />
             </a>
             <a className="landing-link" href={'/demo' + (ar ? '?lang=ar' : '')}>
@@ -888,7 +890,9 @@ export default function LandingPage({
             className="primary btn-glow"
             href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}
           >
-            {t('Créer ma carte', 'صايب الكارط ديالي')}
+            {auth
+              ? t('Accéder à mon tableau de bord', 'ندخل للوحة التحكم')
+              : t('Créer ma carte', 'صايب الكارط ديالي')}
             <Plus size={18} />
           </a>
           <a

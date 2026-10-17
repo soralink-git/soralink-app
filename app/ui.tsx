@@ -1348,9 +1348,11 @@ export default function App({
               </span>
             ) : auth ? (
               <>
-                <a className="header-login" href={accountPath(canAdmin, ar)}>
-                  {canAdmin ? t('Administration', 'الإدارة') : t('Mon espace', 'الحساب ديالي')}
-                </a>
+                {canAdmin && (
+                  <a className="header-login" href={accountPath(canAdmin, ar)}>
+                    {t('Administration', 'الإدارة')}
+                  </a>
+                )}
                 <details className="account-menu">
                   <summary aria-label={t('Compte connecté', 'الحساب اللي داخل')}>
                     <span className="account-status-dot" />
@@ -1378,10 +1380,10 @@ export default function App({
                 {t('Connexion', 'الدخول')}
               </a>
             )}
-            {view === 'home' && sessionChecked && !canAdmin && (
+            {view === 'home' && sessionChecked && !canAdmin && !auth && (
               <a
                 className="primary small header-start"
-                href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}
+                href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}
               >
                 {t('Créer ma carte', 'صايب الكارط')}
               </a>
