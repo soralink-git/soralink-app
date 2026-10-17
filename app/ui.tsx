@@ -1,4 +1,5 @@
 'use client';
+import ThemeToggle from './theme-toggle';
 import { publicCardPath } from './lib/public-address';
 import { appendUnique, type History, type PageInfo } from './lib/pagination';
 import {
@@ -90,7 +91,7 @@ const blank = {
   mapDestination: '',
   color: '#00b5ad',
   template: 'Professionnel',
-  cardTheme: 'light',
+  cardTheme: 'dark',
   buttonShape: 'pill',
   fondColor: '',
   blockColor: '',
@@ -1336,6 +1337,7 @@ export default function App({
             </nav>
           )}
           <div className="header-actions">
+            <ThemeToggle ar={ar} />
             <button className="language" onClick={toggleLanguage}>
               <Globe size={16} />
               {ar ? 'FR' : 'العربية'}

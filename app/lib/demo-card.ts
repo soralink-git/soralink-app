@@ -8,7 +8,7 @@ export const demoCard = {
   whatsapp: '',
   address: 'Oujda · Maroc',
   color: '#00b5ad',
-  cardTheme: 'light',
+  cardTheme: 'dark',
   pro: true,
   services: [
     {

@@ -1,4 +1,5 @@
 'use client';
+import ThemeToggle from '../theme-toggle';
 import CatalogRightsEditor from '../catalog-rights-editor';
 import { useEffect, useRef, useState } from 'react';
 import LoadMore from '../load-more';
@@ -133,6 +134,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
   return (
     <div className="site" dir={ar ? 'rtl' : 'ltr'}>
       <header>
+        <ThemeToggle ar={ar} />
         <button
           className="language"
           onClick={() => {

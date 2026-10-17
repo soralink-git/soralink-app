@@ -1,4 +1,5 @@
 'use client';
+import ThemeToggle from '../theme-toggle';
 import { useState, useEffect } from 'react';
 import { workspacePath, selectedPlan, offerLabel } from '../lib/journey-links';
 import { Nfc, Globe, Mail, Lock, Eye, EyeOff, CheckCircle, ArrowLeft } from 'lucide-react';
@@ -103,10 +104,13 @@ export default function Auth({
           </span>
           Sora<span>Link</span>
         </a>
-        <button className="language" onClick={toggleLanguage}>
-          <Globe size={17} />
-          {ar ? 'Français' : 'العربية'}
-        </button>
+        <div className="header-actions">
+          <ThemeToggle ar={ar} />
+          <button className="language" onClick={toggleLanguage}>
+            <Globe size={17} />
+            {ar ? 'Français' : 'العربية'}
+          </button>
+        </div>
       </header>
       <main className="auth-layout">
         <section className="auth-intro">
