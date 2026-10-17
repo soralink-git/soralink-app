@@ -2,9 +2,10 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import './interface.css';
 import './landing.css';
+import './docare.css';
 import NavigationProgress from './navigation-progress';
 
-export const viewport: Viewport = { themeColor: '#101112' };
+export const viewport: Viewport = { themeColor: '#00b5ad' };
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://soralink.link'),
