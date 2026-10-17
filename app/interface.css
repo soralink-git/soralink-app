@@ -1369,6 +1369,9 @@
   min-height: 44px;
 }
 .workspace-save-action {
+  position: sticky;
+  top: 12px;
+  z-index: 15;
   display: flex;
   justify-content: flex-end;
   margin-bottom: 20px;
