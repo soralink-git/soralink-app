@@ -19,8 +19,8 @@ export default function CatalogEditor({
   subscription,
   ar,
   busy,
-  save,
   onMessage,
+  onBusyChange,
   mediaEditor,
   initialTab,
   promotionsEditor,
@@ -33,7 +33,7 @@ export default function CatalogEditor({
   subscription: any;
   ar: boolean;
   busy: boolean;
-  save: () => Promise<void>;
+  onBusyChange?: (value: boolean) => void;
   onMessage: (s: string) => void;
 }) {
   const t = (fr: string, arabic: string) => (ar ? arabic : fr);
@@ -93,12 +93,13 @@ export default function CatalogEditor({
   async function run(fn: () => Promise<void>) {
     if (locked) return;
     setWorking(true);
+    onBusyChange?.(true);
     try {
       await fn();
       onMessage(
         t(
-          'Importation terminée. Enregistrez pour publier les modifications.',
-          'تم الاستيراد. سجّل باش تنشر التغييرات.',
+          'Importation terminée. Enregistrement automatique en cours.',
+          'تم الاستيراد. التغييرات كيتسجلو تلقائياً.',
         ),
       );
     } catch (e: any) {
@@ -111,6 +112,7 @@ export default function CatalogEditor({
       );
     } finally {
       setWorking(false);
+      onBusyChange?.(false);
     }
   }
   async function photo(file: File, purpose = 'catalog-image') {
@@ -245,8 +247,8 @@ export default function CatalogEditor({
       <h2>{t('Produits et services', 'المنتجات والخدمات')}</h2>
       <p className="hint">
         {t(
-          'Ajoutez ce que vous proposez, puis enregistrez pour le publier sur votre carte.',
-          'زيد المنتجات والخدمات ديالك، ومن بعد سجّل باش يبانو فالبطاقة.',
+          'Ajoutez ce que vous proposez. Les modifications sont enregistrées automatiquement.',
+          'زيد المنتجات والخدمات ديالك. التغييرات كيتسجلو تلقائياً.',
         )}
       </p>
       {!rights.enabled && (
@@ -425,8 +427,8 @@ export default function CatalogEditor({
                       if (
                         window.confirm(
                           t(
-                            'Supprimer ce document ? Enregistrez pour confirmer la suppression.',
-                            'واش بغيتي تحذف هاد الوثيقة؟ سجّل باش تأكّد الحذف.',
+                            'Supprimer ce document ? La suppression sera enregistrée automatiquement.',
+                            'واش بغيتي تحذف هاد الوثيقة؟ الحذف غادي يتسجّل تلقائياً.',
                           ),
                         )
                       )
@@ -865,11 +867,7 @@ export default function CatalogEditor({
           )}
         </p>
       )}
-      <button type="button" className="primary full" disabled={locked} onClick={save}>
-        {working
-          ? t('Importation…', 'جاري الاستيراد…')
-          : t('Enregistrer les modifications', 'حفظ التغييرات')}
-      </button>
+
       {crop && (
         <ImageCropper
           source={crop.source}

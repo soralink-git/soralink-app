@@ -87,8 +87,8 @@ export default function BackgroundEditor({
       )}
       <p className="hint">
         {t(
-          'Enregistrez votre carte pour publier le fond et son opacité.',
-          'سجّل الكارط باش تنشر الخلفية والوضوح ديالها.',
+          'Le fond et son opacité sont enregistrés automatiquement.',
+          'الخلفية والوضوح ديالها كيتسجلو تلقائياً.',
         )}
       </p>
     </div>

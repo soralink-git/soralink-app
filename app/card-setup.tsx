@@ -10,20 +10,8 @@ export default function CardSetup({
   context: DashboardContext;
   onExit: () => void;
 }) {
-  const {
-    data,
-    setData,
-    busy,
-    field,
-    t,
-    ar,
-    startCrop,
-    save,
-    published,
-    setPublished,
-    id,
-    setTab,
-  } = context;
+  const { data, setData, busy, field, t, ar, startCrop, published, setPublished, id, setTab } =
+    context;
   const [step, setStep] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -145,8 +133,8 @@ export default function CardSetup({
             <legend>{t('Vérifiez votre carte dans l’aperçu', 'راجع الكارط فالمعاينة')}</legend>
             <p>
               {t(
-                'Votre style, votre identité et vos actions sont prêts. Choisissez de garder un brouillon ou de publier, puis enregistrez.',
-                'الستايل والمعلومات وأزرار التواصل واجدين. اختار تبقى مسودة ولا تنشرها، ومن بعد سجّل.',
+                'Votre style, votre identité et vos actions sont prêts. L’enregistrement est automatique. Choisissez si votre carte est visible publiquement.',
+                'الستايل والمعلومات وأزرار التواصل واجدين. التسجيل تلقائي. اختار واش الكارط تبان للعموم.',
               )}
             </p>
             <dl className="setup-summary">
@@ -161,20 +149,17 @@ export default function CardSetup({
                 checked={published}
                 onChange={(e) => setPublished(e.target.checked)}
               />
-              {t('Publier ma carte après enregistrement', 'نشر الكارط من بعد التسجيل')}
+              {t('Carte visible publiquement', 'الكارط باينة للعموم')}
             </label>
             <button
-              className="primary full"
               type="button"
+              className="primary full"
               disabled={busy || !data.name?.trim()}
-              onClick={() => void save()}
+              onClick={onExit}
             >
-              {busy
-                ? t('Enregistrement…', 'كنسجّلو…')
-                : published
-                  ? t('Enregistrer et publier', 'سجّل وانشر')
-                  : t('Enregistrer le brouillon', 'سجّل المسودة')}
+              {t('Terminer', 'كمّل')}
             </button>
+
             <p className="hint">
               {t(
                 'Les produits, réseaux et rendez-vous se complètent ensuite depuis les rubriques de votre espace.',
@@ -219,8 +204,8 @@ export default function CardSetup({
       </div>
       <p className="hint">
         {t(
-          'Les changements ne sont publiés qu’après enregistrement.',
-          'التغييرات ما كيبانوش للناس حتى تسجّل.',
+          'Les modifications sont enregistrées automatiquement. Vous choisissez la visibilité de votre carte.',
+          'التغييرات كيتسجلو تلقائياً. نتا كتختار واش الكارط تبان للعموم.',
         )}
       </p>
     </section>

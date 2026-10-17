@@ -1368,3 +1368,62 @@
   gap: 8px;
   min-height: 44px;
 }
+.workspace-savebar {
+  position: sticky;
+  top: 12px;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  background: #111b2e;
+  box-shadow: 0 6px 20px #0004;
+}
+.workspace-savebar > [role='status'] {
+  min-width: 0;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+.workspace-savebar small {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+.workspace-savebar.save-status-saved strong {
+  color: #86efac;
+}
+.workspace-savebar:is(
+  .save-status-error,
+  .save-status-invalid,
+  .save-status-offline,
+  .save-status-conflict
+) {
+  border-color: #b68a3e;
+}
+.workspace-savebar:is(
+    .save-status-error,
+    .save-status-invalid,
+    .save-status-offline,
+    .save-status-conflict
+  )
+  strong {
+  color: #fde68a;
+}
+.workspace-savebar .row {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+@media (max-width: 800px) {
+  .workspace-savebar {
+    position: static;
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .workspace-savebar .row {
+    justify-content: flex-start;
+  }
+}

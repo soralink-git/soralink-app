@@ -358,8 +358,8 @@ export default function NetworkLinksEditor({
           </div>
           <p className="hint">
             {t(
-              'Enregistrez ensuite pour publier les modifications.',
-              'من بعد سجّل باش تنشر التغييرات.',
+              'Les modifications sont enregistrées automatiquement après validation.',
+              'التغييرات كيتسجلو تلقائياً من بعد التأكيد.',
             )}
           </p>
         </form>

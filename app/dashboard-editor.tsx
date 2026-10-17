@@ -1,5 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import SaveBar from './save-bar';
+import type { SaveState } from './lib/save-queue';
 import CardSetup from './card-setup';
 import CardQR from './card-qr';
 import CardStylePicker from './card-style-picker';
@@ -27,7 +29,6 @@ import {
   FileText,
   ExternalLink,
   Download,
-  Save,
   Palette,
   ImageIcon,
   Clock,
@@ -87,6 +88,10 @@ export type DashboardContext = {
   qr: string;
   rawSources?: { avatar?: File | string; cover?: File | string; backgroundPhoto?: File | string };
   save: () => Promise<void>;
+  saveState?: SaveState;
+  savePaused?: boolean;
+  setCatalogWorking?: (value: boolean) => void;
+  reloadSaved?: () => Promise<void>;
   sectionLabels: Record<string, [string, string]>;
   setData: Dispatch<any>;
   setModal: Dispatch<SetStateAction<string>>;
@@ -143,6 +148,10 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     published,
     rawSources,
     save,
+    saveState,
+    savePaused,
+    setCatalogWorking,
+    reloadSaved,
     sectionLabels,
     setAr,
     setData,
@@ -164,6 +173,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
   } = context;
   const [setupOpen, setSetupOpen] = useState(false);
   const [setupDismissed, setSetupDismissed] = useState(false);
+  useEffect(() => {
+    if (loaded && auth && !id && !setupDismissed) setSetupOpen(true);
+  }, [loaded, auth, id, setupDismissed]);
   const showSetup = setupOpen || (loaded && auth && !id && !setupDismissed);
   const closeSetup = () => {
     setSetupOpen(false);
@@ -261,8 +273,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           <div className="callout">
             <p>
               {t(
-                'Bienvenue ! Complétez votre première carte ci-dessous, puis cliquez sur Enregistrer. Vous pourrez la publier et la partager ensuite.',
-                'مرحبا! عمّر الكارط الأولى ديالك وضغط على سجّل. من بعد تقدر تنشرها وتشاركها.',
+                'Bienvenue ! Complétez votre carte. Les modifications sont enregistrées automatiquement ; activez sa visibilité quand elle est prête.',
+                'مرحبا! عمّر الكارط ديالك. التغييرات كيتسجلو تلقائياً، وفعّل الظهور ديالها ملي تكون واجدة.',
               )}
             </p>
           </div>
@@ -282,13 +294,16 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               )}
             </p>
           </div>
-          {auth && (
-            <button disabled={busy} className="primary" onClick={save}>
-              <Save size={17} />
-              {t('Enregistrer', 'سجّل')}
-            </button>
-          )}
         </div>
+        {auth && (
+          <SaveBar
+            state={saveState}
+            ar={ar}
+            disabled={busy || !!savePaused || !data.name?.trim()}
+            save={save}
+            reload={reloadSaved}
+          />
+        )}
         {(!loaded || authLoading) && !auth ? (
           <div className="empty session-loading" role="status" aria-live="polite">
             <span className="session-loading-dot" />
@@ -343,7 +358,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               checked={published}
                               onChange={(e) => setPublished(e.target.checked)}
                             />
-                            {t('Page publiée', 'الصفحة منشورة')}
+                            {t('Carte visible publiquement', 'الكارط باينة للعموم')}
                           </label>
                         </div>
                         <p className="hint">
@@ -368,14 +383,10 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </label>
                         <p className="hint">
                           {t(
-                            'Renseignez vos coordonnées, logo, couverture et présentation. Enregistrez pour mettre à jour votre page.',
-                            'عمّر المعلومات ديالك، اللوگو، الغلاف والتقديم. سجّل باش تحدّث الصفحة.',
+                            'Vos modifications sont enregistrées automatiquement. Leur état est indiqué en haut de votre espace.',
+                            'التغييرات كيتسجلو تلقائياً. الحالة ديال التسجيل كاتبان فالفوق.',
                           )}
                         </p>
-                        <button className="primary full" disabled={busy} onClick={save}>
-                          <Save size={17} />
-                          {t('Enregistrer les modifications', 'سجّل التغييرات')}
-                        </button>
                       </section>
                     </>
                   )}
@@ -386,10 +397,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       ) : (
                         <SocialLinksEditor context={context} />
                       )}
-                      <button className="primary full" disabled={busy} onClick={save}>
-                        <Save size={17} />
-                        {t('Enregistrer les modifications', 'سجّل التغييرات')}
-                      </button>
                     </section>
                   )}
                   {(activeTab === 'content' ||
@@ -403,8 +410,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         subscription={subscription}
                         ar={ar}
                         busy={busy}
-                        save={save}
                         onMessage={setMsg}
+                        onBusyChange={setCatalogWorking}
                         mediaEditor={<CatalogMediaEditor context={context} />}
                         initialTab={
                           tab === 'media'
@@ -420,8 +427,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             </h2>
                             <p className="hint">
                               {t(
-                                'Vos offres apparaissent en tête de votre catalogue sous Produits et services. Les dates suivent l’heure du Maroc ; la date de fin est incluse. Enregistrez pour publier vos changements.',
-                                'العروض كيبانو فالأول ديال الكاتالوگ تحت قسم المنتجات والخدمات. التواريخ بتوقيت المغرب، ونهار النهاية داخل فالعرض. سجّل باش تبان التغييرات.',
+                                'Vos offres apparaissent en tête de votre catalogue sous Produits et services. Les dates suivent l’heure du Maroc ; la date de fin est incluse. Les changements sont enregistrés automatiquement.',
+                                'العروض كيبانو فالأول ديال الكاتالوگ تحت قسم المنتجات والخدمات. التواريخ بتوقيت المغرب، ونهار النهاية داخل فالعرض. التغييرات كيتسجلو تلقائياً.',
                               )}
                             </p>
                             {data.promotions.map((p: any, i: number) => (
@@ -738,19 +745,14 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </details>
                         <div
                           style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}
-                        >
-                          <button disabled={busy} className="primary" onClick={save}>
-                            <Save size={17} />
-                            {t('Enregistrer les modifications', 'سجّل التغييرات')}
-                          </button>
-                        </div>
+                        ></div>
                       </section>
                       <section className="panel">
                         <h2>{t('Mes sections', 'الأقسام ديالي')}</h2>
                         <p className="hint">
                           {t(
-                            'Choisissez les sections visibles et leur ordre. L’identité reste en tête. Les sections vides ne s’affichent pas. Enregistrez pour appliquer les changements à la carte publique.',
-                            'اختار الأقسام اللي يبانوا وترتيبهم. المعلومات كتبقى فاللول والأقسام الخاوية ما كيبانوش. سجّل باش يتطبق التغيير فالصفحة العمومية.',
+                            'Choisissez les sections visibles et leur ordre. L’identité reste en tête. Les sections vides ne s’affichent pas. Les modifications sont enregistrées automatiquement.',
+                            'اختار الأقسام اللي يبانوا وترتيبهم. المعلومات كتبقى فاللول والأقسام الخاوية ما كيبانوش. التغييرات كيتسجلو تلقائياً.',
                           )}
                         </p>
                         {appearance(data)
@@ -852,10 +854,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               </div>
                             );
                           })}
-                        <button className="primary full" disabled={busy} onClick={save}>
-                          <Save size={17} />
-                          {t('Enregistrer les modifications', 'سجّل التغييرات')}
-                        </button>
                       </section>
                     </>
                   )}
@@ -1151,8 +1149,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       <h2>{t('Horaires et disponibilités', 'الأوقات والمواعيد')}</h2>
                       <p className="hint">
                         {t(
-                          'Horaires au Maroc. Les visiteurs proposent un créneau, puis vous le confirmez. Enregistrez vos modifications.',
-                          'الأوقات بتوقيت المغرب. الزوار كيطلبو الموعد ونتا كتأكدو. سجّل التغييرات.',
+                          'Horaires au Maroc. Les visiteurs proposent un créneau, puis vous le confirmez. L’enregistrement des modifications est automatique.',
+                          'الأوقات بتوقيت المغرب. الزوار كيطلبو الموعد ونتا كتأكدو. التغييرات كيتسجلو تلقائياً.',
                         )}
                       </p>
                       {[
@@ -1333,10 +1331,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           'خاص SoraLink يفعّل Pro باش يبان الوقت للزوار.',
                         )}
                       </p>
-                      <button type="button" className="primary full" disabled={busy} onClick={save}>
-                        <Save size={17} />
-                        {t('Enregistrer les modifications', 'سجّل التغييرات')}
-                      </button>
                     </section>
                   )}
                   {tab === 'share' && (
@@ -1432,16 +1426,16 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                                   'الصفحة كتتنشر من بعد التسجيل.',
                                 )
                               : t(
-                                  'Activez « Page publiée » puis enregistrez pour rendre ce lien consultable.',
-                                  'فعّل «الصفحة منشورة» ومن بعد سجّل.',
+                                  'Activez « Carte visible publiquement » pour rendre ce lien consultable après la sauvegarde automatique.',
+                                  'فعّل «الكارط باينة للعموم» باش يخدم الرابط من بعد التسجيل التلقائي.',
                                 )}
                           </p>
                         </>
                       ) : (
                         <p>
                           {t(
-                            'Enregistrez votre carte pour créer votre lien et votre QR.',
-                            'سجّل الكارط باش تصايب الرابط والـ QR.',
+                            'Complétez votre nom : le lien et le QR seront créés lors du premier enregistrement automatique.',
+                            'كمّل الاسم ديالك. الرابط ورمز QR غادي يتصايبو مع أول تسجيل تلقائي.',
                           )}
                         </p>
                       )}
