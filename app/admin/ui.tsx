@@ -134,35 +134,40 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
   return (
     <div className="site" dir={ar ? 'rtl' : 'ltr'}>
       <header>
-        <ThemeToggle ar={ar} />
-        <button
-          className="language"
-          onClick={() => {
-            const next = !ar;
-            setAr(next);
-            const u = new URL(location.href);
-            u.searchParams.set('lang', next ? 'ar' : 'fr');
-            history.replaceState(null, '', u.pathname + u.search);
-          }}
-        >
-          {ar ? 'Français' : 'العربية'}
-        </button>
-        <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-          <span className="brand-icon">
-            <Nfc />
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
+            <span className="brand-icon">
+              <Nfc />
+            </span>
+            Sora<span>Link</span>
+          </a>
+          <span className="badge">
+            <Shield size={14} />
+            {t('ADMINISTRATION', 'الإدارة')}
           </span>
-          Sora<span>Link</span>
-        </a>
-        <span className="badge">
-          <Shield size={14} />
-          {t('ADMINISTRATION', 'الإدارة')}
-        </span>
-        <a className="secondary small" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-          {t('Accueil', 'الرئيسية')}
-        </a>
-        <button className="secondary small" disabled={busy} onClick={logout}>
-          {t('Se déconnecter', 'خرج من الحساب')}
-        </button>
+        </div>
+        <div className="header-actions">
+          <ThemeToggle ar={ar} />
+          <button
+            className="language"
+            onClick={() => {
+              const next = !ar;
+              setAr(next);
+              const u = new URL(location.href);
+              u.searchParams.set('lang', next ? 'ar' : 'fr');
+              history.replaceState(null, '', u.pathname + u.search);
+            }}
+          >
+            <Globe size={17} />
+            {ar ? 'Français' : 'العربية'}
+          </button>
+          <a className="secondary small" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
+            {t('Accueil', 'الرئيسية')}
+          </a>
+          <button className="secondary small" disabled={busy} onClick={logout}>
+            {t('Se déconnecter', 'خرج من الحساب')}
+          </button>
+        </div>
       </header>
       <main className="section">
         <span className="eyebrow">{t('SORALINK / GESTION', 'SoraLink / التسيير')}</span>

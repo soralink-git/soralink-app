@@ -1058,3 +1058,203 @@ html[data-theme='dark'] .landing-showcase .card-design .card-identity {
     flex-wrap: wrap;
   }
 }
+
+/* ==========================================================================
+   Graphic Design & UI Consistency Enhancements
+   ========================================================================== */
+
+/* 1. RTL & Arabic Typographic Mastery */
+[dir='rtl'] {
+  font-family:
+    'Cairo',
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+[dir='rtl'] :is(*:not(code):not(pre):not(kbd):not(samp):not([dir='ltr'])) {
+  letter-spacing: 0 !important;
+}
+[dir='rtl'] :is(h1, h2, h3, h4, h5, .landing-copy h1, .brand) {
+  line-height: 1.35 !important;
+  font-family: 'Cairo', system-ui, sans-serif;
+}
+[dir='rtl'] .landing-copy > p,
+[dir='rtl'] .workspace-intro,
+[dir='rtl'] .panel p {
+  line-height: 1.8;
+}
+[dir='rtl'] :is(.badge, .landing-kicker, .persona-pill, .theme-toggle, .nfc-pulse-badge) {
+  letter-spacing: 0 !important;
+}
+[dir='rtl'] .header-actions {
+  margin-inline-start: auto;
+}
+
+/* 2. Image Cropper Graphic Harmony */
+.crop-overlay {
+  background: rgba(18, 27, 27, 0.78) !important;
+  backdrop-filter: blur(8px) !important;
+}
+.crop-dialog {
+  background: var(--docare-surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 28px !important;
+  box-shadow: var(--docare-shadow) !important;
+}
+.crop-dialog h2,
+.crop-dialog p,
+.crop-dialog label {
+  color: var(--ink) !important;
+}
+.crop-dialog p.hint {
+  color: var(--muted) !important;
+}
+.crop-frame {
+  border-color: var(--docare-teal) !important;
+  box-shadow:
+    0 0 0 1px var(--docare-surface),
+    0 12px 32px rgba(0, 181, 173, 0.25);
+}
+.crop-dialog input[type='range'] {
+  accent-color: var(--docare-deep) !important;
+}
+.crop-live-preview {
+  background: var(--docare-soft) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 20px !important;
+}
+.crop-live-badge {
+  color: var(--docare-deep) !important;
+}
+.crop-live-badge .live-dot {
+  background: var(--docare-teal) !important;
+}
+.crop-dialog .primary {
+  background: var(--docare-teal) !important;
+  color: #003c39 !important;
+}
+.crop-dialog .secondary {
+  background: var(--docare-surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--line) !important;
+}
+
+/* 3. Refined File Inputs */
+input[type='file'] {
+  min-height: auto;
+  padding: 8px 12px;
+  border-radius: 16px;
+  background: var(--docare-field);
+  border: 1px dashed var(--line);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+input[type='file']:hover {
+  border-color: var(--docare-deep);
+  background: var(--docare-tint);
+}
+input[type='file']::file-selector-button {
+  background: var(--docare-surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-inline-end: 12px;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+input[type='file']::file-selector-button:hover {
+  background: var(--docare-teal);
+  color: #003c39;
+  border-color: var(--docare-teal);
+}
+
+/* 4. Smooth Route Transitions */
+.route-loading {
+  background: var(--docare-canvas) !important;
+  color: var(--ink) !important;
+}
+.route-loading-spinner {
+  border-color: var(--line) !important;
+  border-top-color: var(--docare-teal) !important;
+}
+
+/* 5. Legal Pages & Footers */
+.legal-page {
+  max-width: 900px;
+  margin-inline: auto;
+  padding: 32px 24px 72px;
+}
+.legal-page h1,
+.legal-page h2 {
+  color: var(--ink) !important;
+}
+.legal-status {
+  background: var(--docare-tint) !important;
+  border: 1px solid var(--docare-tint-border) !important;
+  color: var(--docare-deep) !important;
+  border-radius: 20px !important;
+}
+.legal-page [lang='ar'] {
+  border-top: 1px solid var(--line) !important;
+}
+.public-legal {
+  color: var(--muted) !important;
+}
+.public-legal a {
+  color: var(--muted) !important;
+  transition: color 160ms ease;
+}
+.public-legal a:hover {
+  color: var(--docare-deep) !important;
+}
+
+/* 6. Catalog Tabs & Component Alignment */
+.catalog-tabs button {
+  border-radius: 999px;
+  background: var(--docare-soft);
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 8px 18px;
+  font-weight: 600;
+  transition: all 160ms ease;
+}
+.catalog-tabs button:hover {
+  background: var(--docare-tint);
+  color: var(--docare-deep);
+  border-color: var(--docare-tint-border);
+}
+.catalog-tabs [aria-selected='true'] {
+  background: var(--docare-tint) !important;
+  color: var(--docare-deep) !important;
+  border-color: var(--docare-tint-border) !important;
+}
+.catalog-editor .catalog-options {
+  border-block-start: 1px solid var(--line) !important;
+}
+.catalog-editor .catalog-empty {
+  border: 1px dashed var(--line) !important;
+  background: var(--docare-soft) !important;
+  color: var(--muted) !important;
+  border-radius: 20px !important;
+}
+
+/* 7. Dark Mode Contrast Polish */
+html[data-theme='dark'] input::placeholder,
+html[data-theme='dark'] textarea::placeholder {
+  color: #8fa69f;
+}
+html[data-theme='dark'] .route-loading {
+  background: #121b1b !important;
+  color: #edf4f2 !important;
+}
+html[data-theme='dark'] .crop-overlay {
+  background: rgba(10, 15, 15, 0.85) !important;
+}
