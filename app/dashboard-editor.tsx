@@ -214,11 +214,12 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         {auth && (
           <button
             type="button"
-            className="secondary full setup-launch"
+            className="setup-launch"
             disabled={busy}
             onClick={() => setSetupOpen(true)}
           >
-            {t('Créer pas à pas', 'صايب خطوة بخطوة')}
+            <Plus size={19} />
+            <span>{t('Créer pas à pas', 'صايب خطوة بخطوة')}</span>
           </button>
         )}
         <nav
@@ -262,7 +263,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         {canAdmin && (
           <a className="secondary small full" href="/admin">
             <Settings size={16} />
-            {t('Administration', 'الإدارة')}
+            <span>{t('Administration', 'الإدارة')}</span>
           </a>
         )}
         <div className="sidebar-note">
