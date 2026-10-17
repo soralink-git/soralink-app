@@ -690,6 +690,52 @@ try {
   }
   assert.equal(clearedOwner.breakStart, '');
   assert.equal(clearedOwner.breakEnd, '');
+  // The same serialization queue used by the editor must carry forward each acknowledged revision.
+  const { load: loadTestModule } = require('../tests/ts-loader.cjs');
+  const { createSaveQueue } = loadTestModule(path.resolve('app/lib/save-queue.ts'));
+  const ownerSnapshot = (await request('/api/data', { auth: true })).json;
+  const persistedCard = ownerSnapshot.profile;
+  assert.ok(ownerSnapshot.saveOwner);
+  await request('/api/data', {
+    auth: true,
+    status: 409,
+    data: {
+      action: 'save',
+      data: clearedOwner,
+      published: true,
+      revision: persistedCard.updated,
+      expectedOwner: 'another-account',
+    },
+  });
+  assert.equal(
+    (await request('/api/data', { auth: true })).json.profile.updated,
+    persistedCard.updated,
+  );
+  assert.equal((await request('/api/data?id=' + cardId)).json.saveOwner, undefined);
+  const sentRevisions = [];
+  const saveQueue = createSaveQueue({
+    onState: () => {},
+    send: async (snapshot, revision) => {
+      sentRevisions.push(revision);
+      const response = await request('/api/data', {
+        auth: true,
+        data: { action: 'save', ...snapshot, revision, expectedOwner: ownerSnapshot.saveOwner },
+      });
+      return response.json;
+    },
+  });
+  saveQueue.reset({ data: clearedOwner, published: true }, persistedCard.updated, true);
+  saveQueue.update({ data: { ...clearedOwner, bio: 'Automatic save first' }, published: true });
+  const inFlightSave = saveQueue.flush();
+  saveQueue.update({ data: { ...clearedOwner, bio: 'Automatic save latest' }, published: true });
+  assert.equal(await inFlightSave, true);
+  assert.equal(sentRevisions.length, 2);
+  assert.notEqual(sentRevisions[0], sentRevisions[1]);
+  assert.equal(
+    JSON.parse((await request('/api/data?id=' + cardId)).json.data).bio,
+    'Automatic save latest',
+  );
+  saveQueue.stop();
 
   await request('/api/auth', { auth: true, data: { action: 'logout' } });
   await request('/api/admin', { auth: true, id: adminId });

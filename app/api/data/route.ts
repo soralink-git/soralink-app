@@ -107,6 +107,7 @@ export async function GET(req: Request) {
       ),
       user: user.displayName,
       email: user.email,
+      saveOwner: user.userId,
       admin,
       source,
     });
@@ -263,6 +264,14 @@ export async function POST(req: Request) {
       return json({ ok: true });
     }
     if (b.action === 'save') {
+      if (b.expectedOwner && b.expectedOwner !== user.userId)
+        return json(
+          {
+            error: 'Le compte connecté a changé. Rechargez votre carte avant d’enregistrer.',
+            errorAr: 'الحساب المتصل تبدّل. عاود حمّل الكارط قبل التسجيل.',
+          },
+          409,
+        );
       const p: any = await db()
         .prepare('SELECT * FROM profiles WHERE owner=?')
         .bind(user.userId)

@@ -101,3 +101,28 @@ L’agenda possède son propre bouton d’enregistrement. Le dernier élément d
 être retiré sans réapparition des données historiques. Ces changements de configuration
 sont publiés après enregistrement ; les contrôles de nettoyage des fichiers inutilisés et
 de protection des fichiers encore référencés restent appliqués côté serveur.
+
+### Sauvegarde automatique
+
+Un seul bouton « Enregistrer les modifications » reste disponible dans la barre d’état.
+L’éditeur enregistre automatiquement après 800 ms de pause dans la saisie. Les envois sont
+sérialisés avec la révision D1 attendue ; une réponse ancienne ne remplace jamais l’état de saisie.
+Les imports suspendent les nouveaux envois jusqu’à leur fin. La saisie reste possible pendant
+une sauvegarde et l’aperçu conserve son composant pendant les changements d’état.
+
+Le chargement initial ne déclenche pas d’écriture. La première carte se crée au premier
+changement valide ; son assistant reste ouvert. La visibilité publique est un choix explicite.
+Les champs incomplets ou refusés ne sont pas marqués enregistrés. L’état indique attente,
+enregistrement, succès, hors ligne, erreur ou conflit en FR/AR. Le retour du réseau relance
+la sauvegarde en attente ; il n’existe pas de boucle de tentatives sur une erreur de validation.
+
+Un conflit de révision bloque les écritures suivantes, y compris manuelles. Le propriétaire
+peut recharger la version enregistrée après confirmation de l’abandon des modifications locales.
+Un rafraîchissement de l’espace attend les écritures en cours ; la fermeture signale les changements
+non enregistrés. Les données en attente restent en mémoire et ne sont pas stockées dans un cache
+local partagé. La sauvegarde nécessite une connexion ; le succès n’est affiché qu’après réponse
+positive du serveur. Les règles de session, propriété, quotas et publication restent inchangées.
+
+La sauvegarde transmet également l’identité du propriétaire chargée avec la carte :
+si le compte connecté change dans un autre onglet, le serveur refuse la modification
+avant toute écriture. Les aperçus temporaires de recadrage ne sont pas enregistrés.

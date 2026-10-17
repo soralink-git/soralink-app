@@ -9,9 +9,10 @@ import {
   languagePath,
 } from './lib/journey-links';
 import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
-import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { X, Calendar, Check, Globe, Users, RotateCcw } from 'lucide-react';
 import QRCode from 'qrcode';
+import useCardAutosave from './use-card-autosave';
 import Pwa from './pwa';
 import ImageCropper from './image-cropper';
 import type { CropTarget } from './lib/crop-geometry';
@@ -438,9 +439,31 @@ export default function App({
     [sessionChecked, setSessionChecked] = useState(false);
   const [pendingOffer, setPendingOffer] = useState(selectedPlan(initialOffer));
   const authEpoch = useRef(0);
-  const profileRevision = useRef<string | null>(null);
+  const [catalogWorking, setCatalogWorking] = useState(false);
   const [authLoading, setAuthLoading] = useState(false),
     [authLoadError, setAuthLoadError] = useState(false);
+  const [crop, setCrop] = useState<{
+    source: File | string;
+    target: CropTarget;
+    previousValue?: string;
+  } | null>(null);
+  const autosave = useCardAutosave({
+    data,
+    published,
+    ar,
+    enabled: view === 'app' && auth && loaded && !authLoading,
+    paused: busy || catalogWorking || !!crop,
+    onSaved: (result) => {
+      setId(result.id);
+      if (result.cleanupPending)
+        setMsg(
+          ar
+            ? 'تسجلات التغييرات. تنظيف التخزين غادي يتعاود من بعد.'
+            : 'Modifications enregistrées. Le nettoyage du stockage sera réessayé.',
+        );
+      void loadStorage();
+    },
+  });
   const [manualShareUrl, setManualShareUrl] = useState('');
   const [emailActions, setEmailActions] = useState(false);
   const [rawSources, setRawSources] = useState<{
@@ -448,11 +471,6 @@ export default function App({
     cover?: File | string;
     backgroundPhoto?: File | string;
   }>({});
-  const [crop, setCrop] = useState<{
-    source: File | string;
-    target: CropTarget;
-    previousValue?: string;
-  } | null>(null);
   function startCrop(source: File | string, target: CropTarget) {
     if (busy) return;
     if (
@@ -543,6 +561,19 @@ export default function App({
     }
   }
   async function logout() {
+    if (
+      autosave.queue.isDirty() &&
+      !(await autosave.queue.flush()) &&
+      !window.confirm(
+        t(
+          'Des modifications ne sont pas enregistrées. Les abandonner et vous déconnecter ?',
+          'كاينين تغييرات ما تسجلوش. واش بغيتي تخرج وتخلّيهم؟',
+        ),
+      )
+    )
+      return;
+    autosave.queue.stop();
+    autosave.ownerRef.current = null;
     authEpoch.current++;
     setBusy(true);
     try {
@@ -557,6 +588,7 @@ export default function App({
       setSessionChecked(true);
       location.assign('/');
     } catch {
+      await load('login', true);
       setMsg(t('Déconnexion impossible. Réessayez.', 'ما تخرجش الحساب. عاود حاول.'));
     } finally {
       setBusy(false);
@@ -694,15 +726,26 @@ export default function App({
       setHistoryBusy(false);
     }
   }
-  async function load(authMode = 'login') {
+  async function load(authMode = 'login', discard = false) {
+    if (!discard && autosave.queue.isDirty() && !(await autosave.queue.flush())) {
+      setMsg(
+        t(
+          'Enregistrez les modifications ou rechargez la version enregistrée.',
+          'سجّل التغييرات ولا عاود حمّل النسخة المسجّلة.',
+        ),
+      );
+      return;
+    }
+    autosave.queue.pause(true);
     historyEpoch.current++;
-    authEpoch.current++;
+    const epoch = ++authEpoch.current;
     setBusy(true);
     setAuthLoading(true);
     setAuthLoadError(false);
     try {
       const r = await fetch('/api/data');
       const b: any = await r.json();
+      if (epoch !== authEpoch.current) return;
       if (r.status === 401) {
         setAuth(false);
         setAccountEmail('');
@@ -723,23 +766,39 @@ export default function App({
         setSessionChecked(true);
         setCanAdmin(!!b.admin);
         setSubscription(b.profile);
-        profileRevision.current = b.profile?.updated || null;
-        if (b.profile) {
-          const profileData = JSON.parse(b.profile.data);
-          const hasQueryLang = new URLSearchParams(location.search).has('lang');
-          if (!hasQueryLang && (profileData.defaultLanguage || profileData.lang)) {
-            setAr(profileData.defaultLanguage === 'ar' || profileData.lang === 'ar');
+
+        if (!autosave.queue.isDirty() || discard) {
+          autosave.ownerRef.current = b.saveOwner || null;
+          if (b.profile) {
+            const profileData = JSON.parse(b.profile.data);
+            const hasQueryLang = new URLSearchParams(location.search).has('lang');
+            const nextAr = hasQueryLang
+              ? ar
+              : profileData.defaultLanguage === 'ar' || profileData.lang === 'ar';
+            if (!hasQueryLang) setAr(nextAr);
+            const hydrated = {
+              ...blank,
+              ...profileData,
+              defaultLanguage: nextAr ? 'ar' : 'fr',
+              promotions: normalizePromotions(profileData.promotions),
+              services: normalizeCatalogue(profileData.services),
+            };
+            autosave.queue.reset(
+              { data: hydrated, published: !!b.profile.published },
+              b.profile.updated || null,
+              true,
+            );
+            setData(hydrated);
+            setPublished(!!b.profile.published);
+            setId(b.profile.id);
+            setPublicName(b.profile.publicName || '');
+          } else {
+            autosave.queue.reset(
+              { data: { ...data, defaultLanguage: ar ? 'ar' : 'fr' }, published: false },
+              null,
+              false,
+            );
           }
-          setData({
-            ...blank,
-            ...profileData,
-            defaultLanguage: profileData.defaultLanguage || profileData.lang || (ar ? 'ar' : 'fr'),
-            promotions: normalizePromotions(profileData.promotions),
-            services: normalizeCatalogue(profileData.services),
-          });
-          setId(b.profile.id);
-          setPublicName(b.profile.publicName || '');
-          setPublished(!!b.profile.published);
         }
         setHistoryPages(b.pages || {});
         setInbox(b.requests);
@@ -750,6 +809,7 @@ export default function App({
         setMsg('');
       }
     } catch {
+      if (epoch !== authEpoch.current) return;
       setAuthLoadError(true);
       setMsg(t('Service indisponible. Réessayez.', 'الخدمة ما متوفراش. عاود جرّب.'));
     }
@@ -773,29 +833,21 @@ export default function App({
     }
   }
   async function save() {
-    try {
-      const payloadData = { ...data, defaultLanguage: ar ? 'ar' : 'fr' };
-      const b = await action({
-        action: 'save',
-        data: payloadData,
-        published,
-        revision: profileRevision.current,
-      });
-      profileRevision.current = b.revision;
-      setId(b.id);
-      setData(payloadData);
-      setMsg(
-        b.cleanupPending
-          ? t(
-              'Carte enregistrée. Le nettoyage du stockage sera réessayé à votre prochaine action.',
-              'تسجلات الكارط. تنظيف التخزين غادي يتعاود فالإجراء الجاي.',
-            )
-          : t('Votre carte est enregistrée.', 'تسجلات الكارط ديالك.'),
-      );
-      void loadStorage();
-    } catch (e: any) {
-      setMsg(e.message);
-    }
+    autosave.queue.update(autosave.latest.current);
+    const ok = await autosave.queue.flush();
+    if (ok) setMsg(t('Modifications enregistrées.', 'تسجلات التغييرات.'));
+  }
+  async function reloadSaved() {
+    if (
+      !autosave.queue.isDirty() ||
+      window.confirm(
+        t(
+          'Recharger la version enregistrée ? Les modifications non enregistrées seront abandonnées.',
+          'واش بغيتي تعاود تحمّل النسخة المسجّلة؟ التغييرات اللي ما تسجلاتش غادي تتحيّد.',
+        ),
+      )
+    )
+      await load('login', true);
   }
   async function upload(f: File, field: string) {
     if (uploadLock.current) return false;
@@ -812,7 +864,12 @@ export default function App({
         ...d,
         [field]: field === 'photos' ? [...d.photos, b.url].slice(0, 10) : b.url,
       }));
-      setMsg(t('Fichier ajouté. Enregistrez votre carte.', 'تزّاد الملف. سجّل الكارط ديالك.'));
+      setMsg(
+        t(
+          'Fichier ajouté. Enregistrement automatique en cours.',
+          'تزّاد الملف. التسجيل التلقائي خدام.',
+        ),
+      );
       return true;
     } catch (e: any) {
       setMsg(e.message);
@@ -843,8 +900,8 @@ export default function App({
       setData((d: any) => ({ ...d, recordedVideo: b.url }));
       setMsg(
         t(
-          'Vidéo ajoutée. Enregistrez votre carte pour la publier.',
-          'تزّاد الفيديو. سجّل الكارط ديالك باش تنشرو.',
+          'Vidéo ajoutée. Enregistrement automatique en cours.',
+          'تزّاد الفيديو. التسجيل التلقائي خدام.',
         ),
       );
     } catch (e: any) {
@@ -900,8 +957,8 @@ export default function App({
       }
       let message = added
         ? t(
-            added + ' photo(s) ajoutée(s). Enregistrez votre carte.',
-            'تزادو ' + added + ' تصاور. سجّل الكارط ديالك.',
+            added + ' photo(s) ajoutée(s). Enregistrement automatique en cours.',
+            'تزادو ' + added + ' تصاور. التسجيل التلقائي خدام.',
           )
         : t('Aucune photo ajoutée.', 'ما تزادت حتى تصويرة.');
       if (excess)
@@ -974,7 +1031,10 @@ export default function App({
       if (b.storage) setStorage(b.storage);
       updateCatalogue(itemId, 'image', b.url);
       setMsg(
-        t('Photo ajoutée. Enregistrez votre catalogue.', 'تزادت التصويرة. سجّل الكاتالوگ ديالك.'),
+        t(
+          'Photo ajoutée. Enregistrement automatique en cours.',
+          'تزادت التصويرة. التسجيل التلقائي خدام.',
+        ),
       );
     } catch (e: any) {
       setMsg(e.message);
@@ -1015,7 +1075,12 @@ export default function App({
       if (!r.ok) throw new Error(b.error || 'Importation impossible');
       if (b.storage) setStorage(b.storage);
       updatePromotion(promoId, 'image', b.url);
-      setMsg(t('Photo ajoutée. Enregistrez votre carte.', 'تزادت التصويرة. سجّل الكارط ديالك.'));
+      setMsg(
+        t(
+          'Photo ajoutée. Enregistrement automatique en cours.',
+          'تزادت التصويرة. التسجيل التلقائي خدام.',
+        ),
+      );
     } catch (e: any) {
       setMsg(e.message);
     } finally {
@@ -1035,6 +1100,7 @@ export default function App({
       {label}
       <input
         type={type}
+        disabled={busy}
         value={data[key] || ''}
         onChange={(e) => setData({ ...data, [key]: e.target.value })}
       />
@@ -1103,29 +1169,32 @@ export default function App({
       );
     }
   }
-  function Card(props: CardViewProps) {
-    return (
-      <CardView
-        {...props}
-        ar={ar}
-        setAr={setAr}
-        view={view}
-        id={id}
-        publicName={publicName}
-        onMessage={setMsg}
-        onRequest={(kind, item) => {
-          setServiceIndex(0);
-          setSelectedItem(item || null);
-          setModal(kind);
-        }}
-        onDiscover={(d) => {
-          setDemo(d);
-          setView('demo');
-          window.scrollTo(0, 0);
-        }}
-      />
-    );
-  }
+  const Card = useCallback(
+    (props: CardViewProps) => {
+      return (
+        <CardView
+          {...props}
+          ar={ar}
+          setAr={setAr}
+          view={view}
+          id={id}
+          publicName={publicName}
+          onMessage={setMsg}
+          onRequest={(kind, item) => {
+            setServiceIndex(0);
+            setSelectedItem(item || null);
+            setModal(kind);
+          }}
+          onDiscover={(d) => {
+            setDemo(d);
+            setView('demo');
+            window.scrollTo(0, 0);
+          }}
+        />
+      );
+    },
+    [ar, view, id, publicName],
+  );
   const sectionLabels: Record<string, [string, string]> = {
     coordinates: ['Coordonnées', 'معلومات التواصل'],
     social: ['Réseaux sociaux', 'مواقع التواصل'],
@@ -1459,6 +1528,10 @@ export default function App({
               qr,
               rawSources,
               save,
+              saveState: autosave.state,
+              savePaused: catalogWorking || !!crop,
+              setCatalogWorking,
+              reloadSaved,
               sectionLabels,
               setAr,
               setData,

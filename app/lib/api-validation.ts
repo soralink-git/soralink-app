@@ -266,6 +266,7 @@ export const dataActionSchema = z
     z.object({
       action: z.literal('save'),
       revision: z.string().max(64).nullable(),
+      expectedOwner: z.string().min(1).max(128).optional(),
       data: profileDataSchema,
       published: z.boolean().default(false),
     }),

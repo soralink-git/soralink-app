@@ -231,7 +231,7 @@ test('product editing exposes one content language and keeps advanced controls c
     assert.doesNotMatch(html, new RegExp('lang="' + (ar ? 'fr' : 'ar') + '"'));
     assert.match(html, /<details class="catalog-options">/);
     assert.doesNotMatch(html, /<details class="catalog-options" open/);
-    assert.match(html, ar ? /حفظ التغييرات/ : /Enregistrer les modifications/);
+    assert.doesNotMatch(html, /Enregistrer les modifications|حفظ التغييرات/);
   }
 });
 
@@ -314,5 +314,47 @@ test('YouTube link and agenda additions have explicit removal and save controls'
     assert.match(agenda, ar ? /حذف يوم الإغلاق/ : /Supprimer la date de fermeture/);
     assert.match(agenda, ar ? /حذف الخدمة/ : /Supprimer la prestation/);
     assert.match(agenda, ar ? /سجّل التغييرات/ : /Enregistrer les modifications/);
+  }
+});
+
+test('a single manual save action and an automatic-save status remain across editor sections', () => {
+  for (const ar of [false, true])
+    for (const tab of ['coordinates', 'interface', 'content', 'links', 'actions', 'schedule']) {
+      const c = context(tab, ar);
+      c.saveState = { status: 'saved', dirty: false };
+      const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
+      assert.equal(
+        (html.match(ar ? /سجّل التغييرات/g : /Enregistrer les modifications/g) || []).length,
+        1,
+      );
+      assert.match(html, ar ? /تسجلات التغييرات/ : /Modifications enregistrées/);
+      assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
+    }
+});
+test('save status reports offline and conflicts honestly and offers an explicit reload', () => {
+  const SaveBar = load(path.resolve('app/save-bar.tsx')).default;
+  for (const ar of [false, true]) {
+    const offline = renderToStaticMarkup(
+      React.createElement(SaveBar, {
+        state: { status: 'offline', dirty: true },
+        ar,
+        disabled: false,
+        save: noop,
+        reload: noop,
+      }),
+    );
+    assert.match(offline, ar ? /التغييرات ما تسجلاتش/ : /Modifications non enregistrées/);
+    assert.doesNotMatch(offline, ar ? /تسجلات التغييرات/ : /Modifications enregistrées/);
+    const conflict = renderToStaticMarkup(
+      React.createElement(SaveBar, {
+        state: { status: 'conflict', dirty: true },
+        ar,
+        disabled: false,
+        save: noop,
+        reload: noop,
+      }),
+    );
+    assert.match(conflict, ar ? /عاود حمّل النسخة المسجّلة/ : /Recharger la version enregistrée/);
+    assert.match(conflict, /<button type="button" class="primary" disabled="">/);
   }
 });

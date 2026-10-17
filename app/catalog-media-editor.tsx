@@ -69,8 +69,8 @@ export default function CatalogMediaEditor({ context }: { context: DashboardCont
       </div>
       <p className="hint">
         {t(
-          'Ajoutez des photos de votre activité ou une vidéo. Enregistrez ensuite pour les publier.',
-          'زيد تصاور ديال الخدمة أو فيديو. ومن بعد سجّل باش يبانو فالبطاقة.',
+          'Ajoutez des photos de votre activité ou une vidéo. L’enregistrement est automatique après l’importation.',
+          'زيد تصاور ديال الخدمة أو فيديو. التسجيل كيكون تلقائياً من بعد الاستيراد.',
         )}
       </p>
       <div className="form-grid">
