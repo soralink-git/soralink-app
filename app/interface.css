@@ -1393,8 +1393,8 @@
   margin-top: 5px;
   overflow-wrap: anywhere;
 }
-.workspace-savebar.save-status-saved strong {
-  color: #86efac;
+.workspace-savebar.save-status-saved {
+  justify-content: flex-end;
 }
 .workspace-savebar:is(
   .save-status-error,

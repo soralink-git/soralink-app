@@ -19,7 +19,7 @@ export default function SaveBar({
     ready: t('Enregistrement automatique activé', 'التسجيل التلقائي مفعّل'),
     pending: t('Modifications en attente…', 'التغييرات فانتظار التسجيل…'),
     saving: t('Enregistrement…', 'كنسجّلو…'),
-    saved: t('Modifications enregistrées', 'تسجلات التغييرات'),
+    saved: '',
     invalid: t('Complétez les champs pour enregistrer.', 'كمّل المعلومات باش يتسجلو التغييرات.'),
     offline: t(
       'Hors ligne. Modifications non enregistrées.',
@@ -33,10 +33,12 @@ export default function SaveBar({
   };
   return (
     <div className={'workspace-savebar save-status-' + state.status}>
-      <div role="status" aria-live="polite">
-        <strong>{labels[state.status]}</strong>
-        {state.error && <small>{state.error}</small>}
-      </div>
+      {state.status !== 'saved' && (
+        <div role="status" aria-live="polite">
+          <strong>{labels[state.status]}</strong>
+          {state.error && <small>{state.error}</small>}
+        </div>
+      )}
       <div className="row">
         <button
           type="button"
