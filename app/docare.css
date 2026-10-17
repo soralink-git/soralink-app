@@ -60,7 +60,10 @@ h3 {
 header {
   background: var(--docare-surface);
   border-color: var(--line);
-  height: 84px;
+  height: 80px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
 }
 .brand {
   color: var(--ink);
@@ -75,8 +78,68 @@ header {
   border-radius: 13px;
   box-shadow: none;
 }
-header :is(nav a, nav button, .language) {
-  color: var(--muted);
+.header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.theme-toggle,
+header .language,
+.account-menu summary,
+header a.header-login,
+.header-actions .secondary.small {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 42px !important;
+  height: 42px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 999px !important;
+  background: var(--docare-surface) !important;
+  color: var(--ink) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  white-space: nowrap !important;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
+  cursor: pointer !important;
+  transition: all 160ms ease !important;
+}
+.theme-toggle {
+  gap: 8px !important;
+  padding: 0 14px !important;
+  background: var(--docare-soft) !important;
+}
+header .language {
+  gap: 7px !important;
+  padding: 0 14px !important;
+  background: var(--docare-soft) !important;
+}
+.account-menu summary {
+  gap: 8px !important;
+  padding: 0 16px !important;
+}
+header a.header-login {
+  padding: 0 16px !important;
+}
+.theme-toggle:hover,
+header .language:hover,
+.account-menu summary:hover,
+header a.header-login:hover {
+  background: var(--docare-tint) !important;
+  border-color: var(--docare-tint-border) !important;
+  color: var(--docare-deep) !important;
+}
+.header-start {
+  min-height: 42px !important;
+  height: 42px !important;
+  padding: 0 18px !important;
+  font-size: 13px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  line-height: 1 !important;
 }
 header nav a:hover {
   color: var(--docare-deep);
@@ -921,15 +984,14 @@ html[data-theme='dark'] .account-menu-panel button {
   border-color: var(--line);
 }
 .workspace-save-action {
-  background: var(--docare-soft);
-  color: var(--ink);
-  border-color: var(--line);
-  box-shadow: none;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 .save-bar {
-  background: var(--docare-soft);
-  color: var(--ink);
-  border-color: var(--line);
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 /* Refine geometry without replacing saved card colors or uploaded artwork. */
 .card-design.profile-card {
@@ -1145,28 +1207,7 @@ html[data-theme='dark'] .account-menu-panel button {
   background: #e4f6ef;
   background-image: radial-gradient(circle at 85% 0%, #00b5ad12 0 35%, transparent 35.5%);
 }
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--docare-soft);
-  color: var(--ink);
-  font-size: 13px;
-  white-space: nowrap;
-}
-.theme-toggle:hover {
-  background: var(--docare-tint);
-  border-color: var(--docare-tint-border);
-}
-.theme-toggle:disabled {
-  cursor: default;
-  opacity: 0.7;
-}
+
 html[data-theme='dark'] .showcase-phone {
   background: var(--docare-surface);
   border-color: #30483f;
