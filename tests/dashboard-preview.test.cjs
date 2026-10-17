@@ -331,30 +331,32 @@ test('a single manual save action remains across editor sections without a saved
       assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
     }
 });
-test('save status reports offline and conflicts honestly and offers an explicit reload', () => {
+test('save controls contain only one button, including offline and conflict states', () => {
   const SaveBar = load(path.resolve('app/save-bar.tsx')).default;
   for (const ar of [false, true]) {
-    const offline = renderToStaticMarkup(
-      React.createElement(SaveBar, {
-        state: { status: 'offline', dirty: true },
-        ar,
-        disabled: false,
-        save: noop,
-        reload: noop,
-      }),
-    );
-    assert.match(offline, ar ? /التغييرات ما تسجلاتش/ : /Modifications non enregistrées/);
-    assert.doesNotMatch(offline, ar ? /تسجلات التغييرات/ : /Modifications enregistrées/);
-    const conflict = renderToStaticMarkup(
-      React.createElement(SaveBar, {
-        state: { status: 'conflict', dirty: true },
-        ar,
-        disabled: false,
-        save: noop,
-        reload: noop,
-      }),
-    );
-    assert.match(conflict, ar ? /عاود حمّل النسخة المسجّلة/ : /Recharger la version enregistrée/);
-    assert.match(conflict, /<button type="button" class="primary" disabled="">/);
+    for (const status of [
+      'ready',
+      'pending',
+      'saving',
+      'saved',
+      'offline',
+      'invalid',
+      'error',
+      'conflict',
+    ]) {
+      const html = renderToStaticMarkup(
+        React.createElement(SaveBar, {
+          state: { status, dirty: status !== 'saved' },
+          ar,
+          disabled: false,
+          save: noop,
+          reload: noop,
+        }),
+      );
+      assert.equal((html.match(/<button /g) || []).length, 1);
+      assert.match(html, ar ? /سجّل التغييرات/ : /Enregistrer les modifications/);
+      assert.doesNotMatch(html, /role="status"|workspace-savebar|class="secondary"/);
+      assert.equal(html.includes('disabled=""'), status === 'saving');
+    }
   }
 });
