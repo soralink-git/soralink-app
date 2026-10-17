@@ -1,0 +1,57 @@
+# Tableau de bord SoraLink
+
+## Création guidée
+
+Les nouveaux propriétaires sans carte enregistrée arrivent dans un assistant à quatre étapes :
+style (modèle, ambiance, palette et images), identité, actions de contact, puis vérification.
+Le nom est requis avant les étapes Contact et Vérifier. Les autres champs sont facultatifs.
+L’utilisateur peut passer à la gestion à tout moment et rouvrir l’assistant.
+Les modifications partagent l’état de l’éditeur : quitter l’assistant ne les efface pas.
+Le choix Brouillon / Publiée est explicite ; le bouton final appelle la sauvegarde existante,
+avec vérification serveur de la session, de la propriété, des droits et de la révision.
+Un échec de sauvegarde ne ferme pas l’assistant.
+
+## Gestion
+
+- Marque et style : quatre modèles, ambiance claire/sombre, palettes, logo et couverture.
+  Le fond photo, les couleurs détaillées et la typographie restent dans un volet avancé.
+- Identité : nom, profession, entreprise et présentation.
+- Actions directes : téléphone, WhatsApp, e-mail, adresse/Maps et site web, avec visibilité.
+- Réseaux et liens : plateformes existantes, ordre par glisser-déposer ou boutons accessibles.
+- Produits et services : catalogue existant, médias, documents et offres.
+- Contacts, demandes, agenda, partage et offre : fonctions existantes conservées.
+
+L’aperçu complet utilise le même composant que la carte publique, dans chaque rubrique.
+L’arabe conserve la direction RTL et la police Cairo. Aucun texte n’est traduit automatiquement.
+
+## Modèles
+
+Exécutif, Créatif, Contact direct et Minimaliste s’appliquent via les champs de style existants.
+Le champ `template` identifie la variante de présentation. Les anciennes valeurs restent valides
+et conservent le rendu existant. Les modèles ne modifient ni les contenus, ni les photos,
+ni la visibilité, ni les droits de forfait, ni la publication. Les couleurs restent modifiables.
+Les recommandations métiers sont indicatives : il n’existe aucune page dédiée par profession.
+
+`socialOrder` est une liste bornée de plateformes reconnues. Elle est validée côté serveur,
+normalisée sans doublons et incluse dans la projection publique. Les réseaux masqués ne sont
+pas transmis au visiteur. Le masquage du site utilise la section `links` existante.
+Aucune migration D1 ni modification de l’authentification n’est nécessaire.
+
+## Partage et contacts
+
+La vCard contient aussi l’entreprise, la fonction, l’adresse et le site lorsqu’ils sont visibles.
+Le texte est protégé contre l’injection de lignes et replié à 75 octets UTF-8.
+Le QR utilise le lien public actuel de la carte, une marge de quatre modules et la correction H.
+Le logo central est facultatif, limité à 18 % du côté du QR, et provient du stockage local autorisé.
+Une erreur de génération est affichée et ne permet pas de télécharger un ancien QR trompeur.
+La génération reste côté client dans le tableau de bord ; aucun générateur tiers ne reçoit le lien.
+La modification du contenu conserve la destination du QR. Tester le scan avant impression.
+
+## Validation
+
+Tests de conservation des contenus/droits lors du choix d’un modèle, validation des données,
+ordre public des réseaux, parcours initial FR/AR, séparation des outils, confidentialité et vCard.
+Compilation et parcours isolés D1/R2 à exécuter avant publication.
+La validation sur appareils physiques (scan avec logo, import iOS/Android, usage tactile) reste
+nécessaire. L’objectif de chargement inférieur à une seconde dépend du réseau et du contenu ;
+il ne constitue pas une mesure obtenue ni une garantie sur tous les appareils.

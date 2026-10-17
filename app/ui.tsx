@@ -366,31 +366,6 @@ export function Customization({
           </button>
         </div>
       </div>
-      <h3>{t('Coordonnées visibles', 'المعلومات اللي كيبانو')}</h3>
-      <div className="visibility-options">
-        {[
-          ['hidePhone', 'Téléphone', 'التلفون'],
-          ['hideEmail', 'E-mail', 'الإيميل'],
-          ['hideLocation', 'Maps et adresse', 'Maps والعنوان'],
-          ['hideSocial', 'Réseaux sociaux', 'مواقع التواصل'],
-          ['hideWhatsApp', 'WhatsApp', 'WhatsApp'],
-        ].map(([key, fr, da]) => (
-          <label key={key}>
-            <input
-              type="checkbox"
-              checked={!data[key]}
-              onChange={(e) => setData({ ...data, [key]: !e.target.checked })}
-            />
-            {t(fr, da)}
-          </label>
-        ))}
-      </div>
-      <p className="hint">
-        {t(
-          'Les informations masquées restent dans votre espace et ne sont plus transmises avec la carte publique après enregistrement.',
-          'المعلومات المخبيّة كاتبقى فالحساب ديالك وما كاتتسيفطش مع الكارط العمومية من بعد التسجيل.',
-        )}
-      </p>
     </div>
   );
 }
@@ -398,6 +373,8 @@ export function Customization({
 const VALID_DASHBOARD_TABS = new Set([
   'coordinates',
   'content',
+  'actions',
+  'links',
   'interface',
   'contacts',
   'requests',

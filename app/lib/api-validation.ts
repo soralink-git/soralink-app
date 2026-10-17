@@ -73,6 +73,10 @@ export const profileDataSchema = z
   .object({
     ...profileFields,
     name: requiredText(120),
+    socialOrder: z
+      .array(z.enum(['instagram', 'facebook', 'linkedin', 'tiktok', 'youtube', 'x']))
+      .max(6)
+      .optional(),
     photos: z.array(text(4000)).max(10).optional(),
     catalogDocuments: z.array(catalogDocumentSchema).max(10).optional(),
     catalogSettings: catalogSettingsSchema.optional(),

@@ -8,6 +8,7 @@ import { vcardText } from './lib/vcard';
 import { useState, useEffect } from 'react';
 import { Nfc, Phone, Mail, MapPin, Download, Globe, Users, Share2, Star } from 'lucide-react';
 import { socialLink } from './lib/social-links';
+import { cardStyleId, socialOrder } from './lib/card-styles';
 import { appearance } from './lib/personalization';
 import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
 import { activePromotions, promotionPrice, todayMorocco } from './lib/promotions';
@@ -132,7 +133,8 @@ export default function CardView({
           ' ' +
           (small ? 'compact' : '') +
           (withSections ? ' unified-card' : '') +
-          (a.backgroundPhoto ? ' has-photo-background' : '')
+          (a.backgroundPhoto ? ' has-photo-background' : '') +
+          (cardStyleId(d.template) ? ' card-layout-' + cardStyleId(d.template) : '')
         }
         style={
           {
@@ -219,6 +221,10 @@ export default function CardView({
                           name: d.name,
                           phone: a.hidePhone ? '' : d.phone,
                           email: a.hideEmail ? '' : d.email,
+                          business: d.business,
+                          job: d.job,
+                          address: a.hideLocation ? '' : d.address,
+                          website: a.hidden.includes('links') ? '' : webLink(d.website),
                         }),
                       ],
                       { type: 'text/vcard' },
@@ -500,21 +506,24 @@ export default function CardView({
           {d.sectionTitles?.[ar ? 'ar' : 'fr']?.social && <h2>{sectionHeading(d, section, '')}</h2>}
           {!a.hideSocial && socialFields.some(([key]) => socialLink(key, d[key])) && (
             <div className="social-links contact-icons">
-              {socialFields.map(([key, label]) =>
-                socialLink(key, d[key]) ? (
-                  <a
-                    key={key}
-                    href={socialLink(key, d[key])}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={label}
-                    title={label}
-                  >
-                    <SocialIcon network={key} />
-                    <span className="contact-label">{label}</span>
-                  </a>
-                ) : null,
-              )}
+              {socialOrder(d.socialOrder)
+                .map((network) => socialFields.find(([key]) => key === network)!)
+                .filter(Boolean)
+                .map(([key, label]) =>
+                  socialLink(key, d[key]) ? (
+                    <a
+                      key={key}
+                      href={socialLink(key, d[key])}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={label}
+                      title={label}
+                    >
+                      <SocialIcon network={key} />
+                      <span className="contact-label">{label}</span>
+                    </a>
+                  ) : null,
+                )}
             </div>
           )}
         </div>
