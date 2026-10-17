@@ -38,6 +38,7 @@ import {
   Camera,
   Crop,
   Package,
+  LogOut,
 } from 'lucide-react';
 
 import { type CardViewProps } from './card-view';
@@ -253,8 +254,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           ))}
         </nav>
         {auth && (
-          <button className="text-button" onClick={logout}>
-            {t('Se déconnecter', 'خرج من الحساب')}
+          <button className="sidebar-logout" onClick={logout}>
+            <LogOut size={16} />
+            <span>{t('Se déconnecter', 'خرج من الحساب')}</span>
           </button>
         )}
         {canAdmin && (

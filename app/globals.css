@@ -4161,13 +4161,22 @@ header nav {
 .account-menu summary {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   cursor: pointer;
   list-style: none;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 9px 11px;
+  border-radius: 999px;
+  background: var(--docare-surface, #ffffff);
+  color: var(--ink, #0f172a);
+  padding: 9px 15px;
+  font-weight: 600;
   white-space: nowrap;
+  transition: all 0.2s ease;
+}
+.account-menu summary:hover {
+  background: var(--docare-tint, #e9f7f3);
+  border-color: var(--docare-tint-border, #bde7da);
+  color: var(--docare-deep, #00847f);
 }
 .account-menu summary::-webkit-details-marker {
   display: none;
@@ -4187,31 +4196,48 @@ header nav {
   max-width: calc(100vw - 35px);
   padding: 18px;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: #171819;
-  box-shadow: 0 12px 35px #0008;
+  border-radius: 20px;
+  background: var(--docare-surface, #ffffff);
+  color: var(--ink, #0f172a);
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   gap: 13px;
   text-align: start;
 }
 .account-menu-panel strong {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
   color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 .account-email {
   font-size: 14px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
   overflow-wrap: anywhere;
 }
 .account-menu-panel a,
 .account-menu-panel button {
   text-align: start;
   font-size: 14px;
+  font-weight: 500;
   padding: 9px 0;
   border-top: 1px solid var(--line);
+  color: var(--ink, #0f172a);
+  transition: color 0.15s ease;
+}
+.account-menu-panel a:hover {
+  color: var(--docare-deep, #00847f);
 }
 .account-menu-panel button {
-  color: #e6ca83;
+  color: #e11d48;
+  font-weight: 600;
+  cursor: pointer;
+}
+.account-menu-panel button:hover {
+  opacity: 0.8;
 }
 [dir='rtl'] .account-menu {
   font-size: 15px;
