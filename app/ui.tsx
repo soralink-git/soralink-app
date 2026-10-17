@@ -166,6 +166,12 @@ export function Customization({
           ['fr', 'Français', 'الفرنسية'],
           ['ar', 'العربية / الدارجة', 'العربية / الدارجة'],
         ])}
+        {select('cardTheme', t('Thème général de la carte', 'المظهر العام للكارط'), [
+          ['light', 'Clair moderne', 'فاتح عصري'],
+          ['dark', 'Sombre élégant', 'داكن أنيق'],
+          ['sand', 'Sable doré', 'رملي ذهبي'],
+          ['teal', 'Santé & Émeraude (Docare)', 'صحي وزمردي (Docare)'],
+        ])}
         {select('cardFont', t('Police', 'الخط'), [
           ['modern', 'Moderne', 'عصري'],
           ['classic', 'Classique', 'كلاسيكي'],
@@ -207,7 +213,13 @@ export function Customization({
               }}
               value={
                 a.fondColor ||
-                (a.theme === 'dark' ? '#0f172a' : a.theme === 'sand' ? '#f5b86e' : '#e2c478')
+                (a.theme === 'dark'
+                  ? '#0f172a'
+                  : a.theme === 'sand'
+                    ? '#f5b86e'
+                    : a.theme === 'teal'
+                      ? '#f0fdfa'
+                      : '#e2c478')
               }
               onChange={(e) => setData({ ...data, fondColor: e.target.value })}
             />
@@ -215,7 +227,13 @@ export function Customization({
               type="text"
               value={data.fondColor || ''}
               placeholder={
-                a.theme === 'dark' ? '#0F172A' : a.theme === 'sand' ? '#F5B86E' : '#E2C478'
+                a.theme === 'dark'
+                  ? '#0F172A'
+                  : a.theme === 'sand'
+                    ? '#F5B86E'
+                    : a.theme === 'teal'
+                      ? '#F0FDFA'
+                      : '#E2C478'
               }
               maxLength={7}
               style={{
@@ -246,7 +264,10 @@ export function Customization({
                 padding: '4px',
                 cursor: 'pointer',
               }}
-              value={a.blockColor || (a.theme === 'dark' ? '#151d28' : '#ffffff')}
+              value={
+                a.blockColor ||
+                (a.theme === 'dark' ? '#151d28' : a.theme === 'teal' ? '#ffffff' : '#ffffff')
+              }
               onChange={(e) => setData({ ...data, blockColor: e.target.value })}
             />
             <input
@@ -282,13 +303,13 @@ export function Customization({
                 padding: '4px',
                 cursor: 'pointer',
               }}
-              value={a.buttonColor || data.color || '#d5b66f'}
+              value={a.buttonColor || data.color || (a.theme === 'teal' ? '#00b5ad' : '#d5b66f')}
               onChange={(e) => setData({ ...data, buttonColor: e.target.value })}
             />
             <input
               type="text"
               value={data.buttonColor || ''}
-              placeholder="#D5B66F"
+              placeholder={a.theme === 'teal' ? '#00B5AD' : '#D5B66F'}
               maxLength={7}
               style={{
                 width: '96px',
@@ -320,7 +341,13 @@ export function Customization({
               }}
               value={
                 a.textColor ||
-                (a.theme === 'dark' ? '#f5f6f8' : a.theme === 'sand' ? '#352b20' : '#1c2623')
+                (a.theme === 'dark'
+                  ? '#f5f6f8'
+                  : a.theme === 'sand'
+                    ? '#352b20'
+                    : a.theme === 'teal'
+                      ? '#0f172a'
+                      : '#1c2623')
               }
               onChange={(e) => setData({ ...data, textColor: e.target.value })}
             />
@@ -328,7 +355,13 @@ export function Customization({
               type="text"
               value={data.textColor || ''}
               placeholder={
-                a.theme === 'dark' ? '#F5F6F8' : a.theme === 'sand' ? '#352B20' : '#1C2623'
+                a.theme === 'dark'
+                  ? '#F5F6F8'
+                  : a.theme === 'sand'
+                    ? '#352B20'
+                    : a.theme === 'teal'
+                      ? '#0F172A'
+                      : '#1C2623'
               }
               maxLength={7}
               style={{
@@ -347,6 +380,55 @@ export function Customization({
             />
           </div>
         </label>
+        <div style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
+          <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '6px', opacity: 0.85 }}>
+            {t('Palettes recommandées', 'ألوان مقترحة')}
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {[
+              { label: 'Docare Sarcelle', color: '#00b5ad', fond: '#f0fdfa', theme: 'teal' },
+              { label: 'Or Premium', color: '#d5b66f', fond: '#ffffff', theme: 'light' },
+              { label: 'Bleu Nuit', color: '#4f46e5', fond: '#0f172a', theme: 'dark' },
+              { label: 'Vert Émeraude', color: '#10b981', fond: '#ffffff', theme: 'light' },
+              { label: 'Sable Chaud', color: '#b45309', fond: '#fff8ec', theme: 'sand' },
+            ].map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                className="secondary small"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  borderRadius: '20px',
+                  padding: '5px 12px',
+                }}
+                onClick={() =>
+                  setData({
+                    ...data,
+                    color: p.color,
+                    buttonColor: p.color,
+                    cardTheme: p.theme,
+                    fondColor: p.fond,
+                    blockColor: '',
+                    textColor: '',
+                  })
+                }
+              >
+                <span
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    backgroundColor: p.color,
+                    display: 'inline-block',
+                  }}
+                />
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
         <div style={{ gridColumn: '1 / -1', marginTop: '6px' }}>
           <button
             type="button"
@@ -355,6 +437,7 @@ export function Customization({
               setData({
                 ...data,
                 color: '#d5b66f',
+                cardTheme: 'light',
                 fondColor: '',
                 blockColor: '',
                 buttonColor: '',

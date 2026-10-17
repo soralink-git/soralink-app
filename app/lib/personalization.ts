@@ -11,7 +11,7 @@ export const sectionKeys = [
   'appointments',
 ] as const;
 export function appearance(d: any) {
-  const theme = ['light', 'dark', 'sand'].includes(d.cardTheme) ? d.cardTheme : 'light';
+  const theme = ['light', 'dark', 'sand', 'teal'].includes(d.cardTheme) ? d.cardTheme : 'light';
   const font = ['modern', 'classic', 'simple'].includes(d.cardFont) ? d.cardFont : 'modern';
   const shape = ['rounded', 'square', 'pill'].includes(d.buttonShape) ? d.buttonShape : 'rounded';
   const order = [

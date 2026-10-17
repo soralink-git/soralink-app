@@ -171,7 +171,7 @@ export const profileDataSchema = z
     blockColor: color,
     textColor: color,
     buttonColor: color,
-    cardTheme: z.enum(['light', 'dark', 'sand']).optional(),
+    cardTheme: z.enum(['light', 'dark', 'sand', 'teal']).optional(),
     cardFont: z.enum(['modern', 'classic', 'simple']).optional(),
     buttonShape: z.enum(['rounded', 'square', 'pill']).optional(),
     avatarShape: z.enum(['circle', 'square']).optional(),

@@ -334,6 +334,47 @@ export default function PublicRequestModal({
               </label>
               {
                 <>
+                  <div
+                    className="docare-date-strip"
+                    role="group"
+                    aria-label={t('Jours disponibles', 'الأيام المتوفرة')}
+                  >
+                    {(() => {
+                      const list: { iso: string; dayName: string; dayNum: string }[] = [];
+                      const base = new Date(moroccoNow().slice(0, 10) + 'T12:00:00Z');
+                      const frDays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+                      const arDays = [
+                        'الأحد',
+                        'الإثنين',
+                        'الثلاثاء',
+                        'الأربعاء',
+                        'الخميس',
+                        'الجمعة',
+                        'السبت',
+                      ];
+                      for (let i = 0; i < 7; i++) {
+                        const cur = new Date(base.getTime() + i * 86400000);
+                        const iso = cur.toISOString().slice(0, 10);
+                        const dayOfWeek = cur.getUTCDay();
+                        list.push({
+                          iso,
+                          dayName: ar ? arDays[dayOfWeek] : frDays[dayOfWeek],
+                          dayNum: String(cur.getUTCDate()).padStart(2, '0'),
+                        });
+                      }
+                      return list;
+                    })().map((d) => (
+                      <button
+                        key={d.iso}
+                        type="button"
+                        className={'docare-date-pill' + (date === d.iso ? ' active' : '')}
+                        onClick={() => setDate(d.iso)}
+                      >
+                        <span className="pill-day">{d.dayName}</span>
+                        <span className="pill-num">{d.dayNum}</span>
+                      </button>
+                    ))}
+                  </div>
                   <label className="field">
                     {t('Jour souhaité · heure du Maroc', 'النهار · توقيت المغرب')}
                     <input

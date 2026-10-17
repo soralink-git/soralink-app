@@ -112,6 +112,17 @@ test('shared renderer preserves theme, sizing, color and shape customization', (
   assert.match(html, /--button-bg:#654321/);
   assert.match(html, /--button-radius:30px/);
 });
+test('shared renderer supports Docare teal theme with pill buttons and color presets', () => {
+  const html = card({
+    ...demoCard,
+    cardTheme: 'teal',
+    buttonShape: 'pill',
+    color: '#00b5ad',
+  });
+  assert.match(html, /theme-teal/);
+  assert.match(html, /--button-radius:30px/);
+  assert.match(html, /--card-color:#00b5ad/);
+});
 test('contact exchange still requires explicit consent', () => {
   const html = render(PublicRequestModal, {
     kind: 'contact',
