@@ -24,7 +24,7 @@
   height: 700px;
   background: radial-gradient(
     ellipse 900px 500px at 50% 120px,
-    rgba(213, 182, 111, 0.16),
+    rgba(0, 181, 173, 0.18),
     transparent 70%
   );
   pointer-events: none;
@@ -38,7 +38,7 @@
   right: -150px;
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle 320px at 50% 50%, rgba(99, 102, 241, 0.12), transparent 70%);
+  background: radial-gradient(circle 350px at 50% 50%, rgba(0, 181, 173, 0.15), transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -50,24 +50,24 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: 9999px;
-  background: rgba(213, 182, 111, 0.08);
-  border: 1px solid rgba(213, 182, 111, 0.25);
-  color: #ecd296;
+  background: rgba(0, 181, 173, 0.09);
+  border: 1px solid rgba(0, 181, 173, 0.35);
+  color: #5eead4;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   margin-bottom: 20px;
   backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 181, 173, 0.15);
 }
 
 .landing-kicker > span:first-child {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #d5b66f;
-  box-shadow: 0 0 10px #d5b66f;
+  background: #00b5ad;
+  box-shadow: 0 0 10px #00b5ad;
   animation: pulse-glow 2s infinite ease-in-out;
 }
 
@@ -115,7 +115,7 @@
 .landing-copy h1 em,
 .landing-copy h1 .hero-gradient {
   font-style: normal;
-  background: linear-gradient(135deg, #ffffff 0%, #f1dc9e 45%, #d5b66f 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 45%, #00b5ad 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -143,15 +143,15 @@
   justify-content: center;
   gap: 10px;
   min-height: 52px;
-  padding: 12px 28px;
+  padding: 12px 30px;
   border-radius: 9999px;
   font-size: 15px;
   font-weight: 750;
-  color: #120e06 !important;
-  background: linear-gradient(135deg, #ecd296 0%, #d5b66f 60%, #c49f50 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #00b5ad 0%, #0d9488 60%, #047857 100%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow:
-    0 8px 24px -4px rgba(213, 182, 111, 0.4),
+    0 8px 24px -4px rgba(0, 181, 173, 0.45),
     inset 0 1px 1px rgba(255, 255, 255, 0.6);
   text-decoration: none;
   cursor: pointer;
@@ -162,7 +162,7 @@
   transform: translateY(-2px);
   filter: brightness(1.08);
   box-shadow:
-    0 12px 32px -4px rgba(213, 182, 111, 0.55),
+    0 12px 32px -4px rgba(0, 181, 173, 0.65),
     inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
@@ -842,10 +842,10 @@
 
 .landing-price-grid article.featured {
   background: linear-gradient(145deg, rgba(30, 42, 66, 0.95) 0%, rgba(17, 24, 40, 0.98) 100%);
-  border: 2px solid rgba(213, 182, 111, 0.65);
+  border: 2px solid rgba(0, 181, 173, 0.7);
   box-shadow:
     0 25px 60px -15px rgba(0, 0, 0, 0.7),
-    0 0 45px rgba(213, 182, 111, 0.2);
+    0 0 45px rgba(0, 181, 173, 0.25);
   transform: scale(1.03);
 }
 
@@ -855,7 +855,7 @@
   font-weight: 750;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #ecd296;
+  color: #00b5ad;
   margin-bottom: 12px;
 }
 
@@ -907,9 +907,10 @@
 }
 
 .landing-price-grid article a.primary {
-  color: #120e06 !important;
-  background: linear-gradient(135deg, #ecd296 0%, #d5b66f 60%, #c49f50 100%);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #00b5ad 0%, #0d9488 60%, #047857 100%);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 8px 24px -4px rgba(0, 181, 173, 0.45);
 }
 
 .landing-price-grid article a.secondary {
@@ -920,9 +921,9 @@
 }
 
 .landing-price-grid article a.secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(213, 182, 111, 0.35);
-  color: #ecd296;
+  background: rgba(0, 181, 173, 0.08);
+  border-color: rgba(0, 181, 173, 0.35);
+  color: #5eead4;
 }
 
 .landing-price-grid article > small {

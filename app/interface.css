@@ -551,32 +551,32 @@
   transition: color 0.2s ease;
 }
 .workspace-navigation button:hover {
-  background: rgba(30, 41, 59, 0.7);
-  border-color: rgba(148, 163, 184, 0.2);
+  background: rgba(0, 181, 173, 0.1);
+  border-color: rgba(0, 181, 173, 0.25);
   color: #ffffff;
 }
 .workspace-navigation button:hover > svg {
-  color: #ecd296;
+  color: #00b5ad;
 }
 .workspace-navigation button.selected {
-  color: #fce7b0;
-  background: linear-gradient(90deg, rgba(213, 182, 111, 0.18) 0%, rgba(213, 182, 111, 0.06) 100%);
-  border: 1px solid rgba(213, 182, 111, 0.45);
-  box-shadow: 0 4px 16px -2px rgba(213, 182, 111, 0.2);
+  color: #5eead4;
+  background: linear-gradient(90deg, rgba(0, 181, 173, 0.2) 0%, rgba(0, 181, 173, 0.06) 100%);
+  border: 1px solid rgba(0, 181, 173, 0.45);
+  box-shadow: 0 4px 16px -2px rgba(0, 181, 173, 0.25);
   font-weight: 700;
 }
 .workspace-navigation button.selected > svg {
-  color: #ecd296;
+  color: #00b5ad;
 }
 .workspace-navigation .nav-count {
   margin-inline-start: auto;
   border-radius: 16px;
-  background: linear-gradient(135deg, #ecd296 0%, #d5b66f 100%);
-  color: #120e06;
+  background: linear-gradient(135deg, #00b5ad 0%, #0d9488 100%);
+  color: #ffffff;
   padding: 2px 7px;
   font-size: 12px;
   font-weight: 750;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 181, 173, 0.4);
 }
 .workspace-design .sidebar-note {
   margin-top: 20px;
@@ -591,7 +591,7 @@
 }
 .workspace-design .workspace-head .eyebrow {
   margin-bottom: 6px;
-  color: #ecd296;
+  color: #00b5ad;
   font-weight: 750;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -616,12 +616,12 @@
 .workspace-design .workspace-tab-content > .panel,
 .workspace-design .workspace-tab-content > section.panel {
   background: linear-gradient(160deg, #141c2e 0%, #0f1626 100%);
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 20px;
+  border: 1px solid rgba(0, 181, 173, 0.16);
+  border-radius: 24px;
   padding: 24px;
   box-shadow:
     0 12px 36px -10px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    inset 0 1px 0 rgba(0, 181, 173, 0.1);
 }
 .workspace-design .panel-title {
   align-items: center;
@@ -648,7 +648,7 @@
   background: #0d1322;
   border: 1px solid #243248;
   color: #f8fafc;
-  border-radius: 10px;
+  border-radius: 14px;
   min-height: 46px;
   transition:
     border-color 0.2s,
@@ -663,18 +663,34 @@
 .workspace-design .workspace-tab-content .field select:focus-visible,
 .workspace-design .workspace-tab-content .field textarea:focus-visible {
   outline: none;
-  border-color: #d5b66f;
+  border-color: #00b5ad;
   background: #0f1728;
-  box-shadow: 0 0 0 3px rgba(213, 182, 111, 0.25);
+  box-shadow: 0 0 0 3px rgba(0, 181, 173, 0.25);
+}
+.workspace-design .primary,
+.workspace-save-action .primary {
+  background: linear-gradient(135deg, #00b5ad 0%, #0d9488 100%);
+  color: #ffffff !important;
+  border-radius: 9999px;
+  box-shadow: 0 4px 16px rgba(0, 181, 173, 0.35);
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+.workspace-design .primary:hover,
+.workspace-save-action .primary:hover {
+  background: linear-gradient(135deg, #02c3ba 0%, #0f766e 100%);
+  box-shadow: 0 6px 22px rgba(0, 181, 173, 0.5);
+  transform: translateY(-1px);
 }
 .workspace-design .workspace-card-preview {
   padding: 16px;
   background: linear-gradient(180deg, #131b2e 0%, #0e1524 100%);
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 24px;
+  border: 1px solid rgba(0, 181, 173, 0.2);
+  border-radius: 28px;
   box-shadow:
     0 12px 36px -10px rgba(0, 0, 0, 0.5),
-    0 0 30px rgba(213, 182, 111, 0.08);
+    0 0 35px rgba(0, 181, 173, 0.12);
   max-height: calc(100dvh - 32px);
 }
 .preview-heading {
