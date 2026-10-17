@@ -1184,3 +1184,133 @@
   min-height: 44px;
   font-size: 22px;
 }
+
+/* Platform-first link management. */
+.network-links-editor .link-add-button {
+  margin-block: 12px 20px;
+}
+.link-platform-picker,
+.link-edit-form {
+  border: 1px solid #3c4c63;
+  border-radius: 16px;
+  padding: 18px;
+  margin-block: 16px;
+  background: #0d1524;
+}
+.link-picker-heading,
+.network-link-actions,
+.network-link-identity,
+.link-edit-form h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.link-picker-heading {
+  justify-content: space-between;
+}
+.link-picker-heading h3 {
+  margin: 0;
+}
+.link-picker-heading button {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+}
+.link-platform-search span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.link-platform-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.workspace-design .link-platform-grid button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 95px;
+  padding: 12px 6px;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  background: #172234;
+  color: #f8fafc;
+}
+.link-platform-grid button svg {
+  width: 26px;
+  height: 26px;
+}
+.link-platform-grid button small {
+  font-size: 11px;
+}
+.network-link-card {
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 16px;
+  margin-block: 12px;
+  min-width: 0;
+}
+.network-link-identity > svg {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+.network-link-identity > div {
+  min-width: 0;
+  flex: 1;
+}
+.network-link-identity strong,
+.network-link-identity span {
+  display: block;
+}
+.network-link-identity span {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+.network-link-actions {
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.network-link-actions > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+}
+.network-link-actions .social-move-actions {
+  margin-inline-start: auto;
+}
+.network-links-empty {
+  text-align: center;
+  padding: 28px 14px;
+  border: 1px dashed #334155;
+  border-radius: 16px;
+  margin-block: 16px;
+  color: #cbd5e1;
+}
+.network-links-empty > svg {
+  margin-inline: auto;
+}
+.network-links-visibility {
+  border-block-start: 1px solid #334155;
+  margin-top: 20px;
+}
+.network-links-visibility summary {
+  min-height: 44px;
+  padding-block: 14px;
+  cursor: pointer;
+}
+@media (max-width: 420px) {
+  .link-platform-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .network-link-actions .social-move-actions {
+    margin-inline-start: 0;
+  }
+}

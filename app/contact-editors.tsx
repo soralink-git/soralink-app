@@ -1,8 +1,7 @@
 'use client';
 import { Phone, Mail, MapPin, Globe } from 'lucide-react';
-import { WhatsAppIcon, SocialIcon } from './card-helpers';
+import { WhatsAppIcon } from './card-helpers';
 import { appearance } from './lib/personalization';
-import { socialOrder } from './lib/card-styles';
 import type { DashboardContext } from './dashboard-editor';
 export function ContactActionsEditor({ context }: { context: DashboardContext }) {
   const { data, setData, t, field, busy } = context;
@@ -104,90 +103,4 @@ export function ContactActionsEditor({ context }: { context: DashboardContext })
     </fieldset>
   );
 }
-export function SocialLinksEditor({ context }: { context: DashboardContext }) {
-  const { data, setData, socialFields, field, busy, t } = context;
-  const ordered = socialOrder(data.socialOrder);
-  function move(index: number, delta: number) {
-    const next = [...ordered];
-    [next[index], next[index + delta]] = [next[index + delta], next[index]];
-    setData((d: any) => ({ ...d, socialOrder: next }));
-  }
-  return (
-    <fieldset className="social-links-editor" disabled={busy}>
-      <legend>{t('Réseaux et liens', 'مواقع التواصل والروابط')}</legend>
-      <label className="toggle">
-        <input
-          type="checkbox"
-          checked={!data.hideSocial}
-          onChange={(e) => {
-            const visible = e.target.checked;
-            setData((d: any) => ({ ...d, hideSocial: !visible }));
-          }}
-        />
-        {t('Afficher mes réseaux sociaux', 'إظهار مواقع التواصل ديالي')}
-      </label>
-      <p className="hint">
-        {t(
-          'Ajoutez vos liens et choisissez leur ordre avec les flèches. Les liens vides ne s’affichent pas.',
-          'زيد الروابط ورتّبهم بالأسهم. الروابط الخاوية ما كيبانوش.',
-        )}
-      </p>
-      {ordered.map((key, i) => {
-        const label = socialFields.find(([k]) => k === key)?.[1] || key;
-        return (
-          <div
-            className="social-editor-row"
-            key={key}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              const from = ordered.indexOf(e.dataTransfer.getData('text/soralink-network'));
-              if (from < 0 || from === i || busy) return;
-              const next = [...ordered];
-              const [moved] = next.splice(from, 1);
-              next.splice(i, 0, moved);
-              setData((d: any) => ({ ...d, socialOrder: next }));
-            }}
-          >
-            <button
-              type="button"
-              className="social-drag-handle"
-              draggable={!busy}
-              onDragStart={(e) => {
-                e.dataTransfer.setData('text/soralink-network', key);
-                e.dataTransfer.effectAllowed = 'move';
-              }}
-              aria-label={t('Déplacer ', 'حرّك ') + label}
-            >
-              ⠿
-            </button>
-            <SocialIcon network={key} />
-            {field(key, label, 'url')}
-            <div className="social-move-actions">
-              <button
-                type="button"
-                disabled={i === 0}
-                onClick={() => move(i, -1)}
-                aria-label={t('Monter ', 'طلّع ') + label}
-              >
-                ↑
-              </button>
-              <button
-                type="button"
-                disabled={i === ordered.length - 1}
-                onClick={() => move(i, 1)}
-                aria-label={t('Descendre ', 'هبّط ') + label}
-              >
-                ↓
-              </button>
-            </div>
-          </div>
-        );
-      })}
-      <details>
-        <summary>{t('Avis Google', 'تقييمات Google')}</summary>
-        {field('googleReview', t('Lien direct d’avis Google', 'رابط مباشر لتقييمات Google'), 'url')}
-      </details>
-    </fieldset>
-  );
-}
+export { default as SocialLinksEditor } from './network-links-editor';
