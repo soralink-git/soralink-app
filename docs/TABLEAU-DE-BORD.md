@@ -65,3 +65,28 @@ La plateforme choisie ouvre un champ de saisie unique ; le lien est validé avan
 Les fiches permettent de modifier ou retirer les liens. Les réseaux ajoutés se réordonnent
 par glisser-déposer ou boutons accessibles. Les champs existants sont réutilisés : aucun
 transfert de données, changement de stockage ou nouvelle limite de forfait.
+
+### Plusieurs entrées par plateforme ou action
+
+`profileLinks` est une liste ordonnée de 40 entrées maximum, indépendantes du forfait catalogue.
+Chaque entrée possède un identifiant unique, un type reconnu, une valeur, deux libellés FR/AR
+facultatifs et sa propre visibilité. Plusieurs entrées du même type sont autorisées. Les adresses
+peuvent conserver un lien Maps et une destination précise. Le choix d’une plateforme existante
+ajoute une nouvelle entrée et ne remplace plus la précédente.
+
+Les anciennes cartes sans liste continuent d’utiliser leurs champs historiques. L’éditeur les
+adapte avec des identifiants stables ; au premier changement, il conserve les valeurs et la
+confidentialité dans la liste. Une liste vide est explicite et ne réactive jamais les anciens liens.
+Aucune migration D1 ni réécriture des comptes n’est requise.
+
+À la sauvegarde, la première entrée de chaque type alimente aussi le champ historique pour
+les traitements existants. La première adresse e-mail reste la destinataire des notifications ;
+les demandes du catalogue utilisent le premier WhatsApp visible dans la projection publique.
+Les changements d’ordre peuvent donc modifier le contact principal de leur type.
+
+Le serveur vérifie les types, formats, identifiants uniques et la limite de 40 entrées. La projection
+publique transmet uniquement les champs autorisés des entrées visibles et respecte les sections
+masquées. La fiche vCard contient les téléphones, e-mails, adresses et sites visibles ; un numéro
+WhatsApp identique à un téléphone n’est pas dupliqué. Les anciennes cartes gardent leur rendu
+jusqu’à la modification de leurs liens. Les tests incluent sauvegarde D1, lecture publique,
+réseaux et numéros multiples, confidentialité, limites et conservation de l’état propriétaire.

@@ -1,3 +1,4 @@
+import { replaceProfileLinks } from '../../lib/profile-links';
 import {
   catalogRights,
   catalogDocuments,
@@ -312,6 +313,7 @@ export async function POST(req: Request) {
       const stamp = new Date(Math.max(Date.now(), (Date.parse(p?.updated) || 0) + 1)).toISOString();
       const id = p?.id || crypto.randomUUID();
       let d = b.data;
+      if (Array.isArray(d.profileLinks)) d = replaceProfileLinks(d, d.profileLinks);
       d = normalizeAppearance(normalizeSchedule(d));
       d.recordedVideo = recordedVideoUrl(d.recordedVideo);
       d.promotions = normalizePromotions(d.promotions);

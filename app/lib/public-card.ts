@@ -1,3 +1,4 @@
+import { visibleProfileLinks, profileLinkKinds } from './profile-links';
 import {
   catalogDocuments,
   catalogCategories,
@@ -138,5 +139,17 @@ export function publicCardData(
   for (const lang of ['fr', 'ar'])
     for (const key of Object.keys(out.sectionTitles[lang]))
       if (hidden.has(key) || (key === 'appointments' && !pro)) delete out.sectionTitles[lang][key];
+  if (Array.isArray(d.profileLinks)) {
+    out.profileLinks = visibleProfileLinks(d);
+    for (const kind of profileLinkKinds)
+      out[kind] = out.profileLinks.find((entry: any) => entry.kind === kind)?.value || '';
+    const address = out.profileLinks.find((entry: any) => entry.kind === 'address');
+    out.mapsUrl = address?.mapsUrl || '';
+    out.mapDestination = address?.mapDestination || '';
+    out.hidePhone = false;
+    out.hideEmail = false;
+    out.hideWhatsApp = false;
+    out.hideLocation = false;
+  }
   return out;
 }

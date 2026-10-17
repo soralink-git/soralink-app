@@ -266,7 +266,7 @@ test('identity, direct contact and network tools are separated without dropping 
     const actions = renderToStaticMarkup(
       React.createElement(DashboardEditor, { context: context('actions', ar) }),
     );
-    assert.match(actions, /class="contact-action-editor"/);
+    assert.match(actions, /class="contact-action-editor(?: network-links-editor)?"/);
     assert.doesNotMatch(actions, /class="social-links-editor(?: network-links-editor)?"/);
     const networkContext = context('links', ar);
     networkContext.data = {

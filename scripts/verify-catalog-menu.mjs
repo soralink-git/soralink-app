@@ -113,7 +113,37 @@ export async function verifyCatalogMenu({ db, request, cardId, otherId, photo })
       ],
     };
     // Use a visible WhatsApp destination for the catalogue order action.
-    await save({ ...data, whatsapp: '0661446664' });
+    await save({
+      ...data,
+      whatsapp: '0661446664',
+      ...(Array.isArray(data.profileLinks)
+        ? {
+            profileLinks: [
+              ...data.profileLinks.filter((entry) => entry.kind !== 'whatsapp'),
+              {
+                id: 'catalog-wa-hidden',
+                kind: 'whatsapp',
+                value: '+212600000099',
+                labelFr: 'Privé',
+                labelAr: 'خاص',
+                visible: false,
+              },
+              {
+                id: 'catalog-wa-visible',
+                kind: 'whatsapp',
+                value: '+212661446664',
+                labelFr: 'Commandes',
+                labelAr: 'الطلبات',
+                visible: true,
+              },
+            ],
+          }
+        : {}),
+    });
+    assert.equal(
+      new URL((await request('/api/catalog-order', { data: order })).json.url).pathname,
+      '/212661446664',
+    );
     const orderFr = new URL(
       (await request('/api/catalog-order', { data: order })).json.url,
     ).searchParams.get('text');
