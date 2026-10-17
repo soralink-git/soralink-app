@@ -45,7 +45,7 @@ test('empty editor offers an add action rather than a wall of empty social input
     assert.doesNotMatch(html, ar ? /Ajouter un lien|Votre premier lien/ : /زيد رابط|زيد أول رابط/);
   }
 });
-test('picker displays supported icons, separates categories and prevents duplicate platform entries', () => {
+test('picker displays supported icons and permits another entry of an existing platform', () => {
   for (const ar of [false, true]) {
     const html = renderToStaticMarkup(
       React.createElement(EditorModule.LinkPlatformPicker, {
@@ -57,9 +57,9 @@ test('picker displays supported icons, separates categories and prevents duplica
     );
     assert.equal((html.match(/<svg/g) || []).length, 10);
     assert.match(html, /type="search"/);
-    assert.match(html, ar ? /تزاد من قبل/ : /Déjà ajouté/);
+    assert.match(html, ar ? /مضاف/ : /ajouté/);
     assert.match(html, ar ? /روابط أخرى/ : /Autres liens/);
-    assert.match(html, /<button type="button" disabled="">/);
+    assert.doesNotMatch(html, /<button type="button" disabled="">/);
   }
 });
 test('URL confirmation normalizes web links and rejects executable schemes, credentials, unknown platforms and oversized input', () => {

@@ -1,4 +1,6 @@
 'use client';
+import ProfileLinksView from './profile-links-view';
+import { visibleProfileLinks } from './lib/profile-links';
 import CatalogVideos, { catalogVideoSources } from './catalog-videos';
 import { catalogSettings } from './lib/catalog-menu';
 import CatalogProducts, { CatalogDocuments } from './catalog-public';
@@ -219,6 +221,9 @@ export default function CardView({
                       [
                         vcardText({
                           name: d.name,
+                          ...(Array.isArray(d.profileLinks)
+                            ? { entries: visibleProfileLinks(d) }
+                            : {}),
                           phone: a.hidePhone ? '' : d.phone,
                           email: a.hideEmail ? '' : d.email,
                           business: d.business,
@@ -342,6 +347,16 @@ export default function CardView({
     const a = appearance(d),
       location = mapLinks(d);
     if (a.hidden.includes(section)) return null;
+    if (Array.isArray(d.profileLinks) && ['coordinates', 'social'].includes(section))
+      return (
+        <ProfileLinksView
+          data={d}
+          group={section}
+          ar={ar}
+          heading={sectionHeading(d, section, '')}
+          onMessage={setMsg}
+        />
+      );
     if (section === 'coordinates') {
       if (
         !(
@@ -744,6 +759,17 @@ export default function CardView({
                 </div>
               );
             if (key === 'video') return null;
+            if (key === 'links' && Array.isArray(d.profileLinks))
+              return (
+                <ProfileLinksView
+                  key={key}
+                  data={d}
+                  group="links"
+                  ar={ar}
+                  heading={sectionHeading(d, 'links', '')}
+                  onMessage={setMsg}
+                />
+              );
             if (key === 'links' && webLink(d.website))
               return (
                 <a

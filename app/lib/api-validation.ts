@@ -1,3 +1,4 @@
+import { profileLinkKinds, profileLinkValue } from './profile-links';
 import {
   catalogDocumentSchema,
   catalogSettingsSchema,
@@ -73,6 +74,30 @@ export const profileDataSchema = z
   .object({
     ...profileFields,
     name: requiredText(120),
+    profileLinks: z
+      .array(
+        z
+          .object({
+            id: requiredText(80),
+            kind: z.enum(profileLinkKinds),
+            value: requiredText(4000),
+            labelFr: text(80).default(''),
+            labelAr: text(80).default(''),
+            visible: z.boolean().default(true),
+            mapsUrl: text(4000).optional(),
+            mapDestination: text(4000).optional(),
+          })
+          .refine(
+            (entry) => !!profileLinkValue(entry.kind, entry.value),
+            'Lien ou coordonnée invalide.',
+          ),
+      )
+      .max(40)
+      .refine(
+        (entries) => new Set(entries.map((entry) => entry.id)).size === entries.length,
+        'Identifiants de liens dupliqués.',
+      )
+      .optional(),
     socialOrder: z
       .array(z.enum(['instagram', 'facebook', 'linkedin', 'tiktok', 'youtube', 'x']))
       .max(6)

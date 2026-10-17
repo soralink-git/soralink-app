@@ -204,6 +204,49 @@ try {
     phone: '0600000001',
     email,
     bio: 'Présentation de test',
+    profileLinks: [
+      {
+        id: 'phone-one',
+        kind: 'phone',
+        value: '0600000001',
+        labelFr: 'Accueil',
+        labelAr: 'الاستقبال',
+        visible: true,
+      },
+      {
+        id: 'phone-two',
+        kind: 'phone',
+        value: '0600000002',
+        labelFr: 'Commercial',
+        labelAr: 'التجاري',
+        visible: true,
+      },
+      { id: 'email-one', kind: 'email', value: email, labelFr: '', labelAr: '', visible: true },
+      {
+        id: 'social-one',
+        kind: 'instagram',
+        value: 'https://instagram.com/first',
+        labelFr: 'Boutique',
+        labelAr: 'المحل',
+        visible: true,
+      },
+      {
+        id: 'social-two',
+        kind: 'instagram',
+        value: 'https://instagram.com/second',
+        labelFr: 'Atelier',
+        labelAr: 'الورشة',
+        visible: true,
+      },
+      {
+        id: 'social-private',
+        kind: 'instagram',
+        value: 'https://instagram.com/private-never-public',
+        labelFr: 'Privé',
+        labelAr: 'خاص',
+        visible: false,
+      },
+    ],
     services: [],
     photos: [],
     promotions: [],
@@ -220,6 +263,21 @@ try {
     data: { action: 'save', revision: null, data: fields, published: false },
   });
   const cardId = saved.json.id;
+  for (const badLinks of [
+    [fields.profileLinks[0], fields.profileLinks[0]],
+    [{ ...fields.profileLinks[3], value: 'javascript:alert(1)' }],
+    Array.from({ length: 41 }, (_, i) => ({ ...fields.profileLinks[0], id: 'over-' + i })),
+  ])
+    await request('/api/data', {
+      auth: true,
+      data: {
+        action: 'save',
+        revision: saved.json.revision,
+        data: { ...fields, profileLinks: badLinks },
+      },
+      status: 400,
+    });
+
   await request('/api/data?id=' + cardId, { status: 404 });
   // Named addresses are chosen by the authenticated owner; draft content stays private.
   await request('/api/address?name=journey-name', { status: 401 });
@@ -345,6 +403,19 @@ try {
   await db.prepare('UPDATE profiles SET published=1 WHERE id=?').bind(cardId).run();
   const publicData = JSON.parse((await request('/api/data?id=' + cardId)).json.data);
   assert.equal(publicData.name, fields.name);
+  assert.equal(publicData.profileLinks.filter((entry) => entry.kind === 'instagram').length, 2);
+  assert.equal(publicData.profileLinks.filter((entry) => entry.kind === 'phone').length, 2);
+  assert(!JSON.stringify(publicData).includes('private-never-public'));
+  const linkPage = (await request('/c/' + cardId)).text;
+  assert(linkPage.includes('instagram.com/first') && linkPage.includes('instagram.com/second'));
+  assert(linkPage.includes('tel:0600000001') && linkPage.includes('tel:0600000002'));
+  assert(!linkPage.includes('private-never-public'));
+  assert(
+    JSON.parse((await request('/api/data', { auth: true })).json.profile.data).profileLinks.some(
+      (entry) => entry.id === 'social-private',
+    ),
+  );
+
   assert.equal(publicData.textColor, '#ffffff');
   assert.equal(publicData.avatar, fields.avatar);
   assert.equal(publicData.backgroundPhoto, fields.backgroundPhoto);
