@@ -186,9 +186,19 @@ export const profileDataSchema = z
       .object({ fr: z.record(text(120)).optional(), ar: z.record(text(120)).optional() })
       .optional(),
     hours: z.record(z.tuple([time, time])).optional(),
-    breakStart: time.optional(),
-    breakEnd: time.optional(),
-    closures: z.array(calendarDate).max(180).optional(),
+    breakStart: z.union([time, z.literal('')]).optional(),
+    breakEnd: z.union([time, z.literal('')]).optional(),
+    closures: z
+      .preprocess(
+        (value) =>
+          Array.isArray(value)
+            ? value
+                .map((date) => (typeof date === 'string' ? date.trim() : date))
+                .filter((date) => date !== '')
+            : value,
+        z.array(calendarDate).max(180),
+      )
+      .optional(),
     appointmentServices: z
       .array(
         z.object({

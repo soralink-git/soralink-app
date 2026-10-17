@@ -89,11 +89,23 @@ export default function CardSetup({
                     }}
                   />
                   {data[key] && (
-                    <img
-                      className="setup-image-preview"
-                      src={data[key]}
-                      alt={t('Image choisie', 'التصويرة المختارة')}
-                    />
+                    <span className="setup-image-controls">
+                      <img
+                        className="setup-image-preview"
+                        src={data[key]}
+                        alt={t('Image choisie', 'التصويرة المختارة')}
+                      />
+                      <button
+                        type="button"
+                        className="text-button"
+                        disabled={busy}
+                        onClick={() => setData((d: any) => ({ ...d, [key]: '' }))}
+                      >
+                        {key === 'avatar'
+                          ? t('Retirer le logo ou portrait', 'حيّد اللوگو ولا التصويرة')
+                          : t('Retirer la couverture', 'حيّد الغلاف')}
+                      </button>
+                    </span>
                   )}
                 </label>
               ))}
