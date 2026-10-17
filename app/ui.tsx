@@ -457,9 +457,7 @@ export default function App({
       setId(result.id);
       if (result.cleanupPending)
         setMsg(
-          ar
-            ? 'تسجلات التغييرات. تنظيف التخزين غادي يتعاود من بعد.'
-            : 'Modifications enregistrées. Le nettoyage du stockage sera réessayé.',
+          ar ? 'تنظيف التخزين غادي يتعاود من بعد.' : 'Le nettoyage du stockage sera réessayé.',
         );
       void loadStorage();
     },
@@ -834,8 +832,7 @@ export default function App({
   }
   async function save() {
     autosave.queue.update(autosave.latest.current);
-    const ok = await autosave.queue.flush();
-    if (ok) setMsg(t('Modifications enregistrées.', 'تسجلات التغييرات.'));
+    await autosave.queue.flush();
   }
   async function reloadSaved() {
     if (

@@ -317,7 +317,7 @@ test('YouTube link and agenda additions have explicit removal and save controls'
   }
 });
 
-test('a single manual save action and an automatic-save status remain across editor sections', () => {
+test('a single manual save action remains across editor sections without a saved notice', () => {
   for (const ar of [false, true])
     for (const tab of ['coordinates', 'interface', 'content', 'links', 'actions', 'schedule']) {
       const c = context(tab, ar);
@@ -327,7 +327,7 @@ test('a single manual save action and an automatic-save status remain across edi
         (html.match(ar ? /سجّل التغييرات/g : /Enregistrer les modifications/g) || []).length,
         1,
       );
-      assert.match(html, ar ? /تسجلات التغييرات/ : /Modifications enregistrées/);
+      assert.doesNotMatch(html, ar ? /تسجلات التغييرات/ : /Modifications enregistrées/);
       assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
     }
 });
