@@ -462,6 +462,14 @@ export default function App({
       void loadStorage();
     },
   });
+  useEffect(() => {
+    const status = autosave.state.status;
+    if (!['invalid', 'offline', 'error', 'conflict'].includes(status)) return;
+    const fallback = ar
+      ? 'ما قدرناش نسجّلو التغييرات. تحقق من المعلومات والاتصال وعاود جرّب.'
+      : 'Les modifications ne sont pas enregistrées. Vérifiez les champs et la connexion puis réessayez.';
+    setMsg(autosave.state.error || fallback);
+  }, [autosave.state.status, autosave.state.error, ar]);
   const [manualShareUrl, setManualShareUrl] = useState('');
   const [emailActions, setEmailActions] = useState(false);
   const [rawSources, setRawSources] = useState<{
