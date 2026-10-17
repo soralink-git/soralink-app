@@ -55,3 +55,13 @@ Compilation et parcours isolés D1/R2 à exécuter avant publication.
 La validation sur appareils physiques (scan avec logo, import iOS/Android, usage tactile) reste
 nécessaire. L’objectif de chargement inférieur à une seconde dépend du réseau et du contenu ;
 il ne constitue pas une mesure obtenue ni une garantie sur tous les appareils.
+
+### Ajout de réseaux par plateforme
+
+« Réseaux et liens » présente uniquement les liens déjà renseignés. « Ajouter un lien »
+ouvre un sélecteur avec icônes, recherche, réseaux sociaux et autres liens (site, avis Google).
+La plateforme choisie ouvre un champ de saisie unique ; le lien est validé avant son ajout
+à l’état de l’éditeur. Les modifications ne sont publiées qu’après l’enregistrement commun.
+Les fiches permettent de modifier ou retirer les liens. Les réseaux ajoutés se réordonnent
+par glisser-déposer ou boutons accessibles. Les champs existants sont réutilisés : aucun
+transfert de données, changement de stockage ou nouvelle limite de forfait.

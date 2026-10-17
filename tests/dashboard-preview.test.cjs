@@ -267,11 +267,17 @@ test('identity, direct contact and network tools are separated without dropping 
       React.createElement(DashboardEditor, { context: context('actions', ar) }),
     );
     assert.match(actions, /class="contact-action-editor"/);
-    assert.doesNotMatch(actions, /class="social-links-editor"/);
+    assert.doesNotMatch(actions, /class="social-links-editor(?: network-links-editor)?"/);
+    const networkContext = context('links', ar);
+    networkContext.data = {
+      ...networkContext.data,
+      instagram: 'https://instagram.com/shop',
+      facebook: 'https://facebook.com/shop',
+    };
     const networks = renderToStaticMarkup(
-      React.createElement(DashboardEditor, { context: context('links', ar) }),
+      React.createElement(DashboardEditor, { context: networkContext }),
     );
-    assert.match(networks, /class="social-links-editor"/);
+    assert.match(networks, /class="social-links-editor(?: network-links-editor)?"/);
     assert.match(networks, ar ? /طلّع|هبّط/ : /Monter|Descendre/);
   }
 });
