@@ -1237,7 +1237,7 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
   border-color: #ffffff50;
 }
 .card-design.theme-light .card-cover {
-  background: var(--block-bg, #e4f6ef);
+  background-color: var(--block-bg, #e4f6ef);
 }
 .card-design .card-identity {
   border-radius: 24px;
@@ -1693,4 +1693,13 @@ html[data-theme='dark'] .route-loading {
 }
 html[data-theme='dark'] .crop-overlay {
   background: rgba(10, 15, 15, 0.85) !important;
+}
+
+/* Published cards use their own colors, independently of the surrounding interface. */
+.card-design .card-identity .eyebrow {
+  color: var(--card-muted, var(--card-fg));
+}
+.card-design .public-details .panel :is(h2, h3),
+.card-design .public-details .card-promotions :is(h2, h3) {
+  color: var(--block-fg, var(--card-fg));
 }

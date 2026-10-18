@@ -1,6 +1,7 @@
 'use client';
 import { cardStyles, cardPalettes, applyCardStyle, applyCardTheme } from './lib/card-styles';
 import type { Dispatch, SetStateAction } from 'react';
+import { appearance } from './lib/personalization';
 export default function CardStylePicker({
   data,
   setData,
@@ -23,40 +24,46 @@ export default function CardStylePicker({
         )}
       </p>
       <div className="card-style-grid">
-        {cardStyles.map((style) => (
-          <button
-            key={style.id}
-            type="button"
-            className="card-style-choice"
-            aria-pressed={data.template === style.id}
-            onClick={() => setData((d: any) => applyCardStyle(d, style.id))}
-          >
-            <span
-              className={'style-miniature style-miniature-' + style.id}
-              style={
-                {
-                  background: style.background,
-                  color: style.text,
-                  '--sample-accent': style.accent,
-                } as any
-              }
-              aria-hidden="true"
+        {cardStyles.map((style) => {
+          const selected = data.template === style.id;
+          const sample = applyCardStyle(data, style.id);
+          const custom = selected ? appearance(data) : null;
+          return (
+            <button
+              key={style.id}
+              type="button"
+              className="card-style-choice"
+              aria-pressed={data.template === style.id}
+              onClick={() => setData((d: any) => applyCardStyle(d, style.id))}
             >
-              <span className="sample-banner" />
-              <span className="sample-avatar" />
-              <span className="sample-name" />
-              <span className="sample-description" />
-              <span className="sample-actions">
-                <i />
-                <i />
-                <i />
+              <span
+                className={'style-miniature style-miniature-' + style.id}
+                style={
+                  {
+                    background: custom?.fondColor || sample.fondColor,
+                    color: custom?.textColor || sample.textColor,
+                    '--sample-accent':
+                      custom?.buttonColor || (selected && data.color) || sample.buttonColor,
+                  } as any
+                }
+                aria-hidden="true"
+              >
+                <span className="sample-banner" />
+                <span className="sample-avatar" />
+                <span className="sample-name" />
+                <span className="sample-description" />
+                <span className="sample-actions">
+                  <i />
+                  <i />
+                  <i />
+                </span>
               </span>
-            </span>
-            <strong>{ar ? style.ar : style.fr}</strong>
-            <span>{ar ? style.descriptionAr : style.descriptionFr}</span>
-            {data.template === style.id && <small>{t('Sélectionné', 'مختار')}</small>}
-          </button>
-        ))}
+              <strong>{ar ? style.ar : style.fr}</strong>
+              <span>{ar ? style.descriptionAr : style.descriptionFr}</span>
+              {data.template === style.id && <small>{t('Sélectionné', 'مختار')}</small>}
+            </button>
+          );
+        })}
       </div>
       <label className="field">
         {t('Ambiance', 'المظهر')}

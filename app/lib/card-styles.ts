@@ -43,8 +43,8 @@ export const cardStyles = [
     id: 'minimal',
     fr: 'Minimaliste',
     ar: 'بسيط',
-    descriptionFr: 'Épuré, sombre et essentiel',
-    descriptionAr: 'غامق وواضح وبلا تعقيد',
+    descriptionFr: 'Épuré et essentiel',
+    descriptionAr: 'واضح وبلا تعقيد',
     background: '#10141d',
     surface: '#181e29',
     text: '#f8fafc',
@@ -66,16 +66,23 @@ export function cardStyleId(value: unknown) {
 export function applyCardStyle(data: any, id: string) {
   const style = cardStyles.find((style) => style.id === id);
   if (!style) return data;
+  const theme =
+    data.cardTheme === 'light' || data.cardTheme === 'dark'
+      ? data.cardTheme
+      : id === 'minimal'
+        ? 'dark'
+        : 'light';
+  const neutralLight = theme === 'light' && id === 'minimal';
   return {
     ...data,
     template: style.id,
-    cardTheme: id === 'minimal' ? 'dark' : 'light',
+    cardTheme: theme,
     cardFont: style.font,
     buttonShape: style.shape,
     avatarShape: id === 'executive' ? 'square' : 'circle',
-    fondColor: style.background,
-    blockColor: style.surface,
-    textColor: style.text,
+    fondColor: theme === 'dark' ? '#10141d' : neutralLight ? '#eef2f6' : style.background,
+    blockColor: theme === 'dark' ? '#181e29' : neutralLight ? '#ffffff' : style.surface,
+    textColor: theme === 'dark' ? '#f8fafc' : neutralLight ? '#17243b' : style.text,
     color: style.accent,
     buttonColor: style.accent,
     buttonStyle: 'filled',

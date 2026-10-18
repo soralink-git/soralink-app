@@ -171,7 +171,19 @@ export default function CardView({
         }
       >
         <CardBackground src={a.backgroundPhoto} opacity={a.backgroundOpacity} />
-        <div className="card-cover" style={d.cover ? { backgroundImage: `url(${d.cover})` } : {}} />
+        <div
+          className="card-cover"
+          style={
+            d.cover
+              ? {
+                  backgroundImage: `url(${d.cover})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }
+              : {}
+          }
+        />
         <div className="card-content">
           <section className="card-identity">
             <div className="avatar">
