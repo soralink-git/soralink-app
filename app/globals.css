@@ -4882,15 +4882,20 @@ header nav {
   gap: 24px;
   align-items: start;
 }
+.workspace-preview-rail {
+  min-width: 0;
+  align-self: stretch;
+}
 .workspace-card-preview {
   width: 100%;
   max-width: none;
   position: sticky;
   top: 16px;
   align-self: start;
+  max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
   overflow: auto;
-  overscroll-behavior: contain;
+  overscroll-behavior: auto;
   scrollbar-gutter: stable;
   padding: 0 4px 8px;
 }
@@ -4910,8 +4915,15 @@ header nav {
     display: flex;
     flex-direction: column;
   }
-  .workspace-card-preview {
+  .workspace-preview-rail {
     order: -1;
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+    flex: none;
+  }
+  .workspace-card-preview {
+    position: static;
     max-width: 100%;
     max-height: 40vh;
     max-height: 40dvh;
