@@ -1393,11 +1393,13 @@ export default function App({
                     <span dir="ltr" className="account-email">
                       {accountEmail || t('Votre compte', 'الحساب ديالك')}
                     </span>
-                    <a href={accountPath(canAdmin, ar)}>
-                      {canAdmin
-                        ? t('Ouvrir l’administration', 'حل الإدارة')
-                        : t('Ouvrir mon espace', 'حل الحساب ديالي')}
-                    </a>
+                    {(canAdmin || view !== 'app') && (
+                      <a href={accountPath(canAdmin, ar)}>
+                        {canAdmin
+                          ? t('Ouvrir l’administration', 'حل الإدارة')
+                          : t('Ouvrir mon espace', 'حل الحساب ديالي')}
+                      </a>
+                    )}
                     <button disabled={busy} onClick={logout}>
                       {t('Se déconnecter', 'خرج من الحساب')}
                     </button>
