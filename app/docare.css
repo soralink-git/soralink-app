@@ -1849,3 +1849,29 @@ textarea,
 .landing-pilot h3 {
   color: var(--ink);
 }
+
+/* Final platform accents, including the floating support action. */
+.landing .primary,
+.workspace-design .primary,
+.workspace-save-action .primary {
+  border-radius: 12px;
+}
+.commercial-whatsapp {
+  background: var(--brand-accent);
+  color: var(--brand-on-accent);
+  border: 1px solid var(--brand-orange);
+  border-radius: 12px;
+  box-shadow: var(--brand-shadow);
+}
+.commercial-whatsapp:hover {
+  background: var(--brand-accent-hover);
+}
+html[data-theme='dark'] .landing-showcase {
+  background: var(--brand-soft);
+}
+html[data-theme='dark'] .landing-showcase .card-design .card-cover:not([style]) {
+  background: var(--brand-slate);
+}
+html[data-theme='dark'] .workspace-navigation button.selected {
+  border-inline-start: 3px solid var(--brand-accent) !important;
+}
