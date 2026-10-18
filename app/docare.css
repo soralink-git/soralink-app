@@ -2180,3 +2180,10 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     padding: 20px;
   }
 }
+
+/* The mobile workspace must override the desktop column declarations above. */
+@media (max-width: 1100px) {
+  .workspace-design.workspace {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
