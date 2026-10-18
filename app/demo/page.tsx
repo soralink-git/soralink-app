@@ -1,6 +1,7 @@
 import PublicCardView from '../public-card-view';
 import { demoCard, demoCardArabic } from '../lib/demo-card';
 export const metadata = {
+  robots: { index: false, follow: false },
   title: 'Démo SoraLink — Exemple de carte digitale',
   description:
     'Explorez un exemple fictif de carte SoraLink, avec catalogue, promotion et rendez-vous.',

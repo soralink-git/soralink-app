@@ -5,6 +5,7 @@ import './landing.css';
 import './docare.css';
 import { AppearanceProvider } from './theme-toggle';
 import NavigationProgress from './navigation-progress';
+import { HOME_TITLE, HOME_DESCRIPTION } from './lib/site-seo';
 
 export const viewport: Viewport = { themeColor: '#121b1b' };
 
@@ -13,8 +14,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'SoraLink',
-    title: 'SoraLink — Toute votre activité dans un lien',
-    description: 'Votre carte digitale, catalogue et rendez-vous. NFC, QR et lien direct.',
+    title: HOME_TITLE,
+    description: HOME_DESCRIPTION,
     images: [
       {
         url: 'https://soralink.link/og-soralink.png',
@@ -30,8 +31,8 @@ export const metadata: Metadata = {
     images: ['https://soralink.link/og-soralink.png'],
   },
   manifest: '/manifest.webmanifest',
-  title: 'SoraLink — Toute votre activité dans un lien',
-  description: 'Carte digitale, catalogue et rendez-vous pour les professionnels au Maroc.',
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
   appleWebApp: { capable: true, title: 'SoraLink', statusBarStyle: 'black-translucent' },
   icons: {
     apple: '/icons/apple-touch-icon.png',
