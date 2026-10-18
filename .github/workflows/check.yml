@@ -20,21 +20,6 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Prepare formatted review sources
-        env:
-          FORMAT_FILES: '["app/ui.tsx","app/card-customization.tsx","app/dashboard-editor.tsx","app/lib/card-design.ts","app/lib/api-validation.ts","app/api/admin/route.ts","app/api/upload/route.ts","app/background-editor.tsx","app/image-cropper.tsx","app/admin-design-editor.tsx","app/admin/ui.tsx","app/api/data/route.ts","app/docare.css","tests/dashboard-preview.test.cjs","tests/pagination.test.cjs","scripts/verify-journey.mjs","tests/admin-design.test.cjs","tests/api-validation.test.cjs",".github/workflows/check.yml"]'
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs/promises';
-          import prettier from 'prettier';
-          for (const path of JSON.parse(process.env.FORMAT_FILES)) {
-            const input = await fs.readFile(path, 'utf8');
-            const content = await prettier.format(input, { ...(await prettier.resolveConfig(path)), filepath:path });
-            await fs.writeFile(path,content);
-            const size=6000, total=Math.ceil(content.length/size);
-            for(let index=0;index<total;index++) console.log('SORALINK_FORMAT_CHUNK '+JSON.stringify({path,index,total,text:content.slice(index*size,(index+1)*size)}));
-          }
-          NODE
       - run: pnpm build
       - run: pnpm verify:public
       - run: pnpm verify:journey

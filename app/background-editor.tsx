@@ -89,8 +89,12 @@ export default function BackgroundEditor({
       )}
       <p className="hint">
         {t(
-          autosave ? 'Le fond et son opacité sont enregistrés automatiquement.' : 'Enregistrez les réglages pour publier le fond et son opacité.',
-          autosave ? 'الخلفية والوضوح ديالها كيتسجلو تلقائياً.' : 'سجّل الإعدادات باش تنشر الخلفية والوضوح ديالها.',
+          autosave
+            ? 'Le fond et son opacité sont enregistrés automatiquement.'
+            : 'Enregistrez les réglages pour publier le fond et son opacité.',
+          autosave
+            ? 'الخلفية والوضوح ديالها كيتسجلو تلقائياً.'
+            : 'سجّل الإعدادات باش تنشر الخلفية والوضوح ديالها.',
         )}
       </p>
     </div>

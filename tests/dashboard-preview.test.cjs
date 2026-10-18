@@ -187,7 +187,7 @@ test('photo and video section controls are grouped into the catalogue rather tha
   const ctx = context('interface');
   const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: ctx }));
   assert.doesNotMatch(html, /aria-label="Position de photos"|aria-label="Position de video"/);
-  assert.match(html, /aria-label="Position de services"/);
+  assert.doesNotMatch(html, /aria-label="Position de /);
 });
 
 test('catalogue opens on products with a clear first action and isolates offers from the initial form', () => {

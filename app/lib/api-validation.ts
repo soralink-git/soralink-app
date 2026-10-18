@@ -293,14 +293,34 @@ export const dataActionSchema = z
   .superRefine((b, ctx) => {
     if (b.action === 'request') requestRules(b, ctx);
   });
-export const adminDesignSchema = profileDataSchema.innerType().pick({
-  color: true, cardTheme: true, cardFont: true, buttonShape: true,
-  avatarShape: true, defaultLanguage: true, fondColor: true, blockColor: true,
-  textColor: true, buttonColor: true, textSize: true, buttonSize: true, buttonStyle: true,
-  backgroundPhoto: true, backgroundOpacity: true, sectionOrder: true, hiddenSections: true, sectionTitles: true,
-}).extend({template: text(80).optional()}).strict();
+export const adminDesignSchema = profileDataSchema
+  .innerType()
+  .pick({
+    color: true,
+    cardTheme: true,
+    cardFont: true,
+    buttonShape: true,
+    avatarShape: true,
+    defaultLanguage: true,
+    fondColor: true,
+    blockColor: true,
+    textColor: true,
+    buttonColor: true,
+    textSize: true,
+    buttonSize: true,
+    buttonStyle: true,
+    backgroundPhoto: true,
+    backgroundOpacity: true,
+    sectionOrder: true,
+    hiddenSections: true,
+    sectionTitles: true,
+  })
+  .extend({ template: text(80).optional() })
+  .strict();
 export const adminActionSchema = z.discriminatedUnion('action', [
-  z.object({action: z.literal('design'), id, revision: text(64), settings: adminDesignSchema}).strict(),
+  z
+    .object({ action: z.literal('design'), id, revision: text(64), settings: adminDesignSchema })
+    .strict(),
   z.object({ action: z.literal('catalogRights'), id, rights: catalogRightsSchema.nullable() }),
   z.object({
     action: z.literal('profile'),

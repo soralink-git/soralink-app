@@ -25,7 +25,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
     [tab, setTab] = useState('clients'),
     [search, setSearch] = useState(''),
     [designId, setDesignId] = useState(''),
-    [designDirty,setDesignDirty] = useState(false),
+    [designDirty, setDesignDirty] = useState(false),
     [ar, setAr] = useState(initialArabic);
   const t = (fr: string, darija: string) => (ar ? darija : fr);
   useEffect(() => {
@@ -101,8 +101,19 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
     } catch {}
   }, [tab]);
   function leaveDesign() {
-    if (designDirty && !confirm(t('Fermer sans enregistrer les réglages de présentation ?', 'تسدّ بلا ما تسجّل إعدادات المظهر؟'))) return false;
-    setDesignId('');setDesignDirty(false);return true;
+    if (
+      designDirty &&
+      !confirm(
+        t(
+          'Fermer sans enregistrer les réglages de présentation ?',
+          'تسدّ بلا ما تسجّل إعدادات المظهر؟',
+        ),
+      )
+    )
+      return false;
+    setDesignId('');
+    setDesignDirty(false);
+    return true;
   }
   async function save(body: any) {
     if (!leaveDesign()) return;
@@ -241,7 +252,9 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                 <button
                   className={tab === v ? 'primary' : 'secondary'}
                   key={v}
-                  onClick={() => {if (leaveDesign()) setTab(v);}}
+                  onClick={() => {
+                    if (leaveDesign()) setTab(v);
+                  }}
                 >
                   {l}
                 </button>
@@ -344,12 +357,39 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                         {t('Enregistrer', 'سجّل')}
                       </button>
                     </form>
-                    <button type="button" className="secondary" disabled={busy} onClick={() => {if (designId !== p.id && leaveDesign()) setDesignId(p.id);}}>
+                    <button
+                      type="button"
+                      className="secondary"
+                      disabled={busy}
+                      onClick={() => {
+                        if (designId !== p.id && leaveDesign()) setDesignId(p.id);
+                      }}
+                    >
                       {t('Présentation et sections', 'المظهر والأقسام')}
                     </button>
-                    {designId === p.id && <AdminDesignEditor key={p.id} profile={p} ar={ar}
-                      onClose={() => setDesignId('')} onDirtyChange={setDesignDirty}
-                      onSaved={result => setData((current:any) => ({...current,profiles:current.profiles.map((item:any)=>item.id===p.id?{...item,data:JSON.stringify(result.data),updated:result.revision}:item)}))}/>}
+                    {designId === p.id && (
+                      <AdminDesignEditor
+                        key={p.id}
+                        profile={p}
+                        ar={ar}
+                        onClose={() => setDesignId('')}
+                        onDirtyChange={setDesignDirty}
+                        onSaved={(result) =>
+                          setData((current: any) => ({
+                            ...current,
+                            profiles: current.profiles.map((item: any) =>
+                              item.id === p.id
+                                ? {
+                                    ...item,
+                                    data: JSON.stringify(result.data),
+                                    updated: result.revision,
+                                  }
+                                : item,
+                            ),
+                          }))
+                        }
+                      />
+                    )}
                     <CatalogRightsEditor profile={p} ar={ar} busy={busy} onSave={save} />
                   </div>
                 ))}

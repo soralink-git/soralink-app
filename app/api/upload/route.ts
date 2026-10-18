@@ -37,14 +37,32 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Choisissez un fichier' }, { status: 400 });
     validateInput(mediaUploadSchema, { type: entry.type, size: entry.size });
     const profileId = form.get('profileId');
-    if (profileId !== null && (!admin || typeof profileId !== 'string' || !profileId.trim() || profileId.length > 128))
-      return Response.json({error:'Accès refusé',errorAr:'ما عندكش الصلاحية.'},{status:403});
-    if (profileId !== null && !['image/jpeg','image/png','image/webp'].includes(entry.type))
-      return Response.json({error:'Choisissez une image.',errorAr:'اختار تصويرة.'},{status:400});
+    if (
+      profileId !== null &&
+      (!admin || typeof profileId !== 'string' || !profileId.trim() || profileId.length > 128)
+    )
+      return Response.json(
+        { error: 'Accès refusé', errorAr: 'ما عندكش الصلاحية.' },
+        { status: 403 },
+      );
+    if (profileId !== null && !['image/jpeg', 'image/png', 'image/webp'].includes(entry.type))
+      return Response.json(
+        { error: 'Choisissez une image.', errorAr: 'اختار تصويرة.' },
+        { status: 400 },
+      );
     const profile = await db()
-      .prepare(profileId !== null ? 'SELECT * FROM profiles WHERE id=?' : 'SELECT * FROM profiles WHERE owner=?')
-      .bind(profileId ?? u.userId).first();
-    if (profileId !== null && !profile) return Response.json({error:'Profil introuvable',errorAr:'ما لقيناش الكارط.'},{status:404});
+      .prepare(
+        profileId !== null
+          ? 'SELECT * FROM profiles WHERE id=?'
+          : 'SELECT * FROM profiles WHERE owner=?',
+      )
+      .bind(profileId ?? u.userId)
+      .first();
+    if (profileId !== null && !profile)
+      return Response.json(
+        { error: 'Profil introuvable', errorAr: 'ما لقيناش الكارط.' },
+        { status: 404 },
+      );
     const owner = profileId !== null ? String(profile!.owner) : u.userId;
     if (profile && !active(profile))
       return Response.json(

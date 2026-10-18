@@ -221,23 +221,59 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           className="workspace-navigation"
           aria-label={t('Rubriques de votre espace', 'أقسام الحساب ديالك')}
         >
-
-          {tabs.filter(([key]) => ['coordinates', 'content', 'share'].includes(key)).map(([key, Icon, fr, da]) => (
-            <button key={key} className={(key === 'coordinates' ? ['coordinates','interface','actions','links'].includes(activeTab) : activeTab === key) ? 'selected' : ''}
-              onClick={() => navigate(key)} aria-pressed={key === 'coordinates' ? ['coordinates','interface','actions','links'].includes(activeTab) : activeTab === key}>
-              <Icon size={19}/><span>{t(fr, da)}</span>
-            </button>
-          ))}
-          <details className="workspace-secondary-nav" open={['contacts','requests','schedule','orders'].includes(activeTab)}>
-            <summary>{t('Suivi de mon activité', 'تتبّع النشاط ديالي')}
-              {inbox.some(r => r.status === 'new') && <span className="nav-count">{inbox.filter(r => r.status === 'new').length}</span>}
-            </summary>
-            {tabs.filter(([key]) => ['contacts','requests','schedule','orders'].includes(key)).map(([key, Icon, fr, da]) => (
-              <button key={key} className={activeTab === key ? 'selected' : ''} onClick={() => navigate(key)} aria-pressed={activeTab === key}>
-                <Icon size={19}/><span>{t(fr, da)}</span>
-                {key === 'requests' && inbox.some(r => r.status === 'new') && <span className="nav-count">{inbox.filter(r => r.status === 'new').length}</span>}
+          {tabs
+            .filter(([key]) => ['coordinates', 'content', 'share'].includes(key))
+            .map(([key, Icon, fr, da]) => (
+              <button
+                key={key}
+                className={
+                  (
+                    key === 'coordinates'
+                      ? ['coordinates', 'interface', 'actions', 'links'].includes(activeTab)
+                      : activeTab === key
+                  )
+                    ? 'selected'
+                    : ''
+                }
+                onClick={() => navigate(key)}
+                aria-pressed={
+                  key === 'coordinates'
+                    ? ['coordinates', 'interface', 'actions', 'links'].includes(activeTab)
+                    : activeTab === key
+                }
+              >
+                <Icon size={19} />
+                <span>{t(fr, da)}</span>
               </button>
             ))}
+          <details
+            className="workspace-secondary-nav"
+            open={['contacts', 'requests', 'schedule', 'orders'].includes(activeTab)}
+          >
+            <summary>
+              {t('Suivi de mon activité', 'تتبّع النشاط ديالي')}
+              {inbox.some((r) => r.status === 'new') && (
+                <span className="nav-count">{inbox.filter((r) => r.status === 'new').length}</span>
+              )}
+            </summary>
+            {tabs
+              .filter(([key]) => ['contacts', 'requests', 'schedule', 'orders'].includes(key))
+              .map(([key, Icon, fr, da]) => (
+                <button
+                  key={key}
+                  className={activeTab === key ? 'selected' : ''}
+                  onClick={() => navigate(key)}
+                  aria-pressed={activeTab === key}
+                >
+                  <Icon size={19} />
+                  <span>{t(fr, da)}</span>
+                  {key === 'requests' && inbox.some((r) => r.status === 'new') && (
+                    <span className="nav-count">
+                      {inbox.filter((r) => r.status === 'new').length}
+                    </span>
+                  )}
+                </button>
+              ))}
           </details>
         </nav>
         {auth && (
@@ -336,13 +372,27 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 <CardSetup context={context} onExit={closeSetup} />
               ) : (
                 <>
-                  {['coordinates','interface','actions','links'].includes(activeTab) && (
-                    <nav className="card-edit-navigation" aria-label={t('Modifier ma carte', 'بدّل الكارط ديالي')}>
+                  {['coordinates', 'interface', 'actions', 'links'].includes(activeTab) && (
+                    <nav
+                      className="card-edit-navigation"
+                      aria-label={t('Modifier ma carte', 'بدّل الكارط ديالي')}
+                    >
                       {[
-                        ['coordinates','Identité','الهوية'], ['interface','Logo et modèle','اللوگو والستايل'],
-                        ['actions','Coordonnées','معلومات التواصل'], ['links','Réseaux et liens','مواقع التواصل والروابط']
-                      ].map(([key,fr,da]) => <button type="button" className={activeTab===key ? 'primary small' : 'secondary small'}
-                        key={key} aria-current={activeTab===key ? 'page' : undefined} onClick={() => navigate(key)}>{t(fr,da)}</button>)}
+                        ['coordinates', 'Identité', 'الهوية'],
+                        ['interface', 'Logo et modèle', 'اللوگو والستايل'],
+                        ['actions', 'Coordonnées', 'معلومات التواصل'],
+                        ['links', 'Réseaux et liens', 'مواقع التواصل والروابط'],
+                      ].map(([key, fr, da]) => (
+                        <button
+                          type="button"
+                          className={activeTab === key ? 'primary small' : 'secondary small'}
+                          key={key}
+                          aria-current={activeTab === key ? 'page' : undefined}
+                          onClick={() => navigate(key)}
+                        >
+                          {t(fr, da)}
+                        </button>
+                      ))}
                     </nav>
                   )}
                   {(activeTab === 'coordinates' || tab === 'profile') && (
@@ -719,7 +769,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           </label>
                         </div>
                       </section>
-
                     </>
                   )}
                   {tab === 'contacts' && (
