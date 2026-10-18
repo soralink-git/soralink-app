@@ -19,7 +19,7 @@ function bucket() {
 }
 export async function POST(req: Request) {
   try {
-    const { user: u } = await identity();
+    const { user: u, admin } = await identity();
     if (!u) return Response.json({ error: 'Connexion requise' }, { status: 401 });
     if (req.headers.get('origin') !== new URL(req.url).origin)
       return new Response(null, { status: 403 });
@@ -36,10 +36,16 @@ export async function POST(req: Request) {
     if (!entry || typeof entry === 'string')
       return Response.json({ error: 'Choisissez un fichier' }, { status: 400 });
     validateInput(mediaUploadSchema, { type: entry.type, size: entry.size });
+    const profileId = form.get('profileId');
+    if (profileId !== null && (!admin || typeof profileId !== 'string' || !profileId.trim() || profileId.length > 128))
+      return Response.json({error:'Accès refusé',errorAr:'ما عندكش الصلاحية.'},{status:403});
+    if (profileId !== null && !['image/jpeg','image/png','image/webp'].includes(entry.type))
+      return Response.json({error:'Choisissez une image.',errorAr:'اختار تصويرة.'},{status:400});
     const profile = await db()
-      .prepare('SELECT * FROM profiles WHERE owner=?')
-      .bind(u.userId)
-      .first();
+      .prepare(profileId !== null ? 'SELECT * FROM profiles WHERE id=?' : 'SELECT * FROM profiles WHERE owner=?')
+      .bind(profileId ?? u.userId).first();
+    if (profileId !== null && !profile) return Response.json({error:'Profil introuvable',errorAr:'ما لقيناش الكارط.'},{status:404});
+    const owner = profileId !== null ? String(profile!.owner) : u.userId;
     if (profile && !active(profile))
       return Response.json(
         {
@@ -68,10 +74,10 @@ export async function POST(req: Request) {
         { status: 413 },
       );
     const metadata = await checkFileContent(entry, rights.pdfPages);
-    await adoptLegacy(u.userId, profile);
-    await cleanupMedia(u.userId);
+    await adoptLegacy(owner, profile);
+    await cleanupMedia(owner);
     const key = crypto.randomUUID();
-    if (!(await reserveMedia(u.userId, key, entry.size, rights)))
+    if (!(await reserveMedia(owner, key, entry.size, rights)))
       return Response.json(
         {
           error: `Stockage plein : ${rights.storageMB} Mo ou ${rights.maxFiles} fichiers maximum. Retirez des médias puis enregistrez votre carte.`,
@@ -89,12 +95,12 @@ export async function POST(req: Request) {
         .run();
     } catch {
       await db().prepare("UPDATE media_assets SET state='deleting' WHERE key=?").bind(key).run();
-      await cleanupMedia(u.userId);
+      await cleanupMedia(owner);
       throw new Error('Upload failed');
     }
     return Response.json({
       url: '/api/upload?key=' + key,
-      storage: await storageUsage(u.userId, rights),
+      storage: await storageUsage(owner, rights),
     });
   } catch (error) {
     const invalid = inputErrorResponse(error);
@@ -142,7 +148,7 @@ export async function GET(req: Request) {
         ),
     );
     if (!visible) {
-      const { user } = await identity();
+      const { user, admin } = await identity();
       const linked: any = user
         ? await db()
             .prepare(
@@ -155,7 +161,7 @@ export async function GET(req: Request) {
         user &&
         (asset?.owner === user.userId ||
           (linked && mediaKeys(JSON.parse(linked.data)).includes(key)));
-      if (!owned)
+      if (!owned && !admin)
         return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store' } });
     }
     if (url.searchParams.get('download') === '1') {

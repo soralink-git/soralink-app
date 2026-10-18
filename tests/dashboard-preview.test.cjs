@@ -127,10 +127,10 @@ for (const ar of [false, true])
       React.createElement(DashboardEditor, { context: context('contacts', ar) }),
     );
     assert.equal((html.match(/aria-pressed="true"/g) || []).length, 1);
-    assert.equal((html.match(/aria-pressed="false"/g) || []).length, 9);
+    assert.equal((html.match(/aria-pressed="false"/g) || []).length, 6);
     assert.match(html, ar ? /<h1>الكونطاكت ديالي<\/h1>/ : /<h1>Mes contacts<\/h1>/);
-    assert.match(html, ar ? /خصّص الكارط/ : /Personnaliser/);
-    assert.match(html, ar ? /الزبناء ديالي/ : /Mes clients/);
+    assert.match(html, ar ? /الكارط ديالي/ : /Ma carte/);
+    assert.match(html, ar ? /تتبّع النشاط ديالي/ : /Suivi de mon activité/);
     assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
   });
 

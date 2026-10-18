@@ -8,7 +8,6 @@ import CardStylePicker from './card-style-picker';
 import { ContactActionsEditor, SocialLinksEditor } from './contact-editors';
 import CatalogEditor from './catalog-editor';
 import CatalogMediaEditor from './catalog-media-editor';
-import BackgroundEditor from './background-editor';
 import type { CropTarget } from './lib/crop-geometry';
 import AddressEditor from './address-editor';
 import { publicCardPath } from './lib/public-address';
@@ -56,7 +55,6 @@ import { MAX_PROMOTIONS, promotionStatus } from './lib/promotions';
 
 export type DashboardContext = {
   Card: (props: CardViewProps) => JSX.Element;
-  Customization: (props?: any) => JSX.Element | null;
   action: (body: any) => Promise<any>;
   ar: boolean;
   setAr?: (ar: boolean) => void;
@@ -93,7 +91,6 @@ export type DashboardContext = {
   savePaused?: boolean;
   setCatalogWorking?: (value: boolean) => void;
   reloadSaved?: () => Promise<void>;
-  sectionLabels: Record<string, [string, string]>;
   setData: Dispatch<any>;
   setModal: Dispatch<SetStateAction<string>>;
   setMsg: Dispatch<SetStateAction<string>>;
@@ -119,7 +116,6 @@ export type DashboardContext = {
 export default function DashboardEditor({ context }: { context: DashboardContext }) {
   const {
     Card,
-    Customization,
     action,
     ar,
     auth,
@@ -153,7 +149,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     savePaused,
     setCatalogWorking,
     reloadSaved,
-    sectionLabels,
     setAr,
     setData,
     setModal,
@@ -187,15 +182,15 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     setTab(next);
   };
   const tabs = [
-    ['interface', Palette, 'Marque et style', 'العلامة والستايل', 'card'],
-    ['coordinates', Users, 'Identité', 'الهوية', 'card'],
+    ['interface', Palette, 'Logo et modèle', 'اللوگو والستايل', 'card'],
+    ['coordinates', Users, 'Ma carte', 'الكارط ديالي', 'card'],
     ['actions', Phone, 'Actions directes', 'أزرار التواصل', 'card'],
     ['links', ExternalLink, 'Réseaux et liens', 'مواقع التواصل والروابط', 'card'],
     ['content', Package, 'Produits et services', 'المنتجات والخدمات', 'card'],
     ['contacts', Users, 'Mes contacts', 'الكونطاكت ديالي', 'clients'],
     ['requests', Calendar, 'Mes demandes', 'الطلبات ديالي', 'clients'],
     ['schedule', Clock, 'Mon agenda', 'الأجندة ديالي', 'clients'],
-    ['share', Nfc, 'Partager', 'شارك', 'offer'],
+    ['share', Nfc, 'Partager ma carte', 'شارك الكارط ديالي', 'offer'],
     ['orders', FileText, 'Mon offre', 'العرض ديالي', 'offer'],
   ] satisfies Array<[string, LucideIcon, string, string, string]>;
   const activeTab =
@@ -226,33 +221,24 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           className="workspace-navigation"
           aria-label={t('Rubriques de votre espace', 'أقسام الحساب ديالك')}
         >
-          {tabs.map(([key, Icon, fr, da, group], index) => (
-            <div key={key} className="workspace-nav-item">
-              {(index === 0 || tabs[index - 1][4] !== group) && (
-                <span className="workspace-nav-group">
-                  {group === 'card'
-                    ? t('Personnaliser', 'خصّص الكارط')
-                    : group === 'clients'
-                      ? t('Mes clients', 'الزبناء ديالي')
-                      : t('Diffusion et offre', 'المشاركة والعرض')}
-                </span>
-              )}
-              <button
-                key={key}
-                className={activeTab === key ? 'selected' : ''}
-                onClick={() => navigate(key)}
-                aria-pressed={activeTab === key}
-              >
-                <Icon size={19} />
-                <span>{t(fr, da)}</span>
-                {key === 'requests' && inbox.some((r) => r.status === 'new') && (
-                  <span className="nav-count">
-                    {inbox.filter((r) => r.status === 'new').length}
-                  </span>
-                )}
-              </button>
-            </div>
+
+          {tabs.filter(([key]) => ['coordinates', 'content', 'share'].includes(key)).map(([key, Icon, fr, da]) => (
+            <button key={key} className={(key === 'coordinates' ? ['coordinates','interface','actions','links'].includes(activeTab) : activeTab === key) ? 'selected' : ''}
+              onClick={() => navigate(key)} aria-pressed={key === 'coordinates' ? ['coordinates','interface','actions','links'].includes(activeTab) : activeTab === key}>
+              <Icon size={19}/><span>{t(fr, da)}</span>
+            </button>
           ))}
+          <details className="workspace-secondary-nav" open={['contacts','requests','schedule','orders'].includes(activeTab)}>
+            <summary>{t('Suivi de mon activité', 'تتبّع النشاط ديالي')}
+              {inbox.some(r => r.status === 'new') && <span className="nav-count">{inbox.filter(r => r.status === 'new').length}</span>}
+            </summary>
+            {tabs.filter(([key]) => ['contacts','requests','schedule','orders'].includes(key)).map(([key, Icon, fr, da]) => (
+              <button key={key} className={activeTab === key ? 'selected' : ''} onClick={() => navigate(key)} aria-pressed={activeTab === key}>
+                <Icon size={19}/><span>{t(fr, da)}</span>
+                {key === 'requests' && inbox.some(r => r.status === 'new') && <span className="nav-count">{inbox.filter(r => r.status === 'new').length}</span>}
+              </button>
+            ))}
+          </details>
         </nav>
         {auth && (
           <button className="sidebar-logout" onClick={logout}>
@@ -350,6 +336,15 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 <CardSetup context={context} onExit={closeSetup} />
               ) : (
                 <>
+                  {['coordinates','interface','actions','links'].includes(activeTab) && (
+                    <nav className="card-edit-navigation" aria-label={t('Modifier ma carte', 'بدّل الكارط ديالي')}>
+                      {[
+                        ['coordinates','Identité','الهوية'], ['interface','Logo et modèle','اللوگو والستايل'],
+                        ['actions','Coordonnées','معلومات التواصل'], ['links','Réseaux et liens','مواقع التواصل والروابط']
+                      ].map(([key,fr,da]) => <button type="button" className={activeTab===key ? 'primary small' : 'secondary small'}
+                        key={key} aria-current={activeTab===key ? 'page' : undefined} onClick={() => navigate(key)}>{t(fr,da)}</button>)}
+                    </nav>
+                  )}
                   {(activeTab === 'coordinates' || tab === 'profile') && (
                     <>
                       <section className="panel">
@@ -366,8 +361,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </div>
                         <p className="hint">
                           {t(
-                            'Le logo et les photos se trouvent dans Marque et style. Les coordonnées se règlent dans Actions directes.',
-                            'اللوگو والتصاور فقسم العلامة والستايل. معلومات التواصل فقسم أزرار التواصل.',
+                            'Complétez votre présentation, puis ajoutez votre logo et vos moyens de contact avec les onglets ci-dessus.',
+                            'عمّر التقديم ديالك، ومن بعد زيد اللوگو ومعلومات التواصل من الاختيارات اللي فالفوق.',
                           )}
                         </p>
                         <h3>{t('Informations professionnelles', 'المعلومات المهنية')}</h3>
@@ -386,8 +381,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         </label>
                         <p className="hint">
                           {t(
-                            'Vos modifications sont enregistrées automatiquement. Leur état est indiqué en haut de votre espace.',
-                            'التغييرات كيتسجلو تلقائياً. الحالة ديال التسجيل كاتبان فالفوق.',
+                            'Vos modifications sont enregistrées automatiquement.',
+                            'التغييرات كيتسجلو تلقائياً.',
                           )}
                         </p>
                       </section>
@@ -604,11 +599,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                   {(activeTab === 'interface' || tab === 'sections') && (
                     <>
                       <section className="panel">
-                        <h2>{t('Interface et style de la carte', 'الواجهة وستايل الكارط')}</h2>
+                        <h2>{t('Logo et modèle de ma carte', 'اللوگو وستايل الكارط ديالي')}</h2>
                         <p className="hint">
                           {t(
-                            'Personnalisez l’apparence visuelle, les couleurs, les polices et l’affichage de votre carte.',
-                            'خصّص المظهر، الألوان، الخطوط وطريقة العرض فالكارط ديالك.',
+                            'Choisissez un modèle et ajoutez vos images. L’équipe SoraLink gère les réglages avancés.',
+                            'اختار الستايل وزيد التصاور ديالك. فريق SoraLink كيتكلف بالإعدادات المفصّلة.',
                           )}
                         </p>
                         <CardStylePicker data={data} setData={setData} ar={ar} busy={busy} />
@@ -723,141 +718,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             )}
                           </label>
                         </div>
-                        <details className="style-advanced">
-                          <summary>
-                            {t(
-                              'Personnalisation avancée : fond, couleurs et typographie',
-                              'تخصيص مفصّل: الخلفية والألوان والخط',
-                            )}
-                          </summary>
-                          <BackgroundEditor
-                            data={data}
-                            setData={setData}
-                            ar={ar}
-                            busy={busy}
-                            startCrop={startCrop}
-                            source={rawSources?.backgroundPhoto}
-                          />
-                          <Customization
-                            data={data}
-                            setData={setData}
-                            ar={ar}
-                            setAr={setAr}
-                            t={t}
-                          />
-                        </details>
-                        <div
-                          style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}
-                        ></div>
                       </section>
-                      <section className="panel">
-                        <h2>{t('Mes sections', 'الأقسام ديالي')}</h2>
-                        <p className="hint">
-                          {t(
-                            'Choisissez les sections visibles et leur ordre. L’identité reste en tête. Les sections vides ne s’affichent pas. Les modifications sont enregistrées automatiquement.',
-                            'اختار الأقسام اللي يبانوا وترتيبهم. المعلومات كتبقى فاللول والأقسام الخاوية ما كيبانوش. التغييرات كيتسجلو تلقائياً.',
-                          )}
-                        </p>
-                        {appearance(data)
-                          .order.filter((key) => !['photos', 'video'].includes(key))
-                          .map((key, i) => {
-                            const a = {
-                                ...appearance(data),
-                                order: appearance(data).order.filter(
-                                  (key) => !['photos', 'video'].includes(key),
-                                ),
-                              },
-                              locked = key === 'appointments' && !data.pro;
-                            const destinations: Record<string, string> = {
-                              coordinates: 'actions',
-                              social: 'links',
-                              promotions: 'content',
-                              services: 'content',
-                              photos: 'content',
-                              pdf: 'content',
-                              video: 'content',
-                              links: 'actions',
-                              appointments: 'schedule',
-                            };
-                            return (
-                              <div className="section-editor-row" key={key}>
-                                <div className="section-control">
-                                  <label>
-                                    <input
-                                      type="checkbox"
-                                      disabled={locked}
-                                      checked={!locked && !a.hidden.includes(key)}
-                                      onChange={(e) =>
-                                        setData((d: any) => ({
-                                          ...d,
-                                          hiddenSections: e.target.checked
-                                            ? a.hidden.filter((k: string) => k !== key)
-                                            : [...a.hidden, key],
-                                        }))
-                                      }
-                                    />
-                                    {t(...sectionLabels[key])}
-                                    {locked && (
-                                      <small> · {t('Option Pro requise', 'خاص Pro')}</small>
-                                    )}
-                                  </label>
-                                  <label className="section-position">
-                                    {t('Position', 'الترتيب')}
-                                    <select
-                                      value={i}
-                                      disabled={locked}
-                                      aria-label={
-                                        t('Position de ', 'ترتيب ') + t(...sectionLabels[key])
-                                      }
-                                      onChange={(e) => {
-                                        const index = Number(e.target.value);
-                                        const order = [...a.order];
-                                        order.splice(i, 1);
-                                        order.splice(index, 0, key);
-                                        setData((d: any) => ({ ...d, sectionOrder: order }));
-                                      }}
-                                    >
-                                      {a.order.map((_, n) => (
-                                        <option key={n} value={n}>
-                                          {n + 1}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </label>
-                                </div>
-                                <label className="field">
-                                  {t('Titre personnalisé · français', 'عنوان شخصي · الدارجة')}
-                                  <input
-                                    maxLength={120}
-                                    disabled={locked}
-                                    value={data.sectionTitles?.[ar ? 'ar' : 'fr']?.[key] || ''}
-                                    placeholder={t(...sectionLabels[key])}
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-                                      setData((d: any) => ({
-                                        ...d,
-                                        sectionTitles: {
-                                          ...d.sectionTitles,
-                                          [ar ? 'ar' : 'fr']: {
-                                            ...d.sectionTitles?.[ar ? 'ar' : 'fr'],
-                                            [key]: value,
-                                          },
-                                        },
-                                      }));
-                                    }}
-                                  />
-                                </label>
-                                <button
-                                  className="text-button"
-                                  disabled={locked}
-                                  onClick={() => setTab(destinations[key])}
-                                >
-                                  {t('Modifier le contenu', 'بدّل المحتوى')}
-                                </button>
-                              </div>
-                            );
-                          })}
-                      </section>
+
                     </>
                   )}
                   {tab === 'contacts' && (

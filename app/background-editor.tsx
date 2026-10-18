@@ -8,6 +8,7 @@ export default function BackgroundEditor({
   source,
   busy,
   ar,
+  autosave = true,
 }: {
   data: any;
   setData: (updater: (previous: any) => any) => void;
@@ -15,6 +16,7 @@ export default function BackgroundEditor({
   source?: File | string;
   busy: boolean;
   ar: boolean;
+  autosave?: boolean;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr);
   const a = appearance(data);
@@ -87,8 +89,8 @@ export default function BackgroundEditor({
       )}
       <p className="hint">
         {t(
-          'Le fond et son opacité sont enregistrés automatiquement.',
-          'الخلفية والوضوح ديالها كيتسجلو تلقائياً.',
+          autosave ? 'Le fond et son opacité sont enregistrés automatiquement.' : 'Enregistrez les réglages pour publier le fond et son opacité.',
+          autosave ? 'الخلفية والوضوح ديالها كيتسجلو تلقائياً.' : 'سجّل الإعدادات باش تنشر الخلفية والوضوح ديالها.',
         )}
       </p>
     </div>

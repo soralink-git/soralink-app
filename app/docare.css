@@ -1875,3 +1875,25 @@ html[data-theme='dark'] .landing-showcase .card-design .card-cover:not([style]) 
 html[data-theme='dark'] .workspace-navigation button.selected {
   border-inline-start: 3px solid var(--brand-accent) !important;
 }
+
+/* Three primary client actions and secondary activity tools. */
+.workspace-secondary-nav { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); }
+.workspace-secondary-nav > summary { cursor: pointer; color: var(--muted); font-size: 14px; min-height: 44px; display: flex; align-items: center; gap: 8px; }
+.workspace-secondary-nav > summary::before { content: '+'; color: var(--brand-strong); font-size: 20px; }
+.workspace-secondary-nav[open] > summary::before { content: '−'; }
+.card-edit-navigation { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.card-edit-navigation button { min-height: 44px; flex: 1 1 auto; }
+.admin-design-editor { margin-block: 20px; min-width: 0; }
+.admin-design-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); gap: 24px; align-items: start; }
+.admin-design-layout > div, .admin-design-layout fieldset { min-width: 0; }
+.admin-design-preview { position: sticky; top: 16px; max-height: calc(100dvh - 40px); overflow: auto; min-width: 0; background: var(--brand-soft); padding: 12px; border-radius: 18px; }
+.admin-design-preview > strong { display: block; margin-bottom: 12px; }
+.admin-design-preview .profile-card { max-width: 100%; }
+.admin-design-save { position: sticky; bottom: 12px; z-index: 4; padding: 12px; margin-top: 16px; background: var(--brand-surface); border: 1px solid var(--line); border-radius: 12px; }
+@media (max-width: 850px) {
+  .admin-design-layout { grid-template-columns: minmax(0, 1fr); }
+  .admin-design-preview { position: static; max-height: 55dvh; }
+  .card-edit-navigation { display: grid; grid-template-columns: 1fr 1fr; }
+  .card-edit-navigation button { width: 100%; }
+  .admin-design-save .primary { width: 100%; }
+}
