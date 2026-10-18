@@ -650,6 +650,17 @@ try {
     method: 'POST',
     body: hiddenForm,
   });
+  const hiddenRevision = (await request('/api/data', { auth: true })).json.profile.updated;
+  await request('/api/admin', {
+    auth: true,
+    id: adminId,
+    data: {
+      action: 'design',
+      id: cardId,
+      revision: hiddenRevision,
+      settings: { hiddenSections: ['photos'] },
+    },
+  });
   const revision = (await request('/api/data', { auth: true })).json.profile.updated;
   await request('/api/data', {
     auth: true,
@@ -680,6 +691,17 @@ try {
     .prepare("UPDATE profiles SET state='active',expires=?,published=1 WHERE id=?")
     .bind(new Date(Date.now() + 365 * 86400000).toISOString(), cardId)
     .run();
+  const removalRevision = (await request('/api/data', { auth: true })).json.profile.updated;
+  await request('/api/admin', {
+    auth: true,
+    id: adminId,
+    data: {
+      action: 'design',
+      id: cardId,
+      revision: removalRevision,
+      settings: { backgroundPhoto: '' },
+    },
+  });
   const beforeRemoval = (await request('/api/data', { auth: true })).json.profile;
   const cleared = {
     ...JSON.parse(beforeRemoval.data),
