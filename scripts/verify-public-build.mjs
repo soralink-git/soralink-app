@@ -124,8 +124,64 @@ try {
     for (const icon of manifest.icons)
       assert.equal((await mf.dispatchFetch('https://soralink.link' + icon.src)).status, 200);
   }
+  // Test the emitted HTML and metadata routes through the packaged Worker, not just TS objects.
+  for (const [query, canonical, title] of [
+    ['?lang=fr&offer=pack', 'https://soralink.link/', 'Carte de visite digitale NFC au Maroc'],
+    ['?lang=ar', 'https://soralink.link/?lang=ar', 'كارط ڤيزيت رقمية NFC فالمغرب'],
+  ]) {
+    const result = await mf.dispatchFetch('https://soralink.link/' + query);
+    assert.equal(result.status, 200);
+    const markup = await result.text();
+    assert(markup.includes(title));
+    const links = markup.match(/<link\b[^>]*>/g) || [];
+    assert(
+      links.some(
+        (tag) =>
+          tag.includes('rel="canonical"') &&
+          new URL(tag.match(/href="([^"]+)"/)[1]).href === canonical,
+      ),
+      JSON.stringify({ query, links }),
+    );
+    assert(links.some((tag) => tag.includes('hrefLang="fr"') || tag.includes('hreflang="fr"')));
+    assert(links.some((tag) => tag.includes('hrefLang="ar"') || tag.includes('hreflang="ar"')));
+    assert(markup.includes('application/ld+json'));
+    assert(markup.includes('https://soralink.link/#website'));
+    assert(!/<meta[^>]*name="robots"[^>]*noindex/.test(markup));
+  }
+  for (const route of [
+    '/?app=1',
+    '/?lang=ar&tab=links',
+    '/auth',
+    '/auth/reset',
+    '/admin',
+    '/admin/connexion',
+    '/demo',
+  ]) {
+    const response = await mf.dispatchFetch('https://soralink.link' + route);
+    assert.equal(response.status, 200, route);
+    const markup = await response.text();
+    assert(/<meta[^>]*name="robots"[^>]*noindex/.test(markup), route + ' must not be indexed');
+  }
+  const robots = await mf.dispatchFetch('https://soralink.link/robots.txt');
+  assert.equal(robots.status, 200);
+  assert.match(robots.headers.get('Content-Type'), /text\/plain/);
+  const robotsText = await robots.text();
+  assert.match(robotsText, /Allow: \/(?:\r?\n|$)/);
+  assert(
+    robotsText.includes('Allow: /api/upload?key='),
+    'Public card images must remain crawlable',
+  );
+  assert.match(robotsText, /Sitemap: https:\/\/soralink.link\/sitemap.xml/);
+  const sitemap = await mf.dispatchFetch('https://soralink.link/sitemap.xml');
+  assert.equal(sitemap.status, 200);
+  assert.match(sitemap.headers.get('Content-Type'), /xml/);
+  const xml = await sitemap.text();
+  assert.equal((xml.match(/<loc>/g) || []).length, 2);
+  assert(xml.includes('<loc>https://soralink.link/</loc>'));
+  assert(xml.includes('<loc>https://soralink.link/?lang=ar</loc>'));
+  assert(!/public-test|PRIVATE_OWNER|auth|admin/.test(xml));
   console.log(
-    'Public build: isolated JS graph, server-rendered card, private-field filtering, assets and main routes verified',
+    'Public build: isolated JS graph, server-rendered card, private-field filtering, assets, main routes, bilingual SEO, private-page noindex and sitemap/robots verified',
   );
 } finally {
   await mf.dispose();

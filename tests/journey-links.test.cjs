@@ -76,7 +76,12 @@ test('page loading excludes external services and in-page anchors, but covers qu
 
 test('home and workspace have separate state identities while editor tab and language changes preserve it', async () => {
   const Page = load(path.resolve('app/page.tsx')).default;
-  const page = (params) => Page({ searchParams: Promise.resolve(params) });
+  const page = async (params) => {
+    const root = await Page({ searchParams: Promise.resolve(params) });
+    return req('react')
+      .Children.toArray(root.props.children)
+      .find((child) => child.props && 'workspaceMode' in child.props);
+  };
   const home = await page({ lang: 'fr' });
   const workspace = await page({ app: '1', tab: 'photos', lang: 'fr' });
   assert.notEqual(home.key, workspace.key);
