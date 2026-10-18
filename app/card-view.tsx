@@ -1,7 +1,7 @@
 'use client';
 import ProfileLinksView from './profile-links-view';
 import { visibleProfileLinks } from './lib/profile-links';
-import CatalogVideos, { catalogVideoSources } from './catalog-videos';
+import CatalogVideos from './catalog-videos';
 import { catalogSettings } from './lib/catalog-menu';
 import CatalogProducts, { CatalogDocuments } from './catalog-public';
 import { catalogDocuments } from './lib/catalog-menu';
@@ -14,7 +14,6 @@ import { cardStyleId, socialOrder } from './lib/card-styles';
 import { appearance } from './lib/personalization';
 import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
 import { activePromotions, promotionPrice, todayMorocco } from './lib/promotions';
-import { recordedVideoUrl } from './lib/content-media';
 import PhotoGallery, { PhotoPreview } from './photo-gallery';
 import PdfCatalogue from './pdf-catalogue';
 import CardBackground from './card-background';
@@ -559,12 +558,17 @@ export default function CardView({
     if (section === 'promotions')
       return (
         <>
-          {activePromotions(d.promotions, promoToday).length > 0 && (
+          {catalogSettings(d).enabled && activePromotions(d.promotions, promoToday).length > 0 && (
             <section className="card-promotions" aria-label={t('Promotions', 'العروض')}>
               <h3>{sectionHeading(d, section, t('Nos promos', 'العروض ديالنا'))}</h3>
               {activePromotions(d.promotions, promoToday).map((p) => (
                 <article className="promotion-item" key={p.id}>
-                  {p.image && <PhotoPreview src={p.image} alt={p.title} ar={ar} />}
+                  <div className="promotion-media">
+                    {(p.image || p.images.length > 0) && (
+                      <PhotoGallery photos={[p.image, ...p.images].filter(Boolean)} ar={ar} />
+                    )}
+                    <CatalogVideos data={p} ar={ar} title={t('Vidéo de l’offre', 'فيديو العرض')} />
+                  </div>
                   <div>
                     <span className="promotion-label">{t('OFFRE SPÉCIALE', 'عرض خاص')}</span>
                     <h4>{p.title}</h4>
@@ -683,20 +687,11 @@ export default function CardView({
               return <CardSection key={key} d={d} section={key} preview={preview} />;
             if (key === 'services') {
               const items = normalizeCatalogue(d.services).filter((item) => item.name);
-              const promos = !a.hidden.includes('promotions')
-                ? activePromotions(d.promotions, promoToday)
-                : [];
-              const mediaVisible = catalogSettings(d).enabled;
-              const videoSources =
-                !a.hidden.includes('video') && mediaVisible
-                  ? catalogVideoSources(d)
-                  : { localVideo: '', youtubeId: '' };
-              const hasVideo = !!(videoSources.localVideo || videoSources.youtubeId);
-              const photos =
-                mediaVisible && !a.hidden.includes('photos') && Array.isArray(d.photos)
-                  ? d.photos.filter(Boolean)
+              const promos =
+                catalogSettings(d).enabled && !a.hidden.includes('promotions')
+                  ? activePromotions(d.promotions, promoToday)
                   : [];
-              if (!items.length && !promos.length && !photos.length && !hasVideo) return null;
+              if (!items.length && !promos.length) return null;
               return (
                 <div className="panel" key={key}>
                   <h2>
@@ -707,7 +702,19 @@ export default function CardView({
                       <h3>{sectionHeading(d, 'promotions', t('Nos promos', 'العروض ديالنا'))}</h3>
                       {promos.map((p) => (
                         <article className="promotion-item" key={p.id}>
-                          {p.image && <PhotoPreview src={p.image} alt={p.title} ar={ar} />}
+                          <div className="promotion-media">
+                            {(p.image || p.images.length > 0) && (
+                              <PhotoGallery
+                                photos={[p.image, ...p.images].filter(Boolean)}
+                                ar={ar}
+                              />
+                            )}
+                            <CatalogVideos
+                              data={p}
+                              ar={ar}
+                              title={t('Vidéo de l’offre', 'فيديو العرض')}
+                            />
+                          </div>
                           <div>
                             <span className="promotion-label">
                               {t('OFFRE SPÉCIALE', 'عرض خاص')}
@@ -743,19 +750,6 @@ export default function CardView({
                     onRequest={onRequest}
                     onMessage={setMsg}
                   />
-                  {photos.length > 0 && (
-                    <div className="catalogue-photos-integrated">
-                      <h3>{sectionHeading(d, 'photos', t('En images', 'بالتصاور'))}</h3>
-                      <PhotoGallery photos={photos} ar={ar} />
-                    </div>
-                  )}
-                  {hasVideo && (
-                    <CatalogVideos
-                      data={d}
-                      ar={ar}
-                      title={sectionHeading(d, 'video', t('En vidéo', 'بالفيديو'))}
-                    />
-                  )}
                 </div>
               );
             }

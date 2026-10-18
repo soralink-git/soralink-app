@@ -76,6 +76,7 @@ export async function POST(req: Request) {
     const purpose = form.get('purpose');
     if (
       (purpose === 'catalog-image' && (!rights.enabled || !rights.products)) ||
+      (purpose === 'catalog-offer' && !rights.enabled) ||
       (purpose === 'catalog-cover' && (!rights.enabled || !rights.pdf)) ||
       (entry.type === 'application/pdf' && (!rights.enabled || !rights.pdf))
     )

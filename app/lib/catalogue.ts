@@ -127,34 +127,43 @@ export function catalogueError(value: unknown, limit = MAX_CATALOGUE_ITEMS) {
 }
 export function normalizeCatalogue(value: unknown, includeDrafts = false): CatalogueItem[] {
   if (!Array.isArray(value)) return [];
+  // Keep spaces and incomplete decimal input in the editor; normalize only for publication.
+  const fieldText = (v: unknown, max: number) =>
+    includeDrafts ? (typeof v === 'string' ? v.slice(0, max) : '') : text(v, max);
   return value
     .slice(0, HARD_CATALOGUE_ITEMS)
     .map(legacyItem)
     .map((item: any, i) => ({ item, i }))
     .filter(({ item }) => item && typeof item === 'object' && (includeDrafts || !emptyDraft(item)))
     .map(({ item, i }) => ({
-      id: text(item.id, 80) || 'legacy-' + i,
+      id: fieldText(item.id, 80) || 'legacy-' + i,
       type: item.type === 'product' ? 'product' : 'service',
-      name: text(item.nameFr ?? item.name, 120) || text(item.nameAr, 120),
-      nameFr: text(item.nameFr ?? item.name, 120),
-      nameAr: text(item.nameAr, 120),
-      descriptionAr: text(item.descriptionAr, 800),
-      categoryAr: text(item.categoryAr, 80),
-      categoryId: text(item.categoryId, 80),
+      name: fieldText(item.nameFr ?? item.name, 120) || fieldText(item.nameAr, 120),
+      nameFr: fieldText(item.nameFr ?? item.name, 120),
+      nameAr: fieldText(item.nameAr, 120),
+      descriptionAr: fieldText(item.descriptionAr, 800),
+      categoryAr: fieldText(item.categoryAr, 80),
+      categoryId: fieldText(item.categoryId, 80),
       images: Array.isArray(item.images) ? item.images.filter(imageValid).slice(0, 5) : [],
-      oldPrice: priceValid(text(item.oldPrice, 30))
-        ? text(item.oldPrice, 30).replace(',', '.').trim()
-        : '',
-      reference: text(item.reference, 80),
+      oldPrice: includeDrafts
+        ? fieldText(item.oldPrice, 30)
+        : priceValid(fieldText(item.oldPrice, 30))
+          ? fieldText(item.oldPrice, 30).replace(',', '.').trim()
+          : '',
+      reference: fieldText(item.reference, 80),
       availability: ['soldout', 'hidden'].includes(item.availability)
         ? item.availability
         : 'available',
       promotion: item.promotion === true,
-      promoStart: text(item.promoStart, 10),
-      promoEnd: text(item.promoEnd, 10),
-      description: text(item.description, 800),
-      category: text(item.category, 80),
-      price: priceValid(text(item.price, 30)) ? text(item.price, 30).replace(',', '.') : '',
+      promoStart: fieldText(item.promoStart, 10),
+      promoEnd: fieldText(item.promoEnd, 10),
+      description: fieldText(item.description, 800),
+      category: fieldText(item.category, 80),
+      price: includeDrafts
+        ? fieldText(item.price, 30)
+        : priceValid(fieldText(item.price, 30))
+          ? fieldText(item.price, 30).replace(',', '.')
+          : '',
       image: imageValid(item.image) ? item.image : '',
       thumbnail: imageValid(item.thumbnail) ? item.thumbnail : '',
     }));

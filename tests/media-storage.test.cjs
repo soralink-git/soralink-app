@@ -306,3 +306,41 @@ test('pending file sizes count toward an administrator storage quota', async () 
   assert.equal(await media.reserveMedia('owner', B, 700000, limit), false);
   assert.equal((await media.storageUsage('owner', limit)).bytes, 700000);
 });
+
+test('offer gallery and video references enforce ownership and remain indexed through saves', async () => {
+  await asset(A);
+  await asset(B);
+  await asset(C, 'another-owner');
+  const previous = await profile('card', 'owner', {});
+  const data = {
+    promotions: [
+      { id: 'offer', title: 'Pack', enabled: false, images: [url(A)], recordedVideo: url(B) },
+    ],
+  };
+  assert.deepEqual([...media.mediaKeys(data)].sort(), [A, B]);
+  assert.equal(await media.validateMedia('owner', data, {}), true);
+  assert.equal(
+    await media.validateMedia('owner', { promotions: [{ recordedVideo: url(C) }] }, {}),
+    false,
+  );
+  assert.equal(
+    await media.validateMedia('owner', { promotions: [{ images: [url(C)] }] }, {}),
+    false,
+  );
+  assert.equal(
+    await media.saveProfileWithMedia(
+      'owner',
+      previous,
+      'card',
+      data,
+      true,
+      'test@example.test',
+      'new',
+    ),
+    true,
+  );
+  assert.deepEqual(await keys(), [A, B]);
+  await media.cleanupMedia('owner');
+  assert.equal(await state(A), 'ready');
+  assert.equal(await state(B), 'ready');
+});

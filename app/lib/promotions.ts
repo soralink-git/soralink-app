@@ -1,9 +1,13 @@
+import { recordedVideoUrl } from './content-media';
 export const MAX_PROMOTIONS = 10;
 export type Promotion = {
   id: string;
   title: string;
   description: string;
   image: string;
+  images: string[];
+  video: string;
+  recordedVideo: string;
   regularPrice: string;
   promoPrice: string;
   startDate: string;
@@ -53,6 +57,16 @@ export function promotionError(value: unknown): string | null {
       return 'Renseignez des prix positifs avec deux décimales maximum.';
     if (regular && promo && Number(promo.replace(',', '.')) > Number(regular.replace(',', '.')))
       return 'Le prix promotionnel ne peut pas dépasser le prix habituel.';
+    if (
+      p.images !== undefined &&
+      (!Array.isArray(p.images) ||
+        p.images.length > 10 ||
+        p.images.some((v: unknown) => !recordedVideoUrl(v)))
+    )
+      return 'Ajoutez jusqu’à 10 photos supplémentaires à cette offre.';
+    if (p.recordedVideo && !recordedVideoUrl(p.recordedVideo)) return 'Vidéo de l’offre invalide.';
+    if (p.video && !youtubeOfferURL(p.video))
+      return 'Renseignez un lien YouTube valide pour cette offre.';
     if (p.image && !/^\/api\/upload\?key=[a-f0-9-]{36}$/.test(p.image))
       return 'Ajoutez la photo de votre promotion avec le bouton prévu.';
   }
@@ -71,6 +85,11 @@ export function normalizePromotions(value: unknown): Promotion[] {
         typeof p.image === 'string' && /^\/api\/upload\?key=[a-f0-9-]{36}$/.test(p.image)
           ? p.image
           : '',
+      images: Array.isArray(p.images)
+        ? p.images.filter((v: unknown) => !!recordedVideoUrl(v)).slice(0, 10)
+        : [],
+      recordedVideo: recordedVideoUrl(p.recordedVideo),
+      video: youtubeOfferURL(p.video) ? p.video : '',
       regularPrice: text(p.regularPrice, 30).replace(',', '.'),
       promoPrice: text(p.promoPrice, 30).replace(',', '.'),
       startDate: text(p.startDate, 10),
@@ -101,4 +120,54 @@ export function promotionPrice(value: string) {
       Number(value.replace(',', '.')),
     ) + ' DH'
   );
+}
+
+// Explicitly move legacy standalone media; leave unrelated content and offer settings intact.
+export function associateLegacyMedia(
+  data: any,
+  id: string,
+  kind: 'photo' | 'video' | 'recordedVideo',
+  value: string,
+) {
+  const target = data.promotions?.find((p: any) => p.id === id);
+  if (!target || !value) return null;
+  if (kind === 'photo') {
+    if (!data.photos?.includes(value)) return null;
+    const existing = [target.image, ...(target.images || [])].filter(Boolean);
+    if (!existing.includes(value) && target.image && (target.images || []).length >= 10)
+      return null;
+    return {
+      ...data,
+      photos: data.photos.filter((src: string) => src !== value),
+      promotions: data.promotions.map((p: any) =>
+        p.id !== id || existing.includes(value)
+          ? p
+          : !p.image
+            ? { ...p, image: value }
+            : { ...p, images: [...(p.images || []), value] },
+      ),
+    };
+  }
+  if (data[kind] !== value || (target[kind] && target[kind] !== value)) return null;
+  return {
+    ...data,
+    [kind]: '',
+    promotions: data.promotions.map((p: any) => (p.id === id ? { ...p, [kind]: value } : p)),
+  };
+}
+
+export function youtubeOfferURL(value: unknown) {
+  if (typeof value !== 'string') return false;
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === 'https:' &&
+      (url.hostname === 'youtu.be'
+        ? /^[\w-]{11}$/.test(url.pathname.slice(1))
+        : ['youtube.com', 'www.youtube.com'].includes(url.hostname) &&
+          /^[\w-]{11}$/.test(url.searchParams.get('v') || ''))
+    );
+  } catch {
+    return false;
+  }
 }

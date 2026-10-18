@@ -1969,3 +1969,128 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     width: 100%;
   }
 }
+
+/* Product management: compact rows, one short editing form at a time. */
+.catalog-product-editor,
+.catalog-promotions-editor .promotion-editor {
+  margin-block: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--brand-soft);
+  padding: 0;
+  min-width: 0;
+}
+.catalog-product-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+}
+.catalog-product-open {
+  display: flex;
+  flex: 1;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  text-align: start;
+  background: transparent;
+  color: var(--ink);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.catalog-product-open > img,
+.catalog-product-placeholder {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--brand-surface);
+  display: grid;
+  place-items: center;
+}
+.catalog-product-open > span:not(.catalog-product-placeholder) {
+  min-width: 0;
+}
+.catalog-product-open strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.catalog-product-open small {
+  display: block;
+  color: var(--muted);
+  margin-block-start: 4px;
+}
+.catalog-edit-label {
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: var(--brand-strong);
+}
+.catalog-product-form {
+  padding: 16px;
+  border-block-start: 1px solid var(--line);
+}
+.catalog-item-menu {
+  flex-shrink: 0;
+  max-width: 130px;
+}
+.catalog-item-menu > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 4px 12px;
+  font-size: 24px;
+  line-height: 1;
+}
+.catalog-item-menu > summary::-webkit-details-marker {
+  display: none;
+}
+.catalog-item-menu button {
+  display: block;
+  width: 100%;
+  margin-block: 6px;
+  padding: 8px;
+}
+.catalog-item-menu .catalog-actions {
+  display: flex;
+}
+.catalog-item-menu .catalog-actions button {
+  width: auto;
+}
+.catalog-language {
+  margin-block: 12px;
+  color: var(--muted);
+}
+.catalog-language > summary {
+  cursor: pointer;
+}
+.catalog-settings {
+  margin-block-start: 24px;
+}
+.promotion-media {
+  min-width: 0;
+}
+.promotion-media:empty {
+  display: none;
+}
+.catalog-legacy-media .promotion-photo img {
+  max-width: 120px;
+  max-height: 120px;
+  object-fit: cover;
+}
+@media (max-width: 600px) {
+  .catalog-edit-label {
+    display: none;
+  }
+  .catalog-product-row {
+    gap: 4px;
+  }
+  .catalog-product-form {
+    padding: 12px;
+  }
+  .catalog-product-open > img,
+  .catalog-product-placeholder {
+    width: 44px;
+    height: 44px;
+  }
+}

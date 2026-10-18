@@ -11,7 +11,6 @@ import {
 import { normalizeAppearance } from './personalization';
 import { normalizeCatalogue } from './catalogue';
 import { activePromotions } from './promotions';
-import { recordedVideoUrl } from './content-media';
 import { normalizeSchedule } from './schedule';
 const textFields = [
   'name',
@@ -97,11 +96,11 @@ export function publicCardData(
     : [];
   if (!out.catalogSettings.showPrices)
     out.services = out.services.map((p: any) => ({ ...p, price: '', oldPrice: '' }));
-  out.promotions = activePromotions(d.promotions);
-  out.photos = Array.isArray(d.photos)
-    ? d.photos.filter((p: unknown) => typeof p === 'string').slice(0, 10)
-    : [];
-  out.recordedVideo = recordedVideoUrl(d.recordedVideo);
+  out.promotions = out.catalogSettings.enabled ? activePromotions(d.promotions) : [];
+  // Standalone legacy files remain private until their owner attaches them to an offer.
+  out.photos = [];
+  out.video = '';
+  out.recordedVideo = '';
   out.appointmentServices = pro ? normalizeSchedule(d).appointmentServices : [];
   if (d.hidePhone) out.phone = '';
   if (d.hideEmail) out.email = '';

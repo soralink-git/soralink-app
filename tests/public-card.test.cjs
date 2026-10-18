@@ -79,7 +79,7 @@ test('empty content produces no catalogue panels', () => {
   );
 });
 
-test('promotions and photo gallery are regrouped under the Produits et services panel', () => {
+test('offers precede products without a standalone gallery', () => {
   const html = card(demoCard);
   const servicesHeadingIndex = html.indexOf('<h2>Produits et services</h2>');
   const promotionsIndex = html.indexOf('class="card-promotions"');
@@ -89,7 +89,7 @@ test('promotions and photo gallery are regrouped under the Produits et services 
   assert.ok(servicesHeadingIndex !== -1, 'Produits et services heading must be present');
   assert.ok(promotionsIndex > servicesHeadingIndex, 'promotions must be inside the services panel');
   assert.ok(catalogueIndex > promotionsIndex, 'catalogue grid follows promotions');
-  assert.ok(galleryIndex > catalogueIndex, 'gallery is integrated inside services panel');
+  assert.equal(galleryIndex, -1, 'standalone gallery is removed');
 });
 test('shared renderer preserves theme, sizing, color and shape customization', () => {
   const html = card({
@@ -221,34 +221,57 @@ test('google review renders golden star action and review badge in both language
   }
 });
 
-test('catalogue includes photos and video once, including a card containing only a video', () => {
-  const video = '/api/upload?key=12345678-1234-1234-1234-123456789abc';
-  const data = {
-    ...demoCard,
-    services: [],
-    promotions: [],
-    photos: [video],
-    recordedVideo: video,
+test('standalone legacy photos and videos no longer create content on the public card', () => {
+  const src = '/api/upload?key=12345678-1234-1234-1234-123456789abc';
+  for (const ar of [false, true]) {
+    const html = card(
+      {
+        ...demoCard,
+        services: [],
+        promotions: [],
+        photos: [src],
+        recordedVideo: src,
+        video: 'https://youtu.be/abcdefghijk',
+      },
+      { ar },
+    );
+    assert.doesNotMatch(
+      html,
+      /catalogue-photos-integrated|catalogue-videos-integrated|<video\b|youtube-nocookie/,
+    );
+    assert.doesNotMatch(html, /<h2>Produits et services<\/h2>/);
+  }
+});
+test('offer media is nested under the offer and disappears with inactive offers', () => {
+  const src = '/api/upload?key=12345678-1234-1234-1234-123456789abc';
+  const offer = {
+    id: 'offer',
+    title: 'Offre',
+    enabled: true,
+    image: src,
+    images: [],
+    recordedVideo: src,
     video: 'https://youtu.be/abcdefghijk',
   };
-  const html = card(data);
-  assert.equal((html.match(/<h2>Produits et services<\/h2>/g) || []).length, 1);
-  assert.equal((html.match(/catalogue-photos-integrated/g) || []).length, 1);
-  assert.equal((html.match(/catalogue-videos-integrated/g) || []).length, 1);
-  assert.equal((html.match(/<video\b/g) || []).length, 1);
-  assert.match(html, /<h3>En vidéo<\/h3>/);
-  assert.doesNotMatch(html, /<h2>En vidéo<\/h2>|<h2>En images<\/h2>/);
-  assert.match(card({ ...data, photos: [] }), /catalogue-videos-integrated/);
-  assert.doesNotMatch(
-    card({ ...data, hiddenSections: ['services'] }),
-    /catalogue-photos-integrated|catalogue-videos-integrated|<video\b/,
-  );
-});
-test('individual media visibility is preserved inside the catalogue', () => {
-  const src = '/api/upload?key=12345678-1234-1234-1234-123456789abc';
-  const d = { ...demoCard, photos: [src], recordedVideo: src };
-  assert.doesNotMatch(card({ ...d, hiddenSections: ['video'] }), /catalogue-videos-integrated/);
-  assert.match(card({ ...d, hiddenSections: ['video'] }), /catalogue-photos-integrated/);
-  assert.doesNotMatch(card({ ...d, hiddenSections: ['photos'] }), /catalogue-photos-integrated/);
-  assert.match(card({ ...d, hiddenSections: ['photos'] }), /catalogue-videos-integrated/);
+  const data = { ...demoCard, services: [], photos: [], promotions: [offer] };
+  for (const ar of [false, true]) {
+    const html = card(data, { ar });
+    assert.equal((html.match(/<video\b/g) || []).length, 1);
+    assert.equal((html.match(/youtube-nocookie/g) || []).length, 1);
+    assert.match(html, /class="promotion-media"/);
+    assert.match(html, ar ? /فيديو العرض/ : /Vidéo de l’offre/);
+    for (const p of [
+      { ...offer, enabled: false },
+      { ...offer, endDate: '2020-01-01' },
+      { ...offer, startDate: '2099-01-01' },
+    ])
+      assert.doesNotMatch(
+        card({ ...data, promotions: [p] }, { ar }),
+        /<video\b|youtube-nocookie|promotion-item/,
+      );
+    assert.doesNotMatch(
+      card({ ...data, catalogSettings: { enabled: false } }, { ar }),
+      /<video\b|youtube-nocookie|promotion-item/,
+    );
+  }
 });
