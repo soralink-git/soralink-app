@@ -1538,12 +1538,14 @@ html[data-theme='dark'] .landing-showcase .card-design .card-identity {
   border-radius: 28px !important;
   box-shadow: var(--docare-shadow) !important;
 }
-.crop-dialog h2,
-.crop-dialog p,
-.crop-dialog label {
+.crop-header h2,
+.crop-header p,
+.crop-adjustments p,
+.crop-adjustments label,
+.crop-footer p {
   color: var(--ink) !important;
 }
-.crop-dialog p.hint {
+.crop-footer p.hint {
   color: var(--muted) !important;
 }
 .crop-frame {
@@ -1566,11 +1568,12 @@ html[data-theme='dark'] .landing-showcase .card-design .card-identity {
 .crop-live-badge .live-dot {
   background: var(--docare-teal) !important;
 }
-.crop-dialog .primary {
+.crop-footer .primary {
   background: var(--docare-teal) !important;
   color: #003c39 !important;
 }
-.crop-dialog .secondary {
+.crop-header .secondary,
+.crop-footer .secondary {
   background: var(--docare-surface) !important;
   color: var(--ink) !important;
   border: 1px solid var(--line) !important;

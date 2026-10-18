@@ -4667,11 +4667,13 @@ header nav {
   border-radius: 16px;
   padding: 22px;
 }
-.crop-dialog h2 {
+.crop-header h2 {
   font-size: 22px;
   margin-bottom: 8px;
 }
-.crop-dialog p {
+.crop-header p,
+.crop-adjustments p,
+.crop-footer p {
   font-size: 14px;
   line-height: 1.6;
 }
@@ -4696,7 +4698,7 @@ header nav {
 .crop-frame canvas:active {
   cursor: grabbing;
 }
-.crop-dialog label {
+.crop-adjustments label {
   display: block;
   font-size: 15px;
   margin: 12px 0;
@@ -4713,12 +4715,13 @@ header nav {
   flex-wrap: wrap;
   margin-top: 18px;
 }
-.crop-dialog .secondary {
+.crop-header .secondary,
+.crop-footer .secondary {
   background: #171b20;
   color: #fff;
   border-color: #aaa;
 }
-.crop-dialog .primary {
+.crop-footer .primary {
   background: #d5b66f;
   color: #17130d;
 }
@@ -5441,4 +5444,178 @@ header nav {
   border: 1px dashed #cbd5e1;
   border-radius: 12px;
   margin-block: 16px;
+}
+
+/* Keep adjustment tools and the real card inside the viewport, including PWA safe areas. */
+.crop-overlay {
+  padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+    max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+}
+.crop-dialog {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  max-width: 560px;
+  height: min(850px, calc(100dvh - 32px));
+  max-height: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+.crop-dialog.crop-with-card {
+  max-width: 1080px;
+}
+.crop-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--line);
+}
+.crop-header > div {
+  flex: 1;
+  min-width: 0;
+}
+.crop-header h2 {
+  font-size: clamp(18px, 2.5vw, 22px);
+  margin: 0 0 4px;
+}
+.crop-header p {
+  margin: 0;
+}
+.crop-close {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+}
+.crop-workspace {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  overflow: hidden;
+}
+.crop-with-card .crop-workspace {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.crop-adjustments {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 12px 20px;
+}
+.crop-frame {
+  width: min(100%, calc(clamp(100px, 35dvh, 340px) * var(--crop-ratio)));
+  max-width: 440px;
+  box-sizing: border-box;
+}
+.crop-adjustments input[type='range'] {
+  min-height: 44px;
+}
+.crop-workspace .crop-live-preview {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  margin: 12px;
+  padding: 12px;
+  overflow: hidden;
+}
+.crop-live-badge {
+  flex-shrink: 0;
+  font-size: 12px;
+}
+.crop-card-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border-radius: 14px;
+}
+.crop-real-card {
+  width: 100%;
+  max-width: 420px;
+  margin-inline: auto;
+}
+.crop-real-card .profile-card {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+.crop-footer {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  border-top: 1px solid var(--line);
+}
+.crop-footer .crop-actions {
+  margin: 0;
+}
+.crop-footer button {
+  min-height: 44px;
+}
+.crop-footer .hint {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 8px 0 0;
+}
+.crop-footer .crop-error {
+  color: #c43a46 !important;
+  margin: 0 0 8px;
+}
+@media (max-width: 700px) {
+  .crop-dialog {
+    height: calc(100dvh - 16px);
+  }
+  .crop-with-card .crop-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) minmax(0, 0.9fr);
+  }
+  .crop-header {
+    padding: 12px;
+    gap: 8px;
+  }
+  .crop-header p {
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .crop-adjustments {
+    padding: 8px 14px;
+  }
+  .crop-frame {
+    width: min(100%, calc(clamp(90px, 22dvh, 180px) * var(--crop-ratio)));
+    margin: 4px auto 8px;
+  }
+  .crop-workspace .crop-live-preview {
+    margin: 4px 10px 8px;
+    padding: 8px;
+  }
+  .crop-live-badge {
+    margin-bottom: 6px;
+    font-size: 11px;
+  }
+  .crop-footer {
+    padding: 10px 12px;
+  }
+  .crop-footer .crop-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .crop-actions .primary {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-height: 500px) and (min-width: 701px) {
+  .crop-header p,
+  .crop-footer .hint {
+    display: none;
+  }
+  .crop-header,
+  .crop-footer {
+    padding-block: 8px;
+  }
 }
