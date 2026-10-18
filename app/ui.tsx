@@ -554,6 +554,35 @@ export default function App({
       : 'Les modifications ne sont pas enregistrées. Vérifiez les champs et la connexion puis réessayez.';
     setMsg(autosave.state.error || fallback);
   }, [autosave.state.status, autosave.state.error, ar]);
+
+  useEffect(() => {
+    if (!msg) return;
+    if (autosave.state.status === 'conflict') return;
+    const isProgress =
+      msg.includes('Enregistrement automatique') ||
+      msg.includes('التسجيل التلقائي') ||
+      msg.includes('Demande enregistrée') ||
+      msg.includes('الطلب تسجل') ||
+      msg.includes('ajouté') ||
+      msg.includes('ajoutée') ||
+      msg.includes('تزّاد');
+    const delay = isProgress ? 3500 : 5000;
+    const timer = setTimeout(() => {
+      setMsg('');
+    }, delay);
+    return () => clearTimeout(timer);
+  }, [msg, autosave.state.status]);
+
+  useEffect(() => {
+    if (
+      autosave.state.status === 'saved' &&
+      msg &&
+      (msg.includes('Enregistrement automatique') || msg.includes('التسجيل التلقائي'))
+    ) {
+      const timer = setTimeout(() => setMsg(''), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [autosave.state.status, msg]);
   const [manualShareUrl, setManualShareUrl] = useState('');
   const [emailActions, setEmailActions] = useState(false);
   const [rawSources, setRawSources] = useState<{

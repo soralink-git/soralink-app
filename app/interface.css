@@ -49,7 +49,7 @@
   width: 100%;
   aspect-ratio: 2.2 / 1;
   height: auto;
-  min-height: 140px;
+  min-height: 0;
   background-color: var(--block-bg, #ffffff);
   background-size: cover;
   background-repeat: no-repeat;
@@ -1135,20 +1135,16 @@
   margin: 0;
   overflow-wrap: anywhere;
 }
-.card-design.card-layout-executive .card-cover {
-  height: 100px;
+.card-design.card-layout-executive .card-cover,
+.card-design.card-layout-creative .card-cover,
+.card-design.card-layout-minimal .card-cover,
+.card-design.card-layout-direct .card-cover {
+  height: auto;
+  aspect-ratio: 2.2 / 1;
+  min-height: 0;
 }
 .card-design.card-layout-executive .card-identity {
   text-align: start;
-}
-.card-design.card-layout-creative .card-cover {
-  height: 220px;
-}
-.card-design.card-layout-minimal .card-cover {
-  height: 65px;
-}
-.card-design.card-layout-direct .card-cover {
-  height: 100px;
 }
 .card-design.card-layout-direct .card-action-icons {
   flex-wrap: wrap;

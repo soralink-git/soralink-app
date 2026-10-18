@@ -4840,7 +4840,7 @@ header nav {
 }
 .unified-card .card-cover {
   height: auto;
-  aspect-ratio: 4/1;
+  aspect-ratio: 2.2 / 1;
   min-height: 0;
 }
 @media (max-width: 500px) {

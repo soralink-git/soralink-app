@@ -1225,6 +1225,13 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
   border-color: #e4ece8;
 }
 .card-design .card-cover {
+  width: 100%;
+  aspect-ratio: 2.2 / 1;
+  height: auto;
+  min-height: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 22px;
   box-shadow: none;
   border-color: #ffffff50;
