@@ -1,3 +1,5 @@
+import { BRAND } from './brand';
+
 export const demoCard = {
   name: 'Exemple SoraLink',
   business: 'Studio créatif · Démonstration',
@@ -7,7 +9,11 @@ export const demoCard = {
   email: '',
   whatsapp: '',
   address: 'Oujda · Maroc',
-  color: '#00b5ad',
+  color: BRAND.orange,
+  fondColor: BRAND.charcoal,
+  blockColor: BRAND.slate,
+  buttonColor: BRAND.orange,
+  textColor: BRAND.white,
   cardTheme: 'dark',
   pro: true,
   services: [

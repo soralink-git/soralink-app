@@ -124,7 +124,12 @@ function serviceWorker() {
       add: async (url) => added.push(url),
       match: async () => new Response('Offline page'),
     }),
-    keys: async () => ['soralink-offline-v1', 'soralink-offline-v2', 'other-app'],
+    keys: async () => [
+      'soralink-offline-v1',
+      'soralink-offline-v2',
+      'soralink-offline-v3',
+      'other-app',
+    ],
     delete: async (name) => removed.push(name),
   };
   vm.runInNewContext(fs.readFileSync('public/sw.js', 'utf8'), {
@@ -156,7 +161,7 @@ test('offline worker caches only its fallback and leaves API, auth and write req
     await task;
   }
   assert.deepEqual(sw.added, ['/offline.html']);
-  assert.deepEqual(sw.removed, ['soralink-offline-v1']);
+  assert.deepEqual(sw.removed, ['soralink-offline-v1', 'soralink-offline-v2']);
   for (const [url, method, mode] of [
     ['https://example.test/api/data', 'GET', 'navigate'],
     ['https://example.test/auth/callback?code=private', 'GET', 'navigate'],

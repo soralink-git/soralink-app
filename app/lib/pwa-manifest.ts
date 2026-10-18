@@ -1,3 +1,5 @@
+import { BRAND } from './brand';
+
 export function manifestPath(ar = false) {
   return '/api/manifest?lang=' + (ar ? 'ar' : 'fr');
 }
@@ -12,8 +14,8 @@ export function appManifest(ar = false) {
     lang: ar ? 'ar' : 'fr',
     dir: ar ? 'rtl' : 'ltr',
     display: 'standalone',
-    background_color: '#0c0d0e',
-    theme_color: '#101112',
+    background_color: BRAND.charcoal,
+    theme_color: BRAND.charcoal,
     description: ar
       ? 'الكارط الرقمية، الكاتالوگ والمواعيد ديالك مع SoraLink.'
       : 'Votre carte digitale, catalogue et rendez-vous SoraLink.',

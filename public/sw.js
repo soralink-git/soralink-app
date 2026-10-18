@@ -1,5 +1,5 @@
 // Cache only the offline page. Never store account data, API responses or card pages.
-const CACHE = 'soralink-offline-v2';
+const CACHE = 'soralink-offline-v3';
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE)

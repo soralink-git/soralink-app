@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
 :root {
   --ink: #0f172a;
@@ -4166,7 +4166,7 @@ header nav {
   list-style: none;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--docare-surface, #ffffff);
+  background: var(--brand-surface, #ffffff);
   color: var(--ink, #0f172a);
   padding: 9px 15px;
   font-weight: 600;
@@ -4174,9 +4174,9 @@ header nav {
   transition: all 0.2s ease;
 }
 .account-menu summary:hover {
-  background: var(--docare-tint, #e9f7f3);
-  border-color: var(--docare-tint-border, #bde7da);
-  color: var(--docare-deep, #00847f);
+  background: var(--brand-tint, #e9f7f3);
+  border-color: var(--brand-tint-border, #bde7da);
+  color: var(--brand-strong, #00847f);
 }
 .account-menu summary::-webkit-details-marker {
   display: none;
@@ -4197,7 +4197,7 @@ header nav {
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: var(--docare-surface, #ffffff);
+  background: var(--brand-surface, #ffffff);
   color: var(--ink, #0f172a);
   box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -4229,7 +4229,7 @@ header nav {
   transition: color 0.15s ease;
 }
 .account-menu-panel a:hover {
-  color: var(--docare-deep, #00847f);
+  color: var(--brand-strong, #00847f);
 }
 .account-menu-panel button {
   color: #e11d48;
