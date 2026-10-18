@@ -1,4 +1,5 @@
 'use client';
+import { BRAND } from './lib/brand';
 import ThemeToggle from './theme-toggle';
 import { publicCardPath } from './lib/public-address';
 import { appendUnique, type History, type PageInfo } from './lib/pagination';
@@ -89,7 +90,7 @@ const blank = {
   x: '',
   mapsUrl: '',
   mapDestination: '',
-  color: '#00b5ad',
+  color: BRAND.orange,
   template: 'Professionnel',
   cardTheme: 'dark',
   buttonShape: 'pill',
@@ -387,7 +388,12 @@ export function Customization({
           </div>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {[
-              { label: 'Docare Sarcelle', color: '#00b5ad', fond: '#f0fdfa', theme: 'teal' },
+              {
+                label: t('Orange SoraLink', 'برتقالي SoraLink'),
+                color: BRAND.orange,
+                fond: BRAND.charcoal,
+                theme: 'dark',
+              },
               { label: 'Or Premium', color: '#d5b66f', fond: '#ffffff', theme: 'light' },
               { label: 'Bleu Nuit', color: '#4f46e5', fond: '#0f172a', theme: 'dark' },
               { label: 'Vert Émeraude', color: '#10b981', fond: '#ffffff', theme: 'light' },
@@ -437,7 +443,7 @@ export function Customization({
             onClick={() =>
               setData({
                 ...data,
-                color: '#d5b66f',
+                color: BRAND.orange,
                 cardTheme: 'light',
                 fondColor: '',
                 blockColor: '',

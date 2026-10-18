@@ -25,6 +25,7 @@ import {
   Wifi,
 } from 'lucide-react';
 import { WhatsAppIcon } from './card-helpers';
+import { BRAND } from './lib/brand';
 
 export default function LandingPage({
   ar,
@@ -46,7 +47,7 @@ export default function LandingPage({
     {
       id: 'commercial',
       badge: t('COMMERCIAL & INDÉPENDANT', 'تجاري ومهني حر'),
-      badgeColor: '#2563EB',
+      badgeColor: BRAND.vermilion,
       title: t('Commerciaux & Indépendants', 'تجاريين ومهنيين أحرار'),
       desc: t(
         'Enregistrez votre contact en 1 seconde et recevez des demandes de devis.',
@@ -61,7 +62,7 @@ export default function LandingPage({
     {
       id: 'restaurant',
       badge: t('COMMERCE & RESTAURATION', 'محلات ومطاعم'),
-      badgeColor: '#EA580C',
+      badgeColor: BRAND.vermilion,
       title: t('Commerces & Restaurants', 'محلات ومطاعم'),
       desc: t(
         'Affichez votre menu PDF, votre catalogue et vos promos du moment.',
@@ -76,7 +77,7 @@ export default function LandingPage({
     {
       id: 'cabinet',
       badge: t('SANTÉ & PROFESSIONS LIBÉRALES', 'عيادات وخدمات'),
-      badgeColor: '#0D9488',
+      badgeColor: BRAND.vermilion,
       title: t('Cabinets & Services', 'عيادات وخدمات'),
       desc: t(
         'Partagez votre itinéraire Maps et gérez vos prises de rendez-vous.',
@@ -91,7 +92,7 @@ export default function LandingPage({
     {
       id: 'artisan',
       badge: t('ARTISANAT & CRÉATION', 'حرفيين ومبدعين'),
-      badgeColor: '#D97706',
+      badgeColor: BRAND.vermilion,
       title: t('Artisans & Créateurs', 'حرفيين ومبدعين'),
       desc: t(
         'Montrez vos réalisations en photos/vidéo et prenez des commandes.',
@@ -177,10 +178,10 @@ export default function LandingPage({
                   instagram: 'https://instagram.com/soralink',
                   linkedin: 'https://linkedin.com/company/soralink',
                   cardTheme: 'light',
-                  color: '#00b5ad',
+                  color: BRAND.orange,
                   fondColor: '#ffffff',
                   blockColor: '#ffffff',
-                  buttonColor: '#00b5ad',
+                  buttonColor: BRAND.orange,
                   textColor: '#0f172a',
                   buttonShape: 'pill',
                   avatarShape: 'circle',
@@ -452,7 +453,7 @@ export default function LandingPage({
               onClick={() => setActivePersona(idx)}
               style={
                 activePersona === idx
-                  ? { borderColor: p.badgeColor, color: p.badgeColor }
+                  ? { borderColor: 'var(--brand-strong)', color: 'var(--brand-strong)' }
                   : undefined
               }
             >

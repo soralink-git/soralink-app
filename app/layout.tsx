@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import { BRAND } from './lib/brand';
 import './globals.css';
 import './interface.css';
 import './landing.css';
@@ -7,7 +8,7 @@ import { AppearanceProvider } from './theme-toggle';
 import NavigationProgress from './navigation-progress';
 import { HOME_TITLE, HOME_DESCRIPTION } from './lib/site-seo';
 
-export const viewport: Viewport = { themeColor: '#121b1b' };
+export const viewport: Viewport = { themeColor: BRAND.charcoal };
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://soralink.link'),
