@@ -1290,7 +1290,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         <Phone />
                         <p>
                           {t(
-                            'Contact : soratap08@gmail.com. Paiement manuel après confirmation. Les coordonnées bancaires et frais de livraison restent à compléter.',
+                            'Contact : contact@soralink.link. Paiement manuel après confirmation. Les coordonnées bancaires et frais de livraison restent à compléter.',
                             'معلومات التواصل التجاري، التحويل والتوصيل غادي يتزادو قبل الإطلاق.',
                           )}
                         </p>

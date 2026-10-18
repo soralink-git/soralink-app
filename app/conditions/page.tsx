@@ -42,7 +42,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ l
             réclamation et l’identité du vendeur. Cette page ne remplace pas les CGV finales.
           </p>
           <p>
-            <a href="mailto:soratap08@gmail.com">soratap08@gmail.com</a> ·{' '}
+            <a href="mailto:contact@soralink.link">contact@soralink.link</a> ·{' '}
             <a href="https://wa.me/212661446664">WhatsApp</a>
           </p>
         </>

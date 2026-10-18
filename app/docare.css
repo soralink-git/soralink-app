@@ -2094,3 +2094,89 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     height: 44px;
   }
 }
+
+/* A shorter homepage: one shared demo, three visual benefits, clear offers. */
+.landing-simple .landing-hero {
+  padding-block: 28px 40px;
+}
+.landing-quick-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  padding-block: 12px 36px;
+  position: relative;
+  z-index: 1;
+}
+.landing-quick-benefits article {
+  padding: 22px;
+  background: var(--brand-soft);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.landing-quick-benefits svg {
+  color: var(--brand-strong);
+  margin-block-end: 12px;
+}
+.landing-quick-benefits h2 {
+  font-size: 19px;
+  margin: 0 0 8px;
+  color: var(--ink);
+}
+.landing-quick-benefits p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.landing-simple .landing-pricing {
+  padding-block: 36px;
+}
+.landing-simple .landing-heading {
+  margin-block-end: 30px;
+}
+.landing-more {
+  padding: 16px 0;
+  margin-block: 16px 0;
+  border-block-start: 1px solid var(--line);
+}
+.landing-more > summary {
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--ink);
+  padding-block: 8px;
+}
+.landing-more p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+.landing-simple .landing-faq {
+  padding-block: 36px;
+}
+.landing-simple .landing-final {
+  padding: 28px;
+  margin-block-start: 24px;
+}
+.landing-simple .landing-final h2 {
+  font-size: clamp(24px, 3vw, 34px);
+}
+@media (max-width: 700px) {
+  .landing-quick-benefits {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .landing-quick-benefits article {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 0 12px;
+  }
+  .landing-quick-benefits svg {
+    grid-row: span 2;
+    margin: 0;
+  }
+  .landing-quick-benefits h2 {
+    font-size: 17px;
+  }
+  .landing-simple .landing-final {
+    padding: 20px;
+  }
+}

@@ -153,7 +153,7 @@ test('order dialog retains selected catalogue information', () => {
     onClose: () => {},
     onMessage: () => {},
   });
-  assert.match(html, /Cadeau personnalisé/);
+  assert.match(html, /Votre produit/);
   assert.match(html, /Votre demande de commande/);
 });
 test('booking cannot be submitted without an available slot', () => {
