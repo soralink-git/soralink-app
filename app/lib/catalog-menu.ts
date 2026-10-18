@@ -1,3 +1,4 @@
+import { normalizePromotions } from './promotions';
 import { z } from 'zod';
 import { normalizeCatalogue } from './catalogue';
 import { catalogueLimit } from './catalogue';
@@ -166,6 +167,7 @@ export function catalogContentIssue(data: any, previous: any, rights: CatalogRig
     Array.isArray(d.photos) ? d.photos : [],
     d.video || '',
     d.recordedVideo || '',
+    normalizePromotions(d.promotions),
   ];
   if (!rights.enabled && JSON.stringify(media(data)) !== JSON.stringify(media(previous)))
     return 'Les médias du catalogue sont désactivés pour votre compte.';

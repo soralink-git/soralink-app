@@ -21,7 +21,13 @@ export function mediaKeys(d: any): string[] {
           ...(Array.isArray(s.images) ? s.images : []),
         ])
       : []),
-    ...(Array.isArray(d?.promotions) ? d.promotions.map((p: any) => p.image) : []),
+    ...(Array.isArray(d?.promotions)
+      ? d.promotions.flatMap((p: any) => [
+          p.image,
+          p.recordedVideo,
+          ...(Array.isArray(p.images) ? p.images : []),
+        ])
+      : []),
   ];
   return [
     ...new Set(

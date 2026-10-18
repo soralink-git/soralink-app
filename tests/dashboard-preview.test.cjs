@@ -154,33 +154,14 @@ for (const ar of [false, true])
     assert.doesNotMatch(article(previewHtml), /card-language/);
   });
 
-test('media controls live in the catalogue media tab rather than in a separate dashboard panel', () => {
-  const ctx = context('content');
-  const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: ctx }));
-  assert.match(html, /id="catalog-tab-media"/);
-  assert.doesNotMatch(html, /Galerie photos &amp; Documents intégrés/);
-  const Editor = load(path.resolve('app/catalog-editor.tsx')).default;
-  const Media = load(path.resolve('app/catalog-media-editor.tsx')).default;
+test('standalone media tab is removed and its old address opens offers', () => {
   for (const ar of [false, true]) {
     const c = context('media', ar);
-    const panel = renderToStaticMarkup(
-      React.createElement(Editor, {
-        data: c.data,
-        setData: noop,
-        ar,
-        busy: false,
-        save: noop,
-        onMessage: noop,
-        initialTab: 'media',
-        mediaEditor: React.createElement(Media, { context: c }),
-      }),
-    );
-    assert.match(panel, /id="catalog-panel-media"/);
-    assert.match(panel, ar ? /صوّر فيديو/ : /Filmer une vidéo/);
-    assert.match(panel, ar ? /خد تصويرة/ : /Prendre une photo/);
-    assert.match(panel, /capture="environment"/);
-    assert.match(panel, ar ? /إظهار الصور فالكاتالوگ/ : /Afficher les photos dans le catalogue/);
-    assert.doesNotMatch(panel, ar ? /Prendre une photo|Filmer une vidéo/ : /خد تصويرة|صوّر فيديو/);
+    const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
+    assert.doesNotMatch(html, /id="catalog-tab-media"|id="catalog-tab-appearance"/);
+    assert.match(html, /id="catalog-panel-promotions"/);
+    assert.match(html, ar ? /العروض والتخفيضات/ : /Offres et promotions/);
+    assert.doesNotMatch(html, /capture="environment"/); // no uploader before choosing an offer
   }
 });
 test('photo and video section controls are grouped into the catalogue rather than ordered separately', () => {
@@ -223,7 +204,7 @@ test('product editing exposes one content language and keeps advanced controls c
         onMessage: noop,
       }),
     );
-    assert.match(html, /class="catalogue-editor" open=""/);
+    assert.match(html, /class="catalog-product-form"/);
     assert.match(
       html,
       new RegExp('lang="' + (ar ? 'ar' : 'fr') + '" dir="' + (ar ? 'rtl' : 'ltr') + '"'),
@@ -307,8 +288,11 @@ test('YouTube link and agenda additions have explicit removal and save controls'
       breakStart: '12:00',
       breakEnd: '14:00',
     };
+    c.data.promotions = [];
     const media = renderToStaticMarkup(React.createElement(Media, { context: c }));
-    assert.match(media, ar ? /حيّد رابط YouTube/ : /Retirer le lien YouTube/);
+    assert.match(media, ar ? /رابط YouTube قديم/ : /Ancien lien YouTube/);
+    assert.match(media, ar ? /ربط بهاد العرض/ : /Associer à cette offre/);
+    assert.match(media, ar ? /حذف/ : /Retirer/);
     const agenda = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
     assert.match(agenda, ar ? /حذف الاستراحة/ : /Supprimer la pause/);
     assert.match(agenda, ar ? /حذف يوم الإغلاق/ : /Supprimer la date de fermeture/);
@@ -360,3 +344,14 @@ test('save controls contain only one button, including offline and conflict stat
     }
   }
 });
+
+for (const ar of [false, true])
+  test(`saved products render compact rows without mounting every editing form (${ar ? 'ar' : 'fr'})`, () => {
+    const c = context('content', ar);
+    const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
+    assert.match(html, /catalog-product-row/);
+    assert.match(html, /catalog-item-menu/);
+    assert.doesNotMatch(html, /id="product-edit-/);
+    assert.match(html, ar ? /متوفر/ : /Disponible/);
+    assert.match(html, /catalog-settings/);
+  });
