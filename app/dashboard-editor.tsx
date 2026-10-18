@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import SaveBar from './save-bar';
+import PinnedCardPreview from './pinned-card-preview';
 import type { SaveState } from './lib/save-queue';
 import CardSetup from './card-setup';
 import CardQR from './card-qr';
@@ -1300,29 +1301,23 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 </>
               )}
             </div>
-            <div className="workspace-preview-rail">
-              <div
-                className="workspace-card-preview"
-                role="region"
-                aria-label={t('Aperçu de votre carte', 'معاينة الكارط ديالك')}
-              >
-                <div className="preview-heading">
-                  <span className="eyebrow">{t('APERÇU EN DIRECT', 'معاينة مباشرة')}</span>
-                  <span className="preview-live-dot" aria-hidden="true" />
-                </div>
-                <Card d={data} preview withSections />
-                <details className="preview-qr">
-                  <summary>{t('Voir le QR de ma carte', 'شوف رمز QR ديال الكارط')}</summary>
-                  <CardQR id={id} publicName={publicName} logo={data.avatar} ar={ar} />
-                </details>
-                <p className="preview-caption">
-                  {t(
-                    'Votre carte évolue pendant vos modifications.',
-                    'الكارط كتبدّل مباشرة مع التعديلات ديالك.',
-                  )}
-                </p>
+            <PinnedCardPreview ar={ar}>
+              <div className="preview-heading">
+                <span className="eyebrow">{t('APERÇU EN DIRECT', 'معاينة مباشرة')}</span>
+                <span className="preview-live-dot" aria-hidden="true" />
               </div>
-            </div>
+              <Card d={data} preview withSections />
+              <details className="preview-qr">
+                <summary>{t('Voir le QR de ma carte', 'شوف رمز QR ديال الكارط')}</summary>
+                <CardQR id={id} publicName={publicName} logo={data.avatar} ar={ar} />
+              </details>
+              <p className="preview-caption">
+                {t(
+                  'Votre carte évolue pendant vos modifications.',
+                  'الكارط كتبدّل مباشرة مع التعديلات ديالك.',
+                )}
+              </p>
+            </PinnedCardPreview>
           </div>
         )}
       </div>
