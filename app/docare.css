@@ -58,9 +58,10 @@ h3 {
   outline-offset: 4px;
 }
 header {
-  background: var(--docare-surface);
-  border-bottom: 1px solid var(--line);
-  box-shadow: 0 2px 10px -2px rgba(0, 60, 55, 0.05);
+  background: transparent !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
   height: 80px;
   display: flex !important;
   align-items: center !important;
@@ -83,6 +84,14 @@ header {
   display: flex !important;
   align-items: center !important;
   gap: 10px !important;
+}
+.header-actions .account-menu,
+.account-menu {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  vertical-align: middle !important;
 }
 .theme-toggle,
 header .language,
@@ -1066,21 +1075,6 @@ html[data-theme='dark'] .workspace-design aside > .text-button:hover {
   overflow-wrap: break-word;
 }
 /* Account menu dropdown */
-.account-menu summary {
-  background: var(--docare-surface);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 9px 15px;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 160ms ease;
-}
-.account-menu summary:hover {
-  background: var(--docare-tint);
-  border-color: var(--docare-tint-border);
-  color: var(--docare-deep);
-}
 .account-status-dot {
   background: var(--docare-teal);
 }
