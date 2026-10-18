@@ -193,7 +193,13 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
         <span className="eyebrow">{t('SORALINK / GESTION', 'SoraLink / التسيير')}</span>
         <div className="workspace-head">
           <h1>{t('Administration', 'الإدارة')}</h1>
-          <button className="secondary" disabled={busy} onClick={() => load()}>
+          <button
+            className="secondary"
+            disabled={busy}
+            onClick={() => {
+              if (leaveDesign()) void load();
+            }}
+          >
             <RefreshCw size={16} />
             {t('Actualiser', 'حدّث')}
           </button>
@@ -372,7 +378,10 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                         key={p.id}
                         profile={p}
                         ar={ar}
-                        onClose={() => setDesignId('')}
+                        onClose={() => {
+                          setDesignId('');
+                          void load();
+                        }}
                         onDirtyChange={setDesignDirty}
                         onSaved={(result) =>
                           setData((current: any) => ({
