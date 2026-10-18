@@ -167,6 +167,10 @@ try {
   assert.match(robots.headers.get('Content-Type'), /text\/plain/);
   const robotsText = await robots.text();
   assert.match(robotsText, /Allow: \/(?:\r?\n|$)/);
+  assert(
+    robotsText.includes('Allow: /api/upload?key='),
+    'Public card images must remain crawlable',
+  );
   assert.match(robotsText, /Sitemap: https:\/\/soralink.link\/sitemap.xml/);
   const sitemap = await mf.dispatchFetch('https://soralink.link/sitemap.xml');
   assert.equal(sitemap.status, 200);

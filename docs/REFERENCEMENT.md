@@ -7,7 +7,7 @@
 - URL canonique arabe : https://soralink.link/?lang=ar.
 - Liens réciproques `hreflang` FR/AR et version par défaut française.
 - Identité structurée WebSite / Organization : SoraLink et son domaine officiel.
-- https://soralink.link/robots.txt annonce le sitemap et laisse explorer les pages publiques.
+- https://soralink.link/robots.txt annonce le sitemap et laisse explorer les pages publiques, y compris les photos publiques servies par `/api/upload?key=...`. Les autres routes API ne sont pas proposées à l’exploration. Les contrôles de confidentialité des fichiers restent appliqués par le serveur.
 - https://soralink.link/sitemap.xml contient les deux versions de l’accueil uniquement.
 - Les pages de compte, connexion, administration et démo portent `noindex, nofollow`.
 - Les cartes publiques conservent leurs propres métadonnées et URL canoniques existantes. Le sitemap n’énumère pas les clients.
