@@ -12,10 +12,12 @@ export default function ImageCropper({
   onLivePreview,
   onCancel,
   onApply,
+  autosave = true,
 }: {
   source: File | string;
   target: CropTarget;
   ar: boolean;
+  autosave?: boolean;
   circle: boolean;
   cardData?: any;
   onLivePreview?: (dataUrl: string) => void;
@@ -375,10 +377,10 @@ export default function ImageCropper({
           </div>
           <p className="hint">
             {t(
-              target === 'product'
+              target === 'product' || !autosave
                 ? 'Appliquez le cadrage pour importer la photo.'
                 : 'Appliquez le cadrage pour importer l’image. La carte sera enregistrée automatiquement.',
-              target === 'product'
+              target === 'product' || !autosave
                 ? 'طبّق القصّ باش ترفع التصويرة.'
                 : 'طبّق القصّ باش ترفع التصويرة. الكارط غادي تتسجّل بوحدها.',
             )}

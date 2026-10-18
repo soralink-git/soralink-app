@@ -1,3 +1,10 @@
+import { normalizeAppearance } from '../../lib/personalization';
+import {
+  adoptLegacy,
+  validateMedia,
+  saveProfileWithMedia,
+  cleanupMedia,
+} from '../../lib/media-storage';
 import { catalogRights } from '../../lib/catalog-menu';
 import { readPage } from '../../lib/pagination';
 import {
@@ -83,6 +90,56 @@ export async function POST(req: Request) {
     const { user, admin } = await identity();
     if (!user || !admin) return json({ error: 'Accès refusé' }, 403);
     const b = await readValidatedJSON(req, adminActionSchema, 10000);
+    if (b.action === 'design') {
+      const profile: any = await db()
+        .prepare('SELECT * FROM profiles WHERE id=?')
+        .bind(b.id)
+        .first();
+      if (!profile) return json({ error: 'Profil introuvable', errorAr: 'ما لقيناش الكارط.' }, 404);
+      if (b.revision !== profile.updated)
+        return json(
+          {
+            error: 'Cette carte a changé. Fermez puis rouvrez ses réglages.',
+            errorAr: 'الكارط تبدلات. سدّ الإعدادات وعاود حلّهم.',
+          },
+          409,
+        );
+      const old = JSON.parse(profile.data);
+      const data = normalizeAppearance({ ...old, ...b.settings });
+      await adoptLegacy(profile.owner, profile);
+      if (!(await validateMedia(profile.owner, data, old)))
+        return json(
+          {
+            error: 'Cette image n’appartient pas à ce client.',
+            errorAr: 'هاد التصويرة ماشي ديال هاد الزبون.',
+          },
+          403,
+        );
+      const revision = new Date(
+        Math.max(Date.now(), (Date.parse(profile.updated) || 0) + 1),
+      ).toISOString();
+      if (
+        !(await saveProfileWithMedia(
+          profile.owner,
+          profile,
+          profile.id,
+          data,
+          !!profile.published,
+          profile.email || '',
+          revision,
+        ))
+      )
+        return json(
+          {
+            error: 'Cette carte a changé. Rechargez ses réglages.',
+            errorAr: 'الكارط تبدلات. عاود حمّل الإعدادات.',
+          },
+          409,
+        );
+      await cleanupMedia(profile.owner);
+      await log(user.email, 'Présentation et sections de la carte', profile.id);
+      return json({ ok: true, data, revision });
+    }
     if (b.action === 'catalogRights') {
       const result = await db()
         .prepare('UPDATE profiles SET catalog_rights=? WHERE id=?')

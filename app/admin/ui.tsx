@@ -1,5 +1,6 @@
 'use client';
 import ThemeToggle from '../theme-toggle';
+import AdminDesignEditor from '../admin-design-editor';
 import CatalogRightsEditor from '../catalog-rights-editor';
 import { useEffect, useRef, useState } from 'react';
 import LoadMore from '../load-more';
@@ -23,6 +24,8 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
     [busy, setBusy] = useState(false),
     [tab, setTab] = useState('clients'),
     [search, setSearch] = useState(''),
+    [designId, setDesignId] = useState(''),
+    [designDirty, setDesignDirty] = useState(false),
     [ar, setAr] = useState(initialArabic);
   const t = (fr: string, darija: string) => (ar ? darija : fr);
   useEffect(() => {
@@ -97,7 +100,23 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
       }
     } catch {}
   }, [tab]);
+  function leaveDesign() {
+    if (
+      designDirty &&
+      !confirm(
+        t(
+          'Fermer sans enregistrer les réglages de présentation ?',
+          'تسدّ بلا ما تسجّل إعدادات المظهر؟',
+        ),
+      )
+    )
+      return false;
+    setDesignId('');
+    setDesignDirty(false);
+    return true;
+  }
   async function save(body: any) {
+    if (!leaveDesign()) return;
     setBusy(true);
     try {
       const r = await fetch('/api/admin', {
@@ -115,6 +134,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
     }
   }
   async function logout() {
+    if (!leaveDesign()) return;
     setBusy(true);
     try {
       const r = await fetch('/api/auth', {
@@ -173,7 +193,13 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
         <span className="eyebrow">{t('SORALINK / GESTION', 'SoraLink / التسيير')}</span>
         <div className="workspace-head">
           <h1>{t('Administration', 'الإدارة')}</h1>
-          <button className="secondary" disabled={busy} onClick={() => load()}>
+          <button
+            className="secondary"
+            disabled={busy}
+            onClick={() => {
+              if (leaveDesign()) void load();
+            }}
+          >
             <RefreshCw size={16} />
             {t('Actualiser', 'حدّث')}
           </button>
@@ -232,7 +258,9 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                 <button
                   className={tab === v ? 'primary' : 'secondary'}
                   key={v}
-                  onClick={() => setTab(v)}
+                  onClick={() => {
+                    if (leaveDesign()) setTab(v);
+                  }}
                 >
                   {l}
                 </button>
@@ -243,7 +271,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
-                    void load({ search });
+                    if (leaveDesign()) void load({ search });
                   }}
                 >
                   <label className="field">
@@ -335,6 +363,42 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                         {t('Enregistrer', 'سجّل')}
                       </button>
                     </form>
+                    <button
+                      type="button"
+                      className="secondary"
+                      disabled={busy}
+                      onClick={() => {
+                        if (designId !== p.id && leaveDesign()) setDesignId(p.id);
+                      }}
+                    >
+                      {t('Présentation et sections', 'المظهر والأقسام')}
+                    </button>
+                    {designId === p.id && (
+                      <AdminDesignEditor
+                        key={p.id}
+                        profile={p}
+                        ar={ar}
+                        onClose={() => {
+                          setDesignId('');
+                          void load();
+                        }}
+                        onDirtyChange={setDesignDirty}
+                        onSaved={(result) =>
+                          setData((current: any) => ({
+                            ...current,
+                            profiles: current.profiles.map((item: any) =>
+                              item.id === p.id
+                                ? {
+                                    ...item,
+                                    data: JSON.stringify(result.data),
+                                    updated: result.revision,
+                                  }
+                                : item,
+                            ),
+                          }))
+                        }
+                      />
+                    )}
                     <CatalogRightsEditor profile={p} ar={ar} busy={busy} onSave={save} />
                   </div>
                 ))}

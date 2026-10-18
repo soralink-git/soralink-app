@@ -1,3 +1,4 @@
+import { clientDesignAllowed, designSettings } from '../../lib/card-design';
 import { replaceProfileLinks } from '../../lib/profile-links';
 import {
   catalogRights,
@@ -298,6 +299,14 @@ export async function POST(req: Request) {
         normalizeCatalogue(p ? JSON.parse(p.data).services : []).length,
       );
       const old = p ? JSON.parse(p.data) : {};
+      if (!clientDesignAllowed(b.data, p ? old : null))
+        return json(
+          {
+            error: 'Les sections et la personnalisation avancée sont gérées par l’équipe SoraLink.',
+            errorAr: 'الأقسام والتخصيص المفصّل كيتكلف بهم فريق SoraLink.',
+          },
+          403,
+        );
       const moduleIssue = catalogContentIssue(b.data, old, rights);
       if (moduleIssue)
         return json(
@@ -321,7 +330,7 @@ export async function POST(req: Request) {
         );
       const stamp = new Date(Math.max(Date.now(), (Date.parse(p?.updated) || 0) + 1)).toISOString();
       const id = p?.id || crypto.randomUUID();
-      let d = b.data;
+      let d = { ...b.data, ...designSettings({ ...old, ...b.data }) };
       if (Array.isArray(d.profileLinks)) d = replaceProfileLinks(d, d.profileLinks);
       d = normalizeAppearance(normalizeSchedule(d));
       d.recordedVideo = recordedVideoUrl(d.recordedVideo);

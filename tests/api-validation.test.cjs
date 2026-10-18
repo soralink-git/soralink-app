@@ -616,3 +616,53 @@ test('Arabic auth returns translated success and retains the selected offer in i
   });
   assert.equal((await login.json()).redirect, '/?app=1&lang=ar&offer=Pack&tab=orders');
 });
+
+test('admin design patches are scoped, session-protected, media-owned and revision checked', async () => {
+  const body = {
+    action: 'design',
+    id: 'public-card',
+    revision: 'revision-1',
+    settings: { hiddenSections: ['social'], textSize: 'large' },
+  };
+  assert.equal((await post('admin', body)).status, 403);
+  user();
+  assert.equal((await post('admin', body)).status, 403);
+  ctx.admin = true;
+  ctx.profile.updated = 'revision-1';
+  assert.equal(
+    (await post('admin', { ...body, settings: { ...body.settings, pro: true } })).status,
+    400,
+  );
+  assert.equal((await post('admin', { ...body, revision: 'old-revision' })).status, 409);
+  ctx.mediaValid = false;
+  assert.equal((await post('admin', body)).status, 403);
+  ctx.mediaValid = true;
+  assert.equal((await post('admin', body)).status, 200);
+  assert.equal(ctx.saved.length, 1);
+  assert.equal(ctx.saved[0][0], 'other');
+  assert.equal(ctx.saved[0][3].name, schedule.name);
+  assert.equal(ctx.saved[0][3].hiddenSections[0], 'social');
+  assert.equal(ctx.saved[0][4], true);
+});
+test('client content saves cannot alter advanced presentation or hidden sections', async () => {
+  user();
+  ctx.own.updated = 'current';
+  for (const patch of [
+    { textSize: 'extra' },
+    { hiddenSections: ['social'] },
+    { backgroundOpacity: 75 },
+  ]) {
+    assert.equal(
+      (
+        await post('data', {
+          action: 'save',
+          revision: 'current',
+          data: { name: 'Card', ...patch },
+          published: true,
+        })
+      ).status,
+      403,
+    );
+  }
+  assert.equal(ctx.saved.length, 0);
+});

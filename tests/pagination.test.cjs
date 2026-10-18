@@ -145,6 +145,9 @@ function adminRoute(DB, auth) {
             json: (body, status = 200) => Response.json(body, { status }),
           };
         if (name.endsWith('/pagination')) return { readPage };
+        if (name.endsWith('/personalization'))
+          return loadModule(path.resolve('app/lib/personalization.ts'));
+        if (name.endsWith('/media-storage')) return {};
         if (name.endsWith('/catalog-menu'))
           return loadModule(path.resolve('app/lib/catalog-menu.ts'));
         if (name.endsWith('/api-validation')) return validation;

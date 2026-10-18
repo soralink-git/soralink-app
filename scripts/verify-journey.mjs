@@ -251,9 +251,7 @@ try {
     photos: [],
     promotions: [],
     cardTheme: 'dark',
-    textColor: '#ffffff',
-    buttonColor: '#d5b66f',
-    textSize: 'large',
+    buttonColor: '',
     buttonShape: 'pill',
     hours: Object.fromEntries(Array.from({ length: 7 }, (_, i) => [i, ['09:00', '17:00']])),
     appointmentServices: [{ name: 'Consultation', duration: 30 }],
@@ -263,6 +261,19 @@ try {
     data: { action: 'save', revision: null, data: fields, published: false },
   });
   const cardId = saved.json.id;
+  const designResult = await request('/api/admin', {
+    auth: true,
+    id: adminId,
+    data: {
+      action: 'design',
+      id: cardId,
+      revision: saved.json.revision,
+      settings: { textColor: '#ffffff', buttonColor: '#d5b66f', textSize: 'large' },
+    },
+  });
+  saved.json.revision = designResult.json.revision;
+  Object.assign(fields, { textColor: '#ffffff', buttonColor: '#d5b66f', textSize: 'large' });
+
   for (const badLinks of [
     [fields.profileLinks[0], fields.profileLinks[0]],
     [{ ...fields.profileLinks[3], value: 'javascript:alert(1)' }],
@@ -375,6 +386,27 @@ try {
   await db.prepare("UPDATE profiles SET state='trial',published=0 WHERE id=?").bind(cardId).run();
   fields.avatar = uploaded.json.url;
   fields.cover = uploaded.json.url;
+  await request('/api/admin', {
+    auth: true,
+    data: {
+      action: 'design',
+      id: cardId,
+      revision: saved.json.revision,
+      settings: { backgroundPhoto: uploaded.json.url },
+    },
+    status: 403,
+  });
+  const backgroundResult = await request('/api/admin', {
+    auth: true,
+    id: adminId,
+    data: {
+      action: 'design',
+      id: cardId,
+      revision: saved.json.revision,
+      settings: { backgroundPhoto: uploaded.json.url, backgroundOpacity: 48 },
+    },
+  });
+  saved.json.revision = backgroundResult.json.revision;
   fields.backgroundPhoto = uploaded.json.url;
   fields.backgroundOpacity = 48;
   await request('/api/data', {
@@ -618,6 +650,17 @@ try {
     method: 'POST',
     body: hiddenForm,
   });
+  const hiddenRevision = (await request('/api/data', { auth: true })).json.profile.updated;
+  await request('/api/admin', {
+    auth: true,
+    id: adminId,
+    data: {
+      action: 'design',
+      id: cardId,
+      revision: hiddenRevision,
+      settings: { hiddenSections: ['photos'] },
+    },
+  });
   const revision = (await request('/api/data', { auth: true })).json.profile.updated;
   await request('/api/data', {
     auth: true,
@@ -648,6 +691,17 @@ try {
     .prepare("UPDATE profiles SET state='active',expires=?,published=1 WHERE id=?")
     .bind(new Date(Date.now() + 365 * 86400000).toISOString(), cardId)
     .run();
+  const removalRevision = (await request('/api/data', { auth: true })).json.profile.updated;
+  await request('/api/admin', {
+    auth: true,
+    id: adminId,
+    data: {
+      action: 'design',
+      id: cardId,
+      revision: removalRevision,
+      settings: { backgroundPhoto: '' },
+    },
+  });
   const beforeRemoval = (await request('/api/data', { auth: true })).json.profile;
   const cleared = {
     ...JSON.parse(beforeRemoval.data),
