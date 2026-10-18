@@ -1000,12 +1000,19 @@ export default function App({
           {(view === 'home' || view === 'pricing') && (
             <nav aria-label={t('Navigation principale', 'التنقل الرئيسي')}>
               {[
-                ['fonctionnalites', 'Fonctionnalités', 'المزايا'],
+                ['fonctionnalites', 'En bref', 'باختصار'],
                 ['tarifs', 'Tarifs', 'الأثمنة'],
-                ['exemples', 'Exemples', 'أمثلة'],
+                ['exemples', 'Démo', 'مثال'],
                 ['faq', 'FAQ', 'أسئلة'],
               ].map(([anchor, f, a]) => (
-                <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#' + anchor} key={anchor}>
+                <a
+                  href={
+                    anchor === 'exemples'
+                      ? '/demo' + (ar ? '?lang=ar' : '')
+                      : '/?lang=' + (ar ? 'ar' : 'fr') + '#' + anchor
+                  }
+                  key={anchor}
+                >
                   {t(f, a)}
                 </a>
               ))}
@@ -1638,8 +1645,8 @@ export default function App({
           </div>
           <div className="footer-contact">
             <strong>{t('Parlons de votre carte', 'نهضرو على الكارط ديالك')}</strong>
-            <a dir="ltr" href="mailto:soratap08@gmail.com">
-              soratap08@gmail.com
+            <a dir="ltr" href="mailto:contact@soralink.link">
+              contact@soralink.link
             </a>
             <a dir="ltr" href="tel:+212661446664">
               +212 661 446 664

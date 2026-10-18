@@ -46,9 +46,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ l
           <h2>Nous contacter</h2>
           <p>
             Pour demander une correction, un accès à vos données ou une suppression, écrivez à{' '}
-            <a href="mailto:soratap08@gmail.com">soratap08@gmail.com</a>. La demande de suppression
-            du compte est traitée par contact ; aucun effacement automatique à 90 jours n’est
-            annoncé comme actif.
+            <a href="mailto:contact@soralink.link">contact@soralink.link</a>. La demande de
+            suppression du compte est traitée par contact ; aucun effacement automatique à 90 jours
+            n’est annoncé comme actif.
           </p>
         </>
       }
@@ -60,8 +60,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ l
               هاد النسخة تجريبية. الإيميل كيتستعمل للتسجيل والدخول. كتختار المعلومات اللي غادي تنشر
               فالكارط، والمعلومات المخبيّة ما كاتتسيفطش فالصفحة العمومية من بعد التسجيل. الطلبات
               وتبادل الكونطاكت كيمشيو للمهني المعني. تبادل المعلومات كيحتاج الموافقة ديالك. للتصحيح،
-              الاطلاع أو طلب حذف المعلومات، تواصل معانا فـ soratap08@gmail.com. تفاصيل المسؤول ومدد
-              الاحتفاظ غادي يتكمّلو قبل الإطلاق التجاري.
+              الاطلاع أو طلب حذف المعلومات، تواصل معانا فـ contact@soralink.link. تفاصيل المسؤول
+              ومدد الاحتفاظ غادي يتكمّلو قبل الإطلاق التجاري.
             </p>
           </section>
         </>
