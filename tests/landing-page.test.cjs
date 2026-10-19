@@ -41,8 +41,20 @@ for (const ar of [false, true])
       html,
       ar ? /التجديد فالعام الموالي: 149/ : /Renouvellement l’année suivante : 149/,
     );
-    assert.match(html, ar ? /\/auth\?mode=signup&amp;lang=ar/ : /\/auth\?mode=signup"/);
+    assert.match(
+      html,
+      ar
+        ? /\/auth\?mode=signup&amp;lang=ar&amp;offer=Digital/
+        : /\/auth\?mode=signup&amp;offer=Digital/,
+    );
     assert.match(html, /https:\/\/wa.me\/212661446664/);
+    const heroActions = html.match(/<div class="landing-actions">([\s\S]*?)<\/div>/)[1];
+    assert.equal((heroActions.match(/<a /g) || []).length, 2);
+    assert.match(heroActions, ar ? /شوف مثال/ : /Voir un exemple/);
+    assert.match(heroActions, ar ? /طلب عبر WhatsApp/ : /Commander sur WhatsApp/);
+    assert.match(heroActions, ar ? /href="\/demo\?lang=ar"/ : /href="\/demo"/);
+    const message = decodeURIComponent(heroActions.match(/wa.me\/212661446664\?text=([^"]+)/)[1]);
+    assert.match(message, ar ? /بغيت نطلب كارط SoraLink NFC/ : /commander une carte SoraLink NFC/);
   });
 test('Arabic homepage and demo copy do not leak French UI or French product names', () => {
   const html = render(true);
@@ -79,8 +91,10 @@ test('home uses the shared general demo identity and catalogue in both languages
     assert(fs.existsSync(path.join('public', actual.cover)));
   }
 });
-test('connected visitor retains direct workspace access', () => {
-  assert.match(render(false, true), /class="primary" href="\/\?app=1"/);
+test('connected visitor keeps offer selection in the workspace and the same two hero actions', () => {
+  const html = render(false, true);
+  assert.match(html, /href="\/\?app=1&amp;offer=Digital&amp;tab=orders"/);
+  assert.match(html, /Commander sur WhatsApp/);
 });
 test('public support addresses consistently use the branded contact email', () => {
   for (const file of [
