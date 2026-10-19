@@ -1117,15 +1117,7 @@ export default function App({
           </button>
         </div>
       )}
-      {view === 'home' && (
-        <LandingPage
-          ar={ar}
-          auth={auth}
-          Card={Card}
-          blank={blank}
-          onPricing={() => setView('pricing')}
-        />
-      )}
+      {view === 'home' && <LandingPage ar={ar} auth={auth} onPricing={() => setView('pricing')} />}
       {view === 'pricing' && (
         <main className="section">
           <span className="eyebrow">{t('DES OFFRES CLAIRES', 'عروض واضحة')}</span>
