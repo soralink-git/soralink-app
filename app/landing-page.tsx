@@ -1,14 +1,11 @@
 'use client';
 import { signupPath } from './lib/journey-links';
-import { demoCard, demoCardArabic } from './lib/demo-card';
-import type { ComponentType } from 'react';
 import {
   Calendar,
   Check,
   ExternalLink,
   Layers,
   Nfc,
-  ArrowDown,
   Users,
   ShoppingBag,
   RefreshCw,
@@ -18,14 +15,10 @@ import { WhatsAppIcon } from './card-helpers';
 export default function LandingPage({
   ar,
   auth,
-  Card,
-  blank,
   onPricing,
 }: {
   ar: boolean;
   auth: boolean;
-  Card: ComponentType<any>;
-  blank: any;
   onPricing: () => void;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr);
@@ -71,47 +64,17 @@ export default function LandingPage({
             </a>
           </div>
         </div>
-        <div className="landing-showcase" id="exemples">
-          <div className="showcase-caption">{t('UNE PAGE À VOTRE IMAGE', 'صفحة على ذوقك')}</div>
-          <div className="showcase-composition showcase-nfc-and-phone">
-            <div className="showcase-nfc" aria-hidden="true">
-              <span dir="ltr">
-                SoraLink <Nfc size={22} />
-              </span>
-              <strong>
-                {t('Votre activité.\nToujours avec vous.', 'النشاط ديالك.\nديما معاك.')}
-              </strong>
-              <div className="nfc-bottom">
-                <span dir="ltr">soralink.link</span>
-                <img src="/demo-nfc-qr.svg" width="52" height="52" alt="" />
-              </div>
-            </div>
-            <div className="showcase-phone">
-              <div className="phone-notch" aria-hidden="true">
-                <span className="phone-speaker" />
-              </div>
-              <div
-                className="showcase-phone-screen"
-                role="region"
-                aria-label={t(
-                  'Page SoraLink de démonstration, à faire défiler',
-                  'صفحة SoraLink للتوضيح، حرّك باش تشوفها كاملة',
-                )}
-                tabIndex={0}
-              >
-                <Card d={{ ...blank, ...(ar ? demoCardArabic : demoCard) }} preview withSections />
-              </div>
-              <span className="showcase-scroll-hint" aria-hidden="true">
-                <ArrowDown size={13} /> {t('Faites défiler la page', 'حرّك باش تشوف الصفحة')}
-              </span>
-            </div>
-          </div>
-          <div className="showcase-note">
-            {t(
-              'Profil de démonstration · Personnalisable pour votre activité',
-              'بروفايل للتوضيح · كتخصّصو حسب النشاط ديالك',
+        <div className="landing-brand-visual" id="exemples">
+          <img
+            src="/soralink-pack-hero.webp"
+            width="1679"
+            height="937"
+            fetchPriority="high"
+            alt={t(
+              'Cartes NFC et cartes de visite SoraLink avec QR code, à côté d’un téléphone présentant une page digitale.',
+              'كارطات SoraLink بتقنية NFC وكود QR، حدا تلفون كيعرض صفحة رقمية.',
             )}
-          </div>
+          />
         </div>
       </section>
       <section

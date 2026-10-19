@@ -6,21 +6,8 @@ const { load, req } = require('./ts-loader.cjs');
 const React = req('react');
 const { renderToStaticMarkup } = req('react-dom/server');
 const LandingPage = load(path.resolve('app/landing-page.tsx')).default;
-const CardView = load(path.resolve('app/card-view.tsx')).default;
-const { demoCard, demoCardArabic } = load(path.resolve('app/lib/demo-card.ts'));
 function render(ar, auth = false) {
-  const Card = (props) =>
-    React.createElement(CardView, {
-      ...props,
-      ar,
-      setAr: () => {},
-      view: 'home',
-      onMessage: () => {},
-      onRequest: () => {},
-    });
-  return renderToStaticMarkup(
-    React.createElement(LandingPage, { ar, auth, Card, blank: {}, onPricing: () => {} }),
-  );
+  return renderToStaticMarkup(React.createElement(LandingPage, { ar, auth, onPricing: () => {} }));
 }
 for (const ar of [false, true])
   test(`short homepage keeps offers and navigation targets without profession blocks (${ar ? 'ar' : 'fr'})`, () => {
@@ -62,33 +49,15 @@ test('Arabic homepage and demo copy do not leak French UI or French product name
     html,
     /Votre service|Votre produit|Profil de démonstration|Un besoin sur mesure|Option Pro|NFC EN DIRECT|Prise de rendez-vous/,
   );
-  assert.match(html, /الخدمة ديالك/);
-  assert.match(html, /المنتج ديالك/);
+  assert.match(html, /كارطات SoraLink بتقنية NFC/);
 });
-test('home uses the shared general demo identity and catalogue in both languages', () => {
+test('home shows the supplied brand visual without embedding the interactive card', () => {
   for (const ar of [false, true]) {
-    let actual;
-    const Card = ({ d }) => {
-      actual = d;
-      return React.createElement('div');
-    };
-    renderToStaticMarkup(
-      React.createElement(LandingPage, {
-        ar,
-        auth: false,
-        Card,
-        blank: { phone: 'legacy' },
-        onPricing: () => {},
-      }),
-    );
-    assert.deepEqual(
-      JSON.parse(JSON.stringify(actual)),
-      JSON.parse(JSON.stringify(ar ? demoCardArabic : demoCard)),
-    );
-    assert.equal(actual.phone, '');
-    assert.equal(actual.email, '');
-    assert.equal(actual.avatar, '/favicon.svg');
-    assert(fs.existsSync(path.join('public', actual.cover)));
+    const html = render(ar);
+    assert.match(html, /src="\/soralink-pack-hero.webp"/);
+    assert.match(html, /fetchPriority="high"/);
+    assert.doesNotMatch(html, /showcase-phone|profile-card|catalog-interactive|showcase-nfc/);
+    assert(fs.statSync('public/soralink-pack-hero.webp').size < 300000);
   }
 });
 test('connected visitor keeps offer selection in the workspace and the same two hero actions', () => {
