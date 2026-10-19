@@ -1390,9 +1390,14 @@
   position: sticky;
   top: 12px;
   z-index: 15;
+  /* Let controls beneath the transparent part of the sticky row receive clicks. */
+  pointer-events: none;
   display: flex;
   justify-content: flex-end;
   margin-bottom: 20px;
+}
+.workspace-save-action > button {
+  pointer-events: auto;
 }
 @media (max-width: 800px) {
   .workspace-save-action {
