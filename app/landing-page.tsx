@@ -8,8 +8,7 @@ import {
   ExternalLink,
   Layers,
   Nfc,
-  Plus,
-  Share2,
+  ArrowDown,
   Users,
   ShoppingBag,
   RefreshCw,
@@ -49,45 +48,62 @@ export default function LandingPage({
             )}
           </p>
           <div className="landing-actions">
-            <a
-              className="primary"
-              href={auth ? '/?app=1' : '/auth?mode=signup' + (ar ? '&lang=ar' : '')}
-            >
-              {auth
-                ? t('Ouvrir mon espace', 'ندخل للمساحة ديالي')
-                : t('Créer ma carte', 'صايب الكارط ديالي')}
-              <Plus size={18} />
-            </a>
-            <a className="landing-link" href={'/demo' + (ar ? '?lang=ar' : '')}>
+            <a className="secondary" href={'/demo' + (ar ? '?lang=ar' : '')}>
               {t('Voir un exemple', 'شوف مثال')}
               <ExternalLink size={16} />
+            </a>
+            <a
+              className="primary"
+              href={
+                'https://wa.me/212661446664?text=' +
+                encodeURIComponent(
+                  t(
+                    'Bonjour, je souhaite commander une carte SoraLink NFC. Pouvez-vous me présenter les offres ?',
+                    'السلام عليكم، بغيت نطلب كارط SoraLink NFC. ممكن تعطيني معلومات على العروض؟',
+                  ),
+                )
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <WhatsAppIcon />
+              {t('Commander sur WhatsApp', 'طلب عبر WhatsApp')}
             </a>
           </div>
         </div>
         <div className="landing-showcase" id="exemples">
           <div className="showcase-caption">{t('UNE PAGE À VOTRE IMAGE', 'صفحة على ذوقك')}</div>
-          <div className="showcase-composition">
-            <div className="showcase-phone">
-              <div className="phone-notch">
-                <span className="phone-speaker" />
-              </div>
-              <Card d={{ ...blank, ...(ar ? demoCardArabic : demoCard) }} preview withSections />
-            </div>
+          <div className="showcase-composition showcase-nfc-and-phone">
             <div className="showcase-nfc" aria-hidden="true">
-              <div className="nfc-pulse-badge">
-                <Nfc size={16} />
-                <span>{t('Approchez ou scannez', 'قرّب ولا امسح')}</span>
-              </div>
               <span dir="ltr">
                 SoraLink <Nfc size={22} />
               </span>
               <strong>
-                {t('Votre activité,\nà portée de main.', 'النشاط ديالك،\nديما معاك.')}
+                {t('Votre activité.\nToujours avec vous.', 'النشاط ديالك.\nديما معاك.')}
               </strong>
               <div className="nfc-bottom">
-                <span>{t('NFC + QR CODE', 'NFC وكود QR')}</span>
-                <Share2 size={16} />
+                <span dir="ltr">soralink.link</span>
+                <img src="/demo-nfc-qr.svg" width="52" height="52" alt="" />
               </div>
+            </div>
+            <div className="showcase-phone">
+              <div className="phone-notch" aria-hidden="true">
+                <span className="phone-speaker" />
+              </div>
+              <div
+                className="showcase-phone-screen"
+                role="region"
+                aria-label={t(
+                  'Page SoraLink de démonstration, à faire défiler',
+                  'صفحة SoraLink للتوضيح، حرّك باش تشوفها كاملة',
+                )}
+                tabIndex={0}
+              >
+                <Card d={{ ...blank, ...(ar ? demoCardArabic : demoCard) }} preview withSections />
+              </div>
+              <span className="showcase-scroll-hint" aria-hidden="true">
+                <ArrowDown size={13} /> {t('Faites défiler la page', 'حرّك باش تشوف الصفحة')}
+              </span>
             </div>
           </div>
           <div className="showcase-note">
