@@ -888,19 +888,19 @@ html[data-theme='dark'] .workspace-nav-group {
 .sidebar-logout,
 .workspace-design aside > .text-button,
 .workspace-design aside > a.secondary {
-  width: 100% !important;
-  min-height: 44px !important;
-  height: 44px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  text-align: start !important;
+  width: 100%;
+  min-height: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: start;
   box-sizing: border-box !important;
   border-radius: 999px !important;
-  padding: 0 16px !important;
-  gap: 12px !important;
-  font-size: 14px !important;
-  white-space: nowrap !important;
+  padding: 0 16px;
+  gap: 12px;
+  font-size: 14px;
+  white-space: nowrap;
   transition: all 160ms ease !important;
 }
 .workspace-navigation button > svg,
@@ -922,13 +922,13 @@ html[data-theme='dark'] .workspace-nav-group {
 .workspace-design .setup-launch > span,
 .sidebar-logout > span,
 .workspace-design aside > a.secondary > span {
-  flex: 1 !important;
-  text-align: start !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
+  flex: 1;
+  text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 600;
 }
 .workspace-design .setup-launch {
   background: linear-gradient(135deg, var(--brand-tint) 0%, var(--brand-soft) 100%) !important;
@@ -2245,6 +2245,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     padding: 8px;
     font-size: 12px;
     white-space: normal;
+    height: auto;
     min-height: 44px;
   }
   .workspace-design > aside > .workspace-navigation {
@@ -2259,6 +2260,8 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     gap: 6px;
   }
   .workspace-design .workspace-navigation > button {
+    height: auto;
+    min-height: 76px;
     min-width: 0;
     width: 100%;
     flex-direction: column;
@@ -2271,8 +2274,23 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     line-height: 1.4;
   }
   .workspace-design .workspace-navigation button > span {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+    font-size: inherit;
+    text-align: center;
+    text-overflow: clip;
     white-space: normal;
     overflow: visible;
+    overflow-wrap: anywhere;
+  }
+  .workspace-design > aside > .setup-launch > span,
+  .workspace-design > aside > .sidebar-logout > span {
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: inherit;
     overflow-wrap: anywhere;
   }
   .workspace-design .workspace-secondary-nav {
