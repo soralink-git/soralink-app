@@ -1151,7 +1151,7 @@ export default function App({
                 </p>
                 <ul>
                   {[
-                    t('1 page · 10 photos · 10 services', 'صفحة وحدة · 10 تصاور · 10 خدمات'),
+                    t('1 page · 10 photos · 40 articles', 'صفحة وحدة · 10 تصاور · 40 منتج وخدمة'),
                     t('Catalogue PDF · QR · vidéo intégrée', 'كاتالوگ PDF · QR · فيديو'),
                     t('Demandes de devis et de commande', 'طلبات الثمن والطلبات'),
                     ...(i > 0
