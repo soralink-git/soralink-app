@@ -41,6 +41,13 @@ test('reuse existing names, preserve translations, and reject invalid or stale e
   const renamed = saveItemCategory(data, 'article', 'Fr', 'Objets', 'gifts');
   assert.equal(renamed.catalogCategories[0].nameAr, 'هدايا');
   assert.equal(renamed.catalogCategories[0].nameFr, 'Objets');
+  const hidden = {
+    ...renamed,
+    catalogCategories: [{ ...renamed.catalogCategories[0], visible: false }],
+  };
+  const applied = saveItemCategory(hidden, 'article', 'Fr', 'Objets', 'gifts', '', true);
+  assert.equal(applied.catalogCategories[0].visible, true);
+  assert.equal(hidden.catalogCategories[0].visible, false);
   for (const value of ['', ' ', 'x'.repeat(121)]) {
     assert.equal(saveItemCategory(data, 'article', 'Fr', value), data);
   }

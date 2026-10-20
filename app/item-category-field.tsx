@@ -123,15 +123,7 @@ export default function ItemCategoryField({
               onClick={() => {
                 const id = editor.id || crypto.randomUUID();
                 setData((d: any) =>
-                  saveItemCategory(
-                    d,
-                    itemId,
-                    language,
-                    editor.name,
-                    editor.id,
-                    id,
-                    editor.visible,
-                  ),
+                  saveItemCategory(d, itemId, language, editor.name, editor.id, id, editor.visible),
                 );
                 setEditor(null);
               }}
