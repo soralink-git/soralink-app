@@ -20,6 +20,7 @@ export function saveItemCategory(
   value: string,
   categoryId = '',
   newId = '',
+  visible?: boolean,
 ) {
   const name = value.trim();
   if (!name || name.length > 120) return data;
@@ -32,7 +33,9 @@ export function saveItemCategory(
     return assignItemCategory(
       {
         ...data,
-        catalogCategories: cats.map((c) => (c.id === selected.id ? { ...c, [field]: name } : c)),
+        catalogCategories: cats.map((c) =>
+          c.id === selected.id ? { ...c, [field]: name, visible: visible ?? c.visible } : c,
+        ),
       },
       itemId,
       selected.id,

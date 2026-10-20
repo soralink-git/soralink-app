@@ -5,6 +5,8 @@ import { catalogCategories, catalogText } from './lib/catalog-menu';
 import { normalizeCatalogue } from './lib/catalogue';
 import { assignItemCategory, saveItemCategory, removeItemCategory } from './lib/item-category';
 
+type CategoryDraft = { id: string; name: string; visible: boolean };
+
 export default function ItemCategoryField({
   data,
   setData,
@@ -20,7 +22,7 @@ export default function ItemCategoryField({
   ar: boolean;
   disabled: boolean;
 }) {
-  const [editor, setEditor] = useState<{ id: string; name: string } | null>(null);
+  const [editor, setEditor] = useState<CategoryDraft | null>(null);
   const t = (fr: string, arabic: string) => (ar ? arabic : fr);
   const cats = catalogCategories(data);
   const item = normalizeCatalogue(data.services, true).find((p) => p.id === itemId);
@@ -59,7 +61,7 @@ export default function ItemCategoryField({
           <button
             type="button"
             disabled={disabled || cats.length >= 40}
-            onClick={() => setEditor({ id: '', name: '' })}
+            onClick={() => setEditor({ id: '', name: '', visible: true })}
           >
             {t('Nouvelle catégorie', 'فئة جديدة')}
           </button>
@@ -70,6 +72,7 @@ export default function ItemCategoryField({
               onClick={() =>
                 setEditor({
                   id: selected.id,
+                  visible: selected.visible,
                   name: language === 'Fr' ? selected.nameFr : selected.nameAr,
                 })
               }
@@ -105,17 +108,9 @@ export default function ItemCategoryField({
               <label className="toggle">
                 <input
                   type="checkbox"
-                  checked={selected?.visible ?? true}
+                  checked={editor.visible}
                   disabled={disabled}
-                  onChange={(e) => {
-                    const visible = e.target.checked;
-                    setData((d: any) => ({
-                      ...d,
-                      catalogCategories: catalogCategories(d).map((c) =>
-                        c.id === editor.id ? { ...c, visible } : c,
-                      ),
-                    }));
-                  }}
+                  onChange={(e) => setEditor({ ...editor, visible: e.target.checked })}
                 />
                 {t('Afficher cette catégorie et ses articles', 'إظهار هاد الفئة والمنتجات ديالها')}
               </label>
@@ -128,7 +123,15 @@ export default function ItemCategoryField({
               onClick={() => {
                 const id = editor.id || crypto.randomUUID();
                 setData((d: any) =>
-                  saveItemCategory(d, itemId, language, editor.name, editor.id, id),
+                  saveItemCategory(
+                    d,
+                    itemId,
+                    language,
+                    editor.name,
+                    editor.id,
+                    id,
+                    editor.visible,
+                  ),
                 );
                 setEditor(null);
               }}

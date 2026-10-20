@@ -71,7 +71,10 @@ export async function verifyCatalogMenu({ db, request, cardId, otherId, photo })
     await db.prepare("UPDATE profiles SET state='trial' WHERE id=?").bind(cardId).run();
     const forty = Array.from({ length: 40 }, (_, i) => product('trial-' + i));
     await save({ ...base, catalogCategories: [category], services: forty });
-    assert.equal(JSON.parse((await request('/api/data?id=' + cardId)).json.data).services.length, 40);
+    assert.equal(
+      JSON.parse((await request('/api/data?id=' + cardId)).json.data).services.length,
+      40,
+    );
     await save({ ...data, services: [...forty, product('trial-extra')] }, { status: 400 });
     await save(base, { published: false });
     await db.prepare("UPDATE profiles SET state='active' WHERE id=?").bind(cardId).run();
