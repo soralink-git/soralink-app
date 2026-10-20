@@ -2,6 +2,9 @@ import { verifyCatalogMenu } from './verify-catalog-menu.mjs';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { readFile, readdir } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+const appTokens = new Map();
+const tokenHash = (token) => createHash('sha256').update(token).digest('hex');
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { Miniflare } = createRequire(require.resolve('wrangler'))('miniflare');
@@ -44,7 +47,9 @@ function session(id = userId) {
 }
 function cookie(id = userId) {
   return (
-    'sb-qa-auth-token=base64-' + Buffer.from(JSON.stringify(session(id))).toString('base64url')
+    'sb-qa-auth-token=base64-' +
+    Buffer.from(JSON.stringify(session(id))).toString('base64url') +
+    (appTokens.has(id) ? '; __Host-soralink-session=' + appTokens.get(id) : '')
   );
 }
 const mf = new Miniflare({
@@ -85,7 +90,11 @@ const mf = new Miniflare({
     if (url.pathname === '/auth/v1/signup') return Response.json({ user: user(), session: null });
     if (url.pathname === '/auth/v1/token') {
       const body = await request.json();
-      return Response.json(session(body.email === adminEmail ? adminId : userId));
+      return Response.json(
+        session(
+          body.email === adminEmail || body.auth_code === 'admin-callback' ? adminId : userId,
+        ),
+      );
     }
     if (url.pathname === '/auth/v1/logout') return new Response(null, { status: 204 });
     if (url.pathname === '/auth/v1/user') {
@@ -106,6 +115,7 @@ async function request(
     method = data ? 'POST' : 'GET',
     body,
     headers = {},
+    redirect = 'follow',
   } = {},
 ) {
   if (body instanceof FormData) {
@@ -115,6 +125,7 @@ async function request(
   }
   const response = await mf.dispatchFetch(base + endpoint, {
     method,
+    redirect,
     headers: {
       ...(auth ? { Cookie: cookie(id) } : {}),
       ...(method === 'POST' ? { Origin: base } : {}),
@@ -158,6 +169,16 @@ try {
     data: { action: 'login', email, password: 'local-test-password' },
   });
   assert.equal(login.json.redirect, '/?app=1');
+  appTokens.set(
+    userId,
+    login.response.headers.get('set-cookie').match(/__Host-soralink-session=([a-f0-9]{64})/)[1],
+  );
+  const otherToken = 'a'.repeat(64);
+  appTokens.set(otherId, otherToken);
+  await db
+    .prepare('INSERT INTO app_sessions(id,owner,expires) VALUES(?,?,?)')
+    .bind(tokenHash(otherToken), 'sb:' + otherId, Date.now() + 900000)
+    .run();
   assert(login.response.headers.get('set-cookie'), 'Sign-in must return a session cookie');
   assert.equal((await request('/api/auth', { auth: true })).json.email, email);
   const adminLogin = await request('/api/auth', {
@@ -170,6 +191,12 @@ try {
     },
   });
   assert.equal(adminLogin.json.redirect, '/admin?lang=ar');
+  appTokens.set(
+    adminId,
+    adminLogin.response.headers
+      .get('set-cookie')
+      .match(/__Host-soralink-session=([a-f0-9]{64})/)[1],
+  );
   for (const endpoint of ['/auth?lang=ar&offer=Pack', '/admin/connexion?lang=ar']) {
     // A loading boundary may stream the redirect after sending the HTML headers.
     const redirect = await request(endpoint, { auth: true, id: adminId });
@@ -791,7 +818,77 @@ try {
   );
   saveQueue.stop();
 
+  // Server idle enforcement: reading/polling never extends the deadline.
+  const appId = tokenHash(appTokens.get(userId));
+  const deadline = Date.now() + 30000;
+  await db.prepare('UPDATE app_sessions SET expires=? WHERE id=?').bind(deadline, appId).run();
+  await request('/api/data', { auth: true });
+  assert.equal(
+    (await db.prepare('SELECT expires FROM app_sessions WHERE id=?').bind(appId).first()).expires,
+    deadline,
+  );
+  const renewed = await request('/api/auth', { auth: true, data: { action: 'activity' } });
+  assert(renewed.json.expiresAt > Date.now() + 890000);
+  await request('/api/auth', {
+    auth: true,
+    data: { action: 'activity' },
+    headers: { Origin: 'https://attacker.example' },
+    status: 403,
+  });
+  // A valid provider cookie alone must not bypass the application timeout.
+  const savedToken = appTokens.get(userId);
+  appTokens.delete(userId);
+  assert.equal((await request('/api/auth', { auth: true })).json.authenticated, false);
+  await request('/api/data', { auth: true, status: 401 });
+  appTokens.set(userId, appTokens.get(adminId));
+  await request('/api/data', { auth: true, status: 401 });
+  appTokens.set(userId, savedToken);
+  await db
+    .prepare('UPDATE app_sessions SET expires=? WHERE id=?')
+    .bind(Date.now() - 1, appId)
+    .run();
+  assert.equal((await request('/api/auth', { auth: true })).json.authenticated, false);
+  await request('/api/data', { auth: true, status: 401 });
+  await request('/api/auth', { auth: true, data: { action: 'activity' }, status: 401 });
+  await request('/api/auth', {
+    auth: true,
+    data: { action: 'password', password: 'new-test-password' },
+    status: 401,
+  });
+  await request('/api/upload?stats=1', { auth: true, status: 401 });
+  await request('/api/admin', { auth: true, id: adminId });
+  const adminAppId = tokenHash(appTokens.get(adminId));
+  const adminDeadline = (
+    await db.prepare('SELECT expires FROM app_sessions WHERE id=?').bind(adminAppId).first()
+  ).expires;
+  await db
+    .prepare('UPDATE app_sessions SET expires=? WHERE id=?')
+    .bind(Date.now() - 1, adminAppId)
+    .run();
+  await request('/api/admin', { auth: true, id: adminId, status: 401 });
+  await request('/api/auth', {
+    auth: true,
+    id: adminId,
+    data: { action: 'activity' },
+    status: 401,
+  });
+  await db
+    .prepare('UPDATE app_sessions SET expires=? WHERE id=?')
+    .bind(adminDeadline, adminAppId)
+    .run();
+  // Logging in creates a new app session; replaying it after logout is denied.
+  const reconnected = await request('/api/auth', {
+    data: { action: 'login', email, password: 'local-test-password' },
+  });
+  appTokens.set(
+    userId,
+    reconnected.response.headers
+      .get('set-cookie')
+      .match(/__Host-soralink-session=([a-f0-9]{64})/)[1],
+  );
+  await request('/api/data', { auth: true });
   await request('/api/auth', { auth: true, data: { action: 'logout' } });
+  await request('/api/data', { auth: true, status: 401 });
   await request('/api/admin', { auth: true, id: adminId });
   assert.equal(
     (
@@ -802,6 +899,43 @@ try {
     ).n,
     0,
   );
+  const callback = await request('/auth/callback?code=client-callback&next=reset&lang=ar', {
+    status: 303,
+    redirect: 'manual',
+    headers: {
+      Cookie:
+        'sb-qa-auth-token-code-verifier=base64-' +
+        Buffer.from(JSON.stringify('local-test-verifier')).toString('base64url'),
+    },
+  });
+  assert.equal(callback.response.headers.get('location'), base + '/auth/reset?lang=ar');
+  appTokens.set(
+    userId,
+    callback.response.headers.get('set-cookie').match(/__Host-soralink-session=([a-f0-9]{64})/)[1],
+  );
+  assert.equal((await request('/api/auth', { auth: true })).json.authenticated, true);
+  await request('/api/auth', {
+    auth: true,
+    data: { action: 'password', password: 'recovered-password' },
+  });
+  await request('/api/auth', { auth: true, data: { action: 'logout' } });
+  const adminCallback = await request('/auth/callback?code=admin-callback&lang=ar', {
+    status: 303,
+    redirect: 'manual',
+    headers: {
+      Cookie:
+        'sb-qa-auth-token-code-verifier=base64-' +
+        Buffer.from(JSON.stringify('local-test-verifier')).toString('base64url'),
+    },
+  });
+  assert.equal(adminCallback.response.headers.get('location'), base + '/admin?lang=ar');
+  appTokens.set(
+    adminId,
+    adminCallback.response.headers
+      .get('set-cookie')
+      .match(/__Host-soralink-session=([a-f0-9]{64})/)[1],
+  );
+  await request('/api/admin', { auth: true, id: adminId });
   assert.equal((await request('/api/auth')).json.authenticated, false);
   assert.equal((await db.prepare('SELECT COUNT(*) n FROM notifications').first()).n, 0);
   console.log(

@@ -47,6 +47,9 @@ test('verified identity never queries or transfers profiles by email, including 
       'next/headers': { cookies: async () => ({ get() {} }) },
       '../chatgpt-auth': { getChatGPTUser: async () => null },
       './subscription': load('app/lib/subscription.ts'),
+      './idle-session': {
+        activeAppSession: async () => ({ owner: 'sb:' + id, expires: Date.now() + 900000 }),
+      },
       './supabase': {
         authClient: async () => ({
           auth: {
@@ -88,6 +91,9 @@ test('admin authority requires the verified configured account and never a card 
       'next/headers': { cookies: async () => ({ get() {} }) },
       '../chatgpt-auth': { getChatGPTUser: async () => null },
       './subscription': load('app/lib/subscription.ts'),
+      './idle-session': {
+        activeAppSession: async () => ({ owner: 'sb:account', expires: Date.now() + 900000 }),
+      },
       './supabase': {
         authClient: async () => ({
           auth: {

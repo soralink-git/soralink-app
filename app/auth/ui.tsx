@@ -1,6 +1,7 @@
 'use client';
 import ThemeToggle from '../theme-toggle';
 import { useState, useEffect } from 'react';
+import { REMEMBERED_EMAIL_KEY } from '../lib/idle-policy';
 import { workspacePath, selectedPlan, offerLabel } from '../lib/journey-links';
 import { Nfc, Globe, Mail, Lock, Eye, EyeOff, CheckCircle, ArrowLeft } from 'lucide-react';
 export default function Auth({
@@ -21,13 +22,24 @@ export default function Auth({
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState(''),
     [error, setError] = useState(''),
-    [visible, setVisible] = useState(false);
+    [visible, setVisible] = useState(false),
+    [rememberEmail, setRememberEmail] = useState(false),
+    [savedEmail, setSavedEmail] = useState(''),
+    [expired, setExpired] = useState(false);
   const offer = selectedPlan(initialOffer);
   const t = (f: string, a: string) => (ar ? a : f);
   useEffect(() => {
     document.documentElement.lang = ar ? 'ar' : 'fr';
     document.documentElement.dir = ar ? 'rtl' : 'ltr';
   }, [ar]);
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(REMEMBERED_EMAIL_KEY) || '';
+      setSavedEmail(saved);
+      setRememberEmail(!!saved);
+    } catch {}
+    setExpired(new URLSearchParams(location.search).get('expired') === '1');
+  }, []);
   function toggleLanguage() {
     const next = !ar;
     setAr(next);
@@ -75,6 +87,13 @@ export default function Auth({
       const b: any = await r.json();
       if (!r.ok) throw new Error(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
       if (b.redirect) {
+        if (mode === 'login') {
+          try {
+            if (rememberEmail)
+              localStorage.setItem(REMEMBERED_EMAIL_KEY, String(f.get('email') || '').trim());
+            else localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+          } catch {}
+        }
         location.assign(b.redirect);
         return;
       }
@@ -192,6 +211,14 @@ export default function Auth({
                       )
                     : t('Accédez à votre carte et à vos demandes.', 'دخل للكارط والطلبات ديالك.')}
           </p>
+          {expired && (
+            <p className="hint" role="status">
+              {t(
+                'Votre session a expiré après 15 minutes d’inactivité. Reconnectez-vous.',
+                'سالات مدة الدخول من بعد 15 دقيقة بلا استعمال. عاود دخل للحساب.',
+              )}
+            </p>
+          )}
           {error && (
             <div className="auth-error" role="alert">
               {error}
@@ -214,14 +241,16 @@ export default function Auth({
               <strong>{offerLabel(offer, ar)}</strong>
             </p>
           )}
-          <form key={mode} onSubmit={submit}>
+          <form key={mode} onSubmit={submit} autoComplete="on">
             {mode !== 'password' && (
               <label className="field">
                 {t('Adresse e-mail', 'الإيميل')}
                 <input
                   type="email"
                   name="email"
-                  autoComplete="email"
+                  autoComplete={mode === 'login' ? 'username' : 'email'}
+                  defaultValue={mode === 'login' ? savedEmail : undefined}
+                  key={mode === 'login' ? savedEmail : mode}
                   required
                   maxLength={254}
                   placeholder="vous@exemple.ma"
@@ -270,9 +299,35 @@ export default function Auth({
               </>
             )}
             {mode === 'login' && (
-              <button type="button" className="text-button" onClick={() => change('reset')}>
-                {t('Mot de passe oublié ?', 'نسيت كلمة السر؟')}
-              </button>
+              <>
+                <label className="auth-remember">
+                  <input
+                    type="checkbox"
+                    checked={rememberEmail}
+                    onChange={(e) => {
+                      setRememberEmail(e.target.checked);
+                      if (!e.target.checked) {
+                        try {
+                          localStorage.removeItem(REMEMBERED_EMAIL_KEY);
+                        } catch {}
+                      }
+                    }}
+                  />
+                  {t(
+                    'Mémoriser mon adresse e-mail sur cet appareil',
+                    'تذكّر الإيميل ديالي فهاد الجهاز',
+                  )}
+                </label>
+                <p className="hint">
+                  {t(
+                    'Pour mémoriser le mot de passe, acceptez la proposition de votre navigateur. Déconnexion après 15 minutes d’inactivité.',
+                    'باش تحفظ كلمة السر، وافق على الاقتراح ديال المتصفح. كيسالي الدخول من بعد 15 دقيقة بلا استعمال.',
+                  )}
+                </p>
+                <button type="button" className="text-button" onClick={() => change('reset')}>
+                  {t('Mot de passe oublié ?', 'نسيت كلمة السر؟')}
+                </button>
+              </>
             )}
             <button className="primary full" disabled={busy}>
               {busy

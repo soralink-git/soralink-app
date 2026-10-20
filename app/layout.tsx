@@ -6,6 +6,7 @@ import './landing.css';
 import './docare.css';
 import { AppearanceProvider } from './theme-toggle';
 import NavigationProgress from './navigation-progress';
+import IdleSession from './idle-session';
 import { HOME_TITLE, HOME_DESCRIPTION } from './lib/site-seo';
 
 export const viewport: Viewport = { themeColor: BRAND.charcoal };
@@ -52,6 +53,7 @@ export default function RootLayout({
       <body className="antialiased">
         <AppearanceProvider>
           <NavigationProgress />
+          <IdleSession />
           {children}
         </AppearanceProvider>
       </body>

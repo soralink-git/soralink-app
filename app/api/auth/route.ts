@@ -2,6 +2,7 @@ import { authActionSchema, readValidatedJSON, inputErrorResponse } from '../../l
 import { authFailure } from '../../lib/auth-errors';
 import { accountPath } from '../../lib/journey-links';
 import { authClient } from '../../lib/supabase';
+import { startAppSession, endAppSession, renewAppSession } from '../../lib/idle-session';
 import { json, identity, isAdministrator } from '../../lib/server';
 import { cookies } from 'next/headers';
 import { getChatGPTUser } from '../../chatgpt-auth';
@@ -20,8 +21,8 @@ function failed(error: any, action: string) {
 }
 export async function GET() {
   try {
-    const { user, admin } = await identity();
-    return json({ authenticated: !!user, email: user?.email || null, admin });
+    const { user, admin, expiresAt } = await identity();
+    return json({ authenticated: !!user, email: user?.email || null, admin, expiresAt });
   } catch {
     return json({ error: 'Vérification de session indisponible' }, 503);
   }
@@ -31,6 +32,14 @@ export async function POST(req: Request) {
     if (req.headers.get('origin') !== new URL(req.url).origin)
       return json({ error: 'Accès refusé' }, 403);
     const b = await readValidatedJSON(req, authActionSchema, 10000);
+    if (b.action === 'activity') {
+      const { user } = await identity();
+      if (!user) return json({ error: 'Session expirée', errorAr: 'سالات مدة الدخول' }, 401);
+      const session = await renewAppSession(user.userId);
+      return session
+        ? json({ expiresAt: session.expires })
+        : json({ error: 'Session expirée', errorAr: 'سالات مدة الدخول' }, 401);
+    }
     if (b.action === 'legacy') {
       const user = await getChatGPTUser();
       if (!user) return json({ error: 'Connexion ChatGPT requise' }, 401);
@@ -41,8 +50,10 @@ export async function POST(req: Request) {
         path: '/',
         maxAge: 86400 * 7,
       });
+      await startAppSession(user.userId);
       return json({ ok: true });
     }
+    if (b.action === 'logout') await endAppSession();
     const s = await authClient();
     const base = new URL(req.url).origin;
     const callback = new URL('/auth/callback', base);
@@ -55,6 +66,15 @@ export async function POST(req: Request) {
       return json({ ok: true });
     }
     if (b.action === 'password') {
+      const { user } = await identity();
+      if (!user)
+        return json(
+          {
+            error: 'Ouvrez un nouveau lien de récupération.',
+            errorAr: 'طلب رابط جديد باش تبدّل كلمة السر.',
+          },
+          401,
+        );
       const { data, error: authError } = await s.auth.getUser();
       if (authError || !data.user || !data.user.email_confirmed_at)
         return json({ error: 'Ouvrez le lien de récupération reçu par e-mail.' }, 401);
@@ -113,6 +133,7 @@ export async function POST(req: Request) {
         return json({ error: 'Confirmez votre e-mail avant de vous connecter.' }, 403);
       }
       (await cookies()).delete('soratap_legacy');
+      await startAppSession('sb:' + data.user.id);
       return json({
         ok: true,
         redirect: accountPath(isAdministrator(data.user.email), b.lang === 'ar', b.offer),
