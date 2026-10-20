@@ -13,14 +13,15 @@ const items = Array.from({ length: 40 }, (_, i) => ({
   image: '/api/upload?key=12345678-1234-1234-1234-123456789abc',
   price: '20',
 }));
-test('paid catalogues retain forty illustrated articles while trials remain limited to ten', () => {
+test('trial and paid catalogues allow forty illustrated articles', () => {
   assert.equal(MAX_CATALOGUE_ITEMS, 40);
   assert.equal(catalogueLimit({ state: 'active' }), 40);
   assert.equal(catalogueLimit({ state: 'suspended' }), 40);
-  assert.equal(catalogueLimit({ state: 'trial' }), 10);
-  assert.equal(catalogueLimit(null), 10);
+  assert.equal(catalogueLimit({ state: 'trial' }), 40);
+  assert.equal(catalogueLimit(null), 40);
   assert.equal(catalogueError(items, 40), null);
-  assert.match(catalogueError(items.slice(0, 11), 10), /10/);
+  assert.equal(catalogueError(items, catalogueLimit({ state: 'trial' })), null);
+  assert.match(catalogueError([...items, { name: 'Extra' }], catalogueLimit(null)), /40/);
   assert.equal(normalizeCatalogue(items).length, 40);
 });
 test('forty full descriptions fit; the schema allows admin overrides while default validation rejects forty-one', () => {

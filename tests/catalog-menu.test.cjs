@@ -34,9 +34,9 @@ const doc = {
   allowDownload: true,
 };
 const rights = menu.catalogRights({ state: 'active' });
-test('paid defaults remain forty products, three 25MB/100-page PDFs, with bounded admin overrides', () => {
+test('trial and paid defaults allow forty products with bounded admin overrides', () => {
   assert.equal(rights.maxProducts, 40);
-  assert.equal(menu.catalogRights({ state: 'trial' }).maxProducts, 10);
+  assert.equal(menu.catalogRights({ state: 'trial' }).maxProducts, 40);
   assert.equal(rights.pdfMB, 25);
   assert.equal(rights.pdfPages, 100);
   assert.equal(rights.maxDocuments, 3);

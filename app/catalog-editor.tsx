@@ -12,6 +12,7 @@ import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
 import { compressPhoto } from './lib/compress-photo';
 import ImageCropper from './image-cropper';
 import PdfCatalogue from './pdf-catalogue';
+import ItemCategoryField from './item-category-field';
 import { PhotoPreview } from './photo-gallery';
 export default function CatalogEditor({
   data,
@@ -38,7 +39,6 @@ export default function CatalogEditor({
   const rights = catalogRights(subscription),
     settings = catalogSettings(data),
     docs = catalogDocuments(data),
-    cats = catalogCategories(data),
     items = normalizeCatalogue(data.services, true);
   const [tab, setTab] = useState<string>(
       initialTab === 'media'
@@ -504,70 +504,6 @@ export default function CatalogEditor({
                 'هاد الحد مشترك بين جميع الفئات ديالك.',
               )}
             </p>
-            <details>
-              <summary>
-                {t('Gérer les catégories', 'إدارة الفئات')} ({cats.length}/40)
-              </summary>
-              {cats.map((cat, i) => (
-                <div className="catalogue-editor" key={cat.id}>
-                  {input(
-                    t('Nom de la catégorie', 'اسم الفئة'),
-                    language === 'Fr' ? cat.nameFr : cat.nameAr,
-                    (v) =>
-                      patch(
-                        'catalogCategories',
-                        cats.map((c) => (c.id === cat.id ? { ...c, ['name' + language]: v } : c)),
-                      ),
-                    {
-                      maxLength: 120,
-                      lang: language.toLowerCase(),
-                      dir: language === 'Ar' ? 'rtl' : 'ltr',
-                    },
-                  )}
-                  {toggle(t('Catégorie visible', 'الفئة ظاهرة'), cat.visible, (v) =>
-                    patch(
-                      'catalogCategories',
-                      cats.map((c) => (c.id === cat.id ? { ...c, visible: v } : c)),
-                    ),
-                  )}
-                  {moves('catalogCategories', i, cats.length)}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (
-                        window.confirm(
-                          t(
-                            'Supprimer cette catégorie ? Les articles seront sans catégorie.',
-                            'حذف هاد الفئة؟ المنتجات غادي تبقى بلا فئة.',
-                          ),
-                        )
-                      )
-                        setData((d: any) => ({
-                          ...d,
-                          catalogCategories: cats.filter((c) => c.id !== cat.id),
-                          services: normalizeCatalogue(d.services, true).map((p) =>
-                            p.categoryId === cat.id ? { ...p, categoryId: '' } : p,
-                          ),
-                        }));
-                    }}
-                  >
-                    {t('Supprimer la catégorie', 'حذف الفئة')}
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                disabled={locked || cats.length >= 40}
-                onClick={() =>
-                  patch('catalogCategories', [
-                    ...cats,
-                    { id: crypto.randomUUID(), nameFr: '', nameAr: '', visible: true },
-                  ])
-                }
-              >
-                {t('Ajouter une catégorie', 'إضافة فئة')}
-              </button>
-            </details>
             <button
               type="button"
               disabled={locked || items.length >= rights.maxProducts}
@@ -683,20 +619,14 @@ export default function CatalogEditor({
                         dir: language === 'Ar' ? 'rtl' : 'ltr',
                       },
                     )}
-                    <label className="field">
-                      {t('Catégorie', 'الفئة')}
-                      <select
-                        value={item.categoryId}
-                        onChange={(e) => updateItem(item.id, 'categoryId', e.target.value)}
-                      >
-                        <option value="">{t('Sans catégorie', 'بلا فئة')}</option>
-                        {cats.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {catalogText(c.nameFr, c.nameAr, ar)}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    <ItemCategoryField
+                      data={data}
+                      setData={setData}
+                      itemId={item.id}
+                      language={language}
+                      ar={ar}
+                      disabled={locked}
+                    />
                     <h4>{t('Image principale', 'الصورة الرئيسية')}</h4>
                     {media(
                       item.image,

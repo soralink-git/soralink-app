@@ -1,7 +1,7 @@
 export const MAX_CATALOGUE_ITEMS = 40;
 export const PAID_CATALOGUE_ITEMS = 40;
 export const HARD_CATALOGUE_ITEMS = 200;
-export const TRIAL_CATALOGUE_ITEMS = 10;
+export const TRIAL_CATALOGUE_ITEMS = 40;
 export function catalogueLimit(profile: { state?: string } | null | undefined) {
   return profile && ['active', 'suspended'].includes(profile.state || '')
     ? PAID_CATALOGUE_ITEMS

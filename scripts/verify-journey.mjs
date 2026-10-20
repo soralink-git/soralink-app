@@ -379,7 +379,7 @@ try {
     data: {
       action: 'save',
       revision: saved.json.revision,
-      data: { ...fields, services: catalogue40.slice(0, 11) },
+      data: { ...fields, services: [...catalogue40, { id: 'trial-extra', name: 'Extra' }] },
       published: false,
     },
     status: 400,

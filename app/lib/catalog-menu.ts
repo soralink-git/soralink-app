@@ -31,7 +31,7 @@ export function catalogRights(profile?: any): CatalogRights {
     maxDocuments: 3,
     maxProducts: catalogueLimit(profile),
     storageMB: 400,
-    maxFiles: catalogueLimit(profile) > 10 ? 160 : 80,
+    maxFiles: 160,
     pdfMB: 25,
     pdfPages: 100,
   };
