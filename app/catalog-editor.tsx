@@ -847,7 +847,6 @@ export default function CatalogEditor({
                 )}
               </article>
             ))}
-
           </fieldset>
         )}
       </div>
