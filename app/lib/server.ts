@@ -2,6 +2,7 @@ import { env } from 'cloudflare:workers';
 import { cookies } from 'next/headers';
 import { getChatGPTUser } from '../chatgpt-auth';
 import { authClient } from './supabase';
+import { activeAppSession } from './idle-session';
 export function db() {
   if (!env.DB) throw new Error('Storage unavailable');
   return env.DB;
@@ -14,6 +15,8 @@ export function isAdministrator(email?: string | null) {
   );
 }
 export async function identity() {
+  const session = await activeAppSession();
+  if (!session) return { user: null, source: '', admin: false, expiresAt: null };
   let user: { userId: string; email: string; displayName: string } | null = null;
   let source = '';
   if (env.SUPABASE_URL && env.SUPABASE_PUBLISHABLE_KEY) {
@@ -31,7 +34,10 @@ export async function identity() {
     user = await getChatGPTUser();
     if (user) source = 'chatgpt';
   }
+  if (user?.userId !== session.owner)
+    return { user: null, source: '', admin: false, expiresAt: null };
   return {
+    expiresAt: session.expires,
     user,
     source,
     admin: !!user && isAdministrator(user.email),

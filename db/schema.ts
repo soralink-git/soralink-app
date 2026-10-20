@@ -133,3 +133,13 @@ export const profileAddresses = sqliteTable(
     index('profile_address_history').on(t.profile),
   ],
 );
+
+export const appSessions = sqliteTable(
+  'app_sessions',
+  {
+    id: text('id').primaryKey(),
+    owner: text('owner').notNull(),
+    expires: integer('expires').notNull(),
+  },
+  (t) => [index('app_sessions_expiry').on(t.expires)],
+);

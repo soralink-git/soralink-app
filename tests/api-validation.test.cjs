@@ -104,6 +104,12 @@ function load(filename) {
         if (!name.startsWith('.')) return require(name);
         const resolved = (path.resolve(path.dirname(file), name) + '.ts').replace(/\\/g, '/');
         if (resolved.endsWith('/lib/server.ts')) return server;
+        if (resolved.endsWith('/lib/idle-session.ts'))
+          return {
+            startAppSession: async () => Date.now() + 900000,
+            endAppSession: async () => {},
+            renewAppSession: async () => ({ expires: Date.now() + 900000 }),
+          };
         if (resolved.endsWith('/lib/supabase.ts')) return { authClient: async () => provider };
         if (resolved.endsWith('/chatgpt-auth.ts')) return { getChatGPTUser: async () => null };
         if (resolved.endsWith('/lib/notifications.ts'))
