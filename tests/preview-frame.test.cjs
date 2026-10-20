@@ -17,22 +17,33 @@ test('desktop preview stays at the window edge after the form scrolls past it, i
   assert.equal(initial.top, 180);
   assert.equal(initial.maxHeight, 704);
 });
-test('compact preview reserves most of the window for editing and tracks the physical column in RTL', () => {
-  const frame = previewFrame({ top: -300, left: 16, width: 358 }, { width: 390, height: 844 });
-  assert.equal(frame.top, 8);
-  assert.equal(frame.left, 16);
-  assert.equal(frame.width, 358);
-  assert.equal(frame.maxHeight, 844 * 0.38);
-  const rtl = previewFrame({ top: -100, left: 30, width: 360 }, desktop);
-  assert.equal(rtl.left, 30);
+test('phone and tablet previews never become fixed overlays', () => {
+  for (const width of [360, 390, 430, 768, 1100]) {
+    for (const top of [180, -300, -5000]) {
+      assert.equal(
+        previewFrame({ top, left: 16, width: width - 32 }, { width, height: 844 }),
+        null,
+      );
+    }
+  }
 });
-test('keyboard and viewport resizing keep the entire fixed panel inside the visible window', () => {
+test('desktop preview clears the sticky save action while scrolling', () => {
+  for (const top of [-100, -800, -5000]) {
+    const frame = previewFrame({ ...rail, top }, { ...desktop, minTop: 78.5 });
+    assert.equal(frame.top, 78.5);
+    assert.equal(frame.maxHeight, 805.5);
+  }
+  const initial = previewFrame(rail, { ...desktop, minTop: 78.5 });
+  assert.equal(initial.top, 180);
+});
+test('desktop viewport resizing and RTL keep the preview within visible bounds', () => {
   const frame = previewFrame(
-    { top: -500, left: 16, width: 358 },
-    { width: 390, height: 400, offsetTop: 250 },
+    { top: -500, left: 30, width: 360 },
+    { width: 1440, height: 400, offsetTop: 250, minTop: 300 },
   );
-  assert.equal(frame.top, 258);
-  assert(frame.top + frame.maxHeight <= 650 - 8);
+  assert.equal(frame.top, 300);
+  assert.equal(frame.left, 30);
+  assert(frame.top + frame.maxHeight <= 650 - 16);
   const short = previewFrame({ ...rail, top: 200 }, { width: 1440, height: 250 });
   assert.equal(short.maxHeight, 34);
 });

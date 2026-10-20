@@ -2216,3 +2216,117 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     border-radius: 16px;
   }
 }
+
+/* Compact editing keeps the navigation and preview in normal document flow. */
+.workspace-preview-toggle {
+  display: none;
+}
+@media (max-width: 1100px) {
+  .workspace-design > aside {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 10px;
+    overflow: visible;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+  .workspace-design > aside > h3,
+  .workspace-design > aside > .sidebar-note {
+    display: none;
+  }
+  .workspace-design > aside > .setup-launch,
+  .workspace-design > aside > .sidebar-logout {
+    order: 0;
+    width: 100%;
+    min-width: 0;
+    margin: 0 !important;
+    padding: 8px;
+    font-size: 12px;
+    white-space: normal;
+    min-height: 44px;
+  }
+  .workspace-design > aside > .workspace-navigation {
+    order: 1;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+    padding: 0;
+    gap: 6px;
+  }
+  .workspace-design .workspace-navigation > button {
+    min-width: 0;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    white-space: normal;
+    padding: 10px 6px;
+    gap: 6px;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .workspace-design .workspace-navigation button > span {
+    white-space: normal;
+    overflow: visible;
+    overflow-wrap: anywhere;
+  }
+  .workspace-design .workspace-secondary-nav {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin: 0;
+    padding-top: 4px;
+  }
+  .workspace-design .workspace-secondary-nav button {
+    display: inline-flex;
+    width: 50%;
+    min-width: 0;
+    white-space: normal;
+    vertical-align: top;
+    padding: 8px;
+  }
+  .workspace-design > aside > a {
+    order: 2;
+    grid-column: 1 / -1;
+  }
+  .workspace-design .workspace-preview-rail {
+    position: static;
+    top: auto;
+    min-height: 0;
+    z-index: auto;
+    width: 100%;
+  }
+  .workspace-preview-toggle {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  .workspace-design .workspace-card-preview {
+    position: static;
+    max-height: 65vh;
+    max-height: 65dvh;
+    margin-top: 10px;
+    z-index: auto;
+  }
+  .workspace-preview-rail:not(.preview-open) > .workspace-card-preview {
+    display: none;
+  }
+  .workspace-design .workspace-save-action {
+    position: static;
+    top: auto;
+    z-index: auto;
+    margin-bottom: 12px;
+  }
+  .workspace-design .workspace-save-action > button {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+  }
+}

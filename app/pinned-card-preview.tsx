@@ -1,8 +1,11 @@
 'use client';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { Eye, X } from 'lucide-react';
 import { previewFrame, type PreviewFrame } from './lib/preview-frame';
 
 export default function PinnedCardPreview({ ar, children }: { ar: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  const previewId = useId();
   const rail = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<{ frame: PreviewFrame | null; height: number }>({
@@ -17,10 +20,12 @@ export default function PinnedCardPreview({ ar, children }: { ar: boolean; child
       pending = 0;
       const rect = anchor.getBoundingClientRect();
       const visible = window.visualViewport;
+      const saveBar = anchor.closest('.workspace-main')?.querySelector('.workspace-save-action');
       const frame = previewFrame(rect, {
         width: window.innerWidth,
         height: visible?.height || window.innerHeight,
         offsetTop: visible?.offsetTop || 0,
+        minTop: saveBar ? saveBar.getBoundingClientRect().bottom + 12 : undefined,
       });
       const height = element.getBoundingClientRect().height;
       setLayout((previous) => {
@@ -58,14 +63,25 @@ export default function PinnedCardPreview({ ar, children }: { ar: boolean; child
   }, []);
   return (
     <div
-      className="workspace-preview-rail"
+      className={'workspace-preview-rail' + (open ? ' preview-open' : '')}
       ref={rail}
       style={{
-        minHeight: layout.height || undefined,
+        minHeight: layout.frame ? layout.height || undefined : undefined,
         position: layout.frame ? 'static' : undefined,
       }}
     >
+      <button
+        type="button"
+        className="secondary workspace-preview-toggle"
+        aria-expanded={open}
+        aria-controls={previewId}
+        onClick={() => setOpen((value) => !value)}
+      >
+        {open ? <X size={18} aria-hidden="true" /> : <Eye size={18} aria-hidden="true" />}
+        {open ? (ar ? 'سدّ المعاينة' : 'Fermer l’aperçu') : ar ? 'شوف المعاينة' : 'Voir l’aperçu'}
+      </button>
       <div
+        id={previewId}
         ref={panel}
         className="workspace-card-preview"
         role="region"
