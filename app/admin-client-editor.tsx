@@ -47,7 +47,14 @@ export default function AdminClientEditor({
           <small>{profile.email || t('E-mail non renseigné', 'الإيميل ما متسجّلش')}</small>
         </span>
         <span className="badge">{offerLabel(profile.plan, ar)}</span>
-        <span>{t('Forfait et accès client', 'الباقة وولوج الزبون')}</span>
+        <span className="badge">
+          {profile.state === 'suspended'
+            ? t('Suspendu', 'موقوف')
+            : profile.state === 'trial'
+              ? t('Essai', 'تجربة')
+              : t('Actif', 'مفعّل')}
+        </span>
+        <span className="admin-client-open-label">{t('Gérer le client', 'دبّر حساب الزبون')}</span>
       </summary>
       <form
         onSubmit={(event) => {
@@ -125,73 +132,82 @@ export default function AdminClientEditor({
             'تغيير الباقة كيرجّع الولوج العادي ديالها. عدّل الصلاحيات لتحت قبل التسجيل. التجديد كيبقى بـ149 درهم فالعام وكيحتافظ بهاد الإعدادات.',
           )}
         </p>
-        <fieldset disabled={busy} className="admin-access-fieldset">
-          <legend>{t('Fonctions autorisées', 'الوظائف المسموحة')}</legend>
+        <details className="admin-client-advanced">
+          <summary>{t('Personnaliser les accès', 'خصّص الصلاحيات')}</summary>
           <p className="hint">
             {t(
-              'Le forfait détermine les fonctions disponibles. Désactiver une fonction la retire aussi de la carte publique, sans supprimer les données.',
-              'الباقة كتحدّد الوظائف المتاحة. توقيف وظيفة كيحيدها حتى من الكارط العمومية بلا حذف المعلومات.',
+              'Ouvrez uniquement pour modifier les fonctions ou les rubriques prévues par le forfait.',
+              'حلّ غير إلا بغيتي تبدّل الوظائف ولا الأقسام ديال الباقة.',
             )}
           </p>
-          {modules.map(([key, fr, da]) => (
-            <label key={key} className="toggle">
-              <input
-                type="checkbox"
-                disabled={
-                  busy ||
-                  !base[key] ||
-                  (key === 'appointments' && access.modules.activity === false)
-                }
-                checked={
-                  base[key] &&
-                  access.modules[key] !== false &&
-                  (key !== 'appointments' || access.modules.activity !== false)
-                }
-                onChange={(event) =>
-                  setAccess((current) => ({
-                    ...current,
-                    modules: { ...current.modules, [key]: event.target.checked },
-                  }))
-                }
-              />
-              <span>
-                {t(fr, da)}
-                {!base[key] && (
-                  <small>{t('Non inclus dans ce forfait', 'ما داخلاش فهاد الباقة')}</small>
-                )}
-              </span>
-            </label>
-          ))}
-        </fieldset>
-        <fieldset disabled={busy} className="admin-access-fieldset">
-          <legend>
-            {t('Rubriques visibles dans l’espace client', 'الأقسام اللي كيبانو فحساب الزبون')}
-          </legend>
-          <p className="hint">
-            {t(
-              'Masquer une rubrique bloque son éditeur et ses actions dans l’espace client. Le contenu déjà publié reste visible. Mon offre reste accessible pour le renouvellement.',
-              'إخفاء قسم كيوقف المحرّر والإجراءات ديالو فحساب الزبون. المحتوى المنشور كيبقى ظاهر. قسم العرض كيبقى متاح باش يتجدّد الاشتراك.',
-            )}
-          </p>
-          <div className="admin-access-grid">
-            {clientSectionKeys.map((key) => (
-              <label className="toggle" key={key}>
+          <fieldset disabled={busy} className="admin-access-fieldset">
+            <legend>{t('Fonctions autorisées', 'الوظائف المسموحة')}</legend>
+            <p className="hint">
+              {t(
+                'Le forfait détermine les fonctions disponibles. Désactiver une fonction la retire aussi de la carte publique, sans supprimer les données.',
+                'الباقة كتحدّد الوظائف المتاحة. توقيف وظيفة كيحيدها حتى من الكارط العمومية بلا حذف المعلومات.',
+              )}
+            </p>
+            {modules.map(([key, fr, da]) => (
+              <label key={key} className="toggle">
                 <input
                   type="checkbox"
-                  disabled={busy || !permittedSections.includes(key)}
-                  checked={visible.includes(key)}
+                  disabled={
+                    busy ||
+                    !base[key] ||
+                    (key === 'appointments' && access.modules.activity === false)
+                  }
+                  checked={
+                    base[key] &&
+                    access.modules[key] !== false &&
+                    (key !== 'appointments' || access.modules.activity !== false)
+                  }
                   onChange={(event) =>
                     setAccess((current) => ({
                       ...current,
-                      sections: { ...current.sections, [key]: event.target.checked },
+                      modules: { ...current.modules, [key]: event.target.checked },
                     }))
                   }
                 />
-                <span>{clientSectionLabels[key][ar ? 1 : 0]}</span>
+                <span>
+                  {t(fr, da)}
+                  {!base[key] && (
+                    <small>{t('Non inclus dans ce forfait', 'ما داخلاش فهاد الباقة')}</small>
+                  )}
+                </span>
               </label>
             ))}
-          </div>
-        </fieldset>
+          </fieldset>
+          <fieldset disabled={busy} className="admin-access-fieldset">
+            <legend>
+              {t('Rubriques visibles dans l’espace client', 'الأقسام اللي كيبانو فحساب الزبون')}
+            </legend>
+            <p className="hint">
+              {t(
+                'Masquer une rubrique bloque son éditeur et ses actions dans l’espace client. Le contenu déjà publié reste visible. Mon offre reste accessible pour le renouvellement.',
+                'إخفاء قسم كيوقف المحرّر والإجراءات ديالو فحساب الزبون. المحتوى المنشور كيبقى ظاهر. قسم العرض كيبقى متاح باش يتجدّد الاشتراك.',
+              )}
+            </p>
+            <div className="admin-access-grid">
+              {clientSectionKeys.map((key) => (
+                <label className="toggle" key={key}>
+                  <input
+                    type="checkbox"
+                    disabled={busy || !permittedSections.includes(key)}
+                    checked={visible.includes(key)}
+                    onChange={(event) =>
+                      setAccess((current) => ({
+                        ...current,
+                        sections: { ...current.sections, [key]: event.target.checked },
+                      }))
+                    }
+                  />
+                  <span>{clientSectionLabels[key][ar ? 1 : 0]}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </details>
         <div className="admin-client-preview" aria-live="polite">
           <strong>{t('Le client verra :', 'الزبون غادي يشوف:')}</strong>
           <p>
