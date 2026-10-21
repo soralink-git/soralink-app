@@ -25,6 +25,7 @@ test('signup associates password guidance with both fields and preserves browser
       React.createElement(Auth, { initialMode: 'signup', initialArabic: ar }),
     );
     const password = html.match(/<input[^>]*name="password"[^>]*>/)[0];
+    assert(password.includes('aria-label="' + (ar ? 'كلمة السر' : 'Mot de passe') + '"'));
     const confirmation = html.match(/<input[^>]*name="confirm"[^>]*>/)[0];
     const hint = password.match(/aria-describedby="([^"]+)"/)[1];
     assert(confirmation.includes('aria-describedby="' + hint + '"'));
