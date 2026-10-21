@@ -128,6 +128,10 @@ export default function CatalogProducts({
       return;
     }
     setDetail('');
+    if (data.activity === false) {
+      void send([{ id: p.id, quantity: 1 }]);
+      return;
+    }
     onRequest(p.type === 'product' ? 'commande' : 'devis', {
       ...p,
       name: name(p),
@@ -135,7 +139,7 @@ export default function CatalogProducts({
       description: catalogText(p.description, p.descriptionAr, ar, true),
     });
   }
-  async function send() {
+  async function send(itemsToSend = selected.map((p) => ({ id: p.id, quantity: cart[p.id] }))) {
     if (preview) {
       onMessage(t('Aperçu : l’envoi WhatsApp est désactivé.', 'معاينة: إرسال واتساب غير مفعّل.'));
       return;
@@ -151,7 +155,7 @@ export default function CatalogProducts({
         body: JSON.stringify({
           profile: id,
           language: ar ? 'ar' : 'fr',
-          items: selected.map((p) => ({ id: p.id, quantity: cart[p.id] })),
+          items: itemsToSend,
         }),
       });
       const b: any = await r.json();
@@ -187,7 +191,7 @@ export default function CatalogProducts({
       <span className="catalog-stock">
         {p.availability === 'soldout' ? t('Épuisé', 'نفد') : t('Disponible', 'متوفر')}
       </span>
-      {p.availability === 'available' && (
+      {p.availability === 'available' && (data.activity !== false || canOrder) && (
         <>
           <button className="secondary full" type="button" onClick={() => choose(p)}>
             {p.type === 'service'

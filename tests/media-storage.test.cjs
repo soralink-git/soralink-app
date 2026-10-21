@@ -24,7 +24,7 @@ before(async () => {
   db = await mf.getD1Database('DB');
   await db.batch([
     db.prepare(
-      "CREATE TABLE profiles(id TEXT PRIMARY KEY,owner TEXT NOT NULL UNIQUE,data TEXT NOT NULL,published INTEGER NOT NULL DEFAULT 0,updated TEXT NOT NULL,email TEXT NOT NULL DEFAULT '',expires TEXT)",
+      "CREATE TABLE profiles(id TEXT PRIMARY KEY,owner TEXT NOT NULL UNIQUE,data TEXT NOT NULL,published INTEGER NOT NULL DEFAULT 0,updated TEXT NOT NULL,email TEXT NOT NULL DEFAULT '',expires TEXT,plan TEXT NOT NULL DEFAULT 'Digital')",
     ),
     db.prepare(
       'CREATE TABLE media_assets(key TEXT PRIMARY KEY,owner TEXT NOT NULL,bytes INTEGER NOT NULL,state TEXT NOT NULL,created TEXT NOT NULL)',

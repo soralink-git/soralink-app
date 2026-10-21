@@ -1,3 +1,4 @@
+import { capabilities } from '../../lib/offers';
 import {
   availabilityQuerySchema,
   validateInput,
@@ -16,7 +17,7 @@ export async function GET(req: Request) {
       .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
       .bind(query.id)
       .first();
-    if (!p || !active(p) || !p.pro_enabled)
+    if (!p || !active(p) || !capabilities(p).appointments)
       return json({ error: 'Rendez-vous indisponibles' }, 404);
     const saved = JSON.parse(p.data);
     if (normalizeAppearance(saved).hiddenSections.includes('appointments'))

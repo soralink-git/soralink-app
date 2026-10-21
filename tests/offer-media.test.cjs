@@ -61,7 +61,8 @@ test('unattached, inactive, expired and disabled offer assets are excluded from 
   ])
     assert.equal(publicCardData({ ...data, ...change }, false).promotions.length, 0);
   assert.equal(
-    publicCardData(data, false, { ...catalogRights(), enabled: false }).promotions.length,
+    publicCardData(data, false, { ...catalogRights({ plan: 'Digital' }), enabled: false })
+      .promotions.length,
     0,
   );
 });
@@ -95,7 +96,7 @@ test('explicit legacy media association moves only the selected file and never o
 });
 test('disabled catalogues reject offer edits on the server while unrelated retained content remains saveable', () => {
   const previous = { promotions: [offer] },
-    denied = { ...catalogRights(), enabled: false };
+    denied = { ...catalogRights({ plan: 'Digital' }), enabled: false };
   assert.equal(catalogContentIssue(previous, previous, denied), '');
   assert.ok(
     catalogContentIssue({ promotions: [{ ...offer, recordedVideo: url }] }, previous, denied),

@@ -158,15 +158,15 @@ export default function Auth({
               </h1>
               <p>
                 {t(
-                  'Personnalisez votre page, partagez vos contenus et retrouvez vos demandes au même endroit.',
-                  'خصّص الصفحة ديالك، شارك المحتوى ولقى الطلبات فبلاصة وحدة.',
+                  'Créez votre carte et partagez-la. Ajoutez le catalogue ou le suivi client selon votre pack.',
+                  'صايب الكارط ديالك وشاركها. زيد الكاتالوگ ولا تتبّع الزبناء حسب الباقة.',
                 )}
               </p>
               <ul className="auth-benefits">
                 {[
                   t('Une carte qui évolue avec vous', 'كارط كتتبدّل معاك'),
-                  t('Vos photos et votre catalogue', 'التصاور والكاتالوگ ديالك'),
-                  t('Vos demandes et vos rendez-vous', 'الطلبات والمواعيد ديالك'),
+                  t('Des fonctions selon votre pack', 'وظائف على حساب الباقة ديالك'),
+                  t('Modifications incluses avec l’abonnement', 'التعديلات داخلة فالاشتراك'),
                 ].map((v) => (
                   <li key={v}>
                     <CheckCircle size={18} />

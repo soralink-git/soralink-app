@@ -1,3 +1,4 @@
+import { capabilities } from '../../lib/offers';
 import { catalogRights, catalogDocuments } from '../../lib/catalog-menu';
 import { checkFileContent } from '../../lib/upload-content';
 import {
@@ -162,9 +163,9 @@ export async function GET(req: Request) {
     const visible = references.results.some(
       (p: any) =>
         active(p) &&
-        mediaKeys(publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p))).includes(
-          key,
-        ),
+        mediaKeys(
+          publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p), capabilities(p)),
+        ).includes(key),
     );
     if (!visible) {
       const { user, admin } = await identity();
@@ -188,7 +189,7 @@ export async function GET(req: Request) {
         (p: any) =>
           active(p) &&
           catalogDocuments(
-            publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p)),
+            publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p), capabilities(p)),
           ).some((d) => d.src === '/api/upload?key=' + key && d.allowDownload),
       );
       if (!allowed) return new Response(null, { status: 403 });

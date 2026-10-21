@@ -2348,3 +2348,35 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     white-space: normal;
   }
 }
+
+.single-action-offer {
+  background: var(--brand-surface);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.single-action-offer p,
+.single-action-price > small,
+.offer-terms {
+  color: var(--muted);
+}
+.single-action-offer .landing-price {
+  color: var(--ink);
+}
+.landing-price-grid {
+  align-items: stretch;
+}
+.landing-price-grid .pricing-card.featured {
+  border-color: var(--brand-orange);
+}
+
+@media (max-width: 1100px) {
+  .workspace-design > aside > .identity-navigation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .workspace-design > aside > .workspace-offer-link {
+    order: 2;
+    grid-column: 1 / -1;
+    min-height: 44px;
+    margin: 0;
+  }
+}

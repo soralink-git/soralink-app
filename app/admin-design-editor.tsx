@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { capabilities } from './lib/offers';
 import CardView from './card-view';
 import Customization from './card-customization';
 import BackgroundEditor from './background-editor';
@@ -140,7 +141,7 @@ export default function AdminDesignEditor({
                   )}
                 </p>
                 {sections.map((key, index) => {
-                  const locked = key === 'appointments' && !profile.pro_enabled;
+                  const locked = key === 'appointments' && !capabilities(profile).appointments;
                   return (
                     <div className="section-editor-row" key={key}>
                       <div className="section-control">
@@ -256,7 +257,7 @@ export default function AdminDesignEditor({
           <strong>{t('Aperçu de la carte', 'معاينة الكارط')}</strong>
           <div inert>
             <CardView
-              d={{ ...data, pro: !!profile.pro_enabled }}
+              d={{ ...data, pro: !!capabilities(profile).appointments }}
               ar={ar}
               setAr={() => {}}
               onMessage={() => {}}

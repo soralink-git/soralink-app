@@ -1,15 +1,6 @@
 'use client';
-import { signupPath } from './lib/journey-links';
-import {
-  Calendar,
-  Check,
-  ExternalLink,
-  Layers,
-  Nfc,
-  Users,
-  ShoppingBag,
-  RefreshCw,
-} from 'lucide-react';
+import OfferGrid from './offer-grid';
+import { ExternalLink, Users, ShoppingBag, RefreshCw } from 'lucide-react';
 import { WhatsAppIcon } from './card-helpers';
 
 export default function LandingPage({
@@ -121,200 +112,13 @@ export default function LandingPage({
           <h2>{t('Les Offres', 'العروض ديالنا')}</h2>
           <p>
             {t(
-              'Un mini-site complet et vos supports physiques, sans prélèvement automatique.',
-              'سيت كامل مع الكارطات ديالك، بلا حتى اقتطاع أوتوماتيكي.',
+              'Choisissez les fonctions utiles à votre activité.',
+              'اختار الوظائف اللي محتاجها للنشاط ديالك.',
             )}
           </p>
         </div>
 
-        <div className="landing-price-grid">
-          {/* 1. Digital */}
-          <article className="pricing-card">
-            <span className="eyebrow">
-              {t('L’essentiel 100 % en ligne', 'الأساسي 100% أونلاين')}
-            </span>
-            <h3>{t('Digital', 'الديجيتال')}</h3>
-            <strong className="landing-price">
-              149<small> {t('DH', 'درهم')}</small>
-            </strong>
-            <p className="hint">{t('/ an', 'فالعام')}</p>
-            <ul className="landing-price-features">
-              <li>
-                <Check size={16} />
-                <span>
-                  {t(
-                    'Votre page complète (Profil, Catalogue, Promos, Devis)',
-                    'صفحة كاملة (بروفايل، كاتالوگ، عروض، دوڤي)',
-                  )}
-                </span>
-              </li>
-              <li>
-                <Check size={16} />
-                <span>
-                  {t('QR code et lien de partage illimité', 'كود QR ورابط مشاركة غير محدود')}
-                </span>
-              </li>
-            </ul>
-            <a className="secondary full" href={signupPath(ar, 'Digital', auth)}>
-              {t('Choisir Digital', 'اختار الديجيتال')}
-            </a>
-            <small>{t('Renouvellement : 149 DH/an', 'التجديد: 149 درهم فالعام')}</small>
-          </article>
-
-          {/* 2. Pack Hybride - Mis en relief (Bleu Nuit #0F172A, scale, bordure lumineuse, badge 🔥) */}
-          <article className="pricing-card featured pack-hybride-highlight">
-            <div className="floating-highlight-badge">
-              <span>{t('LE PACK COMPLET', 'الپاك الكامل')}</span>
-            </div>
-
-            <span className="eyebrow">
-              {t('Digital + supports imprimés', 'ديجيتال وكارطات مطبوعة')}
-            </span>
-            <h3>{t('Pack Hybride', 'الپاك الهجين')}</h3>
-            <div className="landing-price-tagline">
-              {t(
-                'Votre page, votre carte NFC et vos cartes papier.',
-                'صفحتك، كارط NFC والكارطات الورقية ديالك.',
-              )}
-            </div>
-
-            <div className="pack-hardware-preview">
-              <div className="hardware-pill">
-                <Nfc size={15} /> {t('1 Carte NFC', 'كارط NFC وحدة')}
-              </div>
-              <div className="hardware-pill">
-                <Layers size={15} /> {t('100 Cartes papier QR', '100 كارط ورقية QR')}
-              </div>
-            </div>
-
-            <strong className="landing-price">
-              349<small> {t('DH', 'درهم')}</small>
-            </strong>
-            <p className="hint">{t('la première année', 'فالعام الأول')}</p>
-
-            <ul className="landing-price-features">
-              <li>
-                <Check size={16} />
-                <span>
-                  <strong>
-                    {t('Tout le forfait Digital inclus (1 an)', 'كل ما في باقة الديجيتال (1 عام)')}
-                  </strong>
-                </span>
-              </li>
-              <li>
-                <Check size={16} />
-                <span>
-                  <strong>
-                    {t(
-                      '+ 1 Carte NFC personnalisée à votre image',
-                      '+ 1 كارط NFC مخصصة بالهوية ديالك',
-                    )}
-                  </strong>
-                </span>
-              </li>
-              <li>
-                <Check size={16} />
-                <span>
-                  <strong>
-                    {t(
-                      '+ 100 Cartes papier imprimées avec votre QR code',
-                      '+ 100 كارت فيزيت مطبوعة بالـ QR ديالك',
-                    )}
-                  </strong>
-                </span>
-              </li>
-            </ul>
-
-            <a className="primary full btn-glow-gold" href={signupPath(ar, 'Pack', auth)}>
-              {t('Choisir le Pack', 'اختار هاد الپاك')}
-            </a>
-            <small>
-              {t(
-                'Renouvellement l’année suivante : 149 DH/an',
-                'التجديد فالعام الموالي: 149 درهم فالعام',
-              )}
-            </small>
-          </article>
-
-          {/* 3. Clé en main */}
-          <article className="pricing-card">
-            <span className="eyebrow">
-              {t('On s’occupe de tout pour vous', 'كنتكلفو ليك بكلشي')}
-            </span>
-            <h3>{t('Clé en main', 'خدمة كاملة')}</h3>
-            <div className="landing-price-tagline">
-              {t('Nous créons votre page pour vous.', 'كنصايبو الصفحة ليك.')}
-            </div>
-            <strong className="landing-price">
-              549<small> {t('DH', 'درهم')}</small>
-            </strong>
-            <p className="hint">{t('la première année', 'فالعام الأول')}</p>
-            <ul className="landing-price-features">
-              <li>
-                <Check size={16} />
-                <span>
-                  {t(
-                    'Tout le Pack Hybride inclus (Page + 1 carte NFC + 100 cartes QR)',
-                    'كل ما في الپاك الهجين (سيت + 1 كارط NFC + 100 كارت QR)',
-                  )}
-                </span>
-              </li>
-              <li>
-                <Check size={16} />
-                <span>
-                  {t(
-                    '+ Création complète de votre page par notre équipe (avec 2 séries de retouches)',
-                    '+ إعداد كامل لصفحتك من طرف فريقنا (مع مرحلتين للتعديل)',
-                  )}
-                </span>
-              </li>
-            </ul>
-            <a className="secondary full" href={signupPath(ar, 'Accompagnement', auth)}>
-              {t('Choisir Clé en main', 'اختار الخدمة الكاملة')}
-            </a>
-            <small>
-              {t(
-                'Renouvellement l’année suivante : 149 DH/an',
-                'التجديد فالعام الموالي: 149 درهم فالعام',
-              )}
-            </small>
-          </article>
-        </div>
-
-        <details className="landing-more">
-          <summary>{t('Un besoin sur mesure ?', 'بغيتي حاجة على المقاس؟')}</summary>
-          <p>
-            {t(
-              'Une carte NFC pour un lien ou une action précise : contactez-nous pour en parler.',
-              'كارط NFC لرابط ولا إجراء محدد: تواصل معانا باش نشوفو الطلب ديالك.',
-            )}
-          </p>
-          <a
-            className="landing-link"
-            href="https://wa.me/212661446664"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t('Nous contacter sur WhatsApp', 'تواصل معانا فـ WhatsApp')} <WhatsAppIcon />
-          </a>
-        </details>
-
-        <details className="pricing-notes landing-more">
-          <summary>{t('Rendez-vous et détails des offres', 'المواعيد وتفاصيل العروض')}</summary>
-          <p>
-            <Calendar size={18} />
-            <strong>
-              {t('Option Pro (Rendez-vous) : +250 DH / an', 'خيار Pro للمواعيد: +250 درهم فالعام')}
-            </strong>{' '}
-            {t(
-              'Ajoutez un agenda de réservation en ligne (jusqu’à 5 prestations) à votre carte.',
-              'زيد أجندة حجز المواعيد أونلاين (حتى لـ 5 خدمات) فصفحتك.',
-            )}
-          </p>
-          <button className="landing-link" onClick={() => onPricing()}>
-            {t('Détail des offres et assistance', 'تفاصيل العروض والمساعدة')}
-          </button>
-        </details>
+        <OfferGrid ar={ar} auth={auth} />
       </section>
 
       <section className="landing-faq" id="faq">
@@ -339,14 +143,14 @@ export default function LandingPage({
             [
               'Puis-je modifier mes informations après l’impression des cartes ?',
               'واش نقدر نبدل معلوماتي من بعد ما تطبع الكارط؟',
-              'Oui, à tout moment. Vos modifications s’appliquent instantanément sur votre page, sans jamais avoir à réimprimer votre carte NFC ou vos cartes papier.',
-              'إيه، وقتما بغيتي. التعديلات كتبان فالحين فصفحتك، بلا ما تحتاج تعاود تطبع لا كارط NFC ولا الكارطات ديال الورق.',
+              'Avec les packs 2, 3 et 4, modifiez vos contenus à tout moment pendant votre abonnement. Le lien de votre carte reste le même. Le pack 1 ouvre directement le lien choisi lors de la commande.',
+              'فالباقات 2 و3 و4، بدّل المحتوى وقتما بغيتي خلال الاشتراك. الرابط كيبقى هو هو. الباقة 1 كتحل مباشرة الرابط اللي اخترتي فالطلب.',
             ],
             [
               'Pourquoi y a-t-il un renouvellement à 149 DH/an ?',
               'علاش كاين تجديد سنوي بـ 149 درهم/عام؟',
-              'Cela couvre l’hébergement sécurisé de votre mini-site, de votre catalogue photos/PDF, de vos demandes de devis et les mises à jour techniques toute l’année (soit moins de 13 DH par mois).',
-              'باش نضمنو ليك استضافة آمنة للسيت ديالك، الكاتالوگ، طلبات الدوڤي والتحديثات التقنية على طول العام (أقل من 13 درهم فالشهر).',
+              'Pour les packs 2, 3 et 4, les 149 DH/an couvrent l’hébergement, les modifications de vos contenus et les mises à jour. Toutes les fonctions du pack choisi sont conservées au renouvellement. Le pack 1 à 99 DH n’a pas d’abonnement.',
+              'فالباقات 2 و3 و4، 149 درهم فالعام كتشمل الاستضافة، تعديل المحتوى والتحديثات. جميع وظائف الباقة كتبقى من بعد التجديد. الباقة 1 بـ99 درهم بلا اشتراك.',
             ],
           ].map(([q, qa, a, aa]) => (
             <details key={q}>

@@ -1,3 +1,4 @@
+import { capabilities } from './offers';
 import { normalizePromotions } from './promotions';
 import { z } from 'zod';
 import { normalizeCatalogue } from './catalogue';
@@ -36,7 +37,8 @@ export function catalogRights(profile?: any): CatalogRights {
     pdfPages: 100,
   };
   const raw = profile?.catalog_rights ?? profile?.catalogRights;
-  if (raw == null) return defaults;
+  const allowed = capabilities(profile).catalogue;
+  if (raw == null && allowed) return defaults;
   const denied = {
     ...defaults,
     enabled: false,
@@ -47,6 +49,7 @@ export function catalogRights(profile?: any): CatalogRights {
     maxDocuments: 0,
     maxProducts: 0,
   };
+  if (!allowed) return denied;
   try {
     const parsed = catalogRightsSchema.safeParse(typeof raw === 'string' ? JSON.parse(raw) : raw);
     return parsed.success ? parsed.data : denied;

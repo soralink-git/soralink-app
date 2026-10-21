@@ -47,7 +47,7 @@ try {
   const db = await mf.getD1Database('DB');
   await db
     .prepare(
-      'CREATE TABLE profiles(id TEXT PRIMARY KEY, owner TEXT, data TEXT, published INTEGER, state TEXT, expires TEXT, pro_enabled INTEGER)',
+      "CREATE TABLE profiles(id TEXT PRIMARY KEY, owner TEXT, data TEXT, published INTEGER, state TEXT, expires TEXT, pro_enabled INTEGER, plan TEXT DEFAULT 'Digital')",
     )
     .run();
   for (const sql of (await readFile('drizzle/0006_public_addresses.sql', 'utf8')).split(
@@ -71,7 +71,9 @@ try {
     appointmentServices: [{ name: 'Consultation', duration: 30 }],
   };
   await db
-    .prepare('INSERT INTO profiles VALUES(?,?,?,?,?,?,?)')
+    .prepare(
+      'INSERT INTO profiles(id,owner,data,published,state,expires,pro_enabled) VALUES(?,?,?,?,?,?,?)',
+    )
     .bind(
       'public-test',
       'PRIVATE_OWNER',

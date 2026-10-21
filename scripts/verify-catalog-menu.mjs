@@ -249,7 +249,11 @@ export async function verifyCatalogMenu({ db, request, cardId, otherId, photo })
       'deleted',
     );
     // Neither a direct foreign asset reference nor an embedded string grants access.
-    const foreign = (await upload(photo, 'image/png', { id: otherId })).json.url;
+    const foreignForm = new FormData();
+    foreignForm.set('file', new File([photo], 'portrait.png', { type: 'image/png' }));
+    const foreign = (
+      await request('/api/upload', { auth: true, id: otherId, method: 'POST', body: foreignForm })
+    ).json.url;
     await save({ ...data, services: [{ ...product(), image: foreign }] }, { status: 409 });
     await save({ ...data, bio: 'Lien de test ' + foreign });
     await request(foreign, { auth: true, status: 404 });

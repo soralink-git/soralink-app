@@ -1,4 +1,5 @@
 'use client';
+import OfferGrid from './offer-grid';
 import { BRAND } from './lib/brand';
 import ThemeToggle from './theme-toggle';
 import { publicCardPath } from './lib/public-address';
@@ -1126,82 +1127,11 @@ export default function App({
           </h1>
           <p className="muted">
             {t(
-              'Tarifs de lancement proposés · paiement manuel · livraison séparée.',
-              'أثمنة مقترحة للبداية · الأداء يدوي · التوصيل بوحدو.',
+              'Première année incluse · renouvellement des packs 2 à 4 : 149 DH/an.',
+              'العام الأول داخل فالثمن · تجديد الباقات 2 حتى 4: 149 درهم فالعام.',
             )}
           </p>
-          <div className="pricing-grid">
-            {[
-              ['Digital', 149, 'Votre page, en toute autonomie.', 'الصفحة ديالك، كتسيّرها بوحدك.'],
-              ['Pack', 349, 'Le digital rencontre le papier.', 'الديجيتال مع الطباعة.'],
-              ['Accompagnement', 549, 'Vous nous confiez la préparation.', 'خلّي علينا التحضير.'],
-            ].map(([name, price, f, a], i) => (
-              <article className={'price-card ' + (i === 1 ? 'featured' : '')} key={name}>
-                {i === 1 && (
-                  <span className="recommended">{t('LE PACK COMPLET', 'الپاك الكامل')}</span>
-                )}
-                <h2>{name}</h2>
-                <p>{t(String(f), String(a))}</p>
-                <div className="price">
-                  {price}
-                  <span> DH</span>
-                </div>
-                <p className="period">
-                  {i === 0 ? t('par an', 'فالعام') : t('la première année', 'العام الأول')}
-                </p>
-                <ul>
-                  {[
-                    t('1 page · 10 photos · 40 articles', 'صفحة وحدة · 10 تصاور · 40 منتج وخدمة'),
-                    t('Catalogue PDF · QR · vidéo intégrée', 'كاتالوگ PDF · QR · فيديو'),
-                    t('Demandes de devis et de commande', 'طلبات الثمن والطلبات'),
-                    ...(i > 0
-                      ? [
-                          t(
-                            '1 NFC personnalisée + 100 cartes imprimées',
-                            'NFC شخصية + 100 كارط مطبوعة',
-                          ),
-                        ]
-                      : []),
-                    ...(i === 2
-                      ? [
-                          t(
-                            'Préparation + 2 séries de corrections',
-                            'التحضير + جوج مراحل ديال التصحيح',
-                          ),
-                        ]
-                      : []),
-                  ].map((f) => (
-                    <li key={f}>
-                      <Check size={16} />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <button
-                  className={i === 1 ? 'primary full' : 'secondary full'}
-                  onClick={() => {
-                    openApp();
-                    setTab('orders');
-                  }}
-                >
-                  {t('Choisir cette offre', 'اختار هاد العرض')}
-                </button>
-                <small>{t('Renouvellement : 149 DH/an', 'التجديد : 149 درهم فالعام')}</small>
-              </article>
-            ))}
-          </div>
-          <div className="callout">
-            <Calendar size={30} />
-            <div>
-              <h3>{t('Pro Rendez-vous · +250 DH/an', 'Pro Rendez-vous · +250 درهم فالعام')}</h3>
-              <p>
-                {t(
-                  'Un agenda, cinq prestations et des demandes à confirmer. Total Digital + Pro : 399 DH/an.',
-                  'أجندة وحدة، خمس خدمات وطلبات مواعيد كتأكدها. Digital + Pro بـ 399 درهم فالعام.',
-                )}
-              </p>
-            </div>
-          </div>
+          <OfferGrid ar={ar} auth={auth} />
           <details>
             <summary>{t('Renouvellement et assistance', 'التجديد والمساعدة')}</summary>
             <p>

@@ -1,4 +1,5 @@
-export const plans = ['Digital', 'Pack', 'Accompagnement', 'Pro'] as const;
+import { acceptedPlans, offers } from './offers';
+export const plans = acceptedPlans;
 export function selectedPlan(value: unknown): (typeof plans)[number] | undefined {
   return typeof value === 'string' && plans.includes(value as (typeof plans)[number])
     ? (value as (typeof plans)[number])
@@ -35,7 +36,11 @@ export function offerLabel(plan: string, ar = false) {
     Accompagnement: ['Clé en main', 'خدمة كاملة'],
     Pro: ['Option Rendez-vous', 'خيار المواعيد'],
   };
-  return labels[plan]?.[ar ? 1 : 0] || plan;
+  return (
+    offers.find((offer) => offer.id === plan)?.name[ar ? 1 : 0] ||
+    labels[plan]?.[ar ? 1 : 0] ||
+    plan
+  );
 }
 export function languagePath(currentUrl: string, ar: boolean): string {
   const url = new URL(currentUrl, 'https://soralink.link');
