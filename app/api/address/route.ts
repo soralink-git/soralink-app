@@ -1,3 +1,4 @@
+import { clientSectionAllowed } from '../../lib/client-access';
 import { identity, db, json } from '../../lib/server';
 import { normalizePublicName, publicNameError } from '../../lib/public-address';
 import { reservePublicName } from '../../lib/address-storage';
@@ -33,10 +34,12 @@ export async function POST(request: Request) {
     const invalid = publicNameError(name);
     if (invalid) return json({ error: invalid }, 400);
     const profile = await db()
-      .prepare('SELECT id FROM profiles WHERE owner=?')
+      .prepare('SELECT * FROM profiles WHERE owner=?')
       .bind(user.userId)
-      .first<{ id: string }>();
+      .first<any>();
     if (!profile) return json({ error: 'save-first' }, 409);
+    if (!clientSectionAllowed(profile, 'share'))
+      return json({ error: 'disabled', errorAr: 'هاد القسم موقوف من طرف SoraLink.' }, 403);
     if (!(await reservePublicName(db(), user.userId, profile.id, name)))
       return json({ error: 'taken' }, 409);
     return json({ ok: true, name });

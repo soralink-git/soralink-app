@@ -1,3 +1,5 @@
+import { readClientAccess, managementRevision } from '../../lib/client-access-config';
+import { clientSections } from '../../lib/client-access';
 import { annualExpiry, capabilities, isPlatformPlan } from '../../lib/offers';
 import { normalizeAppearance } from '../../lib/personalization';
 import {
@@ -39,7 +41,7 @@ export async function GET(req: Request) {
           // instr treats %, _ and quotes literally and keeps the search parameterized.
           return readPage(
             db(),
-            'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights FROM profiles',
+            'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights,client_access FROM profiles',
             "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0)",
             [query.search, query.search, query.search],
             cursor,
@@ -70,7 +72,13 @@ export async function GET(req: Request) {
       .bind(new Date().toISOString())
       .first();
     return json({
-      profiles: profiles.items.map((p: any) => ({ ...p, catalogRights: catalogRights(p) })),
+      profiles: profiles.items.map((p: any) => ({
+        ...p,
+        catalogRights: catalogRights(p),
+        clientAccess: readClientAccess(p),
+        clientSections: clientSections(p),
+        managementRevision: managementRevision(p),
+      })),
       orders: orders.items,
       audit: audit.items,
       stats,
@@ -194,7 +202,7 @@ export async function POST(req: Request) {
       const plan = renewal ? profile.plan : order.plan;
       const expires = annualExpiry(profile.expires, renewal && profile.state === 'active');
       const pro = renewal
-        ? capabilities(profile).appointments
+        ? profile.plan === 'Activite' || profile.pro_enabled
           ? 1
           : 0
         : plan === 'Activite'
@@ -240,17 +248,60 @@ export async function POST(req: Request) {
       if (b.state !== 'suspended' && !b.expires)
         return json({ error: 'Renseignez une échéance pour activer ce profil.' }, 400);
       const expires = b.expires ? new Date(b.expires + 'T23:59:59Z').toISOString() : null;
-      await db()
-        .prepare('UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=? WHERE id=?')
-        .bind(
-          b.state,
-          b.plan,
-          expires,
-          isPlatformPlan(b.plan) ? (b.plan === 'Activite' ? 1 : 0) : b.pro ? 1 : 0,
-          b.id,
-        )
-        .run();
-      await log(user.email, 'Profil : ' + b.state + ' / ' + b.plan, b.id);
+      if (b.clientAccess !== undefined) {
+        const current: any = await db()
+          .prepare('SELECT * FROM profiles WHERE id=?')
+          .bind(b.id)
+          .first();
+        if (!current)
+          return json({ error: 'Profil introuvable', errorAr: 'ما لقيناش الكارط.' }, 404);
+        if (!b.expectedSettings || b.expectedSettings !== managementRevision(current))
+          return json(
+            {
+              error: 'Les réglages de ce client ont changé. Rechargez avant d’enregistrer.',
+              errorAr: 'إعدادات الزبون تبدلات. عاود حمّل قبل التسجيل.',
+            },
+            409,
+          );
+        const result = await db()
+          .prepare(
+            'UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=?,client_access=? WHERE id=? AND client_access IS ? AND plan=? AND state=? AND expires IS ? AND pro_enabled=?',
+          )
+          .bind(
+            b.state,
+            b.plan,
+            expires,
+            isPlatformPlan(b.plan) ? (b.plan === 'Activite' ? 1 : 0) : b.pro ? 1 : 0,
+            b.clientAccess ? JSON.stringify(b.clientAccess) : null,
+            b.id,
+            current.client_access ?? null,
+            current.plan,
+            current.state,
+            current.expires,
+            current.pro_enabled,
+          )
+          .run();
+        if (!result.meta.changes)
+          return json(
+            {
+              error: 'Ces réglages ont changé. Rechargez la page.',
+              errorAr: 'الإعدادات تبدلات. عاود حمّل الصفحة.',
+            },
+            409,
+          );
+      } else {
+        await db()
+          .prepare('UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=? WHERE id=?')
+          .bind(
+            b.state,
+            b.plan,
+            expires,
+            isPlatformPlan(b.plan) ? (b.plan === 'Activite' ? 1 : 0) : b.pro ? 1 : 0,
+            b.id,
+          )
+          .run();
+      }
+      await log(user.email, 'Forfait et accès client : ' + b.state + ' / ' + b.plan, b.id);
       return json({ ok: true });
     }
     if (b.action === 'order') {

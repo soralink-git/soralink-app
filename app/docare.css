@@ -2380,3 +2380,90 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     margin: 0;
   }
 }
+
+/* Client administration: subscription, functional rights and workspace sections. */
+.admin-client-management {
+  margin-block: 18px 10px;
+}
+.admin-client-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  cursor: pointer;
+}
+.admin-client-summary > span:first-child {
+  flex: 1;
+  min-width: 160px;
+}
+.admin-client-summary small {
+  display: block;
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+}
+.admin-client-management form {
+  margin-top: 24px;
+}
+.admin-access-fieldset {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  min-width: 0;
+  padding: 18px;
+  margin-block: 20px;
+}
+.admin-access-fieldset legend {
+  font-weight: 700;
+  padding-inline: 8px;
+}
+.admin-access-fieldset .toggle {
+  align-items: center;
+  min-height: 44px;
+  gap: 12px;
+}
+.admin-access-fieldset input[type='checkbox'] {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  accent-color: var(--brand-orange);
+}
+.admin-access-fieldset small {
+  display: block;
+  color: var(--muted);
+}
+.admin-access-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 24px;
+}
+.admin-client-preview {
+  border-inline-start: 3px solid var(--brand-orange);
+  padding: 12px 16px;
+  margin-block: 18px;
+  background: var(--brand-tint);
+  border-radius: 8px;
+}
+.admin-client-preview p {
+  line-height: 1.8;
+  margin-block: 8px 0;
+}
+.admin-client-tools {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-inline-end: 8px;
+  margin-bottom: 10px;
+}
+@media (max-width: 700px) {
+  .admin-access-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-client-management .catalog-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .admin-client-summary {
+    gap: 10px;
+  }
+}
