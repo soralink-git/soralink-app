@@ -144,6 +144,10 @@ function adminRoute(DB, auth) {
             identity: async () => auth,
             json: (body, status = 200) => Response.json(body, { status }),
           };
+        if (name.endsWith('/client-access-config'))
+          return loadModule(path.resolve('app/lib/client-access-config.ts'));
+        if (name.endsWith('/client-access'))
+          return loadModule(path.resolve('app/lib/client-access.ts'));
         if (name.endsWith('/offers')) return loadModule(path.resolve('app/lib/offers.ts'));
         if (name.endsWith('/pagination')) return { readPage };
         if (name.endsWith('/personalization'))

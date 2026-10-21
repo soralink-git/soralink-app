@@ -383,3 +383,59 @@ for (const ar of [false, true]) {
     });
   }
 }
+
+for (const ar of [false, true]) {
+  test(`hidden sections cannot be opened through old dashboard addresses (${ar ? 'ar' : 'fr'})`, () => {
+    for (const tab of [
+      'profile',
+      'sections',
+      'content',
+      'catalogue',
+      'promotions',
+      'media',
+      'contacts',
+      'requests',
+      'schedule',
+      'share',
+    ]) {
+      const ctx = context(tab, ar);
+      ctx.subscription = {
+        plan: 'Activite',
+        client_access: {
+          sections: Object.fromEntries(
+            [
+              'coordinates',
+              'interface',
+              'actions',
+              'links',
+              'content',
+              'contacts',
+              'requests',
+              'schedule',
+              'share',
+            ].map((key) => [key, false]),
+          ),
+        },
+      };
+      const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: ctx }));
+      assert.match(html, ar ? /العرض والكارطات ديالي/ : /Mon offre et mes supports/);
+      assert.doesNotMatch(
+        html,
+        /class="card-edit-navigation"|class="catalog-product-list"|class="setup-launch"/,
+      );
+      const nav = html.match(/<nav class="workspace-navigation[^"]*"[^>]*>([\s\S]*?)<\/nav>/)[1];
+      assert.doesNotMatch(nav, /<button|<details/);
+    }
+  });
+  test(`the card navigation uses the first permitted editor when identity is hidden (${ar ? 'ar' : 'fr'})`, () => {
+    const ctx = context('coordinates', ar);
+    ctx.subscription = {
+      plan: 'Identite',
+      client_access: { sections: { coordinates: false, interface: false, actions: false } },
+    };
+    const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: ctx }));
+    assert.match(html, ar ? /مواقع التواصل والروابط/ : /Réseaux et liens/);
+    assert.doesNotMatch(html, /class="setup-launch"/);
+    assert.doesNotMatch(html, /Vos coordonnées et identité|Portrait, logo et couverture/);
+  });
+}

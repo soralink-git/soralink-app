@@ -1,3 +1,4 @@
+import { clientSectionAllowed, clientEditIssue } from '../../lib/client-access';
 import { capabilities, isPlatformPlan, offerPrice, RENEWAL_PRICE } from '../../lib/offers';
 import { clientDesignAllowed, designSettings } from '../../lib/card-design';
 import { replaceProfileLinks } from '../../lib/profile-links';
@@ -78,7 +79,10 @@ export async function GET(req: Request) {
       .bind(user.userId)
       .first();
     if (query.history) {
-      if (query.history !== 'orders' && !capabilities(p).activity)
+      if (
+        query.history !== 'orders' &&
+        !clientSectionAllowed(p, query.history === 'contacts' ? 'contacts' : 'requests')
+      )
         return json(
           {
             error: 'Le suivi nécessite le pack Suivi de mon activité.',
@@ -108,7 +112,7 @@ export async function GET(req: Request) {
     const histories = ['requests', 'contacts', 'orders'] as const;
     const pages = await Promise.all(
       histories.map((kind) =>
-        kind !== 'orders' && !capabilities(p).activity
+        kind !== 'orders' && !clientSectionAllowed(p, kind === 'contacts' ? 'contacts' : 'requests')
           ? Promise.resolve({ items: [], nextCursor: null })
           : readHistory(db(), user.userId, p?.id, kind),
       ),
@@ -291,7 +295,12 @@ export async function POST(req: Request) {
         .prepare('SELECT * FROM profiles WHERE owner=?')
         .bind(user.userId)
         .first();
-      if (!ownerProfile || !active(ownerProfile) || !capabilities(ownerProfile).activity)
+      if (
+        !ownerProfile ||
+        !active(ownerProfile) ||
+        !capabilities(ownerProfile).activity ||
+        !clientSectionAllowed(ownerProfile, b.action === 'deleteContact' ? 'contacts' : 'requests')
+      )
         return json(
           {
             error: 'Le suivi nécessite le pack Suivi de mon activité.',
@@ -364,6 +373,14 @@ export async function POST(req: Request) {
             catalogDocuments(b.data).length > rights.maxDocuments
             ? 400
             : 403,
+        );
+      if (clientEditIssue(p || { plan: 'Identite' }, b.data, old, !!b.published))
+        return json(
+          {
+            error: 'Une rubrique modifiée est désactivée par SoraLink. Rechargez votre espace.',
+            errorAr: 'شي قسم تبدّل وهو موقوف من طرف SoraLink. عاود حمّل الحساب.',
+          },
+          403,
         );
       const catalogueIssue = catalogueError(b.data.services, limit);
       if (catalogueIssue)

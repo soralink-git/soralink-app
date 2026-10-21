@@ -1,3 +1,4 @@
+import { readClientAccess } from './client-access-config';
 // Shared commercial rules. Historical accounts retain the rights sold with their offer.
 export const platformPlans = ['Identite', 'Catalogue', 'Activite'] as const;
 export const legacyPlans = ['Digital', 'Pack', 'Accompagnement', 'Pro'] as const;
@@ -41,13 +42,21 @@ export const offers = [
 export function isPlatformPlan(plan: unknown): plan is (typeof platformPlans)[number] {
   return platformPlans.includes(plan as any);
 }
-export function capabilities(profile?: { plan?: string; pro_enabled?: unknown } | null) {
+export function capabilities(
+  profile?: { plan?: string; pro_enabled?: unknown; client_access?: unknown } | null,
+) {
   const plan = profile?.plan;
   const legacy = legacyPlans.includes(plan as any);
+  const { modules } = readClientAccess(profile);
+  const activity = (plan === 'Activite' || legacy) && modules.activity !== false;
   return {
-    catalogue: plan === 'Catalogue' || plan === 'Activite' || legacy,
-    activity: plan === 'Activite' || legacy,
-    appointments: plan === 'Activite' || (legacy && !!profile?.pro_enabled),
+    catalogue:
+      (plan === 'Catalogue' || plan === 'Activite' || legacy) && modules.catalogue !== false,
+    activity,
+    appointments:
+      activity &&
+      (plan === 'Activite' || (legacy && !!profile?.pro_enabled)) &&
+      modules.appointments !== false,
     legacy,
   };
 }

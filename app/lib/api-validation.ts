@@ -1,3 +1,4 @@
+import { clientAccessSchema } from './client-access-config';
 import { acceptedPlans } from './offers';
 import { profileLinkKinds, profileLinkValue } from './profile-links';
 import {
@@ -338,6 +339,8 @@ export const adminActionSchema = z.discriminatedUnion('action', [
       'Date d’expiration invalide.',
     ),
     pro: z.boolean().default(false),
+    clientAccess: clientAccessSchema.nullable().optional(),
+    expectedSettings: z.string().max(5000).optional(),
   }),
   z.object({
     action: z.literal('order'),

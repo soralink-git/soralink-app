@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { clientSections, normalizeClientTab } from './lib/client-access';
 import SaveBar from './save-bar';
 import PinnedCardPreview from './pinned-card-preview';
 import type { SaveState } from './lib/save-queue';
@@ -168,12 +169,19 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     uploadCatalogue,
     uploadPromotion,
   } = context;
+  const visibleSections = clientSections(subscription);
+  const cardKeys = ['coordinates', 'interface', 'actions', 'links'];
+  const firstCardSection = cardKeys.find((key) => visibleSections.includes(key as any));
+  const canEdit = visibleSections.some((key) =>
+    ['coordinates', 'interface', 'actions', 'links', 'content', 'schedule'].includes(key),
+  );
+  const canSetup = cardKeys.every((key) => visibleSections.includes(key as any));
   const [setupOpen, setSetupOpen] = useState(false);
   const [setupDismissed, setSetupDismissed] = useState(false);
   useEffect(() => {
-    if (loaded && auth && !id && !setupDismissed) setSetupOpen(true);
-  }, [loaded, auth, id, setupDismissed]);
-  const showSetup = setupOpen || (loaded && auth && !id && !setupDismissed);
+    if (canSetup && loaded && auth && !id && !setupDismissed) setSetupOpen(true);
+  }, [loaded, auth, id, setupDismissed, canSetup]);
+  const showSetup = canSetup && (setupOpen || (loaded && auth && !id && !setupDismissed));
   const closeSetup = () => {
     setSetupOpen(false);
     setSetupDismissed(true);
@@ -194,31 +202,26 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     ['schedule', Clock, 'Mon agenda', 'الأجندة ديالي', 'clients'],
     ['share', Nfc, 'Partager ma carte', 'شارك الكارط ديالي', 'offer'],
     ['orders', FileText, 'Mon offre', 'العرض ديالي', 'offer'],
-  ].filter(
-    ([key]) =>
-      (key !== 'content' || rights.catalogue) &&
-      (!['contacts', 'requests', 'schedule'].includes(key as string) || rights.activity),
-  ) as Array<[string, LucideIcon, string, string, string]>;
-  const allowedTab = (next: string) =>
-    (!['content', 'catalogue', 'promotions', 'media'].includes(next) || rights.catalogue) &&
-    (!['contacts', 'requests', 'schedule'].includes(next) || rights.activity);
+  ].filter(([key]) => key === 'orders' || visibleSections.includes(key as any)) as Array<
+    [string, LucideIcon, string, string, string]
+  >;
+  const requestedTab = normalizeClientTab(tab);
+  const activeTab = tabs.some(([key]) => key === requestedTab)
+    ? requestedTab
+    : firstCardSection || tabs[0]?.[0] || 'orders';
   useEffect(() => {
-    if (!allowedTab(tab)) setTab('coordinates');
-  }, [tab, subscription?.plan]);
-  const activeTab =
-    tab === 'profile'
-      ? 'coordinates'
-      : tab === 'sections'
-        ? 'interface'
-        : tab === 'catalogue' || tab === 'promotions' || tab === 'media'
-          ? 'content'
-          : tab;
+    if (normalizeClientTab(tab) !== activeTab) setTab(activeTab);
+  }, [tab, activeTab]);
+  const primaryTabs = [
+    ...(firstCardSection ? [[firstCardSection, Users, 'Ma carte', 'الكارط ديالي', 'card']] : []),
+    ...tabs.filter(([key]) => ['content', 'share'].includes(key)),
+  ] as Array<[string, LucideIcon, string, string, string]>;
   const current = tabs.find(([key]) => key === activeTab) || tabs[0];
   return (
     <main className="workspace workspace-design">
       <aside>
         <h3>{t('Mon espace', 'الحساب ديالي')}</h3>
-        {auth && (
+        {auth && canSetup && (
           <button
             type="button"
             className="setup-launch"
@@ -230,35 +233,35 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           </button>
         )}
         <nav
-          className={'workspace-navigation' + (!rights.catalogue ? ' identity-navigation' : '')}
+          className={
+            'workspace-navigation' + (primaryTabs.length <= 2 ? ' identity-navigation' : '')
+          }
           aria-label={t('Rubriques de votre espace', 'أقسام الحساب ديالك')}
         >
-          {tabs
-            .filter(([key]) => ['coordinates', 'content', 'share'].includes(key))
-            .map(([key, Icon, fr, da]) => (
-              <button
-                key={key}
-                className={
-                  (
-                    key === 'coordinates'
-                      ? ['coordinates', 'interface', 'actions', 'links'].includes(activeTab)
-                      : activeTab === key
-                  )
-                    ? 'selected'
-                    : ''
-                }
-                onClick={() => navigate(key)}
-                aria-pressed={
-                  key === 'coordinates'
+          {primaryTabs.map(([key, Icon, fr, da]) => (
+            <button
+              key={key}
+              className={
+                (
+                  key === firstCardSection
                     ? ['coordinates', 'interface', 'actions', 'links'].includes(activeTab)
                     : activeTab === key
-                }
-              >
-                <Icon size={19} />
-                <span>{t(fr, da)}</span>
-              </button>
-            ))}
-          {rights.activity && (
+                )
+                  ? 'selected'
+                  : ''
+              }
+              onClick={() => navigate(key)}
+              aria-pressed={
+                key === firstCardSection
+                  ? ['coordinates', 'interface', 'actions', 'links'].includes(activeTab)
+                  : activeTab === key
+              }
+            >
+              <Icon size={19} />
+              <span>{t(fr, da)}</span>
+            </button>
+          ))}
+          {visibleSections.some((key) => ['contacts', 'requests', 'schedule'].includes(key)) && (
             <details
               className="workspace-secondary-nav"
               open={['contacts', 'requests', 'schedule', 'orders'].includes(activeTab)}
@@ -347,7 +350,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
             </p>
           </div>
         </div>
-        {auth && (
+        {auth && canEdit && (
           <SaveBar
             state={saveState}
             ar={ar}
@@ -409,20 +412,22 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         ['interface', 'Logo et modèle', 'اللوگو والستايل'],
                         ['actions', 'Coordonnées', 'معلومات التواصل'],
                         ['links', 'Réseaux et liens', 'مواقع التواصل والروابط'],
-                      ].map(([key, fr, da]) => (
-                        <button
-                          type="button"
-                          className={activeTab === key ? 'primary small' : 'secondary small'}
-                          key={key}
-                          aria-current={activeTab === key ? 'page' : undefined}
-                          onClick={() => navigate(key)}
-                        >
-                          {t(fr, da)}
-                        </button>
-                      ))}
+                      ]
+                        .filter(([key]) => visibleSections.includes(key as any))
+                        .map(([key, fr, da]) => (
+                          <button
+                            type="button"
+                            className={activeTab === key ? 'primary small' : 'secondary small'}
+                            key={key}
+                            aria-current={activeTab === key ? 'page' : undefined}
+                            onClick={() => navigate(key)}
+                          >
+                            {t(fr, da)}
+                          </button>
+                        ))}
                     </nav>
                   )}
-                  {(activeTab === 'coordinates' || tab === 'profile') && (
+                  {activeTab === 'coordinates' && (
                     <>
                       <section className="panel">
                         <div className="panel-title">
@@ -474,32 +479,28 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       )}
                     </section>
                   )}
-                  {rights.catalogue &&
-                    (activeTab === 'content' ||
-                      tab === 'catalogue' ||
-                      tab === 'promotions' ||
-                      tab === 'media') && (
-                      <>
-                        <CatalogEditor
-                          data={data}
-                          setData={setData}
-                          subscription={subscription}
-                          ar={ar}
-                          busy={busy}
-                          onMessage={setMsg}
-                          onBusyChange={setCatalogWorking}
-                          initialTab={
-                            tab === 'media'
+                  {rights.catalogue && activeTab === 'content' && (
+                    <>
+                      <CatalogEditor
+                        data={data}
+                        setData={setData}
+                        subscription={subscription}
+                        ar={ar}
+                        busy={busy}
+                        onMessage={setMsg}
+                        onBusyChange={setCatalogWorking}
+                        initialTab={
+                          tab === 'media'
+                            ? 'promotions'
+                            : tab === 'promotions'
                               ? 'promotions'
-                              : tab === 'promotions'
-                                ? 'promotions'
-                                : undefined
-                          }
-                          promotionsEditor={<CatalogOffersEditor context={context} />}
-                        />
-                      </>
-                    )}
-                  {(activeTab === 'interface' || tab === 'sections') && (
+                              : undefined
+                        }
+                        promotionsEditor={<CatalogOffersEditor context={context} />}
+                      />
+                    </>
+                  )}
+                  {activeTab === 'interface' && (
                     <>
                       <section className="panel">
                         <h2>{t('Logo et modèle de ma carte', 'اللوگو وستايل الكارط ديالي')}</h2>
@@ -624,7 +625,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </section>
                     </>
                   )}
-                  {rights.activity && tab === 'contacts' && (
+                  {rights.activity && activeTab === 'contacts' && (
                     <section className="panel">
                       <div className="panel-title">
                         <h2>{t('Mes contacts', 'الكونطاكت ديالي')}</h2>
@@ -737,7 +738,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       />
                     </section>
                   )}
-                  {rights.activity && tab === 'requests' && (
+                  {rights.activity && activeTab === 'requests' && (
                     <section className="panel">
                       <div className="panel-title">
                         <h2>{t('Demandes et rendez-vous', 'الطلبات والمواعيد')}</h2>
@@ -911,7 +912,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       />
                     </section>
                   )}
-                  {rights.activity && tab === 'schedule' && (
+                  {rights.activity && activeTab === 'schedule' && (
                     <section className="panel">
                       <h2>{t('Horaires et disponibilités', 'الأوقات والمواعيد')}</h2>
                       <p className="hint">
@@ -1100,7 +1101,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </p>
                     </section>
                   )}
-                  {tab === 'share' && (
+                  {activeTab === 'share' && (
                     <section className="panel">
                       <AddressEditor
                         current={publicName}
@@ -1208,7 +1209,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       )}
                     </section>
                   )}
-                  {tab === 'orders' && (
+                  {activeTab === 'orders' && (
                     <section className="panel">
                       <h2>{t('Mon offre et mes supports', 'العرض والكارطات ديالي')}</h2>
                       {subscription && (
