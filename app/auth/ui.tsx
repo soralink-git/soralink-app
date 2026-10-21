@@ -1,6 +1,6 @@
 'use client';
 import ThemeToggle from '../theme-toggle';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { REMEMBERED_EMAIL_KEY } from '../lib/idle-policy';
 import { workspacePath, selectedPlan, offerLabel } from '../lib/journey-links';
 import { Nfc, Globe, Mail, Lock, Eye, EyeOff, CheckCircle, ArrowLeft } from 'lucide-react';
@@ -27,6 +27,7 @@ export default function Auth({
     [savedEmail, setSavedEmail] = useState(''),
     [expired, setExpired] = useState(false);
   const offer = selectedPlan(initialOffer);
+  const passwordHintId = useId();
   const t = (f: string, a: string) => (ar ? a : f);
   useEffect(() => {
     document.documentElement.lang = ar ? 'ar' : 'fr';
@@ -41,6 +42,7 @@ export default function Auth({
     setExpired(new URLSearchParams(location.search).get('expired') === '1');
   }, []);
   function toggleLanguage() {
+    if (busy) return;
     const next = !ar;
     setAr(next);
     const url = new URL(location.href);
@@ -106,6 +108,7 @@ export default function Auth({
     }
   }
   function change(v: string) {
+    if (busy) return;
     setMode(v);
     setError('');
     setMessage('');
@@ -125,7 +128,7 @@ export default function Auth({
         </a>
         <div className="header-actions">
           <ThemeToggle ar={ar} />
-          <button className="language" onClick={toggleLanguage}>
+          <button className="language" disabled={busy} onClick={toggleLanguage}>
             <Globe size={17} />
             {ar ? 'Français' : 'العربية'}
           </button>
@@ -241,12 +244,17 @@ export default function Auth({
               <strong>{offerLabel(offer, ar)}</strong>
             </p>
           )}
-          <form key={mode} onSubmit={submit} autoComplete="on">
+          <form key={mode} onSubmit={submit} autoComplete="on" aria-busy={busy}>
             {mode !== 'password' && (
               <label className="field">
                 {t('Adresse e-mail', 'الإيميل')}
                 <input
                   type="email"
+                  inputMode="email"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  dir="ltr"
+                  disabled={busy}
                   name="email"
                   autoComplete={mode === 'login' ? 'username' : 'email'}
                   defaultValue={mode === 'login' ? savedEmail : undefined}
@@ -265,6 +273,8 @@ export default function Auth({
                     <input
                       type={visible ? 'text' : 'password'}
                       name="password"
+                      disabled={busy}
+                      aria-describedby={mode !== 'login' ? passwordHintId : undefined}
                       required
                       minLength={mode === 'login' ? 1 : 10}
                       maxLength={128}
@@ -273,6 +283,8 @@ export default function Auth({
                     <button
                       type="button"
                       onClick={() => setVisible(!visible)}
+                      disabled={busy}
+                      aria-pressed={visible}
                       aria-label={
                         visible
                           ? t('Masquer le mot de passe', 'خبّي كلمة السر')
@@ -284,11 +296,18 @@ export default function Auth({
                   </div>
                 </label>
                 {mode !== 'login' && (
+                  <p className="hint" id={passwordHintId}>
+                    {t('Au moins 10 caractères.', 'على الأقل 10 حروف ورموز.')}
+                  </p>
+                )}
+                {mode !== 'login' && (
                   <label className="field">
                     {t('Confirmer le mot de passe', 'عاود كلمة السر')}
                     <input
                       type={visible ? 'text' : 'password'}
                       name="confirm"
+                      disabled={busy}
+                      aria-describedby={passwordHintId}
                       required
                       minLength={10}
                       maxLength={128}
@@ -304,6 +323,7 @@ export default function Auth({
                   <input
                     type="checkbox"
                     checked={rememberEmail}
+                    disabled={busy}
                     onChange={(e) => {
                       setRememberEmail(e.target.checked);
                       if (!e.target.checked) {
@@ -324,7 +344,12 @@ export default function Auth({
                     'باش تحفظ كلمة السر، وافق على الاقتراح ديال المتصفح. كيسالي الدخول من بعد 15 دقيقة بلا استعمال.',
                   )}
                 </p>
-                <button type="button" className="text-button" onClick={() => change('reset')}>
+                <button
+                  type="button"
+                  className="text-button"
+                  disabled={busy}
+                  onClick={() => change('reset')}
+                >
                   {t('Mot de passe oublié ?', 'نسيت كلمة السر؟')}
                 </button>
               </>
@@ -346,19 +371,19 @@ export default function Auth({
               {mode === 'login' ? (
                 <>
                   {t('Pas encore de compte ?', 'ما عندكش حساب؟')}{' '}
-                  <button className="text-button" onClick={() => change('signup')}>
+                  <button className="text-button" disabled={busy} onClick={() => change('signup')}>
                     {t('Créer un compte', 'صايب حساب')}
                   </button>
                 </>
               ) : (
-                <button className="text-button" onClick={() => change('login')}>
+                <button className="text-button" disabled={busy} onClick={() => change('login')}>
                   {t('J’ai déjà un compte — Se connecter', 'عندي حساب — ندخل')}
                 </button>
               )}
             </div>
           )}
           {mode === 'signup' && (
-            <button className="text-button" onClick={() => change('resend')}>
+            <button className="text-button" disabled={busy} onClick={() => change('resend')}>
               {t('Renvoyer l’e-mail de confirmation', 'عاود سيفط إيميل التأكيد')}
             </button>
           )}

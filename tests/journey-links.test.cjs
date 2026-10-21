@@ -19,6 +19,24 @@ test('chosen offers and language survive authentication and unknown plans cannot
 const React = req('react'),
   { renderToStaticMarkup } = req('react-dom/server');
 const Auth = load(path.resolve('app/auth/ui.tsx')).default;
+test('signup associates password guidance with both fields and preserves browser credential support', () => {
+  for (const ar of [false, true]) {
+    const html = renderToStaticMarkup(
+      React.createElement(Auth, { initialMode: 'signup', initialArabic: ar }),
+    );
+    const password = html.match(/<input[^>]*name="password"[^>]*>/)[0];
+    const confirmation = html.match(/<input[^>]*name="confirm"[^>]*>/)[0];
+    const hint = password.match(/aria-describedby="([^"]+)"/)[1];
+    assert(confirmation.includes('aria-describedby="' + hint + '"'));
+    assert(html.includes('id="' + hint + '"'));
+    assert.match(html, /autoComplete="new-password"|autoComplete="new-password"/i);
+    assert.match(html, ar ? /على الأقل 10/ : /Au moins 10/);
+    assert.match(
+      html,
+      /inputMode="email"[^>]*autoCapitalize="none"[^>]*spellCheck="false"[^>]*dir="ltr"/i,
+    );
+  }
+});
 const LegalView = load(path.resolve('app/legal-view.tsx')).default;
 test('dedicated admin sign-in has no signup, card onboarding or selected offer', () => {
   for (const ar of [true, false]) {

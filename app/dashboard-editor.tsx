@@ -582,14 +582,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               }}
                             />
                             {data.avatar && (
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  gap: '8px',
-                                  alignItems: 'center',
-                                  marginTop: '6px',
-                                }}
-                              >
+                              <div className="image-action-row">
                                 <img
                                   src={data.avatar}
                                   alt=""
@@ -636,14 +629,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                               }}
                             />
                             {data.cover && (
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  gap: '8px',
-                                  alignItems: 'center',
-                                  marginTop: '6px',
-                                }}
-                              >
+                              <div className="image-action-row">
                                 <img
                                   src={data.cover}
                                   alt=""
@@ -1165,28 +1151,14 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         ar={ar}
                         disabled={!id || busy}
                       />
-                      <div className="impact-stats-grid">
-                        <div className="impact-stat-card">
-                          <span className="impact-stat-value">{contacts.length}</span>
-                          <span className="impact-stat-label">
-                            {t('Contacts collectés', 'جهات اتصال مستلمة')}
-                          </span>
-                        </div>
-                        <div className="impact-stat-card">
-                          <span className="impact-stat-value">{inbox.length}</span>
-                          <span className="impact-stat-label">
-                            {t('Demandes reçues', 'طلبات متوصل بها')}
-                          </span>
-                        </div>
-                        <div className="impact-stat-card">
-                          <span className="impact-stat-value">{published ? '100%' : '0%'}</span>
-                          <span className="impact-stat-label">
-                            {published
-                              ? t('Page en ligne', 'الصفحة منشورة')
-                              : t('Brouillon', 'مسودة')}
-                          </span>
-                        </div>
-                      </div>
+                      <p className="share-visibility" role="status">
+                        {t('Après enregistrement : ', 'من بعد التسجيل: ')}
+                        <strong>
+                          {published
+                            ? t('carte publique', 'الكارط عمومية')
+                            : t('carte privée', 'الكارط خاصة')}
+                        </strong>
+                      </p>
                       <h2>
                         {t(
                           'Une page. Plusieurs façons de la partager.',
@@ -1202,6 +1174,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                                 {t('Votre lien permanent', 'الرابط الدائم ديالك')}
                                 <input
                                   readOnly
+                                  dir="ltr"
+                                  onFocus={(event) => event.currentTarget.select()}
                                   value={
                                     typeof window !== 'undefined'
                                       ? location.origin + publicCardPath(id, publicName)
@@ -1235,6 +1209,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                                   className="secondary"
                                   href={publicCardPath(id, publicName)}
                                   target="_blank"
+                                  rel="noopener noreferrer"
                                 >
                                   {t('Ouvrir', 'فتح')}
                                   <ExternalLink size={15} />

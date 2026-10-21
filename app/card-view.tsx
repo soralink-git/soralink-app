@@ -227,6 +227,7 @@ export default function CardView({
               <div className="card-action-icons">
                 <button
                   className="card-button card-save"
+                  aria-label={t('Enregistrer le contact', 'سجّل الكونطاكت')}
                   onClick={() => {
                     const blob = new Blob(
                       [
@@ -249,22 +250,20 @@ export default function CardView({
                   }}
                 >
                   <Download size={22} />
-                  <span className="action-label">
-                    {t('Enregistrer le contact', 'سجّل الكونطاكت')}
-                  </span>
+                  <span className="action-label">{t('Enregistrer', 'تسجيل')}</span>
                 </button>
                 <button
                   className="exchange-button"
+                  aria-label={t('Partager cette carte', 'شارك هاد الكارط')}
                   onClick={() => void sharePublicCard(d, preview)}
                 >
                   <Share2 size={22} />
-                  <span className="action-label">
-                    {t('Partager cette carte', 'شارك هاد الكارط')}
-                  </span>
+                  <span className="action-label">{t('Partager', 'مشاركة')}</span>
                 </button>
                 {d.activity !== false && (
                   <button
                     className="exchange-button"
+                    aria-label={t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
                     onClick={() => {
                       if (preview || view === 'demo') {
                         setMsg(
@@ -279,9 +278,7 @@ export default function CardView({
                     }}
                   >
                     <Users size={22} />
-                    <span className="action-label">
-                      {t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
-                    </span>
+                    <span className="action-label">{t('Échanger', 'تبادل')}</span>
                   </button>
                 )}
               </div>
