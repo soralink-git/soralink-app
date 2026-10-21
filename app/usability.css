@@ -1,0 +1,84 @@
+/* Finishing pass shared by the public site, account forms and editors. */
+.image-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-block-start: 8px;
+  min-inline-size: 0;
+}
+.image-action-row > img {
+  flex-shrink: 0;
+}
+.image-action-row > button {
+  min-block-size: 44px;
+  max-inline-size: 100%;
+  white-space: normal;
+}
+.workspace-design .share-visibility {
+  padding: 12px 16px;
+  margin-block: 16px;
+  border-inline-start: 3px solid var(--brand-strong);
+  background: var(--brand-soft);
+  color: var(--ink);
+  line-height: 1.6;
+}
+.password-field > input {
+  padding-inline-end: 52px;
+}
+.password-field > button {
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  inset-inline-end: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.color-field {
+  min-inline-size: 0;
+}
+.color-field > div {
+  min-inline-size: 0;
+  flex-wrap: wrap;
+}
+@media (max-width: 700px) {
+  .site > header {
+    height: auto !important;
+    min-height: 80px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block: 12px;
+  }
+  .site > header .header-actions {
+    flex-wrap: wrap;
+    max-inline-size: 100%;
+  }
+  .site > header .header-actions :is(button, a, summary) {
+    min-height: 44px !important;
+    height: auto !important;
+  }
+  .site .field {
+    min-inline-size: 0;
+  }
+  .site .field :is(input, select, textarea),
+  .public-card-page :is(input, select, textarea) {
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    font-size: 16px;
+  }
+  .site footer a,
+  .public-legal a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+  }
+  .auth-layout {
+    margin-block: 24px;
+    gap: 20px;
+  }
+  .auth-intro h1 {
+    font-size: 28px;
+    line-height: 1.25;
+  }
+}

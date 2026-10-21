@@ -1406,27 +1406,20 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
     transition: none !important;
   }
 }
-/* Keep icon action names available to assistive technology. */
+/* Main card actions keep visible labels as well as their complete accessible names. */
 .card-design .card-action-icons .action-label {
   display: inline !important;
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
-}
-.card-design.card-layout-direct .card-action-icons > .card-save .action-label {
   position: static;
   width: auto;
   height: auto;
+  padding: 0;
   margin: 0;
   overflow: visible;
   clip-path: none;
   white-space: normal;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+  line-height: 1.4;
 }
 .landing .landing-price-features li,
 .landing .landing-price-features li strong,

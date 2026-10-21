@@ -56,7 +56,7 @@ export default function Customization({
       <div className="form-grid">
         {select('defaultLanguage', t('Langue par défaut de la carte', 'اللغة الافتراضية للكارط'), [
           ['fr', 'Français', 'الفرنسية'],
-          ['ar', 'العربية / الدارجة', 'العربية / الدارجة'],
+          ['ar', 'Arabe / darija', 'العربية / الدارجة'],
         ])}
         {select('cardTheme', t('Thème général de la carte', 'المظهر العام للكارط'), [
           ['light', 'Clair moderne', 'فاتح عصري'],
@@ -91,11 +91,16 @@ export default function Customization({
           ['filled', 'Plein', 'عامر'],
           ['outline', 'Contour', 'بالإطار'],
         ])}
-        <label className="field">
+        <div
+          className="field color-field"
+          role="group"
+          aria-label={t('Couleur du fond', 'لون الخلفية')}
+        >
           {t('Couleur du fond', 'لون الخلفية')}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
             <input
               type="color"
+              aria-label={t('Choisir : couleur du fond', 'اختار لون الخلفية')}
               style={{
                 flex: 1,
                 minWidth: '48px',
@@ -117,6 +122,9 @@ export default function Customization({
             />
             <input
               type="text"
+              dir="ltr"
+              spellCheck={false}
+              aria-label={t('Code couleur : fond', 'رمز اللون ديال الخلفية')}
               value={data.fondColor || ''}
               placeholder={
                 a.theme === 'dark'
@@ -143,12 +151,17 @@ export default function Customization({
               }}
             />
           </div>
-        </label>
-        <label className="field">
+        </div>
+        <div
+          className="field color-field"
+          role="group"
+          aria-label={t('Couleur des blocs', 'لون الكتل')}
+        >
           {t('Couleur des blocs', 'لون الكتل')}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
             <input
               type="color"
+              aria-label={t('Choisir : couleur des blocs', 'اختار لون الكتل')}
               style={{
                 flex: 1,
                 minWidth: '48px',
@@ -164,6 +177,9 @@ export default function Customization({
             />
             <input
               type="text"
+              dir="ltr"
+              spellCheck={false}
+              aria-label={t('Code couleur : blocs', 'رمز اللون ديال الكتل')}
               value={data.blockColor || ''}
               placeholder={a.theme === 'dark' ? '#151D28' : '#FFFFFF'}
               maxLength={7}
@@ -182,12 +198,17 @@ export default function Customization({
               }}
             />
           </div>
-        </label>
-        <label className="field">
+        </div>
+        <div
+          className="field color-field"
+          role="group"
+          aria-label={t('Couleur des boutons', 'لون الأزرار')}
+        >
           {t('Couleur des boutons', 'لون الأزرار')}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
             <input
               type="color"
+              aria-label={t('Choisir : couleur des boutons', 'اختار لون الأزرار')}
               style={{
                 flex: 1,
                 minWidth: '48px',
@@ -200,6 +221,9 @@ export default function Customization({
             />
             <input
               type="text"
+              dir="ltr"
+              spellCheck={false}
+              aria-label={t('Code couleur : boutons', 'رمز اللون ديال الأزرار')}
               value={data.buttonColor || ''}
               placeholder={a.theme === 'teal' ? '#00B5AD' : '#D5B66F'}
               maxLength={7}
@@ -218,12 +242,17 @@ export default function Customization({
               }}
             />
           </div>
-        </label>
-        <label className="field">
+        </div>
+        <div
+          className="field color-field"
+          role="group"
+          aria-label={t('Couleur du texte', 'لون الكتابة')}
+        >
           {t('Couleur du texte', 'لون الكتابة')}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
             <input
               type="color"
+              aria-label={t('Choisir : couleur du texte', 'اختار لون الكتابة')}
               style={{
                 flex: 1,
                 minWidth: '48px',
@@ -245,6 +274,9 @@ export default function Customization({
             />
             <input
               type="text"
+              dir="ltr"
+              spellCheck={false}
+              aria-label={t('Code couleur : texte', 'رمز اللون ديال الكتابة')}
               value={data.textColor || ''}
               placeholder={
                 a.theme === 'dark'
@@ -271,7 +303,7 @@ export default function Customization({
               }}
             />
           </div>
-        </label>
+        </div>
         <div style={{ gridColumn: '1 / -1', marginTop: '10px' }}>
           <div style={{ fontSize: '13px', fontWeight: 600, marginBottom: '6px', opacity: 0.85 }}>
             {t('Palettes recommandées', 'ألوان مقترحة')}
@@ -284,10 +316,30 @@ export default function Customization({
                 fond: BRAND.charcoal,
                 theme: 'dark',
               },
-              { label: 'Or Premium', color: '#d5b66f', fond: '#ffffff', theme: 'light' },
-              { label: 'Bleu Nuit', color: '#4f46e5', fond: '#0f172a', theme: 'dark' },
-              { label: 'Vert Émeraude', color: '#10b981', fond: '#ffffff', theme: 'light' },
-              { label: 'Sable Chaud', color: '#b45309', fond: '#fff8ec', theme: 'sand' },
+              {
+                label: t('Or premium', 'ذهبي راقي'),
+                color: '#d5b66f',
+                fond: '#ffffff',
+                theme: 'light',
+              },
+              {
+                label: t('Bleu nuit', 'أزرق ليلي'),
+                color: '#4f46e5',
+                fond: '#0f172a',
+                theme: 'dark',
+              },
+              {
+                label: t('Vert émeraude', 'أخضر زمردي'),
+                color: '#10b981',
+                fond: '#ffffff',
+                theme: 'light',
+              },
+              {
+                label: t('Sable chaud', 'رملي دافئ'),
+                color: '#b45309',
+                fond: '#fff8ec',
+                theme: 'sand',
+              },
             ].map((p) => (
               <button
                 key={p.label}

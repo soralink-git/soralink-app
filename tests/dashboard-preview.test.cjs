@@ -121,6 +121,16 @@ test('logo and cover controls are rendered in the Interface tab', () => {
   assert.match(html, /Image de couverture/);
   assert.match(html, /Portrait, logo et couverture/);
 });
+test('sharing shows the selected visibility instead of invented percentages and partial contact totals', () => {
+  for (const ar of [false, true]) {
+    const c = context('share', ar);
+    c.published = true;
+    const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
+    assert.match(html, /class="share-visibility" role="status"/);
+    assert.match(html, ar ? /من بعد التسجيل/ : /Après enregistrement/);
+    assert.doesNotMatch(html, /impact-stat|100%|Contacts collectés|جهات اتصال مستلمة/);
+  }
+});
 
 for (const ar of [false, true])
   test(`workspace groups and selected section render in ${ar ? 'Arabic' : 'French'}`, () => {
