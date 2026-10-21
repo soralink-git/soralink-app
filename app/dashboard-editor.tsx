@@ -14,6 +14,7 @@ import AddressEditor from './address-editor';
 import { publicCardPath } from './lib/public-address';
 import LoadMore from './load-more';
 import type { History, PageInfo } from './lib/pagination';
+import { capabilities, offers, RENEWAL_PRICE } from './lib/offers';
 import { offerLabel } from './lib/journey-links';
 import type { JSX, Dispatch, SetStateAction, RefObject } from 'react';
 import type { LucideIcon } from 'lucide-react';
@@ -181,6 +182,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     closeSetup();
     setTab(next);
   };
+  const rights = capabilities(subscription);
   const tabs = [
     ['interface', Palette, 'Logo et modèle', 'اللوگو والستايل', 'card'],
     ['coordinates', Users, 'Ma carte', 'الكارط ديالي', 'card'],
@@ -192,7 +194,17 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     ['schedule', Clock, 'Mon agenda', 'الأجندة ديالي', 'clients'],
     ['share', Nfc, 'Partager ma carte', 'شارك الكارط ديالي', 'offer'],
     ['orders', FileText, 'Mon offre', 'العرض ديالي', 'offer'],
-  ] satisfies Array<[string, LucideIcon, string, string, string]>;
+  ].filter(
+    ([key]) =>
+      (key !== 'content' || rights.catalogue) &&
+      (!['contacts', 'requests', 'schedule'].includes(key as string) || rights.activity),
+  ) as Array<[string, LucideIcon, string, string, string]>;
+  const allowedTab = (next: string) =>
+    (!['content', 'catalogue', 'promotions', 'media'].includes(next) || rights.catalogue) &&
+    (!['contacts', 'requests', 'schedule'].includes(next) || rights.activity);
+  useEffect(() => {
+    if (!allowedTab(tab)) setTab('coordinates');
+  }, [tab, subscription?.plan]);
   const activeTab =
     tab === 'profile'
       ? 'coordinates'
@@ -218,7 +230,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           </button>
         )}
         <nav
-          className="workspace-navigation"
+          className={'workspace-navigation' + (!rights.catalogue ? ' identity-navigation' : '')}
           aria-label={t('Rubriques de votre espace', 'أقسام الحساب ديالك')}
         >
           {tabs
@@ -246,36 +258,51 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 <span>{t(fr, da)}</span>
               </button>
             ))}
-          <details
-            className="workspace-secondary-nav"
-            open={['contacts', 'requests', 'schedule', 'orders'].includes(activeTab)}
-          >
-            <summary>
-              {t('Suivi de mon activité', 'تتبّع النشاط ديالي')}
-              {inbox.some((r) => r.status === 'new') && (
-                <span className="nav-count">{inbox.filter((r) => r.status === 'new').length}</span>
-              )}
-            </summary>
-            {tabs
-              .filter(([key]) => ['contacts', 'requests', 'schedule', 'orders'].includes(key))
-              .map(([key, Icon, fr, da]) => (
-                <button
-                  key={key}
-                  className={activeTab === key ? 'selected' : ''}
-                  onClick={() => navigate(key)}
-                  aria-pressed={activeTab === key}
-                >
-                  <Icon size={19} />
-                  <span>{t(fr, da)}</span>
-                  {key === 'requests' && inbox.some((r) => r.status === 'new') && (
-                    <span className="nav-count">
-                      {inbox.filter((r) => r.status === 'new').length}
-                    </span>
-                  )}
-                </button>
-              ))}
-          </details>
+          {rights.activity && (
+            <details
+              className="workspace-secondary-nav"
+              open={['contacts', 'requests', 'schedule', 'orders'].includes(activeTab)}
+            >
+              <summary>
+                {t('Suivi de mon activité', 'تتبّع النشاط ديالي')}
+                {inbox.some((r) => r.status === 'new') && (
+                  <span className="nav-count">
+                    {inbox.filter((r) => r.status === 'new').length}
+                  </span>
+                )}
+              </summary>
+              {tabs
+                .filter(([key]) => ['contacts', 'requests', 'schedule'].includes(key))
+                .map(([key, Icon, fr, da]) => (
+                  <button
+                    key={key}
+                    className={activeTab === key ? 'selected' : ''}
+                    onClick={() => navigate(key)}
+                    aria-pressed={activeTab === key}
+                  >
+                    <Icon size={19} />
+                    <span>{t(fr, da)}</span>
+                    {key === 'requests' && inbox.some((r) => r.status === 'new') && (
+                      <span className="nav-count">
+                        {inbox.filter((r) => r.status === 'new').length}
+                      </span>
+                    )}
+                  </button>
+                ))}
+            </details>
+          )}
         </nav>
+        <button
+          className={
+            'secondary small full workspace-offer-link' +
+            (activeTab === 'orders' ? ' selected' : '')
+          }
+          aria-pressed={activeTab === 'orders'}
+          onClick={() => navigate('orders')}
+        >
+          <FileText size={19} />
+          <span>{t('Mon offre', 'العرض ديالي')}</span>
+        </button>
         {auth && (
           <button className="sidebar-logout" onClick={logout}>
             <LogOut size={16} />
@@ -447,30 +474,31 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       )}
                     </section>
                   )}
-                  {(activeTab === 'content' ||
-                    tab === 'catalogue' ||
-                    tab === 'promotions' ||
-                    tab === 'media') && (
-                    <>
-                      <CatalogEditor
-                        data={data}
-                        setData={setData}
-                        subscription={subscription}
-                        ar={ar}
-                        busy={busy}
-                        onMessage={setMsg}
-                        onBusyChange={setCatalogWorking}
-                        initialTab={
-                          tab === 'media'
-                            ? 'promotions'
-                            : tab === 'promotions'
+                  {rights.catalogue &&
+                    (activeTab === 'content' ||
+                      tab === 'catalogue' ||
+                      tab === 'promotions' ||
+                      tab === 'media') && (
+                      <>
+                        <CatalogEditor
+                          data={data}
+                          setData={setData}
+                          subscription={subscription}
+                          ar={ar}
+                          busy={busy}
+                          onMessage={setMsg}
+                          onBusyChange={setCatalogWorking}
+                          initialTab={
+                            tab === 'media'
                               ? 'promotions'
-                              : undefined
-                        }
-                        promotionsEditor={<CatalogOffersEditor context={context} />}
-                      />
-                    </>
-                  )}
+                              : tab === 'promotions'
+                                ? 'promotions'
+                                : undefined
+                          }
+                          promotionsEditor={<CatalogOffersEditor context={context} />}
+                        />
+                      </>
+                    )}
                   {(activeTab === 'interface' || tab === 'sections') && (
                     <>
                       <section className="panel">
@@ -596,7 +624,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </section>
                     </>
                   )}
-                  {tab === 'contacts' && (
+                  {rights.activity && tab === 'contacts' && (
                     <section className="panel">
                       <div className="panel-title">
                         <h2>{t('Mes contacts', 'الكونطاكت ديالي')}</h2>
@@ -709,7 +737,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       />
                     </section>
                   )}
-                  {tab === 'requests' && (
+                  {rights.activity && tab === 'requests' && (
                     <section className="panel">
                       <div className="panel-title">
                         <h2>{t('Demandes et rendez-vous', 'الطلبات والمواعيد')}</h2>
@@ -731,9 +759,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </div>
                       <span className="badge">
                         {data.pro
-                          ? t('Pro Rendez-vous actif', 'خيار المواعيد مفعّل')
+                          ? t('Rendez-vous actifs', 'خيار المواعيد مفعّل')
                           : t(
-                              'Option Pro à activer par SoraLink',
+                              'Rendez-vous à activer par SoraLink',
                               'خاص SoraLink يفعّل خيار المواعيد',
                             )}
                       </span>
@@ -883,7 +911,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       />
                     </section>
                   )}
-                  {tab === 'schedule' && (
+                  {rights.activity && tab === 'schedule' && (
                     <section className="panel">
                       <h2>{t('Horaires et disponibilités', 'الأوقات والمواعيد')}</h2>
                       <p className="hint">
@@ -1066,8 +1094,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </button>
                       <p className="hint">
                         {t(
-                          'L’option Pro doit être activée par SoraLink pour afficher les créneaux au public.',
-                          'خاص SoraLink يفعّل Pro باش يبان الوقت للزوار.',
+                          'Le pack Suivi de mon activité doit être activé par SoraLink pour afficher les créneaux au public.',
+                          'خاص SoraLink يفعّل باقة تتبّع النشاط باش تبان الأوقات للزوار.',
                         )}
                       </p>
                     </section>
@@ -1212,13 +1240,41 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           'الطلبات كتتسجّل للتتبع. ما كاين حتى أداء هنا.',
                         )}
                       </p>
+                      <p className="hint">
+                        {t(
+                          'Première année incluse. Ensuite 149 DH/an avec toutes les fonctions du pack conservées. Carte NFC physique en supplément.',
+                          'العام الأول داخل فالثمن. من بعد 149 درهم فالعام مع جميع وظائف الباقة. كارط NFC المادية بزيادة.',
+                        )}
+                      </p>
+                      {subscription && (
+                        <button
+                          className="primary"
+                          disabled={busy}
+                          onClick={async () => {
+                            try {
+                              await action({
+                                action: 'order',
+                                plan: subscription.plan,
+                                kind: 'renewal',
+                              });
+                              await load();
+                              setMsg(
+                                t(
+                                  'Demande de renouvellement enregistrée. Paiement à confirmer.',
+                                  'تسجّل طلب التجديد. خاص تأكيد الأداء.',
+                                ),
+                              );
+                            } catch (e: any) {
+                              setMsg(e.message);
+                            }
+                          }}
+                        >
+                          {t('Renouveler mon pack', 'جدّد الباقة ديالي')} · {RENEWAL_PRICE}{' '}
+                          {t('DH/an', 'درهم فالعام')}
+                        </button>
+                      )}
                       <div className="order-options">
-                        {[
-                          ['Digital', 149],
-                          ['Pack', 349],
-                          ['Accompagnement', 549],
-                          ['Pro', 250],
-                        ].map(([n, p]) => (
+                        {offers.map(({ id: n, price: p }) => (
                           <button
                             key={n}
                             className="secondary"
@@ -1247,7 +1303,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </div>
                       {orders.map((o) => (
                         <div className="request" key={o.id}>
-                          <strong>{offerLabel(o.plan, ar)}</strong>
+                          <strong>
+                            {o.kind === 'renewal' ? t('Renouvellement · ', 'تجديد · ') : ''}
+                            {offerLabel(o.plan, ar)}
+                            {o.amount != null ? ` · ${o.amount} ${t('DH', 'درهم')}` : ''}
+                          </strong>
                           <span className="badge">
                             {t(
                               (
@@ -1291,8 +1351,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         <Phone />
                         <p>
                           {t(
-                            'Contact : contact@soralink.link. Paiement manuel après confirmation. Les coordonnées bancaires et frais de livraison restent à compléter.',
-                            'معلومات التواصل التجاري، التحويل والتوصيل غادي يتزادو قبل الإطلاق.',
+                            'Contact : contact@soralink.link. Paiement manuel après confirmation. Les frais de livraison sont précisés avant commande.',
+                            'تواصل معنا: contact@soralink.link. الأداء يدوي بعد التأكيد. مصاريف التوصيل كتتحدّد قبل الطلب.',
                           )}
                         </p>
                       </div>
@@ -1306,7 +1366,24 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 <span className="eyebrow">{t('APERÇU EN DIRECT', 'معاينة مباشرة')}</span>
                 <span className="preview-live-dot" aria-hidden="true" />
               </div>
-              <Card d={data} preview withSections />
+              <Card
+                d={{
+                  ...data,
+                  activity: rights.activity,
+                  pro: rights.appointments,
+                  ...(!rights.catalogue
+                    ? {
+                        services: [],
+                        promotions: [],
+                        catalogDocuments: [],
+                        pdf: '',
+                        catalogSettings: { ...data.catalogSettings, enabled: false },
+                      }
+                    : {}),
+                }}
+                preview
+                withSections
+              />
               <details className="preview-qr">
                 <summary>{t('Voir le QR de ma carte', 'شوف رمز QR ديال الكارط')}</summary>
                 <CardQR id={id} publicName={publicName} logo={data.avatar} ar={ar} />

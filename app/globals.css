@@ -5631,3 +5631,57 @@ header nav {
     padding-block: 8px;
   }
 }
+
+/* Commercial offers share the same layout on the home and offer page. */
+.single-action-offer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px;
+  margin-top: 28px;
+  background: var(--brand-surface, #ffffff);
+}
+.single-action-offer h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.single-action-offer p,
+.offer-terms {
+  line-height: 1.7;
+  color: var(--muted);
+}
+.single-action-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.offer-terms {
+  margin: 24px 0;
+  font-size: 14px;
+}
+.landing-price-grid {
+  align-items: stretch;
+}
+.landing-price-grid .pricing-card > a {
+  margin-top: auto;
+}
+.landing-price-grid .pricing-card.featured {
+  border-color: #ff9125;
+}
+@media (max-width: 700px) {
+  .single-action-offer {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 20px;
+  }
+  .single-action-price {
+    width: 100%;
+  }
+  .single-action-price a {
+    width: 100%;
+  }
+}

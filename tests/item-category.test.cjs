@@ -15,7 +15,7 @@ const initial = {
   services: [{ id: 'article', name: 'Article', nameFr: 'Article', price: '25' }],
   catalogCategories: [],
 };
-const rights = catalogRights({ state: 'trial' });
+const rights = catalogRights({ plan: 'Digital', state: 'trial' });
 test('creating a category from an article assigns it atomically and keeps valid saved data', () => {
   const out = saveItemCategory(initial, 'article', 'Fr', '  Cadeaux  ', '', 'gifts');
   assert.equal(out.catalogCategories[0].nameFr, 'Cadeaux');

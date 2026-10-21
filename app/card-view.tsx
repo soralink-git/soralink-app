@@ -262,28 +262,30 @@ export default function CardView({
                     {t('Partager cette carte', 'شارك هاد الكارط')}
                   </span>
                 </button>
-                <button
-                  className="exchange-button"
-                  onClick={() => {
-                    if (preview || view === 'demo') {
-                      setMsg(
-                        t(
-                          'Aperçu : le formulaire sera disponible sur votre carte publique.',
-                          'معاينة: الفورميلير غادي يخدم فالصفحة العمومية ديالك.',
-                        ),
-                      );
-                      return;
-                    }
-                    onRequest('contact');
-                  }}
-                >
-                  <Users size={22} />
-                  <span className="action-label">
-                    {t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
-                  </span>
-                </button>
+                {d.activity !== false && (
+                  <button
+                    className="exchange-button"
+                    onClick={() => {
+                      if (preview || view === 'demo') {
+                        setMsg(
+                          t(
+                            'Aperçu : le formulaire sera disponible sur votre carte publique.',
+                            'معاينة: الفورميلير غادي يخدم فالصفحة العمومية ديالك.',
+                          ),
+                        );
+                        return;
+                      }
+                      onRequest('contact');
+                    }}
+                  >
+                    <Users size={22} />
+                    <span className="action-label">
+                      {t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
+                    </span>
+                  </button>
+                )}
               </div>
-              {!d.pro && (
+              {d.activity !== false && !d.pro && (
                 <button
                   className="card-button card-request"
                   onClick={() => {

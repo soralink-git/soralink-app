@@ -174,6 +174,7 @@ beforeEach(() => {
     authUser: { email_confirmed_at: '2026-01-01' },
     profile: {
       id: 'public-card',
+      plan: 'Digital',
       owner: 'other',
       published: 1,
       state: 'active',

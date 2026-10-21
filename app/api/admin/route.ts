@@ -1,3 +1,4 @@
+import { annualExpiry, capabilities, isPlatformPlan } from '../../lib/offers';
 import { normalizeAppearance } from '../../lib/personalization';
 import {
   adoptLegacy,
@@ -149,13 +150,105 @@ export async function POST(req: Request) {
       await log(user.email, 'Droits des produits et services', b.id);
       return json({ ok: true });
     }
+    if (b.action === 'activateOrder') {
+      const order: any = await db().prepare('SELECT * FROM orders WHERE id=?').bind(b.id).first();
+      if (!order || order.status !== 'paid' || order.applied)
+        return json(
+          {
+            error: 'Confirmez le paiement. Une commande ne peut être activée qu’une fois.',
+            errorAr: 'أكّد الأداء. الطلب كيتفعّل غير مرة وحدة.',
+          },
+          409,
+        );
+      const profile: any = await db()
+        .prepare('SELECT * FROM profiles WHERE owner=?')
+        .bind(order.owner)
+        .first();
+      if (!profile)
+        return json(
+          {
+            error: 'Le client doit d’abord enregistrer sa carte.',
+            errorAr: 'خاص الزبون يسجّل الكارط ديالو الأول.',
+          },
+          409,
+        );
+      const renewal = order.kind === 'renewal';
+      if (!renewal && !isPlatformPlan(order.plan))
+        return json(
+          {
+            error: 'Cette ancienne commande doit être traitée depuis la fiche client.',
+            errorAr: 'هاد الطلب القديم خاصو يتعالج من ملف الزبون.',
+          },
+          409,
+        );
+      // A renewal cannot silently change tiers after an intervening upgrade.
+      if (renewal && order.plan !== profile.plan)
+        return json(
+          {
+            error:
+              'Le pack du client a changé. Annulez cette demande et créez un nouveau renouvellement.',
+            errorAr: 'الباقة تبدلات. لغي هاد الطلب وصايب تجديد جديد.',
+          },
+          409,
+        );
+      const plan = renewal ? profile.plan : order.plan;
+      const expires = annualExpiry(profile.expires, renewal && profile.state === 'active');
+      const pro = renewal
+        ? capabilities(profile).appointments
+          ? 1
+          : 0
+        : plan === 'Activite'
+          ? 1
+          : 0;
+      const stamp = crypto.randomUUID();
+      const result = await db().batch([
+        db()
+          .prepare(
+            "UPDATE orders SET applied=? WHERE id=? AND status='paid' AND applied IS NULL AND EXISTS(SELECT 1 FROM profiles WHERE id=? AND plan=? AND expires IS ? AND state=? AND pro_enabled=?) RETURNING id",
+          )
+          .bind(
+            stamp,
+            order.id,
+            profile.id,
+            profile.plan,
+            profile.expires,
+            profile.state,
+            profile.pro_enabled,
+          ),
+        db()
+          .prepare(
+            "UPDATE profiles SET state='active',plan=?,expires=?,pro_enabled=? WHERE id=? AND EXISTS(SELECT 1 FROM orders WHERE id=? AND applied=?)",
+          )
+          .bind(plan, expires, pro, profile.id, order.id, stamp),
+      ]);
+      if (!result[0].results.length)
+        return json(
+          {
+            error: 'Cette commande ou ce compte a changé. Rechargez la page.',
+            errorAr: 'الطلب ولا الحساب تبدّل. عاود حمّل الصفحة.',
+          },
+          409,
+        );
+      await log(
+        user.email,
+        renewal ? 'Renouvellement annuel 149 DH' : 'Activation du pack ' + plan,
+        profile.id,
+      );
+      return json({ ok: true, plan, expires });
+    }
     if (b.action === 'profile') {
       if (b.state !== 'suspended' && !b.expires)
         return json({ error: 'Renseignez une échéance pour activer ce profil.' }, 400);
       const expires = b.expires ? new Date(b.expires + 'T23:59:59Z').toISOString() : null;
       await db()
         .prepare('UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=? WHERE id=?')
-        .bind(b.state, b.plan, expires, b.pro ? 1 : 0, b.id)
+        .bind(
+          b.state,
+          b.plan,
+          expires,
+          isPlatformPlan(b.plan) ? (b.plan === 'Activite' ? 1 : 0) : b.pro ? 1 : 0,
+          b.id,
+        )
         .run();
       await log(user.email, 'Profil : ' + b.state + ' / ' + b.plan, b.id);
       return json({ ok: true });

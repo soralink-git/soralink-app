@@ -21,18 +21,16 @@ for (const ar of [false, true])
     );
     assert.doesNotMatch(html, /LE PLUS CHOISI|Le plus populaire|الأكثر طلباً/);
     assert.match(html, /class="landing-quick-benefits"/);
-    assert.match(html, /class="landing-more"/);
+    assert.match(html, /class="single-action-offer"/);
     assert.doesNotMatch(html, /<details[^>]*\bopen/);
-    for (const price of ['149', '349', '549']) assert.match(html, new RegExp(price + '<small>'));
-    assert.match(
-      html,
-      ar ? /التجديد فالعام الموالي: 149/ : /Renouvellement l’année suivante : 149/,
-    );
+    for (const price of ['99', '149', '249', '499'])
+      assert.match(html, new RegExp(price + '<small>'));
+    assert.match(html, ar ? /من بعد 149 درهم فالعام/ : /Puis 149 DH\/an/);
     assert.match(
       html,
       ar
-        ? /\/auth\?mode=signup&amp;lang=ar&amp;offer=Digital/
-        : /\/auth\?mode=signup&amp;offer=Digital/,
+        ? /\/auth\?mode=signup&amp;lang=ar&amp;offer=Identite/
+        : /\/auth\?mode=signup&amp;offer=Identite/,
     );
     assert.match(html, /https:\/\/wa.me\/212661446664/);
     const heroActions = html.match(/<div class="landing-actions">([\s\S]*?)<\/div>/)[1];
@@ -62,7 +60,7 @@ test('home shows the supplied brand visual without embedding the interactive car
 });
 test('connected visitor keeps offer selection in the workspace and the same two hero actions', () => {
   const html = render(false, true);
-  assert.match(html, /href="\/\?app=1&amp;offer=Digital&amp;tab=orders"/);
+  assert.match(html, /href="\/\?app=1&amp;offer=Identite&amp;tab=orders"/);
   assert.match(html, /Commander sur WhatsApp/);
 });
 test('public support addresses consistently use the branded contact email', () => {

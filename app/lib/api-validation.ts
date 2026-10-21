@@ -1,3 +1,4 @@
+import { acceptedPlans } from './offers';
 import { profileLinkKinds, profileLinkValue } from './profile-links';
 import {
   catalogDocumentSchema,
@@ -284,7 +285,8 @@ export const dataActionSchema = z
     }),
     z.object({
       action: z.literal('order'),
-      plan: z.enum(['Digital', 'Pack', 'Accompagnement', 'Pro']),
+      plan: z.enum(acceptedPlans),
+      kind: z.enum(['purchase', 'renewal']).default('purchase'),
     }),
     z.object({
       action: z.literal('status'),
@@ -321,6 +323,7 @@ export const adminDesignSchema = profileDataSchema
   .extend({ template: text(80).optional() })
   .strict();
 export const adminActionSchema = z.discriminatedUnion('action', [
+  z.object({ action: z.literal('activateOrder'), id }),
   z
     .object({ action: z.literal('design'), id, revision: text(64), settings: adminDesignSchema })
     .strict(),
@@ -329,7 +332,7 @@ export const adminActionSchema = z.discriminatedUnion('action', [
     action: z.literal('profile'),
     id,
     state: z.enum(['active', 'trial', 'suspended']),
-    plan: z.enum(['Digital', 'Pack', 'Accompagnement']),
+    plan: z.enum(acceptedPlans),
     expires: formText(10).refine(
       (v) => !v || calendarDate.safeParse(v).success,
       'Date d’expiration invalide.',
@@ -376,7 +379,7 @@ export const authActionSchema = z
   .and(
     z.object({
       lang: z.enum(['fr', 'ar']).default('fr'),
-      offer: z.enum(['Digital', 'Pack', 'Accompagnement', 'Pro']).optional(),
+      offer: z.enum(acceptedPlans).optional(),
     }),
   );
 export const dataQuerySchema = z

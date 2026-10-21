@@ -44,8 +44,10 @@ const socialFields = ['instagram', 'facebook', 'linkedin', 'tiktok', 'youtube', 
 export function publicCardData(
   saved: any,
   pro: boolean,
-  rights: CatalogRights = catalogRights({ state: 'active' }),
+  rights: CatalogRights = catalogRights({ state: 'active', plan: 'Digital' }),
+  features = { activity: true, appointments: pro },
 ) {
+  pro = features.appointments;
   const d = normalizeAppearance(saved),
     out: Record<string, any> = {};
   for (const key of textFields) out[key] = typeof d[key] === 'string' ? d[key] : '';
@@ -74,6 +76,7 @@ export function publicCardData(
   ])
     out[key] = d[key];
   out.pro = pro;
+  out.activity = features.activity;
   out.defaultLanguage = d.defaultLanguage === 'ar' || d.lang === 'ar' ? 'ar' : 'fr';
   out.services = normalizeCatalogue(d.services).filter((item) => item.name);
   out.catalogSettings = {

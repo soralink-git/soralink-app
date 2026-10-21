@@ -1,3 +1,4 @@
+import { capabilities } from './offers';
 import { catalogRights } from './catalog-menu';
 import { notFound } from 'next/navigation';
 import PublicCardView from '../public-card-view';
@@ -30,6 +31,7 @@ export async function publicProfileMetadata(key: ProfileKey) {
         JSON.parse(profile.data),
         !!profile.pro_enabled,
         catalogRights(profile),
+        capabilities(profile),
       );
       const title =
         String(d.business || d.name || 'Carte professionnelle').slice(0, 120) + ' — SoraLink';
@@ -91,6 +93,7 @@ export async function publicProfilePage(key: ProfileKey, lang?: string) {
         JSON.parse(profile.data),
         !!profile.pro_enabled,
         catalogRights(profile),
+        capabilities(profile),
       );
       initialError = '';
     }

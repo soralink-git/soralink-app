@@ -1,3 +1,4 @@
+import { verifyOffers } from './verify-offers.mjs';
 import { verifyCatalogMenu } from './verify-catalog-menu.mjs';
 import assert from 'node:assert/strict';
 import path from 'node:path';
@@ -366,6 +367,11 @@ try {
   assert(Date.parse(trial.expires) > Date.now());
   assert(Date.parse(trial.expires) < Date.now() + 15 * 86400000);
 
+  assert.equal(
+    (await db.prepare('SELECT plan FROM profiles WHERE id=?').bind(cardId).first()).plan,
+    'Identite',
+  );
+  await db.prepare("UPDATE profiles SET plan='Digital' WHERE id=?").bind(cardId).run();
   const catalogue40 = Array.from({ length: 40 }, (_, i) => ({
     id: 'item-' + i,
     name: 'Article ' + (i + 1),
@@ -591,7 +597,7 @@ try {
     auth: true,
     id: otherId,
     data: { action: 'deleteContact', id: inbox.contacts[0].id },
-    status: 404,
+    status: 403,
   });
   const now = new Date(Date.now() + 2 * 86400000);
   const date = now.toISOString().slice(0, 10);
@@ -666,9 +672,7 @@ try {
   assert.equal(seen.size, 106);
   await request('/api/data?history=requests', { status: 401 });
   await request('/api/data?history=requests&cursor=invalid', { auth: true, status: 400 });
-  const otherHistory = (await request('/api/data?history=requests', { auth: true, id: otherId }))
-    .json;
-  assert.equal(otherHistory.items.length, 0);
+  await request('/api/data?history=requests', { auth: true, id: otherId, status: 403 });
   await request('/api/admin', { auth: true, status: 403 });
   const hiddenForm = new FormData();
   hiddenForm.set('file', new File([photo], 'hidden.png', { type: 'image/png' }));
@@ -817,6 +821,8 @@ try {
     'Automatic save latest',
   );
   saveQueue.stop();
+
+  await verifyOffers({ db, request, cardId, adminId, otherId });
 
   // Server idle enforcement: reading/polling never extends the deadline.
   const appId = tokenHash(appTokens.get(userId));

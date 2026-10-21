@@ -1,3 +1,4 @@
+import { capabilities } from '../../lib/offers';
 import { db, json, active } from '../../lib/server';
 import { catalogRights, catalogEnabled } from '../../lib/catalog-menu';
 import { catalogOrderSchema, catalogOrderMessage } from '../../lib/catalog-order';
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
         { error: 'Les commandes WhatsApp sont désactivées.', errorAr: 'طلبات واتساب غير مفعلة.' },
         403,
       );
-    const data = publicCardData(saved, !!profile.pro_enabled, rights),
+    const data = publicCardData(saved, !!profile.pro_enabled, rights, capabilities(profile)),
       phone = whatsappNumber(data.whatsapp);
     if (!phone) return json({ error: 'WhatsApp indisponible', errorAr: 'واتساب غير متوفر' }, 403);
     try {

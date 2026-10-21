@@ -39,6 +39,7 @@ function context(tab, ar = false) {
     id: 'public-card',
     inbox: [],
     orders: [],
+    subscription: { plan: 'Digital', state: 'active', pro_enabled: demoCard.pro ? 1 : 0 },
     contacts: [],
     notifications: [],
     promoToday: '2026-10-12',
@@ -355,3 +356,30 @@ for (const ar of [false, true])
     assert.match(html, ar ? /متوفر/ : /Disponible/);
     assert.match(html, /catalog-settings/);
   });
+
+for (const ar of [false, true]) {
+  for (const plan of ['Identite', 'Catalogue', 'Activite']) {
+    test(`dashboard navigation matches ${plan} (${ar ? 'ar' : 'fr'}) and rejects forbidden content rendering`, () => {
+      const ctx = context('coordinates', ar);
+      ctx.subscription = { plan };
+      const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: ctx }));
+      const nav = html.match(/<nav class="workspace-navigation[^"]*"[^>]*>([\s\S]*?)<\/nav>/)[1];
+      assert.equal(
+        nav.includes(ar ? 'المنتجات والخدمات' : 'Produits et services'),
+        plan !== 'Identite',
+      );
+      assert.equal(
+        nav.includes(ar ? 'تتبّع النشاط ديالي' : 'Suivi de mon activité'),
+        plan === 'Activite',
+      );
+      assert(nav.includes(ar ? 'شارك الكارط ديالي' : 'Partager ma carte'));
+      if (plan === 'Identite') {
+        ctx.tab = 'content';
+        const forbidden = renderToStaticMarkup(
+          React.createElement(DashboardEditor, { context: ctx }),
+        );
+        assert.doesNotMatch(forbidden, /catalog-editor|catalog-product-list/);
+      }
+    });
+  }
+}

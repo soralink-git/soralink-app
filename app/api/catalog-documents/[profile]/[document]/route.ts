@@ -1,3 +1,4 @@
+import { capabilities } from '../../../../lib/offers';
 import { db, identity, active, json } from '../../../../lib/server';
 import { catalogDocuments, catalogRights } from '../../../../lib/catalog-menu';
 import { publicCardData } from '../../../../lib/public-card';
@@ -13,9 +14,9 @@ export async function GET(
     const rights = catalogRights(p);
     let doc =
       p.published && active(p)
-        ? catalogDocuments(publicCardData(JSON.parse(p.data), !!p.pro_enabled, rights)).find(
-            (d) => d.id === document,
-          )
+        ? catalogDocuments(
+            publicCardData(JSON.parse(p.data), !!p.pro_enabled, rights, capabilities(p)),
+          ).find((d) => d.id === document)
         : undefined;
     if (!doc) {
       const { user } = await identity();

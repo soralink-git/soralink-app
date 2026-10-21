@@ -1,4 +1,5 @@
 'use client';
+import { platformPlans, isPlatformPlan } from '../lib/offers';
 import ThemeToggle from '../theme-toggle';
 import AdminDesignEditor from '../admin-design-editor';
 import CatalogRightsEditor from '../catalog-rights-editor';
@@ -332,11 +333,13 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                         <label className="field">
                           {t('Offre', 'العرض')}
                           <select name="plan" defaultValue={p.plan}>
-                            {['Digital', 'Pack', 'Accompagnement'].map((v) => (
-                              <option key={v} value={v}>
-                                {offerLabel(v, ar)}
-                              </option>
-                            ))}
+                            {[...platformPlans, ...(!isPlatformPlan(p.plan) ? [p.plan] : [])].map(
+                              (v) => (
+                                <option key={v} value={v}>
+                                  {offerLabel(v, ar)}
+                                </option>
+                              ),
+                            )}
                           </select>
                         </label>
                         <label className="field">
@@ -347,15 +350,17 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                             defaultValue={p.expires?.slice(0, 10) || ''}
                           />
                         </label>
-                        <label className="toggle">
-                          <input name="pro" type="checkbox" defaultChecked={!!p.pro_enabled} />
-                          {t('Option Rendez-vous', 'خيار المواعيد')}
-                        </label>
+                        {!isPlatformPlan(p.plan) && (
+                          <label className="toggle">
+                            <input name="pro" type="checkbox" defaultChecked={!!p.pro_enabled} />
+                            {t('Rendez-vous · ancien forfait', 'المواعيد · باقة قديمة')}
+                          </label>
+                        )}
                       </div>
                       <p className="hint">
                         {t(
-                          'Validez le paiement séparément dans Commandes, puis activez l’offre et son échéance ici.',
-                          'أكّد الأداء فقسم الطلبات ومن بعد فعّل العرض والأجل ديالو هنا.',
+                          'Dans Commandes, confirmez le paiement puis utilisez Activer ou renouveler. Les rendez-vous sont inclus dans le pack Suivi de mon activité.',
+                          'فالتسيير ديال الطلبات، أكّد الأداء ومن بعد فعّل ولا جدّد. المواعيد داخلة فباقة تتبّع النشاط.',
                         )}
                       </p>
                       <button className="primary" disabled={busy}>
@@ -419,7 +424,11 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                 {data.orders.map((o: any) => (
                   <article className="request" key={o.id}>
                     <div>
-                      <span className="eyebrow">{offerLabel(o.plan, ar)}</span>
+                      <span className="eyebrow">
+                        {o.kind === 'renewal' ? t('Renouvellement · ', 'تجديد · ') : ''}
+                        {offerLabel(o.plan, ar)}
+                        {o.amount != null ? ` · ${o.amount} ${t('DH', 'درهم')}` : ''}
+                      </span>
                       <h3>
                         {o.data ? JSON.parse(o.data).name : t('Client sans carte', 'زبون بلا كارط')}
                       </h3>
@@ -428,6 +437,20 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                         {o.created.slice(0, 10)} · {o.id.slice(0, 8)}
                       </p>
                     </div>
+                    {o.applied ? (
+                      <span className="badge">{t('Abonnement activé', 'الاشتراك مفعّل')}</span>
+                    ) : (
+                      o.status === 'paid' &&
+                      (isPlatformPlan(o.plan) || o.kind === 'renewal') && (
+                        <button
+                          className="primary"
+                          disabled={busy}
+                          onClick={() => save({ action: 'activateOrder', id: o.id })}
+                        >
+                          {t('Activer ou renouveler · 12 mois', 'فعّل ولا جدّد · 12 شهر')}
+                        </button>
+                      )
+                    )}
                     <label className="field">
                       {t('Statut', 'الحالة')}
                       <select

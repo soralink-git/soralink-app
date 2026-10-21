@@ -33,17 +33,20 @@ const doc = {
   visible: true,
   allowDownload: true,
 };
-const rights = menu.catalogRights({ state: 'active' });
+const rights = menu.catalogRights({ plan: 'Digital', state: 'active' });
 test('trial and paid defaults allow forty products with bounded admin overrides', () => {
   assert.equal(rights.maxProducts, 40);
-  assert.equal(menu.catalogRights({ state: 'trial' }).maxProducts, 40);
+  assert.equal(menu.catalogRights({ plan: 'Digital', state: 'trial' }).maxProducts, 40);
   assert.equal(rights.pdfMB, 25);
   assert.equal(rights.pdfPages, 100);
   assert.equal(rights.maxDocuments, 3);
   assert.equal(menu.catalogRightsSchema.safeParse({ ...rights, maxProducts: 201 }).success, false);
   assert.equal(menu.catalogRightsSchema.safeParse({ ...rights, pdfPages: 101 }).success, false);
   assert.equal(
-    menu.catalogRights({ catalog_rights: JSON.stringify({ ...rights, enabled: false }) }).enabled,
+    menu.catalogRights({
+      plan: 'Digital',
+      catalog_rights: JSON.stringify({ ...rights, enabled: false }),
+    }).enabled,
     false,
   );
 });
@@ -206,12 +209,15 @@ test('owner can add an empty product draft, type either language, and partially 
 
 test('malformed stored administrator rights fail closed while a missing override uses the plan', () => {
   for (const raw of ['bad json', '{}', JSON.stringify({ ...rights, maxProducts: 9999 })]) {
-    const effective = menu.catalogRights({ state: 'active', catalog_rights: raw });
+    const effective = menu.catalogRights({ plan: 'Digital', state: 'active', catalog_rights: raw });
     assert.equal(effective.enabled, false);
     assert.equal(effective.pdf, false);
     assert.equal(effective.products, false);
   }
-  assert.equal(menu.catalogRights({ state: 'active', catalog_rights: null }).enabled, true);
+  assert.equal(
+    menu.catalogRights({ plan: 'Digital', state: 'active', catalog_rights: null }).enabled,
+    true,
+  );
 });
 
 test('integrated media respect catalogue visibility and cannot be changed when admin disables the module', () => {

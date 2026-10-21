@@ -1,3 +1,4 @@
+import { capabilities, isPlatformPlan, offerPrice, RENEWAL_PRICE } from '../../lib/offers';
 import { clientDesignAllowed, designSettings } from '../../lib/card-design';
 import { replaceProfileLinks } from '../../lib/profile-links';
 import {
@@ -59,7 +60,12 @@ export async function GET(req: Request) {
         .bind(id)
         .first();
       if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
-      const d = publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p));
+      const d = publicCardData(
+        JSON.parse(p.data),
+        !!capabilities(p).appointments,
+        catalogRights(p),
+        capabilities(p),
+      );
       return json({
         id: p.id,
         publicName: await currentPublicName(db(), p.id),
@@ -72,6 +78,14 @@ export async function GET(req: Request) {
       .bind(user.userId)
       .first();
     if (query.history) {
+      if (query.history !== 'orders' && !capabilities(p).activity)
+        return json(
+          {
+            error: 'Le suivi nécessite le pack Suivi de mon activité.',
+            errorAr: 'التتبّع خاصو باقة تتبّع النشاط.',
+          },
+          403,
+        );
       const page = await readHistory(db(), user.userId, p?.id, query.history, query.cursor);
       return json({
         items: page.items,
@@ -87,12 +101,17 @@ export async function GET(req: Request) {
       p.catalogRights = catalogRights(p);
       await db().prepare('UPDATE profiles SET email=? WHERE id=?').bind(user.email, p.id).run();
       const d = JSON.parse(p.data);
-      d.pro = !!p.pro_enabled;
+      d.pro = capabilities(p).appointments;
+      d.activity = capabilities(p).activity;
       p.data = JSON.stringify(d);
     }
     const histories = ['requests', 'contacts', 'orders'] as const;
     const pages = await Promise.all(
-      histories.map((kind) => readHistory(db(), user.userId, p?.id, kind)),
+      histories.map((kind) =>
+        kind !== 'orders' && !capabilities(p).activity
+          ? Promise.resolve({ items: [], nextCursor: null })
+          : readHistory(db(), user.userId, p?.id, kind),
+      ),
     );
     const [inbox, contacts, orders] = pages;
     const notifications = await requestNotifications(db(), p?.id, inbox.items as { id: string }[]);
@@ -130,6 +149,14 @@ export async function POST(req: Request) {
         .bind(b.profile)
         .first();
       if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
+      if (!capabilities(p).activity)
+        return json(
+          {
+            error: 'Les demandes nécessitent le pack Suivi de mon activité.',
+            errorAr: 'الطلبات خاصها باقة تتبّع النشاط.',
+          },
+          403,
+        );
       let sourceCardId = '';
       if (b.shareCard === true) {
         if (b.kind !== 'contact') return json({ error: 'Type de partage invalide' }, 400);
@@ -163,7 +190,12 @@ export async function POST(req: Request) {
         if (!['commande', 'devis'].includes(b.kind))
           return json({ error: 'Type de demande invalide' }, 400);
         const catalogueData = JSON.parse(p.data);
-        const publishedCatalog = publicCardData(catalogueData, !!p.pro_enabled, catalogRights(p));
+        const publishedCatalog = publicCardData(
+          catalogueData,
+          !!capabilities(p).appointments,
+          catalogRights(p),
+          capabilities(p),
+        );
         const item = catalogueSelection(publishedCatalog.services, b.catalogueId);
         if (!item || normalizeAppearance(catalogueData).hiddenSections.includes('services'))
           return json({ error: 'Cet article n’est plus disponible. Actualisez la carte.' }, 409);
@@ -185,7 +217,7 @@ export async function POST(req: Request) {
       if (b.kind === 'rdv') {
         if (normalizeAppearance(JSON.parse(p.data)).hiddenSections.includes('appointments'))
           return json({ error: 'Rendez-vous indisponibles' }, 403);
-        if (!p.pro_enabled) return json({ error: 'Option Pro non active' }, 403);
+        if (!capabilities(p).appointments) return json({ error: 'Option Pro non active' }, 403);
         const d = normalizeSchedule(JSON.parse(p.data));
         const s = d.appointmentServices[Number(b.service || 0)];
         if (!s) return json({ error: 'Prestation invalide' }, 400);
@@ -254,6 +286,20 @@ export async function POST(req: Request) {
       return json({ ok: true });
     }
     if (!user) return json({ error: 'Connexion requise' }, 401);
+    if (['manual', 'status', 'deleteContact'].includes(b.action)) {
+      const ownerProfile: any = await db()
+        .prepare('SELECT * FROM profiles WHERE owner=?')
+        .bind(user.userId)
+        .first();
+      if (!ownerProfile || !active(ownerProfile) || !capabilities(ownerProfile).activity)
+        return json(
+          {
+            error: 'Le suivi nécessite le pack Suivi de mon activité.',
+            errorAr: 'التتبّع خاصو باقة تتبّع النشاط.',
+          },
+          403,
+        );
+    }
     if (b.action === 'deleteContact') {
       const result = await db()
         .prepare(
@@ -293,7 +339,7 @@ export async function POST(req: Request) {
           },
           403,
         );
-      const rights = catalogRights(p);
+      const rights = catalogRights(p || { plan: 'Identite' });
       const limit = Math.max(
         rights.maxProducts,
         normalizeCatalogue(p ? JSON.parse(p.data).services : []).length,
@@ -335,7 +381,8 @@ export async function POST(req: Request) {
       d = normalizeAppearance(normalizeSchedule(d));
       d.recordedVideo = recordedVideoUrl(d.recordedVideo);
       d.promotions = normalizePromotions(d.promotions);
-      d.pro = !!p?.pro_enabled;
+      d.pro = capabilities(p).appointments;
+      d.activity = capabilities(p).activity;
       d.services = normalizeCatalogue(d.services);
       d.catalogDocuments = catalogDocuments(d);
       d.pdf = '';
@@ -434,7 +481,8 @@ export async function POST(req: Request) {
         .prepare('SELECT * FROM profiles WHERE owner=?')
         .bind(user.userId)
         .first();
-      if (!p || !active(p) || !p.pro_enabled) return json({ error: 'Option Pro inactive' }, 403);
+      if (!p || !active(p) || !capabilities(p).appointments)
+        return json({ error: 'Option Pro inactive' }, 403);
       const d = normalizeSchedule(JSON.parse(p.data));
       const service = d.appointmentServices[Number(b.service || 0)];
       if (!service) return json({ error: 'Prestation invalide' }, 400);
@@ -502,16 +550,67 @@ export async function POST(req: Request) {
       return json({ ok: true });
     }
     if (b.action === 'order') {
-      const existing = await db()
-        .prepare("SELECT id FROM orders WHERE owner=? AND plan=? AND status='pending'")
-        .bind(user.userId, b.plan)
+      const profile: any = await db()
+        .prepare('SELECT * FROM profiles WHERE owner=?')
+        .bind(user.userId)
         .first();
-      if (existing) return json({ error: 'Une demande pour cette offre est déjà en attente' }, 409);
+      if (!profile)
+        return json(
+          {
+            error: 'Enregistrez votre carte avant de demander une offre.',
+            errorAr: 'سجّل الكارط قبل طلب العرض.',
+          },
+          409,
+        );
+      const renewal = b.kind === 'renewal';
+      const plan = renewal ? profile.plan : b.plan;
+      if (!renewal && !isPlatformPlan(plan))
+        return json(
+          { error: 'Choisissez une offre actuelle.', errorAr: 'اختار باقة من العروض الحالية.' },
+          400,
+        );
+      if (
+        renewal &&
+        ![...['Identite', 'Catalogue', 'Activite', 'Digital', 'Pack', 'Accompagnement']].includes(
+          plan,
+        )
+      )
+        return json(
+          {
+            error: 'Contactez l’assistance pour ce renouvellement.',
+            errorAr: 'تواصل مع المساعدة باش تجدّد.',
+          },
+          400,
+        );
+      const kind = renewal ? 'renewal' : 'purchase';
+      const existing = await db()
+        .prepare("SELECT id FROM orders WHERE owner=? AND plan=? AND kind=? AND status='pending'")
+        .bind(user.userId, plan, kind)
+        .first();
+      if (existing)
+        return json(
+          {
+            error: 'Une demande pour cette offre est déjà en attente',
+            errorAr: 'كاين طلب فانتظار التأكيد لهاد الباقة.',
+          },
+          409,
+        );
+      const amount = renewal ? RENEWAL_PRICE : offerPrice(plan);
       await db()
-        .prepare('INSERT INTO orders(id,owner,plan,status,created) VALUES(?,?,?,?,?)')
-        .bind(crypto.randomUUID(), user.userId, b.plan, 'pending', new Date().toISOString())
+        .prepare(
+          'INSERT INTO orders(id,owner,plan,status,created,kind,amount) VALUES(?,?,?,?,?,?,?)',
+        )
+        .bind(
+          crypto.randomUUID(),
+          user.userId,
+          plan,
+          'pending',
+          new Date().toISOString(),
+          kind,
+          amount,
+        )
         .run();
-      return json({ ok: true });
+      return json({ ok: true, plan, kind, amount });
     }
     if (b.action === 'status') {
       const r: any = await db()
@@ -542,7 +641,8 @@ export async function POST(req: Request) {
           .prepare('SELECT * FROM profiles WHERE id=?')
           .bind(r.profile)
           .first();
-        if (!active(p) || !p.pro_enabled) return json({ error: 'Option Pro inactive' }, 403);
+        if (!active(p) || !capabilities(p).appointments)
+          return json({ error: 'Option Pro inactive' }, 403);
         if (r.status === 'confirmed') return json({ ok: true });
         const busy = await db()
           .prepare('SELECT slot FROM bookings WHERE profile=? AND slot LIKE ?')

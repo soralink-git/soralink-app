@@ -161,7 +161,7 @@ export async function saveProfileWithMedia(
     : '1=1';
   const save = db()
     .prepare(
-      'INSERT INTO profiles(id,owner,data,published,updated,email,expires) SELECT ?,?,?,?,?,?,? WHERE ' +
+      "INSERT INTO profiles(id,owner,data,published,updated,email,expires,plan) SELECT ?,?,?,?,?,?,?,'Identite' WHERE " +
         valid +
         ' ON CONFLICT(owner) DO UPDATE SET data=excluded.data,published=excluded.published,updated=excluded.updated,email=excluded.email,expires=COALESCE(profiles.expires,excluded.expires) WHERE profiles.updated=? AND profiles.data=? AND profiles.published=? RETURNING id',
     )
