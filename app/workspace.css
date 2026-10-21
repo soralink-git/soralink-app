@@ -17,6 +17,35 @@
 .workspace-design :is(.workspace-intro, .hint) {
   max-inline-size: 65ch;
 }
+.workspace-design .catalog-list-tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 12px;
+  align-items: start;
+  margin-block: 20px 12px;
+  padding-block: 16px;
+  border-block: 1px solid var(--line);
+}
+.workspace-design .catalog-list-tools .field {
+  margin: 0;
+}
+.workspace-design .catalog-list-count {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.workspace-design .catalog-product-form {
+  scroll-margin-block-start: 24px;
+}
+.workspace-design .catalog-item-menu > summary {
+  min-inline-size: 44px;
+  min-block-size: 44px;
+  display: grid;
+  place-items: center;
+}
+.workspace-design .catalog-list-tools .text-button {
+  min-block-size: 44px;
+  text-align: start;
+}
 @media (max-width: 1100px) {
   .workspace-design.workspace {
     gap: 20px;
