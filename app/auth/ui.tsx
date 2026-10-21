@@ -273,6 +273,7 @@ export default function Auth({
                     <input
                       type={visible ? 'text' : 'password'}
                       name="password"
+                      aria-label={t('Mot de passe', 'كلمة السر')}
                       disabled={busy}
                       aria-describedby={mode !== 'login' ? passwordHintId : undefined}
                       required
