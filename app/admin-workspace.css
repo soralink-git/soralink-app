@@ -1,0 +1,178 @@
+/* Administrative tools share the SoraLink palette without changing public cards. */
+.admin-workspace .admin-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-inline-size: 0;
+  flex-wrap: wrap;
+}
+.admin-workspace > main {
+  max-inline-size: 1200px;
+}
+.admin-workspace .admin-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.admin-workspace .admin-tabs button {
+  min-inline-size: 0;
+  min-block-size: 44px;
+  padding: 10px 8px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.admin-client-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  margin-block: 20px;
+}
+.admin-client-search .field {
+  margin: 0;
+}
+.admin-client-card {
+  padding: 20px;
+  margin-block: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--brand-surface);
+  min-inline-size: 0;
+}
+.admin-client-card > .admin-client-management {
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.admin-client-summary > span:first-child {
+  min-inline-size: 0;
+  flex: 1 1 200px;
+  overflow-wrap: anywhere;
+}
+.admin-client-summary::after {
+  content: '';
+  inline-size: 9px;
+  block-size: 9px;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+.admin-client-management[open] > summary::after {
+  transform: rotate(225deg);
+}
+.admin-client-open-label {
+  font-size: 14px;
+  color: var(--brand-strong);
+}
+.admin-client-advanced {
+  margin-block: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px 12px;
+}
+.admin-client-advanced > summary {
+  cursor: pointer;
+  padding-block: 12px;
+  min-block-size: 44px;
+  font-weight: 600;
+}
+.admin-client-card > .catalog-rights {
+  margin-block-end: 0;
+  box-shadow: none;
+}
+.admin-workspace :is(.form-grid, .field) {
+  min-inline-size: 0;
+  align-content: start;
+}
+.admin-workspace .form-grid {
+  align-items: start;
+}
+.admin-workspace .field :is(input, select, textarea) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.admin-workspace .request > div {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+.admin-workspace .hint {
+  max-inline-size: 65ch;
+  line-height: 1.6;
+}
+@media (max-width: 700px) {
+  .admin-workspace.site > header {
+    height: auto !important;
+    min-height: 80px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block: 16px;
+  }
+  .admin-workspace .header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    max-inline-size: 100%;
+  }
+  .admin-workspace .header-actions :is(button, a) {
+    min-block-size: 44px;
+  }
+  .admin-workspace .admin-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-block: 20px;
+  }
+  .admin-workspace .admin-stats .panel {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 12px 8px;
+    min-inline-size: 0;
+    text-align: center;
+  }
+  .admin-workspace .admin-stats b {
+    font-size: 26px;
+    line-height: 1.2;
+  }
+  .admin-workspace .admin-stats span {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .admin-workspace .admin-stats svg {
+    inline-size: 20px;
+    block-size: 20px;
+  }
+  .admin-client-card {
+    padding: 16px;
+  }
+  .admin-client-summary > span:first-child {
+    flex-basis: 100%;
+  }
+  .admin-workspace .form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .admin-workspace .field :is(input, select, textarea) {
+    font-size: 16px;
+    min-block-size: 44px;
+  }
+  .admin-workspace :is(button, a.secondary, summary) {
+    min-block-size: 44px;
+  }
+  .admin-workspace .request {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .admin-workspace .request > .field {
+    flex: 1 1 100%;
+  }
+  .admin-access-fieldset {
+    padding: 12px;
+  }
+}
+@media (max-width: 360px) {
+  .admin-client-search {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

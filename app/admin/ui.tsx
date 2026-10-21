@@ -155,9 +155,9 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
     }
   }
   return (
-    <div className="site" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="site admin-workspace" dir={ar ? 'rtl' : 'ltr'}>
       <header>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div className="admin-brand-group">
           <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
             <span className="brand-icon">
               <Nfc />
@@ -213,7 +213,11 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
             'تسيير المنصة · ولوج مستقل على كارطات واشتراكات الزبناء.',
           )}
         </p>
-        {error && <div className="notice">{error}</div>}
+        {error && (
+          <div className="notice" role="alert">
+            {error}
+          </div>
+        )}
         {!checked ? (
           <div className="empty session-loading" role="status">
             <span className="session-loading-dot" aria-hidden="true" />
@@ -252,7 +256,10 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                 <span>{t('Échéances dépassées', 'الاشتراكات اللي سالات')}</span>
               </div>
             </div>
-            <div className="row admin-tabs">
+            <nav
+              className="row admin-tabs"
+              aria-label={t('Rubriques de l’administration', 'أقسام الإدارة')}
+            >
               {[
                 ['clients', t('Clients', 'الزبناء')],
                 ['orders', t('Commandes', 'الطلبات')],
@@ -261,6 +268,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                 <button
                   className={tab === v ? 'primary' : 'secondary'}
                   key={v}
+                  aria-pressed={tab === v}
                   onClick={() => {
                     if (leaveDesign()) setTab(v);
                   }}
@@ -268,10 +276,11 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                   {l}
                 </button>
               ))}
-            </div>
+            </nav>
             {tab === 'clients' && (
               <>
                 <form
+                  className="admin-client-search"
                   onSubmit={(event) => {
                     event.preventDefault();
                     if (leaveDesign()) void load({ search });
@@ -291,7 +300,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                   </button>
                 </form>
                 {data.profiles.map((p: any) => (
-                  <div key={p.id}>
+                  <article className="admin-client-card" key={p.id}>
                     <AdminClientEditor
                       key={p.id + managementRevision(p)}
                       profile={p}
@@ -311,16 +320,15 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                     </div>
                     <button
                       type="button"
-                      className="secondary"
+                      className="secondary small"
                       disabled={busy}
+                      aria-expanded={designId === p.id}
                       onClick={() => {
-                        if (designId !== p.id && leaveDesign()) setDesignId(p.id);
+                        if (designId === p.id) leaveDesign();
+                        else if (leaveDesign()) setDesignId(p.id);
                       }}
                     >
-                      {t(
-                        'Carte publique : présentation et sections',
-                        'الكارط العمومية: المظهر والأقسام',
-                      )}
+                      {t('Mise en page de la carte', 'تنسيق الكارط')}
                     </button>
                     {designId === p.id && (
                       <AdminDesignEditor
@@ -355,15 +363,15 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                       busy={busy}
                       onSave={save}
                     />
-                  </div>
+                  </article>
                 ))}
                 {!data.profiles.length && (
                   <div className="empty">
                     {data.search
                       ? t('Aucun résultat pour cette recherche.', 'ما لقينا حتى نتيجة لهاد البحث.')
                       : t(
-                          'Aucun client. Créez votre première carte dans Mon espace.',
-                          'ما كاين حتى زبون. صايب أول كارط فالحساب ديالك.',
+                          'Les comptes clients apparaîtront ici après leur inscription.',
+                          'حسابات الزبناء غادي تبان هنا من بعد التسجيل.',
                         )}
                   </div>
                 )}
