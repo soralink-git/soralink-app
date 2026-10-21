@@ -55,8 +55,8 @@
   content: '';
   inline-size: 9px;
   block-size: 9px;
-  border-inline-end: 2px solid currentColor;
-  border-block-end: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
   transform: rotate(45deg);
   flex-shrink: 0;
 }
