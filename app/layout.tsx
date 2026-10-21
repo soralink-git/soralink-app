@@ -4,6 +4,7 @@ import './globals.css';
 import './interface.css';
 import './landing.css';
 import './docare.css';
+import './workspace.css';
 import { AppearanceProvider } from './theme-toggle';
 import NavigationProgress from './navigation-progress';
 import IdleSession from './idle-session';

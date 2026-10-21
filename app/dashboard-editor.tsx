@@ -217,10 +217,67 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     ...tabs.filter(([key]) => ['content', 'share'].includes(key)),
   ] as Array<[string, LucideIcon, string, string, string]>;
   const current = tabs.find(([key]) => key === activeTab) || tabs[0];
+  const cardLabels: Record<string, [string, string]> = {
+    coordinates: ['Identité', 'الهوية'],
+    interface: ['Logo et modèle', 'اللوگو والستايل'],
+    actions: ['Coordonnées', 'معلومات التواصل'],
+    links: ['Réseaux et liens', 'مواقع التواصل والروابط'],
+  };
+  const introductions: Record<string, [string, string]> = {
+    coordinates: ['Présentez-vous en quelques mots.', 'عرّف براسك بكلمات قليلة.'],
+    interface: [
+      'Choisissez les images et le style de votre carte.',
+      'اختار التصاور والستايل ديال الكارط.',
+    ],
+    actions: ['Ajoutez les moyens de vous contacter.', 'زيد الطرق باش يتواصلو معاك.'],
+    links: ['Rassemblez vos réseaux sociaux et vos liens.', 'جمع مواقع التواصل والروابط ديالك.'],
+    content: ['Ajoutez vos produits, services et offres.', 'زيد المنتجات والخدمات والعروض ديالك.'],
+    contacts: [
+      'Retrouvez les personnes qui vous ont laissé leurs coordonnées.',
+      'لقى الناس اللي خلاو ليك معلومات التواصل ديالهم.',
+    ],
+    requests: [
+      'Consultez les demandes reçues et répondez à vos clients.',
+      'شوف الطلبات اللي وصلوك وجاوب الزبناء ديالك.',
+    ],
+    schedule: [
+      'Définissez vos horaires et vos disponibilités.',
+      'حدّد الأوقات والمواعيد المتاحة ديالك.',
+    ],
+    share: ['Partagez votre lien ou votre code QR.', 'شارك الرابط ولا رمز الكارط ديالك.'],
+    orders: ['Consultez votre forfait et son renouvellement.', 'شوف العرض ديالك والتجديد ديالو.'],
+  };
   return (
     <main className="workspace workspace-design">
       <aside>
         <h3>{t('Mon espace', 'الحساب ديالي')}</h3>
+        <label className="workspace-mobile-location">
+          <span>{t('Mon espace', 'الحساب ديالي')}</span>
+          <select
+            value={activeTab}
+            onChange={(event) => navigate(event.target.value)}
+            aria-label={t('Choisir une rubrique', 'اختار القسم')}
+          >
+            {firstCardSection && (
+              <optgroup label={t('Ma carte', 'الكارط ديالي')}>
+                {cardKeys
+                  .filter((key) => visibleSections.includes(key as any))
+                  .map((key) => (
+                    <option key={key} value={key}>
+                      {t(...cardLabels[key])}
+                    </option>
+                  ))}
+              </optgroup>
+            )}
+            {tabs
+              .filter(([key]) => !cardKeys.includes(key))
+              .map(([key, , fr, da]) => (
+                <option key={key} value={key}>
+                  {t(fr, da)}
+                </option>
+              ))}
+          </select>
+        </label>
         {auth && canSetup && (
           <button
             type="button"
@@ -343,10 +400,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               {showSetup ? t('Créer ma carte', 'صايب الكارط ديالي') : t(current[2], current[3])}
             </h1>
             <p className="workspace-intro">
-              {t(
-                'Personnalisez, enregistrez et partagez votre présence digitale.',
-                'خصّص، سجّل وشارك الحضور الرقمي ديالك.',
-              )}
+              {showSetup
+                ? t('Créez votre carte, une étape à la fois.', 'صايب الكارط ديالك خطوة بخطوة.')
+                : t(...introductions[activeTab])}
             </p>
           </div>
         </div>
