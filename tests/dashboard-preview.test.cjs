@@ -385,6 +385,29 @@ for (const ar of [false, true]) {
 }
 
 for (const ar of [false, true]) {
+  test(`compact navigation respects plan rights and selects the actual editor (${ar ? 'ar' : 'fr'})`, () => {
+    for (const plan of ['Identite', 'Catalogue', 'Activite']) {
+      const ctx = context('links', ar);
+      ctx.subscription = { plan };
+      const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: ctx }));
+      const selector = html.match(/<select aria-label="[^"]+">([\s\S]*?)<\/select>/)[1];
+      assert.match(selector, /value="links" selected=""/);
+      assert.equal(selector.includes('value="content"'), plan !== 'Identite');
+      assert.equal(selector.includes('value="schedule"'), plan === 'Activite');
+      assert.match(selector, /value="share"/);
+      assert.match(selector, /value="orders"/);
+      assert.doesNotMatch(selector, ar ? /Ma carte|Identité|Mon offre/ : /الهوية|العرض ديالي/);
+      ctx.subscription.client_access = { sections: { links: false, share: false } };
+      const restricted = renderToStaticMarkup(
+        React.createElement(DashboardEditor, { context: ctx }),
+      );
+      const restrictedSelector = restricted.match(
+        /<select aria-label="[^"]+">([\s\S]*?)<\/select>/,
+      )[1];
+      assert.doesNotMatch(restrictedSelector, /value="links"|value="share"/);
+      assert.match(restrictedSelector, /value="coordinates" selected=""/);
+    }
+  });
   test(`hidden sections cannot be opened through old dashboard addresses (${ar ? 'ar' : 'fr'})`, () => {
     for (const tab of [
       'profile',

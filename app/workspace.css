@@ -1,0 +1,107 @@
+/* Client editing: compact navigation, readable forms and progressive disclosure.
+   Keep customer card presentation independent from the surrounding workspace. */
+.workspace-mobile-location {
+  display: none;
+}
+.workspace-design :is(.form-grid, .field) {
+  min-inline-size: 0;
+  align-content: start;
+}
+.workspace-design .form-grid {
+  align-items: start;
+}
+.workspace-design .field :is(input, select, textarea) {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+.workspace-design :is(.workspace-intro, .hint) {
+  max-inline-size: 65ch;
+}
+@media (max-width: 1100px) {
+  .workspace-design.workspace {
+    gap: 20px;
+  }
+  .workspace-design > aside > :is(.workspace-navigation, .workspace-offer-link) {
+    display: none;
+  }
+  .workspace-mobile-location {
+    display: grid;
+    grid-column: 1 / -1;
+    gap: 8px;
+    min-inline-size: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .workspace-mobile-location select {
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: 48px;
+    padding: 10px 12px;
+    border: 1px solid var(--brand-input-border);
+    border-radius: 12px;
+    background: var(--brand-field);
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .workspace-design > aside > :is(.setup-launch, .sidebar-logout) {
+    font-size: 14px;
+    gap: 8px;
+    justify-content: center;
+  }
+  .workspace-design .card-edit-navigation {
+    display: none;
+  }
+  .workspace-design .workspace-head {
+    margin-block-end: 16px;
+  }
+  .workspace-design .workspace-head .eyebrow {
+    display: none;
+  }
+  .workspace-design .workspace-head h1 {
+    font-size: 28px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+  .workspace-design .workspace-intro {
+    margin-block-start: 8px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .workspace-design .workspace-editor-layout {
+    gap: 16px;
+  }
+  .workspace-design .workspace-tab-content > .panel {
+    padding: 16px;
+  }
+  .workspace-design .panel-title {
+    gap: 12px;
+    margin-block-end: 16px;
+    padding-block-end: 12px;
+  }
+  .workspace-design .panel-title h2 {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+  .workspace-design .form-grid {
+    gap: 16px;
+  }
+  .workspace-design .workspace-tab-content .field :is(input, select, textarea) {
+    font-size: 16px;
+  }
+  .workspace-design .workspace-tab-content .field textarea {
+    min-block-size: 112px;
+    resize: vertical;
+  }
+  .workspace-design .workspace-preview-toggle {
+    color: var(--ink);
+    background: var(--brand-surface);
+    border-color: var(--line);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace-design :is(button, input, select, textarea) {
+    transition: none;
+  }
+}
