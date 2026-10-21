@@ -1406,21 +1406,6 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
     transition: none !important;
   }
 }
-/* Main card actions keep visible labels as well as their complete accessible names. */
-.card-design .card-action-icons .action-label {
-  display: inline !important;
-  position: static;
-  width: auto;
-  height: auto;
-  padding: 0;
-  margin: 0;
-  overflow: visible;
-  clip-path: none;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  font-weight: 700;
-  line-height: 1.4;
-}
 .landing .landing-price-features li,
 .landing .landing-price-features li strong,
 .landing .landing-price small {

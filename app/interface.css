@@ -196,21 +196,19 @@
   box-sizing: border-box;
 }
 .card-design .card-action-icons > button {
-  width: auto !important;
-  min-width: 0 !important;
-  max-width: none !important;
-  height: auto !important;
-  min-height: 76px !important;
-  max-height: none !important;
-  aspect-ratio: auto !important;
-  padding: 10px 8px !important;
+  width: 54px !important;
+  min-width: 44px !important;
+  max-width: 54px !important;
+  height: 54px !important;
+  min-height: 44px !important;
+  max-height: 54px !important;
+  aspect-ratio: 1 / 1 !important;
+  padding: 0 !important;
   border-radius: var(--button-radius, 16px);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1 1 88px;
-  flex-direction: column;
-  gap: 6px;
+  flex: 0 0 auto;
   background: var(--button-bg, var(--accent)) !important;
   color: var(--button-text, var(--accent-text, #ffffff)) !important;
   border: 1px solid color-mix(in srgb, var(--button-bg, var(--accent)) 80%, #ffffff);
@@ -226,9 +224,6 @@
   width: 24px !important;
   height: 24px !important;
   color: inherit;
-}
-.card-design .card-action-icons .action-label {
-  display: inline !important;
 }
 .card-design .card-action-icons > button:hover {
   transform: translateY(-2px) scale(1.05);
@@ -1148,20 +1143,6 @@
 }
 .card-design.card-layout-executive .card-identity {
   text-align: start;
-}
-.card-design.card-layout-direct .card-action-icons {
-  flex-wrap: wrap;
-}
-.card-design.card-layout-direct .card-action-icons > .card-save {
-  flex-direction: row;
-  width: 100% !important;
-  max-width: none !important;
-  aspect-ratio: auto !important;
-  flex-basis: 100%;
-  gap: 10px;
-}
-.card-design.card-layout-direct .card-action-icons > .card-save .action-label {
-  display: inline !important;
 }
 @media (max-width: 480px) {
   .card-style-choice > strong {
