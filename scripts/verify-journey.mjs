@@ -282,7 +282,7 @@ try {
     cardTheme: 'dark',
     buttonColor: '',
     buttonShape: 'pill',
-    hours: Object.fromEntries(Array.from({ length: 7 }, (_, i) => [i, ['09:00', '17:00']])),
+    hours: Object.fromEntries(Array.from({ length: 5 }, (_, i) => [i + 1, ['09:00', '17:00']])),
     appointmentServices: [{ name: 'Consultation', duration: 30 }],
   };
   const saved = await request('/api/data', {
@@ -373,6 +373,7 @@ try {
     'Identite',
   );
   await db.prepare("UPDATE profiles SET plan='Digital' WHERE id=?").bind(cardId).run();
+  fields.hours = Object.fromEntries(Array.from({ length: 7 }, (_, i) => [i, ['09:00', '17:00']]));
   const catalogue40 = Array.from({ length: 40 }, (_, i) => ({
     id: 'item-' + i,
     name: 'Article ' + (i + 1),

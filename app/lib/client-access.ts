@@ -63,12 +63,7 @@ export function clientEditIssue(profile: any, incoming: any, previous: any, publ
       return true;
     if (!allowed('links') && changed(['hideSocial', 'socialOrder'])) return true;
   }
-  const config = readClientAccess(profile);
-  if (
-    config.sections.schedule === false ||
-    config.modules.appointments === false ||
-    config.modules.activity === false
-  ) {
+  if (!allowed('schedule')) {
     const keys = ['hours', 'closures', 'appointmentServices', 'breakStart', 'breakEnd'];
     if (changed(keys, normalizeSchedule(incoming), normalizeSchedule(previous))) return true;
   }

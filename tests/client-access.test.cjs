@@ -168,3 +168,10 @@ test('the administrator sees separate subscription, function and workspace contr
     assert.equal((html.match(/type="checkbox"/g) || []).length, 12);
   }
 });
+
+test('a plan without agenda access cannot modify schedule settings through a direct save', () => {
+  const profile = { plan: 'Identite', published: 1 };
+  const data = { name: 'Test' };
+  assert.equal(clientEditIssue(profile, { ...data, hours: {} }, data, true), true);
+  assert.equal(clientEditIssue(profile, data, data, true), false);
+});
