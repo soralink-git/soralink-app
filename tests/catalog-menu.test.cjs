@@ -245,9 +245,13 @@ test('built-in demo media is rendered only in preview while customer upload rule
   );
   assert.equal(menu.catalogDocuments(demo).length, 0);
   assert.equal(menu.catalogDocuments(demo, true).length, 1);
-  assert.match(menu.catalogDocuments(arabic, true)[0].src, /catalogue-ar\.pdf$/);
+  assert.match(menu.catalogDocuments(arabic, true)[0].src, /catalogue-v2-ar\.pdf$/);
   assert.equal(normalizeCatalogue(demo.services)[0].image, '');
-  assert.equal(normalizeCatalogue(demo.services, false, true)[0].image, '/soralink-pack-hero.webp');
+  assert.equal(
+    normalizeCatalogue(demo.services, false, true)[0].image,
+    '/demo/soralink/premium/nfc.webp',
+  );
+  assert.equal(new Set(demo.services.map((item) => item.image)).size, 5);
   assert(catalogueError(demo.services));
   assert.equal(menu.catalogDocumentSchema.safeParse(demo.catalogDocuments[0]).success, false);
   const external = { ...demo.catalogDocuments[0], src: 'https://example.com/private.pdf' };

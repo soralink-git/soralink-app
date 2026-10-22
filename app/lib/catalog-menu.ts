@@ -98,8 +98,13 @@ export function catalogSettings(data: any) {
 }
 // Built-in demo files are accepted only by the preview renderer. Upload validation stays strict.
 const demoDocumentSchema = catalogDocumentSchema.extend({
-  src: z.enum(['/demo/soralink/catalogue-fr.pdf', '/demo/soralink/catalogue-ar.pdf']),
-  cover: z.literal('/soralink-pack-hero.webp'),
+  src: z.enum([
+    '/demo/soralink/catalogue-fr.pdf',
+    '/demo/soralink/catalogue-ar.pdf',
+    '/demo/soralink/catalogue-v2-fr.pdf',
+    '/demo/soralink/catalogue-v2-ar.pdf',
+  ]),
+  cover: z.enum(['/soralink-pack-hero.webp', '/demo/soralink/premium/nfc.webp']),
 });
 export function catalogDocuments(data: any, demo = false): CatalogDocument[] {
   if (Array.isArray(data?.catalogDocuments))
