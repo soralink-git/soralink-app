@@ -30,7 +30,16 @@ export type CatalogueItem = {
   promoEnd: string;
 };
 const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
-const demoImage = (value: unknown) => value === '/soralink-pack-hero.webp';
+const demoImage = (value: unknown) =>
+  typeof value === 'string' &&
+  [
+    '/soralink-pack-hero.webp',
+    '/demo/soralink/premium/nfc.webp',
+    '/demo/soralink/premium/identite.svg',
+    '/demo/soralink/premium/catalogue.svg',
+    '/demo/soralink/premium/activite.svg',
+    '/demo/soralink/premium/accompagnement.svg',
+  ].includes(value);
 const imageValid = (value: unknown) =>
   typeof value === 'string' && /^\/api\/upload\?key=[a-f0-9-]{36}$/.test(value);
 export const priceValid = (value: string) => !value || /^\d{1,9}([.,]\d{1,2})?$/.test(value);

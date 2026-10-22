@@ -15,7 +15,7 @@ export const soralinkTestCard = {
   job: 'Cartes NFC et identité digitale',
   bio: 'Partagez vos coordonnées, présentez vos offres et recevez les demandes de vos clients depuis une seule carte. Découvrez ici les offres SoraLink et un exemple de présentation complète.',
   avatar: '/favicon.svg',
-  cover: '/soralink-pack-hero.webp',
+  cover: '/demo/soralink/premium/nfc.webp',
   phone: '+212661446664',
   whatsapp: '+212661446664',
   email: 'contact@soralink.link',
@@ -43,12 +43,12 @@ export const soralinkTestCard = {
   catalogDocuments: [
     {
       id: '6966649e-ad39-4ff2-bdcf-eaa00c516c58',
-      src: '/demo/soralink/catalogue-fr.pdf',
+      src: '/demo/soralink/catalogue-v2-fr.pdf',
       titleFr: 'Catalogue des offres SoraLink',
       titleAr: 'كاتالوگ عروض SoraLink',
       descriptionFr: 'Les quatre forfaits, leurs services et les conditions de renouvellement.',
       descriptionAr: 'الباقات الأربعة، الخدمات ديالها وشروط التجديد.',
-      cover: '/soralink-pack-hero.webp',
+      cover: '/demo/soralink/premium/nfc.webp',
       visible: true,
       allowDownload: false,
     },
@@ -71,7 +71,7 @@ export const soralinkTestCard = {
       categoryAr: 'بطاقات NFC',
       price: '99',
       availability: 'available',
-      image: '/soralink-pack-hero.webp',
+      image: '/demo/soralink/premium/nfc.webp',
     },
     ...offers.map((offer) => ({
       id: `soralink-${offer.id.toLowerCase()}`,
@@ -87,7 +87,7 @@ export const soralinkTestCard = {
       categoryAr: 'البطاقات الرقمية',
       price: String(offer.price),
       availability: 'available',
-      image: '/soralink-pack-hero.webp',
+      image: `/demo/soralink/premium/${offer.id.toLowerCase()}.svg`,
     })),
     {
       id: 'soralink-support',
@@ -105,7 +105,7 @@ export const soralinkTestCard = {
       categoryAr: 'المواكبة',
       price: '',
       availability: 'available',
-      image: '/soralink-pack-hero.webp',
+      image: '/demo/soralink/premium/accompagnement.svg',
     },
   ],
   appointmentServices: [
@@ -125,7 +125,7 @@ export const soralinkTestCardArabic = {
   address: 'وجدة · المغرب',
   catalogDocuments: soralinkTestCard.catalogDocuments.map((document) => ({
     ...document,
-    src: '/demo/soralink/catalogue-ar.pdf',
+    src: '/demo/soralink/catalogue-v2-ar.pdf',
   })),
   appointmentServices: [
     { name: 'نتعرّف على SoraLink', duration: 15 },
