@@ -96,11 +96,17 @@ export function catalogSettings(data: any) {
   const p = catalogSettingsSchema.safeParse(data?.catalogSettings);
   return p.success ? p.data : catalogSettingsSchema.parse({});
 }
-export function catalogDocuments(data: any): CatalogDocument[] {
+// Built-in demo files are accepted only by the preview renderer. Upload validation stays strict.
+const demoDocumentSchema = catalogDocumentSchema.extend({
+  src: z.enum(['/demo/soralink/catalogue-fr.pdf', '/demo/soralink/catalogue-ar.pdf']),
+  cover: z.literal('/soralink-pack-hero.webp'),
+});
+export function catalogDocuments(data: any, demo = false): CatalogDocument[] {
   if (Array.isArray(data?.catalogDocuments))
     return data.catalogDocuments
       .flatMap((v: unknown) => {
-        const p = catalogDocumentSchema.safeParse(v);
+        const normal = catalogDocumentSchema.safeParse(v);
+        const p = !normal.success && demo ? demoDocumentSchema.safeParse(v) : normal;
         return p.success ? [p.data] : [];
       })
       .slice(0, 10);
