@@ -754,10 +754,10 @@ export default function CardView({
               return <CardSection key={key} d={d} section={key} preview={preview} />;
             }
             if (key === 'photos') return null;
-            if (key === 'pdf' && catalogDocuments(d).length)
+            if (key === 'pdf' && catalogDocuments(d, view === 'demo').length)
               return (
                 <div className="panel" key={key}>
-                  <CatalogDocuments data={d} id={id} ar={ar} preview={preview} />
+                  <CatalogDocuments data={d} id={id} ar={ar} preview={preview || view === 'demo'} />
                 </div>
               );
             if (key === 'video') return null;

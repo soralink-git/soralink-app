@@ -28,7 +28,7 @@ export function CatalogDocuments({
 }) {
   const [opened, setOpened] = useState('');
   const t = (fr: string, a: string) => (ar ? a : fr),
-    docs = catalogDocuments(data).filter((d) => d.visible),
+    docs = catalogDocuments(data, preview).filter((d) => d.visible),
     settings = catalogSettings(data);
   if (!settings.enabled || !settings.pdf || !docs.length) return null;
   return (
@@ -88,7 +88,7 @@ export default function CatalogProducts({
     cats = catalogCategories(data).filter((c) => c.visible),
     items = visibleProducts({
       ...data,
-      services: normalizeCatalogue(data.services),
+      services: normalizeCatalogue(data.services, false, preview),
     }) as CatalogueItem[];
   const [search, setSearch] = useState(''),
     [category, setCategory] = useState(''),

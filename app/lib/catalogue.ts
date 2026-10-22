@@ -30,6 +30,7 @@ export type CatalogueItem = {
   promoEnd: string;
 };
 const text = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+const demoImage = (value: unknown) => value === '/soralink-pack-hero.webp';
 const imageValid = (value: unknown) =>
   typeof value === 'string' && /^\/api\/upload\?key=[a-f0-9-]{36}$/.test(value);
 export const priceValid = (value: string) => !value || /^\d{1,9}([.,]\d{1,2})?$/.test(value);
@@ -125,7 +126,11 @@ export function catalogueError(value: unknown, limit = MAX_CATALOGUE_ITEMS) {
   }
   return null;
 }
-export function normalizeCatalogue(value: unknown, includeDrafts = false): CatalogueItem[] {
+export function normalizeCatalogue(
+  value: unknown,
+  includeDrafts = false,
+  demo = false,
+): CatalogueItem[] {
   if (!Array.isArray(value)) return [];
   // Keep spaces and incomplete decimal input in the editor; normalize only for publication.
   const fieldText = (v: unknown, max: number) =>
@@ -164,7 +169,7 @@ export function normalizeCatalogue(value: unknown, includeDrafts = false): Catal
         : priceValid(fieldText(item.price, 30))
           ? fieldText(item.price, 30).replace(',', '.')
           : '',
-      image: imageValid(item.image) ? item.image : '',
+      image: imageValid(item.image) || (demo && demoImage(item.image)) ? item.image : '',
       thumbnail: imageValid(item.thumbnail) ? item.thumbnail : '',
     }));
 }

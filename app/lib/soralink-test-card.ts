@@ -34,12 +34,25 @@ export const soralinkTestCard = {
   catalogSettings: {
     enabled: true,
     products: true,
-    pdf: false,
+    pdf: true,
     whatsapp: true,
     showPrices: true,
     layout: 'grid',
     accent: BRAND.orange,
   },
+  catalogDocuments: [
+    {
+      id: '6966649e-ad39-4ff2-bdcf-eaa00c516c58',
+      src: '/demo/soralink/catalogue-fr.pdf',
+      titleFr: 'Catalogue des offres SoraLink',
+      titleAr: 'كاتالوگ عروض SoraLink',
+      descriptionFr: 'Les quatre forfaits, leurs services et les conditions de renouvellement.',
+      descriptionAr: 'الباقات الأربعة، الخدمات ديالها وشروط التجديد.',
+      cover: '/soralink-pack-hero.webp',
+      visible: true,
+      allowDownload: false,
+    },
+  ],
   catalogCategories: categories,
   services: [
     {
@@ -58,6 +71,7 @@ export const soralinkTestCard = {
       categoryAr: 'بطاقات NFC',
       price: '99',
       availability: 'available',
+      image: '/soralink-pack-hero.webp',
     },
     ...offers.map((offer) => ({
       id: `soralink-${offer.id.toLowerCase()}`,
@@ -73,6 +87,7 @@ export const soralinkTestCard = {
       categoryAr: 'البطاقات الرقمية',
       price: String(offer.price),
       availability: 'available',
+      image: '/soralink-pack-hero.webp',
     })),
     {
       id: 'soralink-support',
@@ -90,6 +105,7 @@ export const soralinkTestCard = {
       categoryAr: 'المواكبة',
       price: '',
       availability: 'available',
+      image: '/soralink-pack-hero.webp',
     },
   ],
   appointmentServices: [
@@ -107,6 +123,10 @@ export const soralinkTestCardArabic = {
   job: 'بطاقات NFC والهوية الرقمية',
   bio: 'شارك معلومات التواصل، عرض الخدمات ديالك وتوصّل بطلبات الزبناء من بطاقة وحدة. هنا تقدر تشوف عروض SoraLink ومثال ديال بطاقة كاملة.',
   address: 'وجدة · المغرب',
+  catalogDocuments: soralinkTestCard.catalogDocuments.map((document) => ({
+    ...document,
+    src: '/demo/soralink/catalogue-ar.pdf',
+  })),
   appointmentServices: [
     { name: 'نتعرّف على SoraLink', duration: 15 },
     { name: 'نوجد البطاقة الرقمية ديالي', duration: 30 },
