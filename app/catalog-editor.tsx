@@ -13,6 +13,8 @@ import { catalogEditorItems } from './lib/catalog-editor-list';
 import { compressPhoto } from './lib/compress-photo';
 import ImageCropper from './image-cropper';
 import PdfCatalogue from './pdf-catalogue';
+import CatalogVariantsEditor from './catalog-variants-editor';
+import { fulfillmentLabels } from './lib/catalog-order';
 import ItemCategoryField from './item-category-field';
 import { PhotoPreview } from './photo-gallery';
 export default function CatalogEditor({
@@ -743,6 +745,12 @@ export default function CatalogEditor({
                           (v) => updateItem(item.id, 'price', v),
                           { inputMode: 'decimal', maxLength: 30 },
                         )}
+                        <CatalogVariantsEditor
+                          variants={item.variants}
+                          onChange={(v) => updateItem(item.id, 'variants', v)}
+                          ar={ar}
+                          disabled={locked}
+                        />
                         <details className="catalog-options">
                           <summary>{t('Plus d’options', 'اختيارات إضافية')}</summary>
                           <label className="field">
@@ -936,6 +944,35 @@ export default function CatalogEditor({
             (v) => patch('catalogSettings', { ...settings, accent: v }),
             { type: 'color' },
           )}
+          <details className="catalog-options">
+            <summary>
+              {t('Modes de retrait et livraison (facultatifs)', 'طرق التسليم والتوصيل (اختيارية)')}
+            </summary>
+            <p className="hint">
+              {t(
+                'Activez uniquement les modes proposés par votre activité. Les frais de livraison seront à confirmer.',
+                'فعّل غير الطرق اللي كتوفرها. مصاريف التوصيل خاصها التأكيد.',
+              )}
+            </p>
+            {Object.entries(fulfillmentLabels).map(([key, labels]) => (
+              <label className="toggle" key={key}>
+                <input
+                  type="checkbox"
+                  disabled={locked}
+                  checked={settings.fulfillmentModes.includes(key as any)}
+                  onChange={(e) =>
+                    patch('catalogSettings', {
+                      ...settings,
+                      fulfillmentModes: e.target.checked
+                        ? [...settings.fulfillmentModes, key]
+                        : settings.fulfillmentModes.filter((v) => v !== key),
+                    })
+                  }
+                />
+                {labels[ar ? 1 : 0]}
+              </label>
+            ))}
+          </details>
           <button
             type="button"
             onClick={() => patch('catalogSettings', { ...settings, accent: '' })}

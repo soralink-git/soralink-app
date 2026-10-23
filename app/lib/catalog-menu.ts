@@ -78,6 +78,11 @@ export const catalogSettingsSchema = z
     products: z.boolean().default(true),
     whatsapp: z.boolean().default(true),
     showPrices: z.boolean().default(true),
+    fulfillmentModes: z
+      .array(z.enum(['onsite', 'takeaway', 'delivery']))
+      .max(3)
+      .refine((v) => new Set(v).size === v.length)
+      .default([]),
     layout: z.enum(['grid', 'list']).default('grid'),
     accent: z.union([z.literal(''), z.string().regex(/^#[0-9a-f]{6}$/i)]).default(''),
   })

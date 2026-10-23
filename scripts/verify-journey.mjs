@@ -1,3 +1,4 @@
+import { verifyCommerce } from './verify-commerce.mjs';
 import { verifyClientAccess } from './verify-client-access.mjs';
 import { verifyOffers } from './verify-offers.mjs';
 import { verifyCatalogMenu } from './verify-catalog-menu.mjs';
@@ -826,6 +827,7 @@ try {
 
   await verifyOffers({ db, request, cardId, adminId, otherId });
   await verifyClientAccess({ db, request, cardId, adminId });
+  await verifyCommerce({ db, request, cardId, adminId, otherId, photo });
 
   // Server idle enforcement: reading/polling never extends the deadline.
   const appId = tokenHash(appTokens.get(userId));

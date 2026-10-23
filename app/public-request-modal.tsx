@@ -197,6 +197,7 @@ export default function PublicRequestModal({
                 message: f.get('message'),
                 email: f.get('email'),
                 service: serviceIndex,
+                variantId: selectedItem?.variantId,
                 catalogueId: ['commande', 'devis'].includes(modal || '')
                   ? selectedItem?.id
                   : undefined,

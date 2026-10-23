@@ -31,13 +31,16 @@ export function mailStatement(
   r: any,
   event: 'new' | 'confirmed' | 'cancelled',
   revision = 0,
+  requireRequest = false,
 ) {
   const recipient = event === 'new' ? p.email : r.email;
   if (!mailEnabled(e) || !validEmail(recipient)) return [];
   const d = JSON.parse(p.data);
   const professional = String(d.business || d.name || 'Votre professionnel').slice(0, 120);
   const ar =
-    event === 'new' ? d.defaultLanguage === 'ar' : (r.language || d.defaultLanguage) === 'ar';
+    event === 'new'
+      ? d.defaultLanguage === 'ar' || d.lang === 'ar'
+      : (r.language || d.defaultLanguage) === 'ar';
   const t = (fr: string, darija: string) => (ar ? darija : fr);
   const kind = ar
     ? ({ devis: 'طلب الثمن', commande: 'طلب', rdv: 'موعد' } as Record<string, string>)[r.kind] ||
@@ -62,7 +65,12 @@ export function mailStatement(
         ? t('SoraLink - Rendez-vous confirmé', 'SoraLink - تأكيد الموعد')
         : t('SoraLink - Rendez-vous annulé', 'SoraLink - إلغاء الموعد');
   const body = [
-    intro,
+    r.whatsappPrepared
+      ? t(
+          'Une sélection a été préparée pour WhatsApp. Son envoi et son acceptation restent à confirmer.',
+          'توجد اختيار لواتساب. الإرسال وقبول الطلب باقي خاصهم التأكيد.',
+        )
+      : intro,
     '',
     professional,
     event === 'new'
@@ -70,6 +78,7 @@ export function mailStatement(
       : t('Bonjour ', 'السلام عليكم ') + r.name + ',',
     r.service ? t('Prestation : ', 'الخدمة: ') + r.service : '',
     slot,
+    event === 'new' && r.message ? String(r.message).slice(0, 10000) : '',
     event === 'new' ? t('Téléphone : ', 'التلفون: ') + r.phone : '',
     '',
     event === 'new'
@@ -91,9 +100,12 @@ export function mailStatement(
   // For a status change, enqueue only if its version was committed in this batch.
   const sql =
     event === 'new'
-      ? 'INSERT OR IGNORE INTO notifications(id,profile,request_id,recipient,subject,body,created,next_attempt) VALUES(?,?,?,?,?,?,?,?)'
+      ? requireRequest
+        ? 'INSERT OR IGNORE INTO notifications(id,profile,request_id,recipient,subject,body,created,next_attempt) SELECT ?,?,?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM requests WHERE id=?)'
+        : 'INSERT OR IGNORE INTO notifications(id,profile,request_id,recipient,subject,body,created,next_attempt) VALUES(?,?,?,?,?,?,?,?)'
       : 'INSERT OR IGNORE INTO notifications(id,profile,request_id,recipient,subject,body,created,next_attempt) SELECT ?,?,?,?,?,?,?,? WHERE EXISTS(SELECT 1 FROM requests WHERE id=? AND status=? AND notification_revision=?)';
   const args: any[] = [id, p.id, r.id, recipient, subject, body, now, now];
+  if (event === 'new' && requireRequest) args.push(r.id);
   if (event !== 'new') args.push(r.id, event, revision);
   return [e.DB.prepare(sql).bind(...args)];
 }

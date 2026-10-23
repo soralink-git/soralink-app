@@ -247,6 +247,13 @@ export default function CardView({
                       { type: 'text/vcard' },
                     );
                     download(blob, 'contact.vcf');
+                    if (view === 'public' && !preview && d.activity !== false)
+                      onMessage(
+                        t(
+                          'Pour me laisser vos coordonnées, utilisez le bouton Échanger (facultatif).',
+                          'إلى بغيتي تخلّي معلومات التواصل ديالك استعمل زر التبادل (اختياري).',
+                        ),
+                      );
                   }}
                 >
                   <Download size={22} />

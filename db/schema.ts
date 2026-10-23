@@ -147,3 +147,62 @@ export const appSessions = sqliteTable(
   },
   (t) => [index('app_sessions_expiry').on(t.expires)],
 );
+
+export const catalogOrderIntents = sqliteTable(
+  'catalog_order_intents',
+  {
+    id: text('id').primaryKey(),
+    profile: text('profile')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    requestId: text('request_id').notNull(),
+    payloadHash: text('payload_hash').notNull(),
+    visitorHash: text('visitor_hash').notNull(),
+    created: text('created').notNull(),
+  },
+  (t) => [
+    index('catalog_intents_profile_created').on(t.profile, t.created),
+    index('catalog_intents_visitor_created').on(t.visitorHash, t.created),
+  ],
+);
+export const profileMetrics = sqliteTable(
+  'profile_metrics',
+  {
+    profile: text('profile')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    day: text('day').notNull(),
+    source: text('source').notNull(),
+    visits: integer('visits').notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.profile, t.day, t.source] })],
+);
+export const profileMetricSeen = sqliteTable(
+  'profile_metric_seen',
+  {
+    id: text('id').primaryKey(),
+    profile: text('profile')
+      .notNull()
+      .references(() => profiles.id, { onDelete: 'cascade' }),
+    created: text('created').notNull(),
+  },
+  (t) => [index('metric_seen_created').on(t.created)],
+);
+export const paymentReceipts = sqliteTable(
+  'payment_receipts',
+  {
+    id: text('id').primaryKey(),
+    orderId: text('order_id')
+      .notNull()
+      .references(() => orders.id, { onDelete: 'cascade' }),
+    owner: text('owner').notNull(),
+    objectKey: text('object_key').notNull().unique(),
+    mime: text('mime').notNull(),
+    bytes: integer('bytes').notNull(),
+    created: text('created').notNull(),
+  },
+  (t) => [
+    index('receipts_order_created').on(t.orderId, t.created),
+    index('receipts_owner_created').on(t.owner, t.created),
+  ],
+);

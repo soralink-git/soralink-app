@@ -1,5 +1,6 @@
 'use client';
 import AdminClientEditor from '../admin-client-editor';
+import PaymentReceiptUpload from '../payment-receipt-upload';
 import { managementRevision } from '../lib/client-access-config';
 import { isPlatformPlan } from '../lib/offers';
 import ThemeToggle from '../theme-toggle';
@@ -395,6 +396,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                         {o.created.slice(0, 10)} · {o.id.slice(0, 8)}
                       </p>
                     </div>
+                    <PaymentReceiptUpload orderId={o.id} ar={ar} admin />
                     {o.applied ? (
                       <span className="badge">{t('Abonnement activé', 'الاشتراك مفعّل')}</span>
                     ) : (

@@ -227,6 +227,8 @@ test('disabled mail does not send; old mail expires; post-response batches are b
 test('Pages dispatch waits for successful mutation and attaches work to waitUntil', async () => {
   for (const [method, path, status, expected] of [
     ['POST', '/api/data', 200, 1],
+    ['POST', '/api/catalog-order', 200, 1],
+    ['POST', '/api/catalog-order', 409, 0],
     ['POST', '/api/data', 409, 0],
     ['GET', '/api/data', 200, 0],
     ['POST', '/api/auth', 200, 0],
@@ -244,6 +246,7 @@ test('Pages dispatch waits for successful mutation and attaches work to waitUnti
         },
       },
       './app/lib/notifications': {
+        mailEnabled: () => true,
         mailReady: () => true,
         sendPending: async (_, __, limit) => {
           assert.equal(handled, true);
@@ -387,4 +390,71 @@ test('offline asset remains accessible after Pages redirects .html to its canoni
     assert.equal(response.status, 200);
     assert.equal(await response.text(), 'Offline asset');
   }
+});
+
+test('Pages dispatch uses the internal binding without copying the provider key', async () => {
+  let calls = 0;
+  const tasks = [];
+  const worker = load('worker.ts', {
+    'vinext/server/fetch-handler': {
+      default: { fetch: async () => new Response(null, { status: 200 }) },
+    },
+    './app/lib/notifications': {
+      mailEnabled: () => true,
+      mailReady: () => false,
+      sendPending: async () => {
+        throw Error('Pages must not send directly');
+      },
+    },
+  }).default;
+  await worker.fetch(
+    new Request('https://example.test/api/catalog-order', { method: 'POST' }),
+    {
+      DB: {},
+      NOTIFICATIONS: {
+        fetch: async (url, init) => {
+          assert.equal(url, 'https://notifications.internal/dispatch');
+          assert.equal(init.method, 'POST');
+          calls++;
+          return new Response(null, { status: 204 });
+        },
+      },
+    },
+    { waitUntil: (task) => tasks.push(task) },
+  );
+  await Promise.all(tasks);
+  assert.equal(calls, 1);
+  assert.equal(tasks.length, 1);
+});
+test('internal notification entrypoint rejects unrelated requests and bounds sending to one', async () => {
+  let calls = 0;
+  const worker = load('notifications-worker.ts', {
+    './app/lib/notifications': {
+      sendPending: async (env, sender, limit) => {
+        assert.equal(env.DB, 'shared-db');
+        assert.equal(limit, 1);
+        calls++;
+      },
+    },
+  }).default;
+  for (const [url, method] of [
+    ['https://notifications.internal/dispatch', 'GET'],
+    ['https://public.example/dispatch', 'POST'],
+    ['https://notifications.internal/other', 'POST'],
+  ])
+    assert.equal(
+      (await worker.fetch(new Request(url, { method }), { DB: 'shared-db' })).status,
+      404,
+    );
+  assert.equal(calls, 0);
+  assert.equal(
+    (
+      await worker.fetch(
+        new Request('https://notifications.internal/dispatch', { method: 'POST' }),
+        { DB: 'shared-db' },
+      )
+    ).status,
+    204,
+  );
+  assert.equal(calls, 1);
 });
