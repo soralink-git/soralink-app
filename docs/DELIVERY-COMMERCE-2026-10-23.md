@@ -6,7 +6,7 @@
 
 - `/api/catalog-order` reconstruit le message à partir des articles publiés : prix, stock, variantes et modes de remise sont contrôlés côté serveur.
 - Une sélection préparée est enregistrée dans « Mes demandes » pour le forfait Activité lorsque cette section est autorisée. Elle porte explicitement la mention « envoi à confirmer » : ouvrir WhatsApp ne prouve jamais l’envoi du message.
-- La notification utilise la file d’envoi existante, ses reprises et son mécanisme d’idempotence. Le Worker déclenche également sa prise en charge via `ctx.waitUntil` après un appel réussi à cette route.
+- La notification utilise la file d’envoi existante, ses reprises et son mécanisme d’idempotence. Le Worker Pages déclenche également sa prise en charge via `ctx.waitUntil` après un appel réussi à cette route. En production, un binding de service interne `NOTIFICATIONS` appelle le Worker dédié : la clé Resend reste uniquement dans ce dernier. Le Worker dédié conserve son cron et ne possède aucune route publique.
 - Une même intention ne crée pas plusieurs demandes ni plusieurs notifications. Limites : 10 nouvelles intentions par visiteur/carte en 15 minutes et 30 par carte en 15 minutes. Les intentions de plus de 30 jours sont nettoyées progressivement.
 - Le forfait Catalogue conserve la sélection WhatsApp sans obtenir les fonctions Activité.
 - Les bindings D1 `DB` et R2 `BUCKET` existent déjà sur les environnements Pages de production et de prévisualisation : aucune duplication de configuration n’est nécessaire. Le cron de secours existant reste à une minute ; le passer à deux minutes ralentirait la reprise.
@@ -47,11 +47,11 @@
 
 ## Migration et compatibilité
 
-Migration additive : `drizzle/0012_commerce_metrics_receipts.sql` ; nouvelles tables d’intentions, de statistiques et de justificatifs, avec index et références aux données existantes. Aucune suppression ou réécriture de données client. Les forfaits, la validation manuelle des paiements, l’authentification et le fournisseur e-mail existant sont conservés. Aucune API Meta ni paiement en ligne ajouté.
+Migration additive : `drizzle/0012_commerce_metrics_receipts.sql` ; nouvelles tables d’intentions, de statistiques et de justificatifs, avec index et références aux données existantes. Migration appliquée en prévisualisation et en production. Aucune suppression ou réécriture de données client. Les forfaits, la validation manuelle des paiements, l’authentification et le fournisseur e-mail existant sont conservés. Aucune API Meta ni paiement en ligne ajouté.
 
 ## Vérifications réalisées
 
-- `pnpm build` : TypeScript, 267 tests, formatage et compilation Vinext/Cloudflare réussis.
+- `pnpm build` : TypeScript, 269 tests, formatage et compilation Vinext/Cloudflare réussis.
 - `pnpm verify:public` : graphe JavaScript public isolé, filtrage des champs privés, rendu serveur, ressources, routes, référencement FR/AR et exclusion des pages privées vérifiés.
 - `pnpm verify:journey` : parcours complets sur D1/R2 isolés ; sélection idempotente, variantes, livraison, prix calculés côté serveur, isolation des comptes, justificatifs privés accessibles au propriétaire/admin, renouvellement expiré et absence d’activation automatique validés.
 - Test de panne d’écriture : aucune intention ni notification partiellement conservée lorsque l’enregistrement de la demande échoue.

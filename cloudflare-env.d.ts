@@ -1,5 +1,6 @@
 declare namespace Cloudflare {
   interface Env {
+    NOTIFICATIONS?: Fetcher;
     NOTIFICATIONS_ENABLED?: string;
     PUBLIC_SITE_URL?: string;
     EMAIL_FROM?: string;
