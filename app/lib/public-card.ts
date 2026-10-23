@@ -98,7 +98,12 @@ export function publicCardData(
     ? visibleProducts({ ...d, services: out.services }).slice(0, rights.maxProducts)
     : [];
   if (!out.catalogSettings.showPrices)
-    out.services = out.services.map((p: any) => ({ ...p, price: '', oldPrice: '' }));
+    out.services = out.services.map((p: any) => ({
+      ...p,
+      price: '',
+      oldPrice: '',
+      variants: p.variants.map((v: any) => ({ ...v, price: '' })),
+    }));
   out.promotions = out.catalogSettings.enabled ? activePromotions(d.promotions) : [];
   // Standalone legacy files remain private until their owner attaches them to an offer.
   out.photos = [];

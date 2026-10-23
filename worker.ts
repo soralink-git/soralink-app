@@ -21,7 +21,7 @@ export default {
     const response = await handler.fetch(request, env, ctx);
     if (
       request.method === 'POST' &&
-      url.pathname === '/api/data' &&
+      ['/api/data', '/api/catalog-order'].includes(url.pathname) &&
       response.ok &&
       env.DB &&
       mailReady({ ...env, DB: env.DB })

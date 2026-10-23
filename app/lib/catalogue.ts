@@ -1,3 +1,4 @@
+import { z } from 'zod';
 export const MAX_CATALOGUE_ITEMS = 40;
 export const PAID_CATALOGUE_ITEMS = 40;
 export const HARD_CATALOGUE_ITEMS = 200;
@@ -7,8 +8,31 @@ export function catalogueLimit(profile: { state?: string } | null | undefined) {
     ? PAID_CATALOGUE_ITEMS
     : TRIAL_CATALOGUE_ITEMS;
 }
+export const catalogueVariantSchema = z
+  .object({
+    id: z.string().min(1).max(80),
+    nameFr: z.string().trim().max(80).default(''),
+    nameAr: z.string().trim().max(80).default(''),
+    price: z
+      .string()
+      .max(30)
+      .default('')
+      .refine((v) => !v || /^\d{1,9}([.,]\d{1,2})?$/.test(v)),
+    availability: z.enum(['available', 'soldout']).default('available'),
+  })
+  .strict()
+  .refine((v) => !!(v.nameFr || v.nameAr), 'Nommez chaque variante.');
+export const catalogueVariantsSchema = z
+  .array(catalogueVariantSchema)
+  .max(12)
+  .refine(
+    (v) => new Set(v.map((i) => i.id)).size === v.length,
+    'Identifiants de variantes dupliqués.',
+  );
+export type CatalogueVariant = z.infer<typeof catalogueVariantSchema>;
 export type CatalogueItem = {
   id: string;
+  variants: CatalogueVariant[];
   type: 'product' | 'service';
   name: string;
   description: string;
@@ -68,7 +92,8 @@ const emptyDraft = (item: any) =>
       (typeof item[key] === 'string' && !item[key].trim()),
   ) &&
   (!Array.isArray(item.images) || item.images.length === 0) &&
-  !item.promotion;
+  !item.promotion &&
+  (!Array.isArray(item.variants) || item.variants.length === 0);
 const legacyItem = (item: unknown) => (typeof item === 'string' ? { name: item } : item);
 export function catalogueError(value: unknown, limit = MAX_CATALOGUE_ITEMS) {
   if (value === undefined) return null;
@@ -128,6 +153,8 @@ export function catalogueError(value: unknown, limit = MAX_CATALOGUE_ITEMS) {
     if (item.thumbnail && !imageValid(item.thumbnail)) return 'Miniature invalide.';
     if (item.image && !imageValid(item.image))
       return 'Ajoutez les photos du catalogue avec le bouton prévu.';
+    if (item.variants !== undefined && !catalogueVariantsSchema.safeParse(item.variants).success)
+      return 'Vérifiez les noms, les prix et les identifiants des variantes (12 maximum).';
     const id = text(item.id, 80) || 'legacy-' + i;
     if (ids.has(id))
       return 'Deux articles du catalogue ont le même identifiant. Supprimez puis recréez l’article en double.';
@@ -150,6 +177,16 @@ export function normalizeCatalogue(
     .map((item: any, i) => ({ item, i }))
     .filter(({ item }) => item && typeof item === 'object' && (includeDrafts || !emptyDraft(item)))
     .map(({ item, i }) => ({
+      variants: Array.isArray(item.variants)
+        ? item.variants.slice(0, 12).map((v: any) => ({
+            id: fieldText(v.id, 80),
+            nameFr: fieldText(v.nameFr, 80),
+            nameAr: fieldText(v.nameAr, 80),
+            price: fieldText(v.price, 30).replace(',', '.'),
+            availability:
+              v.availability === 'soldout' ? ('soldout' as const) : ('available' as const),
+          }))
+        : [],
       id: fieldText(item.id, 80) || 'legacy-' + i,
       type: item.type === 'product' ? 'product' : 'service',
       name: fieldText(item.nameFr ?? item.name, 120) || fieldText(item.nameAr, 120),

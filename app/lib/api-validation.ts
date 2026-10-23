@@ -10,7 +10,7 @@ import {
 } from './catalog-menu';
 import { z } from 'zod';
 import { cursorSchema } from './pagination';
-import { catalogueError, HARD_CATALOGUE_ITEMS } from './catalogue';
+import { catalogueError, HARD_CATALOGUE_ITEMS, catalogueVariantsSchema } from './catalogue';
 import { promotionError } from './promotions';
 import { recordedVideoUrl, mediaError } from './content-media';
 import { sectionKeys } from './personalization';
@@ -133,6 +133,7 @@ export const profileDataSchema = z
                 .optional(),
               oldPrice: text(30).nullish(),
               reference: text(80).nullish(),
+              variants: catalogueVariantsSchema.optional(),
               availability: z.enum(['available', 'soldout', 'hidden']).optional(),
               promotion: z.boolean().optional(),
               promoStart: text(10).nullish(),
@@ -242,6 +243,7 @@ const requestObject = z.object({
   slot: formText(32),
   service: serviceIndex,
   catalogueId: text(80).nullish(),
+  variantId: text(80).nullish(),
   shareCard: z.boolean().default(false),
   consent: z.boolean().optional(),
   trap: formText(0),
@@ -258,6 +260,7 @@ function requestRules(b: z.infer<typeof requestObject>, ctx: z.RefinementCtx, re
       ((!b.shareCard || resolved) && !whatsappNumber(b.phone)))
   )
     issue('Vérifiez vos coordonnées et votre accord de partage');
+  if (b.variantId && !b.catalogueId) issue('Article manquant pour cette variante.');
   if (b.catalogueId != null && !['commande', 'devis'].includes(b.kind))
     issue('Type de demande invalide');
   if (b.kind === 'rdv' && !slot.safeParse(b.slot).success) issue('Choisissez un créneau valide.');

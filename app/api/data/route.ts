@@ -1,3 +1,4 @@
+import { selectedProduct } from '../../lib/catalog-order';
 import { clientSectionAllowed, clientEditIssue } from '../../lib/client-access';
 import { capabilities, isPlatformPlan, offerPrice, RENEWAL_PRICE } from '../../lib/offers';
 import { clientDesignAllowed, designSettings } from '../../lib/card-design';
@@ -200,15 +201,30 @@ export async function POST(req: Request) {
           catalogRights(p),
           capabilities(p),
         );
-        const item = catalogueSelection(publishedCatalog.services, b.catalogueId);
-        if (!item || normalizeAppearance(catalogueData).hiddenSections.includes('services'))
+        const baseItem = catalogueSelection(publishedCatalog.services, b.catalogueId);
+        if (!baseItem || normalizeAppearance(catalogueData).hiddenSections.includes('services'))
           return json({ error: 'Cet article n’est plus disponible. Actualisez la carte.' }, 409);
-        service = item.name;
+        service = baseItem.name;
+        let item = baseItem;
+        try {
+          item = selectedProduct(baseItem, b.variantId || undefined);
+        } catch {
+          return json({ error: 'Variante indisponible', errorAr: 'هاد الاختيار ما متوفرش.' }, 409);
+        }
         const category = catalogCategories(publishedCatalog).find((c) => c.id === item.categoryId);
         const arabic = b.language === 'ar';
         const localized = {
           ...item,
-          name: catalogText(item.nameFr, item.nameAr, arabic),
+          name:
+            catalogText(item.nameFr, item.nameAr, arabic) +
+            (b.variantId
+              ? ' · ' +
+                catalogText(
+                  item.variants.find((v) => v.id === b.variantId)?.nameFr,
+                  item.variants.find((v) => v.id === b.variantId)?.nameAr,
+                  arabic,
+                )
+              : ''),
           category: category
             ? catalogText(category.nameFr, category.nameAr, arabic)
             : catalogText(item.category, item.categoryAr, arabic, true),

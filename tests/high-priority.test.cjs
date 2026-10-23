@@ -227,6 +227,8 @@ test('disabled mail does not send; old mail expires; post-response batches are b
 test('Pages dispatch waits for successful mutation and attaches work to waitUntil', async () => {
   for (const [method, path, status, expected] of [
     ['POST', '/api/data', 200, 1],
+    ['POST', '/api/catalog-order', 200, 1],
+    ['POST', '/api/catalog-order', 409, 0],
     ['POST', '/api/data', 409, 0],
     ['GET', '/api/data', 200, 0],
     ['POST', '/api/auth', 200, 0],

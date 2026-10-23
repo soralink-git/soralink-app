@@ -82,3 +82,111 @@
     line-height: 1.25;
   }
 }
+/* Commerce controls keep forms readable and floating actions clear of overlays. */
+.payment-receipts {
+  display: grid;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  padding-block: 12px;
+}
+.payment-receipts input[type='file'] {
+  max-width: 100%;
+}
+.visit-metrics {
+  margin-block: 0 24px;
+  padding-block-end: 18px;
+  border-block-end: 1px solid var(--line);
+}
+.metric-row {
+  display: grid;
+  grid-template-columns: 85px minmax(0, 1fr) 45px;
+  align-items: center;
+  gap: 12px;
+  margin-block: 14px;
+}
+.metric-track {
+  height: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--line);
+}
+.metric-track span {
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+  background: #ff9125;
+}
+.catalog-variant-row {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-block: 14px;
+}
+.catalog-total {
+  font-weight: 700;
+}
+.catalog-cart {
+  scroll-margin-block: 100px;
+}
+.sticky-card-bar,
+.catalog-mobile-spacer {
+  display: none;
+}
+@media (max-width: 700px) {
+  .catalog-mobile-spacer {
+    display: block;
+    height: 100px;
+  }
+  .sticky-card-bar {
+    display: flex;
+    position: fixed;
+    inset-inline: 12px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    z-index: 45;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 18px;
+    background: #242c39;
+    color: white;
+    box-shadow: 0 6px 28px #0005;
+    max-width: 680px;
+    margin-inline: auto;
+  }
+  .sticky-card-bar[dir='rtl'] {
+    font-family: Cairo, sans-serif;
+  }
+  .sticky-card-bar div {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+  }
+  .sticky-card-bar small {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  .sticky-card-bar button {
+    flex-shrink: 0;
+    background: var(--sticky-accent);
+    color: var(--sticky-foreground);
+    border: 0;
+    border-radius: 12px;
+    min-height: 44px;
+    padding: 10px 14px;
+    font-weight: 700;
+  }
+  body:has(dialog[open], [aria-modal='true']) .sticky-card-bar {
+    display: none;
+  }
+  .catalog-options input,
+  .catalog-options select,
+  .catalog-options textarea {
+    font-size: 16px;
+    min-height: 44px;
+  }
+}

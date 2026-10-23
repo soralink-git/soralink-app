@@ -5,6 +5,8 @@ import SaveBar from './save-bar';
 import PinnedCardPreview from './pinned-card-preview';
 import type { SaveState } from './lib/save-queue';
 import CardSetup from './card-setup';
+import PaymentReceiptUpload from './payment-receipt-upload';
+import DashboardMetricsChart from './dashboard-metrics-chart';
 import CardQR from './card-qr';
 import CardStylePicker from './card-style-picker';
 import { ContactActionsEditor, SocialLinksEditor } from './contact-editors';
@@ -782,6 +784,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                   )}
                   {rights.activity && activeTab === 'requests' && (
                     <section className="panel">
+                      <DashboardMetricsChart ar={ar} />
                       <div className="panel-title">
                         <h2>{t('Demandes et rendez-vous', 'الطلبات والمواعيد')}</h2>
                         {data.pro && (
@@ -1168,7 +1171,13 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       {id ? (
                         <>
                           <div className="share-box">
-                            <CardQR id={id} publicName={publicName} logo={data.avatar} ar={ar} />
+                            <CardQR
+                              id={id}
+                              publicName={publicName}
+                              logo={data.avatar}
+                              business={data.business || data.name}
+                              ar={ar}
+                            />
                             <div>
                               <label className="field">
                                 {t('Votre lien permanent', 'الرابط الدائم ديالك')}
@@ -1369,6 +1378,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             )}
                           </span>
                           <span>{o.created.slice(0, 10)}</span>
+                          <PaymentReceiptUpload
+                            orderId={o.id}
+                            ar={ar}
+                            pending={o.status === 'pending' && !o.applied}
+                          />
                         </div>
                       ))}
                       <LoadMore
@@ -1418,7 +1432,13 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               />
               <details className="preview-qr">
                 <summary>{t('Voir le QR de ma carte', 'شوف رمز QR ديال الكارط')}</summary>
-                <CardQR id={id} publicName={publicName} logo={data.avatar} ar={ar} />
+                <CardQR
+                  id={id}
+                  publicName={publicName}
+                  logo={data.avatar}
+                  business={data.business || data.name}
+                  ar={ar}
+                />
               </details>
               <p className="preview-caption">
                 {t(

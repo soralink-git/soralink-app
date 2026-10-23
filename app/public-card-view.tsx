@@ -1,6 +1,7 @@
 'use client';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { visitSource } from './lib/metric-links';
 import CardView from './card-view';
 const PublicRequestModal = lazy(() => import('./public-request-modal'));
 export default function PublicCardView({
@@ -35,6 +36,22 @@ export default function PublicCardView({
     document.documentElement.lang = ar ? 'ar' : 'fr';
     document.documentElement.dir = ar ? 'rtl' : 'ltr';
   }, [ar]);
+  useEffect(() => {
+    if (!cardId || demoArabic || initialError) return;
+    const source = visitSource(new URL(location.href).searchParams.get('src'));
+    const key = 'soralink-visit:' + cardId + ':' + source;
+    try {
+      const last = Number(sessionStorage.getItem(key) || 0);
+      if (Date.now() - last < 1800000) return;
+      sessionStorage.setItem(key, String(Date.now()));
+    } catch {}
+    void fetch('/api/metrics', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ profile: cardId, source }),
+      keepalive: true,
+    }).catch(() => {});
+  }, [cardId, demoArabic, initialError]);
   async function retry() {
     if (!cardId || busy) return;
     setBusy(true);
