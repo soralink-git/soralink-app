@@ -1,3 +1,4 @@
+import { verifyProfileIdentity } from './verify-profile-identity.mjs';
 import { verifyCommerce } from './verify-commerce.mjs';
 import { verifyClientAccess } from './verify-client-access.mjs';
 import { verifyOffers } from './verify-offers.mjs';
@@ -825,6 +826,7 @@ try {
   );
   saveQueue.stop();
 
+  await verifyProfileIdentity({ db, request, cardId, adminId });
   await verifyOffers({ db, request, cardId, adminId, otherId });
   await verifyClientAccess({ db, request, cardId, adminId });
   await verifyCommerce({ db, request, cardId, adminId, otherId, photo });

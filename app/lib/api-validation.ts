@@ -1,3 +1,4 @@
+import { profileKind, profileName } from './profile-identity';
 import { clientAccessSchema } from './client-access-config';
 import { acceptedPlans } from './offers';
 import { profileLinkKinds, profileLinkValue } from './profile-links';
@@ -75,7 +76,8 @@ for (const key of ['hidePhone', 'hideEmail', 'hideLocation', 'hideSocial', 'hide
 export const profileDataSchema = z
   .object({
     ...profileFields,
-    name: requiredText(120),
+    name: formText(120),
+    profileType: z.enum(['person', 'business']).optional(),
     profileLinks: z
       .array(
         z
@@ -222,6 +224,15 @@ export const profileDataSchema = z
   })
   .passthrough()
   .superRefine((d, ctx) => {
+    const establishment = profileKind(d) === 'business';
+    if (!profileName(d) || (establishment && profileName(d).length > 120))
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [establishment ? 'business' : 'name'],
+        message: establishment
+          ? 'Renseignez le nom de l’établissement (120 caractères maximum).'
+          : 'Renseignez un nom (120 caractères maximum).',
+      });
     const errors = [
       JSON.stringify(d).length > 700000 ? 'Informations invalides : carte trop volumineuse.' : null,
       catalogueError(d.services, HARD_CATALOGUE_ITEMS),

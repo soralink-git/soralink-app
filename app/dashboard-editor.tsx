@@ -1,4 +1,6 @@
 'use client';
+import ProfileIdentityFields from './profile-identity-fields';
+import { profileName } from './lib/profile-identity';
 import { useState, useEffect } from 'react';
 import { clientSections, normalizeClientTab } from './lib/client-access';
 import SaveBar from './save-bar';
@@ -413,7 +415,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           <SaveBar
             state={saveState}
             ar={ar}
-            disabled={busy || !!savePaused || !data.name?.trim()}
+            disabled={busy || !!savePaused || !profileName(data)}
             save={save}
             reload={reloadSaved}
           />
@@ -507,11 +509,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                           )}
                         </p>
                         <h3>{t('Informations professionnelles', 'المعلومات المهنية')}</h3>
-                        <div className="form-grid">
-                          {field('name', t('Nom complet *', 'الاسم الكامل *'))}
-                          {field('job', t('Profession', 'المهنة'))}
-                          {field('business', t('Entreprise / cabinet', 'المقاولة / المكتب'))}
-                        </div>
+                        <ProfileIdentityFields data={data} setData={setData} ar={ar} busy={busy} />
                         <label className="field">
                           {t('Présentation', 'التقديم')}
                           <textarea
@@ -870,10 +868,10 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                                     r.email +
                                     '?subject=' +
                                     encodeURIComponent(
-                                      t('Votre demande — ', 'الطلب ديالك — ') + data.name,
+                                      t('Votre demande — ', 'الطلب ديالك — ') + profileName(data),
                                     ) +
                                     '&body=' +
-                                    encodeURIComponent(requestReply(r, data.name, ar))
+                                    encodeURIComponent(requestReply(r, profileName(data), ar))
                                   }
                                 >
                                   {t('Préparer un e-mail', 'وجد إيميل')} · {r.email}

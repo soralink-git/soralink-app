@@ -1,3 +1,4 @@
+import { profileKind } from './profile-identity';
 import { capabilities } from './offers';
 import { readClientAccess, clientSectionKeys, type ClientSection } from './client-access-config';
 import { normalizeSchedule } from './schedule';
@@ -43,7 +44,11 @@ export function clientEditIssue(profile: any, incoming: any, previous: any, publ
     allowed = (key: ClientSection) => visible.includes(key);
   const changed = (keys: string[], a = incoming, b = previous) =>
     keys.some((key) => JSON.stringify(a[key] ?? '') !== JSON.stringify(b[key] ?? ''));
-  if (!allowed('coordinates') && changed(['name', 'business', 'job', 'bio'])) return true;
+  if (
+    !allowed('coordinates') &&
+    (changed(['name', 'business', 'job', 'bio']) || profileKind(incoming) !== profileKind(previous))
+  )
+    return true;
   if (
     !allowed('interface') &&
     (changed(['avatar', 'cover']) ||
