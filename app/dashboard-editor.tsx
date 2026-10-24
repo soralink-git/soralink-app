@@ -1,63 +1,56 @@
 'use client';
-import ProfileIdentityFields from './profile-identity-fields';
-import { profileName } from './lib/profile-identity';
-import { useState, useEffect } from 'react';
-import { clientSections, normalizeClientTab } from './lib/client-access';
-import SaveBar from './save-bar';
-import PinnedCardPreview from './pinned-card-preview';
-import type { SaveState } from './lib/save-queue';
-import CardSetup from './card-setup';
-import PaymentReceiptUpload from './payment-receipt-upload';
-import DashboardMetricsChart from './dashboard-metrics-chart';
+import DashboardOrders from './dashboard-orders';
+import DashboardShare from './dashboard-share';
+
+import type { LucideIcon } from 'lucide-react';
+import type { Dispatch, JSX, RefObject, SetStateAction } from 'react';
+import { useEffect, useState } from 'react';
 import CardQR from './card-qr';
+import CardSetup from './card-setup';
 import CardStylePicker from './card-style-picker';
-import { ContactActionsEditor, SocialLinksEditor } from './contact-editors';
 import CatalogEditor from './catalog-editor';
 import CatalogOffersEditor from './catalog-offers-editor';
+import { ContactActionsEditor, SocialLinksEditor } from './contact-editors';
+import DashboardMetricsChart from './dashboard-metrics-chart';
+import { clientSections, normalizeClientTab } from './lib/client-access';
 import type { CropTarget } from './lib/crop-geometry';
-import AddressEditor from './address-editor';
-import { publicCardPath } from './lib/public-address';
-import LoadMore from './load-more';
+import { capabilities } from './lib/offers';
 import type { History, PageInfo } from './lib/pagination';
-import { capabilities, offers, RENEWAL_PRICE } from './lib/offers';
-import { offerLabel } from './lib/journey-links';
-import type { JSX, Dispatch, SetStateAction, RefObject } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import { profileName } from './lib/profile-identity';
+import type { SaveState } from './lib/save-queue';
+import LoadMore from './load-more';
+import PinnedCardPreview from './pinned-card-preview';
+import ProfileIdentityFields from './profile-identity-fields';
+import SaveBar from './save-bar';
 
 import {
-  Nfc,
-  X,
-  Phone,
   Calendar,
-  Briefcase,
-  Plus,
-  LayoutDashboard,
-  FileText,
-  ExternalLink,
-  Download,
-  Palette,
-  ImageIcon,
   Clock,
-  Users,
-  Settings,
-  Copy,
-  Camera,
   Crop,
-  Package,
+  ExternalLink,
+  FileText,
+  LayoutDashboard,
   LogOut,
+  Nfc,
+  Package,
+  Palette,
+  Phone,
+  Plus,
+  Settings,
+  Users,
+  X,
 } from 'lucide-react';
 
-import { type CardViewProps } from './card-view';
 import { WhatsAppIcon } from './card-helpers';
+import { type CardViewProps } from './card-view';
 
 import {
-  whatsappNumber,
-  whatsappNotification,
   requestKind,
-  requestStatus,
   requestReply,
+  requestStatus,
+  whatsappNotification,
+  whatsappNumber,
 } from './lib/whatsapp-notification';
-import { appearance } from './lib/personalization';
 
 export type DashboardContext = {
   Card: (props: CardViewProps) => JSX.Element;
@@ -1154,264 +1147,8 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       </p>
                     </section>
                   )}
-                  {activeTab === 'share' && (
-                    <section className="panel">
-                      <AddressEditor
-                        current={publicName}
-                        onChange={setPublicName}
-                        ar={ar}
-                        disabled={!id || busy}
-                      />
-                      <p className="share-visibility" role="status">
-                        {t('Après enregistrement : ', 'من بعد التسجيل: ')}
-                        <strong>
-                          {published
-                            ? t('carte publique', 'الكارط عمومية')
-                            : t('carte privée', 'الكارط خاصة')}
-                        </strong>
-                      </p>
-                      <h2>
-                        {t(
-                          'Une page. Plusieurs façons de la partager.',
-                          'صفحة وحدة. طرق بزاف للمشاركة.',
-                        )}
-                      </h2>
-                      {id ? (
-                        <>
-                          <div className="share-box">
-                            <CardQR
-                              id={id}
-                              publicName={publicName}
-                              logo={data.avatar}
-                              business={data.business || data.name}
-                              ar={ar}
-                            />
-                            <div>
-                              <label className="field">
-                                {t('Votre lien permanent', 'الرابط الدائم ديالك')}
-                                <input
-                                  readOnly
-                                  dir="ltr"
-                                  onFocus={(event) => event.currentTarget.select()}
-                                  value={
-                                    typeof window !== 'undefined'
-                                      ? location.origin + publicCardPath(id, publicName)
-                                      : ''
-                                  }
-                                />
-                              </label>
-                              <div className="row">
-                                <button
-                                  className="primary"
-                                  onClick={async () => {
-                                    try {
-                                      await navigator.clipboard.writeText(
-                                        location.origin + publicCardPath(id, publicName),
-                                      );
-                                      setMsg(t('Lien copié', 'تنسخ الرابط'));
-                                    } catch {
-                                      setMsg(
-                                        t(
-                                          'Copiez le lien depuis le champ.',
-                                          'نسخ الرابط من الخانة.',
-                                        ),
-                                      );
-                                    }
-                                  }}
-                                >
-                                  <Copy size={16} />
-                                  {t('Copier', 'نسخ')}
-                                </button>
-                                <a
-                                  className="secondary"
-                                  href={publicCardPath(id, publicName)}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                >
-                                  {t('Ouvrir', 'فتح')}
-                                  <ExternalLink size={15} />
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-
-                          <p className="hint">
-                            {published
-                              ? t(
-                                  'La page est publiée après enregistrement.',
-                                  'الصفحة كتتنشر من بعد التسجيل.',
-                                )
-                              : t(
-                                  'Activez « Carte visible publiquement » pour rendre ce lien consultable après la sauvegarde automatique.',
-                                  'فعّل «الكارط باينة للعموم» باش يخدم الرابط من بعد التسجيل التلقائي.',
-                                )}
-                          </p>
-                        </>
-                      ) : (
-                        <p>
-                          {t(
-                            'Complétez votre nom : le lien et le QR seront créés lors du premier enregistrement automatique.',
-                            'كمّل الاسم ديالك. الرابط ورمز QR غادي يتصايبو مع أول تسجيل تلقائي.',
-                          )}
-                        </p>
-                      )}
-                    </section>
-                  )}
-                  {activeTab === 'orders' && (
-                    <section className="panel">
-                      <h2>{t('Mon offre et mes supports', 'العرض والكارطات ديالي')}</h2>
-                      {subscription && (
-                        <div className="callout">
-                          <div>
-                            <h3>
-                              {offerLabel(subscription.plan, ar)} ·{' '}
-                              {subscription.state === 'active'
-                                ? t('Actif', 'مفعّل')
-                                : subscription.state === 'suspended'
-                                  ? t('Suspendu', 'موقوف')
-                                  : t('Essai', 'تجربة')}
-                            </h3>
-                            <p>
-                              {subscription.expires
-                                ? t('Échéance : ', 'نهاية الاشتراك : ') +
-                                  subscription.expires.slice(0, 10)
-                                : t(
-                                    'Échéance à définir par SoraLink',
-                                    'SoraLink غادي يحدّد نهاية الاشتراك',
-                                  )}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                      <p className="muted">
-                        {t(
-                          'Demandes enregistrées pour suivi. Aucun paiement n’est encaissé ici.',
-                          'الطلبات كتتسجّل للتتبع. ما كاين حتى أداء هنا.',
-                        )}
-                      </p>
-                      <p className="hint">
-                        {t(
-                          'Première année incluse. Ensuite 149 DH/an avec toutes les fonctions du pack conservées. Carte NFC physique en supplément.',
-                          'العام الأول داخل فالثمن. من بعد 149 درهم فالعام مع جميع وظائف الباقة. كارط NFC المادية بزيادة.',
-                        )}
-                      </p>
-                      {subscription && (
-                        <button
-                          className="primary"
-                          disabled={busy}
-                          onClick={async () => {
-                            try {
-                              await action({
-                                action: 'order',
-                                plan: subscription.plan,
-                                kind: 'renewal',
-                              });
-                              await load();
-                              setMsg(
-                                t(
-                                  'Demande de renouvellement enregistrée. Paiement à confirmer.',
-                                  'تسجّل طلب التجديد. خاص تأكيد الأداء.',
-                                ),
-                              );
-                            } catch (e: any) {
-                              setMsg(e.message);
-                            }
-                          }}
-                        >
-                          {t('Renouveler mon pack', 'جدّد الباقة ديالي')} · {RENEWAL_PRICE}{' '}
-                          {t('DH/an', 'درهم فالعام')}
-                        </button>
-                      )}
-                      <div className="order-options">
-                        {offers.map(({ id: n, price: p }) => (
-                          <button
-                            key={n}
-                            className="secondary"
-                            disabled={busy}
-                            onClick={async () => {
-                              try {
-                                await action({ action: 'order', plan: n });
-                                await load();
-                                setMsg(
-                                  t(
-                                    'Votre demande d’offre est enregistrée.',
-                                    'تسجّل طلب العرض ديالك.',
-                                  ),
-                                );
-                              } catch (e: any) {
-                                setMsg(e.message);
-                              }
-                            }}
-                          >
-                            {offerLabel(String(n), ar)}
-                            <b>
-                              {p} {t('DH', 'درهم')}
-                            </b>
-                          </button>
-                        ))}
-                      </div>
-                      {orders.map((o) => (
-                        <div className="request" key={o.id}>
-                          <strong>
-                            {o.kind === 'renewal' ? t('Renouvellement · ', 'تجديد · ') : ''}
-                            {offerLabel(o.plan, ar)}
-                            {o.amount != null ? ` · ${o.amount} ${t('DH', 'درهم')}` : ''}
-                          </strong>
-                          <span className="badge">
-                            {t(
-                              (
-                                {
-                                  pending: 'En attente',
-                                  paid: 'Paiement confirmé',
-                                  design: 'Visuel à valider',
-                                  production: 'En fabrication',
-                                  ready: 'Prête',
-                                  shipped: 'Expédiée',
-                                  delivered: 'Remise',
-                                  cancelled: 'Annulée',
-                                } as any
-                              )[o.status] || o.status,
-                              (
-                                {
-                                  pending: 'فانتظار الأداء',
-                                  paid: 'تخلّص',
-                                  design: 'التصميم',
-                                  production: 'فالتحضير',
-                                  ready: 'واجدة',
-                                  shipped: 'تسيفطات',
-                                  delivered: 'تسلّمات',
-                                  cancelled: 'تلغات',
-                                } as any
-                              )[o.status] || o.status,
-                            )}
-                          </span>
-                          <span>{o.created.slice(0, 10)}</span>
-                          <PaymentReceiptUpload
-                            orderId={o.id}
-                            ar={ar}
-                            pending={o.status === 'pending' && !o.applied}
-                          />
-                        </div>
-                      ))}
-                      <LoadMore
-                        page={historyPages?.orders}
-                        busy={busy || !!historyBusy}
-                        ar={ar}
-                        onClick={() => {
-                          void loadMoreHistory?.('orders');
-                        }}
-                      />
-                      <div className="callout">
-                        <Phone />
-                        <p>
-                          {t(
-                            'Contact : contact@soralink.link. Paiement manuel après confirmation. Les frais de livraison sont précisés avant commande.',
-                            'تواصل معنا: contact@soralink.link. الأداء يدوي بعد التأكيد. مصاريف التوصيل كتتحدّد قبل الطلب.',
-                          )}
-                        </p>
-                      </div>
-                    </section>
-                  )}
+                  {activeTab === 'share' && <DashboardShare context={context} />}
+                  {activeTab === 'orders' && <DashboardOrders context={context} />}
                 </>
               )}
             </div>
