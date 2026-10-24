@@ -114,6 +114,21 @@ export default function CardView({
     onChoose?: () => void;
     withSections?: boolean;
   }) {
+    // Trim a display-only copy: whitespace is empty, saved drafts stay untouched.
+    d = Object.fromEntries(
+      Object.entries(d).map(([key, value]) => [
+        key,
+        typeof value === 'string' ? value.trim() : value,
+      ]),
+    );
+    const title = profileName(d);
+    const subtitle =
+      profileKind(d) === 'business'
+        ? d.name
+          ? t('Contact : ', 'المسؤول: ') + d.name
+          : ''
+        : d.business;
+    const hasIdentity = !!(d.avatar || title || subtitle || d.job || d.bio);
     const location = mapLinks(d),
       a = appearance(d);
     const isDarkBlock = a.blockColor ? accentText(a.blockColor) === '#ffffff' : a.theme === 'dark';
@@ -136,6 +151,8 @@ export default function CardView({
           (small ? 'compact' : '') +
           (withSections ? ' unified-card' : '') +
           (a.backgroundPhoto ? ' has-photo-background' : '') +
+          (!d.cover ? ' without-cover' : '') +
+          (!d.avatar ? ' without-avatar' : '') +
           (cardStyleId(d.template) ? ' card-layout-' + cardStyleId(d.template) : '')
         }
         style={
@@ -171,64 +188,31 @@ export default function CardView({
         }
       >
         <CardBackground src={a.backgroundPhoto} opacity={a.backgroundOpacity} />
-        <div
-          className="card-cover"
-          style={
-            d.cover
-              ? {
-                  backgroundImage: `url(${d.cover})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                }
-              : {}
-          }
-        />
+        {d.cover && (
+          <div
+            className="card-cover"
+            style={{
+              backgroundImage: `url(${d.cover})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat',
+            }}
+          />
+        )}
         <div className="card-content">
-          <section className="card-identity">
-            <div className="avatar">
-              {d.avatar ? (
-                <img src={d.avatar} alt="" />
-              ) : (
-                profileName(d)
-                  .split(' ')
-                  .filter(Boolean)
-                  .slice(0, 2)
-                  .map((s: string) => s[0])
-                  .join('') || 'SL'
+          {hasIdentity && (
+            <section className="card-identity">
+              {d.avatar && (
+                <div className="avatar">
+                  <img src={d.avatar} alt="" />
+                </div>
               )}
-            </div>
-            <span className="eyebrow">
-              {profileKind(d) === 'business'
-                ? d.name?.trim()
-                  ? t('Contact : ', 'المسؤول: ') + d.name.trim()
-                  : t('Établissement', 'محل / مقاولة')
-                : d.business || t('Votre entreprise', 'المقاولة ديالك')}
-            </span>
-            <h2>
-              {profileName(d) ||
-                (profileKind(d) === 'business'
-                  ? t('Nom de l’établissement', 'اسم المحل')
-                  : t('Votre nom', 'الاسم ديالك'))}
-            </h2>
-            {(profileKind(d) !== 'business' || d.job?.trim() || preview) && (
-              <p className="job">
-                {d.job ||
-                  (profileKind(d) === 'business'
-                    ? t('Votre activité', 'النشاط ديالك')
-                    : t('Votre métier', 'المهنة ديالك'))}
-              </p>
-            )}
-            {(profileKind(d) !== 'business' || d.bio?.trim() || preview) && (
-              <p className="bio">
-                {d.bio ||
-                  t(
-                    'Présentez votre activité en quelques mots.',
-                    'عرّف بالنشاط ديالك بكلمات بسيطة.',
-                  )}
-              </p>
-            )}
-          </section>
+              {subtitle && <span className="eyebrow">{subtitle}</span>}
+              {title && <h2>{title}</h2>}
+              {d.job && <p className="job">{d.job}</p>}
+              {d.bio && <p className="bio">{d.bio}</p>}
+            </section>
+          )}
           {small && !preview && !withSections && <CardSection d={d} section="coordinates" />}
           {small && !preview && !withSections && <CardSection d={d} section="social" />}
           {small && !preview && !withSections ? (

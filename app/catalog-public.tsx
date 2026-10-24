@@ -163,6 +163,9 @@ export default function CatalogProducts({
     ...new Set(items.filter((p) => !p.categoryId && p.category).map((p) => p.category)),
   ];
   const current = items.find((p) => p.id === detail);
+  const detailDescription = current
+    ? catalogText(current.description, current.descriptionAr, ar, true).trim()
+    : '';
   const phone = whatsappNumber(data.whatsapp || '');
   const canOrder = settings.whatsapp && !!phone;
   function choose(p: CatalogueItem) {
@@ -556,7 +559,7 @@ export default function CatalogProducts({
       {current && (
         <ProductDetail ar={ar} title={name(current)} onClose={() => setDetail('')}>
           <PhotoGallery photos={[current.image, ...current.images].filter(Boolean)} ar={ar} />
-          <p>{catalogText(current.description, current.descriptionAr, ar, true)}</p>
+          {detailDescription && <p>{detailDescription}</p>}
           {current.reference && (
             <p>
               {t('Référence : ', 'المرجع: ')}
