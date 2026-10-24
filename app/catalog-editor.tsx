@@ -65,6 +65,12 @@ export default function CatalogEditor({
   const shownItems = catalogEditorItems(items, { query, categoryId, ar, editingId: expandedItem });
   const shownIds = new Set(shownItems.map((item) => item.id));
   const requestedItem = useRef('');
+  const returnToItem = useRef('');
+  const editing = tab === 'products' && items.some((item) => item.id === expandedItem);
+  const closeItem = () => {
+    returnToItem.current = expandedItem;
+    setExpandedItem('');
+  };
   const openItem = (id: string) => {
     requestedItem.current = id;
     setExpandedItem(id);
@@ -74,6 +80,12 @@ export default function CatalogEditor({
     setCategoryId('');
   };
   useEffect(() => {
+    if (!expandedItem && returnToItem.current) {
+      const row = document.getElementById('product-open-' + returnToItem.current);
+      row?.focus({ preventScroll: true });
+      row?.scrollIntoView({ block: 'nearest' });
+      returnToItem.current = '';
+    }
     if (requestedItem.current && requestedItem.current === expandedItem) {
       const form = document.getElementById('product-edit-' + expandedItem);
       form?.scrollIntoView({ block: 'nearest' });
@@ -274,7 +286,10 @@ export default function CatalogEditor({
     </div>
   );
   return (
-    <section className="panel catalog-editor" dir={ar ? 'rtl' : 'ltr'}>
+    <section
+      className={'panel catalog-editor' + (editing ? ' is-editing' : '')}
+      dir={ar ? 'rtl' : 'ltr'}
+    >
       <h2>{t('Produits et services', 'المنتجات والخدمات')}</h2>
       <p className="hint">
         {t(
@@ -522,10 +537,10 @@ export default function CatalogEditor({
             <legend>
               {t('Votre liste de produits et services', 'لائحة المنتجات والخدمات ديالك')}
             </legend>
-            <p>
+            <p className="catalog-list-overview">
               {items.length}/{rights.maxProducts} {t('articles', 'منتجات')}
             </p>
-            <p className="hint">
+            <p className="hint catalog-list-overview">
               {t(
                 'Cette limite est partagée entre toutes vos catégories.',
                 'هاد الحد مشترك بين جميع الفئات ديالك.',
@@ -534,7 +549,7 @@ export default function CatalogEditor({
             <button
               type="button"
               disabled={locked || items.length >= rights.maxProducts}
-              className="secondary"
+              className="secondary catalog-add-item"
               onClick={() => {
                 const id = crypto.randomUUID();
                 resetFilters();
@@ -634,15 +649,21 @@ export default function CatalogEditor({
             {items.map(
               (item, i) =>
                 shownIds.has(item.id) && (
-                  <article className="catalog-product-editor" key={item.id}>
+                  <article
+                    className={
+                      'catalog-product-editor' + (expandedItem === item.id ? ' is-editing' : '')
+                    }
+                    key={item.id}
+                  >
                     <div className="catalog-product-row">
                       <button
                         type="button"
                         className="catalog-product-open"
+                        id={'product-open-' + item.id}
                         disabled={locked}
                         aria-expanded={expandedItem === item.id}
                         aria-controls={'product-edit-' + item.id}
-                        onClick={() => openItem(expandedItem === item.id ? '' : item.id)}
+                        onClick={() => (expandedItem === item.id ? closeItem() : openItem(item.id))}
                       >
                         {item.image ? (
                           <img src={item.thumbnail || item.image} alt="" loading="lazy" />
@@ -714,6 +735,13 @@ export default function CatalogEditor({
                     </div>
                     {expandedItem === item.id && (
                       <div className="catalog-product-form" id={'product-edit-' + item.id}>
+                        <button
+                          type="button"
+                          className="text-button catalog-back"
+                          onClick={closeItem}
+                        >
+                          {t('Retour à la liste', 'رجع للائحة')}
+                        </button>
                         {input(
                           t('Nom du produit ou service *', 'اسم المنتج أو الخدمة *'),
                           language === 'Fr' ? item.nameFr : item.nameAr,
@@ -724,14 +752,6 @@ export default function CatalogEditor({
                             dir: language === 'Ar' ? 'rtl' : 'ltr',
                           },
                         )}
-                        <ItemCategoryField
-                          data={data}
-                          setData={setData}
-                          itemId={item.id}
-                          language={language}
-                          ar={ar}
-                          disabled={locked}
-                        />
                         <h4>{t('Image principale', 'الصورة الرئيسية')}</h4>
                         {media(
                           item.image,
@@ -745,14 +765,25 @@ export default function CatalogEditor({
                           (v) => updateItem(item.id, 'price', v),
                           { inputMode: 'decimal', maxLength: 30 },
                         )}
-                        <CatalogVariantsEditor
-                          variants={item.variants}
-                          onChange={(v) => updateItem(item.id, 'variants', v)}
-                          ar={ar}
-                          disabled={locked}
-                        />
                         <details className="catalog-options">
-                          <summary>{t('Plus d’options', 'اختيارات إضافية')}</summary>
+                          <summary>
+                            {t('Description, catégorie et options', 'الوصف والفئة والاختيارات')}
+                          </summary>
+                          <ItemCategoryField
+                            data={data}
+                            setData={setData}
+                            itemId={item.id}
+                            language={language}
+                            ar={ar}
+                            disabled={locked}
+                          />
+                          <CatalogVariantsEditor
+                            variants={item.variants}
+                            onChange={(v) => updateItem(item.id, 'variants', v)}
+                            ar={ar}
+                            disabled={locked}
+                          />
+
                           <label className="field">
                             {t('Description (facultative)', 'الوصف (اختياري)')}
                             <textarea
@@ -887,11 +918,7 @@ export default function CatalogEditor({
                             </label>
                           </details>
                         </details>
-                        <button
-                          type="button"
-                          className="secondary"
-                          onClick={() => setExpandedItem('')}
-                        >
+                        <button type="button" className="secondary" onClick={closeItem}>
                           {t('Fermer la fiche', 'سد التفاصيل')}
                         </button>
                       </div>

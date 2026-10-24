@@ -1,0 +1,54 @@
+/* SoraLink identity: orange, vermilion, charcoal, slate and white.
+   Shared by public site, authentication, workspace, administration and dialogs.
+   Saved customer card colors remain authoritative. */
+:root {
+  color-scheme: light;
+  --font-body: 'Roboto', 'Cairo', sans-serif;
+  --font-arabic: 'Cairo', system-ui, -apple-system, sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --radius-control: 12px;
+  --radius-panel: 18px;
+  --control-min: 44px;
+  --brand-orange: #ff9125;
+  --brand-vermilion: #ef552c;
+  --brand-charcoal: #111111;
+  --brand-slate: #242c39;
+  --brand-white: #ffffff;
+  --brand-accent: var(--brand-orange);
+  --brand-on-accent: var(--brand-charcoal);
+  --brand-accent-hover: #ffac5b;
+  --brand-strong: #b63b18;
+  --brand-soft: #eeebe6;
+  --brand-surface: var(--brand-white);
+  --brand-canvas: #f5f3f0;
+  --brand-field: var(--brand-white);
+  --brand-tint: #fff0df;
+  --brand-tint-border: #d9944b;
+  --brand-input-border: #8f8880;
+  --brand-shadow: 0 10px 32px -14px #242c3926, 0 2px 6px -1px #1111110a;
+  --ink: var(--brand-charcoal);
+  --green: var(--brand-strong);
+  --lime: var(--brand-tint);
+  --muted: #5d6068;
+  --line: #d4cfc9;
+}
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --brand-strong: var(--brand-orange);
+  --brand-surface: var(--brand-slate);
+  --brand-canvas: var(--brand-charcoal);
+  --brand-soft: #1b2029;
+  --brand-field: #191e27;
+  --brand-tint: #39291e;
+  --brand-tint-border: #a86025;
+  --brand-input-border: #747e8b;
+  --brand-shadow: 0 16px 40px -18px #00000066;
+  --ink: #f8f7f5;
+  --muted: #c1c5cd;
+  --line: #485160;
+}

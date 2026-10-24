@@ -1,19 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Roboto:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss';
-:root {
-  --ink: #0f172a;
-  --green: #00b5ad;
-  --lime: #5eead4;
-  --muted: #64748b;
-  --line: #e2e8f0;
-}
 * {
   box-sizing: border-box;
 }
 body {
   margin: 0;
   background: #fafcfb;
-  color: var(--ink);
   font-family: 'DM Sans', 'Cairo', sans-serif;
   font-size: 16px;
 }
@@ -351,7 +343,6 @@ nav button.active {
   place-items: center;
 }
 .card-button {
-  background: var(--accent);
   color: white;
   width: 100%;
   padding: 13px;
@@ -1290,13 +1281,6 @@ html[dir='rtl'] .hero-stage .profile-card {
   }
 }
 /* SoraLink — palette harmonieuse et raffinée (navy profond, or champagne, saphir) */
-:root {
-  --ink: #f8fafc;
-  --green: #d5b66f;
-  --lime: #ecd296;
-  --muted: #94a3b8;
-  --line: rgba(148, 163, 184, 0.16);
-}
 body {
   background-color: #0b111e;
   background-image:
@@ -1304,7 +1288,6 @@ body {
     radial-gradient(at 85% 20%, rgba(213, 182, 111, 0.1) 0px, transparent 50%),
     radial-gradient(at 50% 85%, rgba(14, 165, 233, 0.07) 0px, transparent 55%);
   background-attachment: fixed;
-  color: var(--ink);
 }
 .brand-icon {
   background: linear-gradient(135deg, #ecd296 0%, #d5b66f 100%);
@@ -1658,7 +1641,6 @@ textarea::placeholder {
 }
 .docare-date-strip {
   display: flex;
-  gap: 8px;
   overflow-x: auto;
   padding: 4px 2px 10px 2px;
   margin-bottom: 8px;
@@ -1745,9 +1727,6 @@ textarea::placeholder {
 .custom-card .avatar {
   border-color: var(--card-bg);
   border-radius: var(--avatar-radius);
-}
-.custom-card .text-button {
-  color: var(--card-fg);
 }
 .custom-details .panel,
 .custom-details > a {
@@ -2164,11 +2143,7 @@ textarea::placeholder {
   padding: 0 44px;
 }
 .landing-kicker {
-  display: inline-flex;
-  align-items: center;
   gap: 10px;
-  font-size: 11px;
-  font-weight: 700;
   letter-spacing: 1.5px;
   color: var(--landing-gold);
 }
@@ -2179,10 +2154,6 @@ textarea::placeholder {
   background: var(--landing-gold);
 }
 .landing-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 0.85fr);
-  align-items: center;
-  gap: 48px;
   padding: 48px 0 42px;
 }
 .landing-copy h1 {
@@ -2202,9 +2173,6 @@ textarea::placeholder {
   max-width: 470px;
 }
 .landing-actions {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
   gap: 24px;
   margin-top: 30px;
 }
@@ -2259,16 +2227,11 @@ textarea::placeholder {
   background: #059669 !important;
 }
 .landing-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
   font-size: 14px;
   padding: 12px 0;
   border-bottom: 1px solid #5f5136;
 }
 .landing-proof {
-  display: flex;
-  align-items: center;
   gap: 8px;
   font-size: 12px;
   color: var(--landing-muted);
@@ -2276,7 +2239,6 @@ textarea::placeholder {
 }
 .landing-proof svg {
   color: var(--landing-gold);
-  flex-shrink: 0;
 }
 @keyframes nfc-pulse {
   0% {
@@ -2352,162 +2314,17 @@ textarea::placeholder {
   animation: nfc-wave 2s infinite ease-out;
 }
 .landing-showcase {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  max-width: 440px;
-  margin: 0 auto;
   padding: 0;
   background: transparent;
   border: none;
 }
-.showcase-composition {
-  position: relative;
-  width: 360px;
-  max-width: 100%;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-}
 .showcase-caption {
-  position: relative;
-  z-index: 2;
-  display: inline-flex;
-  align-items: center;
   gap: 10px;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  font-weight: 700;
   color: #f59e0b;
-  text-transform: uppercase;
   margin-bottom: 14px;
   padding: 5px 14px;
-  border-radius: 9999px;
   background: rgba(15, 23, 42, 0.85);
   border: 1px solid rgba(245, 158, 11, 0.3);
-}
-.showcase-phone {
-  position: relative;
-  z-index: 2;
-  width: 360px;
-  max-width: 100%;
-  height: 640px;
-  max-height: 80vh;
-  margin: 0 auto;
-  padding: 0;
-  background: #090e18;
-  border: 10px solid #1e293b;
-  border-radius: 46px;
-  box-shadow:
-    0 30px 70px -15px rgba(0, 0, 0, 0.8),
-    0 0 45px rgba(79, 70, 229, 0.18),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
-  overflow-y: auto;
-  overflow-x: hidden;
-  overscroll-behavior: contain;
-  scrollbar-width: none;
-  box-sizing: border-box;
-  flex-shrink: 0;
-}
-.showcase-phone::-webkit-scrollbar {
-  display: none;
-}
-.showcase-phone .profile-card {
-  width: 100%;
-  max-width: 100%;
-  border-radius: 36px;
-  box-shadow: none !important;
-  border: none !important;
-  padding: 12px 14px 28px !important;
-  background: var(--card-fond, #0a0e16);
-}
-.showcase-phone .card-cover {
-  width: 100%;
-  aspect-ratio: 2.2 / 1 !important;
-  height: auto !important;
-  min-height: 125px !important;
-  border-radius: 26px !important;
-}
-.showcase-phone .card-content {
-  padding: 0 !important;
-  gap: 12px !important;
-}
-.showcase-phone .card-identity {
-  border-radius: 26px !important;
-  padding: 0 16px 20px !important;
-}
-.showcase-phone .avatar {
-  width: 96px !important;
-  height: 96px !important;
-  margin: -48px auto 12px !important;
-  font-size: 30px !important;
-}
-.showcase-phone .avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.showcase-phone .profile-card h2 {
-  font-size: 20px !important;
-}
-.showcase-phone .card-action-icons > button {
-  width: 48px !important;
-  min-width: 44px !important;
-  height: 48px !important;
-  min-height: 44px !important;
-}
-.showcase-phone .public-details .panel,
-.showcase-phone .public-details .card-promotions {
-  border-radius: 24px !important;
-  padding: 16px 14px !important;
-}
-.showcase-nfc {
-  position: absolute;
-  bottom: 25px;
-  right: -24px;
-  left: auto;
-  inset-inline-start: auto;
-  z-index: 5;
-  width: 190px;
-  min-height: 115px;
-  padding: 16px;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-  border: 1.5px solid #f59e0b;
-  border-radius: 16px;
-  box-shadow:
-    0 20px 45px -10px rgba(0, 0, 0, 0.7),
-    0 0 25px rgba(245, 158, 11, 0.25);
-  transform: rotate(4deg);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 8px;
-}
-.showcase-nfc:hover {
-  transform: rotate(0deg) scale(1.04);
-}
-.showcase-nfc > span[dir='ltr'],
-.showcase-nfc > span:not(.nfc-pulse-badge) {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-  font-weight: 800;
-  color: #f59e0b;
-  letter-spacing: -0.01em;
-}
-.showcase-nfc strong {
-  white-space: pre-line;
-  font-size: 11px;
-  line-height: 1.4;
-  font-weight: 600;
-  color: #e2e8f0;
 }
 .nfc-bottom {
   display: flex;
@@ -2519,18 +2336,13 @@ textarea::placeholder {
   color: #94a3b8;
 }
 [dir='rtl'] .showcase-nfc {
-  right: auto;
-  left: -24px;
   transform: rotate(-4deg);
 }
 [dir='rtl'] .showcase-nfc:hover {
   transform: rotate(0deg) scale(1.04);
 }
 .showcase-note {
-  display: flex;
-  align-items: center;
   justify-content: center;
-  gap: 8px;
   font-size: 10px;
   color: #aaa294;
 }
@@ -2538,12 +2350,8 @@ textarea::placeholder {
   width: 5px;
   height: 5px;
   background: #dfc382;
-  border-radius: 50%;
 }
 .landing-sharing {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 24px;
   border-block: 1px solid #332e25;
   padding: 26px 0;
@@ -2551,15 +2359,12 @@ textarea::placeholder {
 .landing-sharing > p {
   font-size: 14px;
   color: var(--landing-muted);
-  margin: 0;
 }
 .landing-sharing > div {
-  display: flex;
   gap: 35px;
 }
 .landing-sharing span {
   display: flex;
-  align-items: center;
   gap: 10px;
   font-size: 13px;
 }
@@ -2656,7 +2461,6 @@ textarea::placeholder {
 }
 .feature-index {
   font-size: 11px;
-  font-weight: 800;
   color: #64748b;
   letter-spacing: 1px;
 }
@@ -2762,7 +2566,6 @@ textarea::placeholder {
   animation: nfc-pulse 1.8s infinite;
 }
 .landing-process {
-  padding: 36px;
   background: #111827;
   border: 1px solid #1f2937;
   border-radius: 20px;
@@ -2778,8 +2581,6 @@ textarea::placeholder {
   margin: 0;
 }
 .landing-steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 24px;
   margin-top: 30px;
 }
@@ -2815,9 +2616,7 @@ textarea::placeholder {
   line-height: 1.6;
 }
 .landing-faq {
-  display: grid;
   grid-template-columns: 1fr 1.15fr;
-  gap: 48px;
   padding: 58px 0 70px;
 }
 .landing-faq details {
@@ -2827,7 +2626,6 @@ textarea::placeholder {
 .landing-faq summary {
   font-weight: 500;
   font-size: 15px;
-  cursor: pointer;
   line-height: 1.7;
 }
 .landing-faq details p {
@@ -2837,12 +2635,10 @@ textarea::placeholder {
 }
 [dir='rtl'] .landing h1 {
   letter-spacing: 0;
-  line-height: 1.45;
   font-size: clamp(34px, 3.6vw, 46px);
 }
 [dir='rtl'] .landing h2 {
   letter-spacing: 0;
-  line-height: 1.5;
   font-size: 30px;
 }
 [dir='rtl'] .landing-kicker {
@@ -3032,7 +2828,6 @@ header {
 @media (max-width: 700px) {
   [dir='rtl'] .landing h1 {
     font-size: 34px;
-    line-height: 1.5;
   }
   [dir='rtl'] .landing h2 {
     font-size: 27px;
@@ -3220,9 +3015,6 @@ header nav {
 }
 .nfc-explainer {
   min-height: 230px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   gap: 22px;
   border: 1px solid #393226;
   border-radius: 18px;
@@ -3235,7 +3027,6 @@ header nav {
   border-radius: 10px;
   background: #28251e;
   border: 1px solid #d5b66f;
-  display: flex;
   align-items: center;
   justify-content: space-around;
   color: #dfc382;
@@ -3246,10 +3037,6 @@ header nav {
   min-height: 180px;
   border-radius: 18px;
   border: 2px solid #7c6a48;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 18px;
   color: #dfc382;
   font-size: 12px;
@@ -3342,8 +3129,6 @@ header nav {
   color: #94a3b8;
 }
 .usecase-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin: 22px 0;
 }
@@ -3380,8 +3165,6 @@ header nav {
   line-height: 1.5;
 }
 .landing-price-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
   margin-top: 36px;
   align-items: center;
@@ -3454,17 +3237,14 @@ header nav {
   font-size: 23px;
   align-self: flex-start;
   margin: 8px 0 18px;
-  color: #ffffff;
 }
 .landing-price {
   font-size: 42px;
   letter-spacing: -1px;
-  color: #ffffff;
 }
 .landing-price small {
   font-size: 18px;
   font-weight: 500;
-  color: #94a3b8;
 }
 .landing-price-tagline {
   font-size: 13px;
@@ -3496,8 +3276,6 @@ header nav {
   margin-top: 2px;
 }
 .landing-price-grid article > small {
-  font-size: 12px;
-  text-align: center;
   color: #94a3b8;
   margin-top: 16px;
 }
@@ -3722,9 +3500,6 @@ header nav {
   border: 1px solid #78623a;
   border-radius: 12px;
   margin: 0 0 38px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 28px;
 }
 .landing-final h2 {
@@ -3734,7 +3509,6 @@ header nav {
 .landing-final p {
   font-size: 14px;
   color: #bbb4a4;
-  margin: 0;
 }
 .landing-final .landing-actions {
   display: flex;
@@ -3791,9 +3565,6 @@ header nav {
   padding: 12px 16px;
   box-shadow: 0 4px 20px #0008;
   font-size: 13px;
-}
-.legal-page {
-  max-width: 900px;
 }
 .legal-page h1 {
   font-size: 32px;
@@ -3949,9 +3720,6 @@ header nav {
   .header-actions {
     gap: 10px;
   }
-  .header-login {
-    font-size: 12px;
-  }
   .header-start {
     display: none;
   }
@@ -4009,7 +3777,6 @@ header nav {
   max-width: 100%;
 }
 .landing-features {
-  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 34px;
   margin-top: 24px;
@@ -4018,14 +3785,11 @@ header nav {
   padding-top: 25px;
 }
 .landing-pilot {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 30px;
   padding: 28px 0 38px;
   border-top: 1px solid #332e25;
 }
 .landing-pilot h3 {
-  font-size: 20px;
   line-height: 1.5;
   margin: 12px 0;
 }
@@ -4657,7 +4421,6 @@ header nav {
   padding: 16px;
 }
 .crop-dialog {
-  width: 100%;
   max-width: 520px;
   max-height: calc(100dvh - 32px);
   overflow: auto;
@@ -4739,7 +4502,6 @@ header nav {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -5663,9 +5425,6 @@ header nav {
 .offer-terms {
   margin: 24px 0;
   font-size: 14px;
-}
-.landing-price-grid {
-  align-items: stretch;
 }
 .landing-price-grid .pricing-card > a {
   margin-top: auto;
