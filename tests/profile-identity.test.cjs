@@ -45,6 +45,7 @@ for (const ar of [false, true])
     );
     assert.match(html, new RegExp('<h2>' + data.business + '</h2>'));
     assert(!html.includes('<h2>Amine</h2>'));
+    assert.doesNotMatch(html, /Votre activité|النشاط ديالك|Présentez votre activité/);
     const fields = renderToStaticMarkup(
       React.createElement(Fields, { data: establishment, setData() {}, ar, busy: false }),
     );

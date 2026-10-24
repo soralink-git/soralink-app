@@ -211,16 +211,23 @@ export default function CardView({
                   ? t('Nom de l’établissement', 'اسم المحل')
                   : t('Votre nom', 'الاسم ديالك'))}
             </h2>
-            <p className="job">
-              {d.job ||
-                (profileKind(d) === 'business'
-                  ? t('Votre activité', 'النشاط ديالك')
-                  : t('Votre métier', 'المهنة ديالك'))}
-            </p>
-            <p className="bio">
-              {d.bio ||
-                t('Présentez votre activité en quelques mots.', 'عرّف بالنشاط ديالك بكلمات بسيطة.')}
-            </p>
+            {(profileKind(d) !== 'business' || d.job?.trim() || preview) && (
+              <p className="job">
+                {d.job ||
+                  (profileKind(d) === 'business'
+                    ? t('Votre activité', 'النشاط ديالك')
+                    : t('Votre métier', 'المهنة ديالك'))}
+              </p>
+            )}
+            {(profileKind(d) !== 'business' || d.bio?.trim() || preview) && (
+              <p className="bio">
+                {d.bio ||
+                  t(
+                    'Présentez votre activité en quelques mots.',
+                    'عرّف بالنشاط ديالك بكلمات بسيطة.',
+                  )}
+              </p>
+            )}
           </section>
           {small && !preview && !withSections && <CardSection d={d} section="coordinates" />}
           {small && !preview && !withSections && <CardSection d={d} section="social" />}
