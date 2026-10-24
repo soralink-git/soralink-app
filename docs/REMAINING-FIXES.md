@@ -47,9 +47,9 @@ les clients mis à jour utilisent en plus les métadonnées de pagination.
   106 demandes parcourues sans doublon, isolation des comptes, refus anonyme et curseur invalide.
 - Rendu des libellés français et darija et réponses préparées ; compilation TypeScript,
   tests, formatage, vérification du graphe public et du parcours complet.
-- Audit des dépendances : un avis élevé subsiste sur `braces@3.0.3`
-  (`GHSA-vfj7-8cjw-p6xm`), sans version corrigée publiée dans le résultat obtenu.
-  L’avis reste visible et concerne la chaîne d’outils déjà documentée.
+- Audit des dépendances actualisé le 24 octobre 2026 : aucune vulnérabilité connue
+  après les mises à jour ciblées. L’avis `braces` (`GHSA-vfj7-8cjw-p6xm`) a été retiré
+  par GitHub le 23 octobre. Voir le [rapport de mise à jour](SECURITY-UPDATE-2026-10-24.md).
 
 ## Points nécessitant des informations ou des accès supplémentaires
 

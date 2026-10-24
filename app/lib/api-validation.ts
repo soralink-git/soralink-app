@@ -74,7 +74,7 @@ for (const key of [
   profileFields[key] = text(key === 'bio' ? 5000 : 4000).nullish();
 for (const key of ['hidePhone', 'hideEmail', 'hideLocation', 'hideSocial', 'hideWhatsApp', 'pro'])
   profileFields[key] = z.boolean().optional();
-export const profileDataSchema = z
+const profileObjectSchema = z
   .object({
     ...profileFields,
     name: formText(120),
@@ -193,9 +193,12 @@ export const profileDataSchema = z
     sectionOrder: z.array(z.enum(sectionKeys)).max(9).optional(),
     hiddenSections: z.array(z.enum(sectionKeys)).max(9).optional(),
     sectionTitles: z
-      .object({ fr: z.record(text(120)).optional(), ar: z.record(text(120)).optional() })
+      .object({
+        fr: z.record(z.string(), text(120)).optional(),
+        ar: z.record(z.string(), text(120)).optional(),
+      })
       .optional(),
-    hours: z.record(z.tuple([time, time])).optional(),
+    hours: z.record(z.string(), z.tuple([time, time])).optional(),
     breakStart: z.union([time, z.literal('')]).optional(),
     breakEnd: z.union([time, z.literal('')]).optional(),
     closures: z
@@ -224,26 +227,26 @@ export const profileDataSchema = z
       .max(5)
       .optional(),
   })
-  .passthrough()
-  .superRefine((d, ctx) => {
-    const establishment = profileKind(d) === 'business';
-    if (!profileName(d) || (establishment && profileName(d).length > 120))
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: [establishment ? 'business' : 'name'],
-        message: establishment
-          ? 'Renseignez le nom de l’établissement (120 caractères maximum).'
-          : 'Renseignez un nom (120 caractères maximum).',
-      });
-    const errors = [
-      JSON.stringify(d).length > 700000 ? 'Informations invalides : carte trop volumineuse.' : null,
-      catalogueError(d.services, HARD_CATALOGUE_ITEMS),
-      promotionError(d.promotions),
-      d.recordedVideo && !recordedVideoUrl(d.recordedVideo) ? 'Lien de vidéo invalide' : null,
-    ];
-    for (const error of errors)
-      if (error) ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
-  });
+  .passthrough();
+export const profileDataSchema = profileObjectSchema.superRefine((d, ctx) => {
+  const establishment = profileKind(d) === 'business';
+  if (!profileName(d) || (establishment && profileName(d).length > 120))
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: [establishment ? 'business' : 'name'],
+      message: establishment
+        ? 'Renseignez le nom de l’établissement (120 caractères maximum).'
+        : 'Renseignez un nom (120 caractères maximum).',
+    });
+  const errors = [
+    JSON.stringify(d).length > 700000 ? 'Informations invalides : carte trop volumineuse.' : null,
+    catalogueError(d.services, HARD_CATALOGUE_ITEMS),
+    promotionError(d.promotions),
+    d.recordedVideo && !recordedVideoUrl(d.recordedVideo) ? 'Lien de vidéo invalide' : null,
+  ];
+  for (const error of errors)
+    if (error) ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
+});
 const requestObject = z.object({
   action: z.literal('request'),
   profile: id,
@@ -315,8 +318,7 @@ export const dataActionSchema = z
   .superRefine((b, ctx) => {
     if (b.action === 'request') requestRules(b, ctx);
   });
-export const adminDesignSchema = profileDataSchema
-  .innerType()
+export const adminDesignSchema = profileObjectSchema
   .pick({
     color: true,
     cardTheme: true,
@@ -450,7 +452,8 @@ export function validateInput<S extends z.ZodTypeAny>(schema: S, value: unknown)
     const first = result.error.issues[0];
     const field = first.path[first.path.length - 1];
     let message = issue?.message;
-    if (!message && first.code === 'invalid_union_discriminator') message = 'Action inconnue';
+    if (!message && first.code === 'invalid_union' && first.path.at(-1) === 'action')
+      message = 'Action inconnue';
     if (!message && field === 'email') message = 'Renseignez une adresse e-mail valide.';
     if (!message && field === 'password')
       message =
