@@ -1,4 +1,5 @@
 'use client';
+import { profileKind, profileName } from './lib/profile-identity';
 import ProfileLinksView from './profile-links-view';
 import { visibleProfileLinks } from './lib/profile-links';
 import CatalogVideos from './catalog-videos';
@@ -189,7 +190,7 @@ export default function CardView({
               {d.avatar ? (
                 <img src={d.avatar} alt="" />
               ) : (
-                d.name
+                profileName(d)
                   .split(' ')
                   .filter(Boolean)
                   .slice(0, 2)
@@ -197,13 +198,36 @@ export default function CardView({
                   .join('') || 'SL'
               )}
             </div>
-            <span className="eyebrow">{d.business || t('Votre entreprise', 'المقاولة ديالك')}</span>
-            <h2>{d.name || t('Votre nom', 'الاسم ديالك')}</h2>
-            <p className="job">{d.job || t('Votre métier', 'المهنة ديالك')}</p>
-            <p className="bio">
-              {d.bio ||
-                t('Présentez votre activité en quelques mots.', 'عرّف بالنشاط ديالك بكلمات بسيطة.')}
-            </p>
+            <span className="eyebrow">
+              {profileKind(d) === 'business'
+                ? d.name?.trim()
+                  ? t('Contact : ', 'المسؤول: ') + d.name.trim()
+                  : t('Établissement', 'محل / مقاولة')
+                : d.business || t('Votre entreprise', 'المقاولة ديالك')}
+            </span>
+            <h2>
+              {profileName(d) ||
+                (profileKind(d) === 'business'
+                  ? t('Nom de l’établissement', 'اسم المحل')
+                  : t('Votre nom', 'الاسم ديالك'))}
+            </h2>
+            {(profileKind(d) !== 'business' || d.job?.trim() || preview) && (
+              <p className="job">
+                {d.job ||
+                  (profileKind(d) === 'business'
+                    ? t('Votre activité', 'النشاط ديالك')
+                    : t('Votre métier', 'المهنة ديالك'))}
+              </p>
+            )}
+            {(profileKind(d) !== 'business' || d.bio?.trim() || preview) && (
+              <p className="bio">
+                {d.bio ||
+                  t(
+                    'Présentez votre activité en quelques mots.',
+                    'عرّف بالنشاط ديالك بكلمات بسيطة.',
+                  )}
+              </p>
+            )}
           </section>
           {small && !preview && !withSections && <CardSection d={d} section="coordinates" />}
           {small && !preview && !withSections && <CardSection d={d} section="social" />}
@@ -233,6 +257,7 @@ export default function CardView({
                       [
                         vcardText({
                           name: d.name,
+                          profileType: d.profileType,
                           ...(Array.isArray(d.profileLinks)
                             ? { entries: visibleProfileLinks(d) }
                             : {}),

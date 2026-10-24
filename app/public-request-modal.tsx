@@ -1,4 +1,5 @@
 'use client';
+import { profileName } from './lib/profile-identity';
 import { useEffect, useState, useRef } from 'react';
 import { X } from 'lucide-react';
 import { cataloguePrice } from './lib/catalogue';
@@ -164,7 +165,7 @@ export default function PublicRequestModal({
         >
           <X />
         </button>
-        <span className="eyebrow">{data.name}</span>
+        <span className="eyebrow">{profileName(data)}</span>
         <h2>
           {modal === 'contact'
             ? t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')

@@ -1,3 +1,4 @@
+import { profileKind } from './profile-identity';
 import { visibleProfileLinks, profileLinkKinds } from './profile-links';
 import {
   catalogDocuments,
@@ -75,6 +76,7 @@ export function publicCardData(
     'hideWhatsApp',
   ])
     out[key] = d[key];
+  out.profileType = profileKind(saved);
   out.pro = pro;
   out.activity = features.activity;
   out.defaultLanguage = d.defaultLanguage === 'ar' || d.lang === 'ar' ? 'ar' : 'fr';

@@ -1,7 +1,9 @@
+import { profileKind, profileName } from './profile-identity';
 import { whatsappNumber } from './whatsapp-notification';
 import type { ProfileLink } from './profile-links';
 export function vcardText(data: {
   name?: unknown;
+  profileType?: unknown;
   phone?: unknown;
   email?: unknown;
   business?: unknown;
@@ -12,7 +14,11 @@ export function vcardText(data: {
 }): string {
   const safe = (value: unknown) =>
     typeof value === 'string' ? value.replace(/\\/g, '\\\\').replace(/[\r\n;,]/g, ' ') : '';
-  const lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + safe(data.name)];
+  const lines = [
+    'BEGIN:VCARD',
+    'VERSION:3.0',
+    'FN:' + safe(profileKind(data) === 'business' ? profileName(data) : data.name),
+  ];
   if (data.entries) {
     const numbers = new Set<string>();
     for (const entry of data.entries) {

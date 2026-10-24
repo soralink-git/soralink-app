@@ -1,4 +1,5 @@
 'use client';
+import { profileName } from './lib/profile-identity';
 import { useState } from 'react';
 import { Save, RotateCcw } from 'lucide-react';
 import { capabilities, platformPlans, isPlatformPlan } from './lib/offers';
@@ -43,7 +44,7 @@ export default function AdminClientEditor({
     <details className="panel admin-client-management">
       <summary className="admin-client-summary">
         <span>
-          <strong>{JSON.parse(profile.data).name || t('Client', 'زبون')}</strong>
+          <strong>{profileName(JSON.parse(profile.data)) || t('Client', 'زبون')}</strong>
           <small>{profile.email || t('E-mail non renseigné', 'الإيميل ما متسجّلش')}</small>
         </span>
         <span className="badge">{offerLabel(profile.plan, ar)}</span>

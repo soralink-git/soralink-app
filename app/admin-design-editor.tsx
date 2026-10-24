@@ -1,4 +1,5 @@
 'use client';
+import { profileName } from './lib/profile-identity';
 import { useEffect, useRef, useState } from 'react';
 import { capabilities } from './lib/offers';
 import CardView from './card-view';
@@ -96,7 +97,7 @@ export default function AdminDesignEditor({
       <div className="panel-title">
         <div>
           <h2>{t('Présentation et sections', 'المظهر والأقسام')}</h2>
-          <p>{data.name}</p>
+          <p>{profileName(data)}</p>
         </div>
         <button type="button" className="secondary small" disabled={busy || !!crop} onClick={close}>
           {t('Fermer', 'سدّ')}

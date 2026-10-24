@@ -1,3 +1,4 @@
+import { profileName } from './profile-identity';
 export type SaveStatus =
   | 'ready'
   | 'pending'
@@ -90,12 +91,11 @@ export function createSaveQueue(options: {
     clear();
     if (!ready || paused || conflict) return false;
     if (running && !(await running)) return false;
-    if (force && !persisted && !dirty() && String(JSON.parse(latest!).data?.name || '').trim())
-      baseline = null;
+    if (force && !persisted && !dirty() && profileName(JSON.parse(latest!).data)) baseline = null;
     while (dirty()) {
       if (paused || conflict || (!force && blocked === latest)) return false;
       const snapshot: CardSnapshot = JSON.parse(latest!);
-      if (!String(snapshot.data?.name || '').trim()) {
+      if (!profileName(snapshot.data)) {
         blocked = latest;
         emit('invalid');
         return false;

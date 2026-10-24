@@ -1,4 +1,5 @@
 'use client';
+import { profileName } from '../lib/profile-identity';
 import AdminClientEditor from '../admin-client-editor';
 import PaymentReceiptUpload from '../payment-receipt-upload';
 import { managementRevision } from '../lib/client-access-config';
@@ -389,7 +390,9 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                         {o.amount != null ? ` · ${o.amount} ${t('DH', 'درهم')}` : ''}
                       </span>
                       <h3>
-                        {o.data ? JSON.parse(o.data).name : t('Client sans carte', 'زبون بلا كارط')}
+                        {o.data
+                          ? profileName(JSON.parse(o.data))
+                          : t('Client sans carte', 'زبون بلا كارط')}
                       </h3>
                       <p>{o.email}</p>
                       <p className="hint">

@@ -1,4 +1,5 @@
 'use client';
+import { profileName } from './lib/profile-identity';
 import OfferGrid from './offer-grid';
 import { BRAND } from './lib/brand';
 import ThemeToggle from './theme-toggle';
@@ -75,6 +76,7 @@ function mapLinks(d: any) {
 const blank = {
   promotions: [] as any[],
   name: '',
+  profileType: 'person',
   job: '',
   business: '',
   bio: '',
@@ -1257,7 +1259,7 @@ export default function App({
       )}
       {(view === 'public' || view === 'demo') && (
         <main className="public-layout">
-          {view === 'public' && !data.name ? (
+          {view === 'public' && !profileName(data) ? (
             <div className="empty">
               <h2>
                 {loaded
@@ -1285,7 +1287,7 @@ export default function App({
             >
               <X />
             </button>
-            <span className="eyebrow">{data.name}</span>
+            <span className="eyebrow">{profileName(data)}</span>
             <h2>
               {modal === 'contact'
                 ? t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')

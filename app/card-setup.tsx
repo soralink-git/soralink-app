@@ -1,4 +1,6 @@
 'use client';
+import ProfileIdentityFields from './profile-identity-fields';
+import { profileName, profileKind } from './lib/profile-identity';
 import { useState, useRef, useEffect } from 'react';
 import CardStylePicker from './card-style-picker';
 import { ContactActionsEditor } from './contact-editors';
@@ -10,8 +12,7 @@ export default function CardSetup({
   context: DashboardContext;
   onExit: () => void;
 }) {
-  const { data, setData, busy, field, t, ar, startCrop, published, setPublished, id, setTab } =
-    context;
+  const { data, setData, busy, t, ar, startCrop, published, setPublished, id, setTab } = context;
   const [step, setStep] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
@@ -39,7 +40,7 @@ export default function CardSetup({
           <li key={label}>
             <button
               type="button"
-              disabled={busy || (i > 1 && !data.name?.trim())}
+              disabled={busy || (i > 1 && !profileName(data))}
               aria-current={i === step ? 'step' : undefined}
               onClick={() => setStep(i)}
             >
@@ -103,11 +104,7 @@ export default function CardSetup({
         {step === 1 && (
           <fieldset disabled={busy}>
             <legend>{t('Présentez votre activité', 'عرّف بالنشاط ديالك')}</legend>
-            <div className="form-grid">
-              {field('name', t('Nom complet *', 'الاسم الكامل *'))}
-              {field('job', t('Profession', 'المهنة'))}
-              {field('business', t('Entreprise / cabinet', 'المقاولة / المكتب'))}
-            </div>
+            <ProfileIdentityFields data={data} setData={setData} ar={ar} busy={busy} />
             <label className="field">
               {t('Présentation courte', 'تقديم قصير')}
               <textarea
@@ -121,8 +118,8 @@ export default function CardSetup({
             </label>
             <p className="hint">
               {t(
-                'Seul le nom est obligatoire. Vous pourrez compléter les autres informations ensuite.',
-                'غير الاسم إجباري. المعلومات الأخرى تقدر تزيدها من بعد.',
+                'Renseignez le nom à mettre en avant. Les autres informations peuvent être complétées ensuite.',
+                'عمّر الاسم اللي بغيتي يبان هو الأول. المعلومات الأخرى تقدر تزيدها من بعد.',
               )}
             </p>
           </fieldset>
@@ -138,10 +135,19 @@ export default function CardSetup({
               )}
             </p>
             <dl className="setup-summary">
-              <dt>{t('Nom', 'الاسم')}</dt>
-              <dd>{data.name}</dd>
-              <dt>{t('Entreprise', 'المقاولة')}</dt>
-              <dd>{data.business || t('Non renseignée', 'ما تعمراتش')}</dd>
+              <dt>
+                {profileKind(data) === 'business' ? t('Établissement', 'المحل') : t('Nom', 'الاسم')}
+              </dt>
+              <dd>{profileName(data)}</dd>
+              <dt>
+                {profileKind(data) === 'business'
+                  ? t('Contact', 'المسؤول')
+                  : t('Entreprise', 'المقاولة')}
+              </dt>
+              <dd>
+                {(profileKind(data) === 'business' ? data.name : data.business) ||
+                  t('Non renseigné', 'ما تعمّرش')}
+              </dd>
             </dl>
             <label className="toggle">
               <input
@@ -154,7 +160,7 @@ export default function CardSetup({
             <button
               type="button"
               className="primary full"
-              disabled={busy || !data.name?.trim()}
+              disabled={busy || !profileName(data)}
               onClick={onExit}
             >
               {t('Terminer', 'كمّل')}
@@ -195,7 +201,7 @@ export default function CardSetup({
           <button
             type="button"
             className="primary"
-            disabled={busy || (step === 1 && !data.name?.trim())}
+            disabled={busy || (step === 1 && !profileName(data))}
             onClick={() => setStep((s) => s + 1)}
           >
             {t('Continuer', 'كمّل')}

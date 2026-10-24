@@ -42,8 +42,8 @@ export async function GET(req: Request) {
           return readPage(
             db(),
             'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights,client_access FROM profiles',
-            "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0)",
-            [query.search, query.search, query.search],
+            "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.business'),'')),lower(?))>0)",
+            [query.search, query.search, query.search, query.search],
             cursor,
             'updated',
           );
