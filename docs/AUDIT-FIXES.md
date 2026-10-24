@@ -73,18 +73,18 @@ et aucun message réel n’a été envoyé pendant cette préparation.
 
 ## Dépendances
 
-Les mises à jour sont ciblées : Next 16.3.8, React/React DOM/RSC 19.2.8, Vite 8.0.16,
-sharp 0.35.5 et versions corrigées des dépendances transitives. Les exceptions de version
-sont explicites dans `pnpm-workspace.yaml`, avec un lockfile figé. Le délai minimal de
-publication des dépendances reste actif. Vinext n’a pas été migré vers une autre version
-majeure de son parcours de publication dans cette correction.
+La correction initiale utilisait Next 16.3.8, React/React DOM/RSC 19.2.8 et Vite 8.0.16.
+Ces versions sont remplacées par la [mise à jour de sécurité du 24 octobre 2026](SECURITY-UPDATE-2026-10-24.md) :
+Next et eslint-config-next 16.4.1, React/React DOM/RSC 19.2.9, Vite 8.1.6,
+Zod 4.6.6, undici 7.30.1 et fast-uri 3.1.9. Sharp reste fixé à 0.35.5.
+Le lockfile est figé et le délai minimal de publication reste actif, avec une exception
+limitée à la version corrigée `fast-uri@3.1.9`, publiée le 19 octobre.
 
-L’avis `GHSA-vfj7-8cjw-p6xm` sur `braces@3.0.3` reste signalé : aucun correctif publié
-n’est disponible dans le résultat d’audit. Il se trouve dans les outils de lint/build
-(globs), pas dans un traitement de motifs fourni par les clients de SoraLink identifié
-par cette revue. Ne pas exposer de serveur de développement ni accepter de motifs glob
-arbitraires provenant de visiteurs. L’audit hebdomadaire continue à signaler cet avis ;
-il n’est pas masqué par une liste d’exceptions.
+L’avis `GHSA-vfj7-8cjw-p6xm` sur `braces@3.0.3` a été retiré par GitHub le 23 octobre 2026,
+car jugé non exploitable en pratique. Il ne constitue donc plus une alerte résiduelle
+sans correctif. L’audit du 24 octobre ne signale aucune vulnérabilité connue.
+Aucun avis n’est masqué par une liste d’exceptions. La surveillance hebdomadaire reste active
+et un audit bloquant au seuil élevé est ajouté aux vérifications de chaque PR et de main.
 
 ## Points qui ne sont pas présentés comme terminés
 

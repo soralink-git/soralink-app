@@ -673,3 +673,43 @@ test('client content saves cannot alter advanced presentation or hidden sections
   }
   assert.equal(ctx.saved.length, 0);
 });
+
+test('oversized product collections fail at the bound before accumulating per-item errors', () => {
+  const result = v.profileDataSchema.safeParse({
+    name: 'Atelier',
+    services: Array(10000).fill({ name: 42, images: [false], variants: [null] }),
+  });
+  assert.equal(result.success, false);
+  assert.equal(result.error.issues.length, 1);
+  assert.equal(result.error.issues[0].code, 'too_big');
+  assert.deepEqual(Array.from(result.error.issues[0].path), ['services']);
+});
+
+test('Zod migration preserves bilingual records, catalog defaults and independent admin design', () => {
+  const parsed = v.profileDataSchema.parse({
+    name: 'Atelier',
+    sectionTitles: { fr: { contact: 'Contact' }, ar: { contact: 'تواصل' } },
+    hours: { 1: ['09:00', '17:00'] },
+    catalogSettings: {},
+  });
+  assert.equal(parsed.sectionTitles.fr.contact, 'Contact');
+  assert.equal(parsed.sectionTitles.ar.contact, 'تواصل');
+  assert.equal(parsed.hours['1'][0], '09:00');
+  assert.equal(parsed.catalogSettings.enabled, true);
+  assert.equal(parsed.catalogSettings.layout, 'grid');
+  assert.equal(parsed.catalogSettings.fulfillmentModes.length, 0);
+  assert.equal(v.adminDesignSchema.parse({ color: '#ff9125' }).color, '#ff9125');
+  assert.equal(v.adminDesignSchema.safeParse({ name: 'Unauthorized' }).success, false);
+  assert.equal(
+    v.profileDataSchema.safeParse({ name: 'Atelier', hours: { 1: ['25:00', '17:00'] } }).success,
+    false,
+  );
+});
+
+test('unknown discriminated actions retain a localized validation response', () => {
+  for (const schema of [v.dataActionSchema, v.authActionSchema, v.adminActionSchema])
+    assert.throws(
+      () => v.validateInput(schema, { action: 'unknown-action' }),
+      (error) => error instanceof v.ApiInputError && error.message === 'Action inconnue',
+    );
+});
