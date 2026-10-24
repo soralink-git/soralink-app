@@ -1390,3 +1390,21 @@
   margin-top: 3px;
   accent-color: #ff9125;
 }
+
+/* Empty identity fields take no space, in the editor preview and on public cards. */
+.card-design.without-avatar .card-identity,
+.card-design.without-cover .card-identity {
+  padding-block-start: var(--space-6);
+}
+.card-design.without-cover .card-identity {
+  margin-block-start: 0;
+}
+.card-design.without-cover .avatar {
+  margin-block-start: 0;
+}
+.card-design .card-identity > :first-child:not(.avatar) {
+  margin-block-start: 0;
+}
+.card-design .public-details:empty {
+  display: none;
+}
