@@ -61,6 +61,7 @@ export function publicCardData(
     'textSize',
     'buttonSize',
     'buttonStyle',
+    'serviceButtonMode',
     'cardTheme',
     'cardFont',
     'buttonShape',

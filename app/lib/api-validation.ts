@@ -1,3 +1,4 @@
+import { serviceButtonModes } from './service-buttons';
 import { profileKind, profileName } from './profile-identity';
 import { clientAccessSchema } from './client-access-config';
 import { acceptedPlans } from './offers';
@@ -188,6 +189,7 @@ export const profileDataSchema = z
     textSize: z.enum(['normal', 'large', 'extra']).optional(),
     buttonSize: z.enum(['normal', 'large']).optional(),
     buttonStyle: z.enum(['filled', 'outline']).optional(),
+    serviceButtonMode: z.enum(serviceButtonModes).optional(),
     sectionOrder: z.array(z.enum(sectionKeys)).max(9).optional(),
     hiddenSections: z.array(z.enum(sectionKeys)).max(9).optional(),
     sectionTitles: z
@@ -329,6 +331,7 @@ export const adminDesignSchema = profileDataSchema
     textSize: true,
     buttonSize: true,
     buttonStyle: true,
+    serviceButtonMode: true,
     backgroundPhoto: true,
     backgroundOpacity: true,
     sectionOrder: true,

@@ -1,7 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { Phone, Mail, MapPin, Globe, Star } from 'lucide-react';
 import { SocialIcon, WhatsAppIcon } from './card-helpers';
+import { serviceButtonStyle } from './lib/service-buttons';
 import {
   visibleProfileLinks,
   profileLinkGroup,
@@ -22,10 +23,12 @@ export default function ProfileLinksView({
   onMessage: (s: string) => void;
 }) {
   const [email, setEmail] = useState('');
+  const emailPanelId = useId();
   const t = (fr: string, a: string) => (ar ? a : fr);
   const entries = visibleProfileLinks(data).filter(
     (entry) => profileLinkGroup(entry.kind) === group,
   );
+  const currentEmail = entries.find((entry) => entry.kind === 'email' && entry.id === email);
   if (!entries.length) return null;
   return (
     <div className="panel profile-links-panel">
@@ -35,12 +38,16 @@ export default function ProfileLinksView({
           <div className="profile-link-public" key={entry.id}>
             <a
               href={profileLinkHref(entry)}
+              style={serviceButtonStyle(data, entry.kind)}
               target={['phone', 'email'].includes(entry.kind) ? undefined : '_blank'}
               rel="noopener noreferrer"
-              aria-label={profileLinkLabel(entry, ar)}
-              onClick={(e) => {
+              aria-label={profileLinkLabel(entry, ar) + ' — ' + entry.value}
+              title={profileLinkLabel(entry, ar) + ' — ' + entry.value}
+              aria-expanded={entry.kind === 'email' ? email === entry.id : undefined}
+              aria-controls={entry.kind === 'email' ? emailPanelId : undefined}
+              onClick={(event) => {
                 if (entry.kind === 'email') {
-                  e.preventDefault();
+                  event.preventDefault();
                   setEmail(email === entry.id ? '' : entry.id);
                 }
               }}
@@ -60,48 +67,44 @@ export default function ProfileLinksView({
               ) : (
                 <SocialIcon network={entry.kind} />
               )}
-              <span>
-                <strong>{profileLinkLabel(entry, ar)}</strong>
-                <small dir={entry.kind === 'address' ? undefined : 'ltr'}>{entry.value}</small>
-              </span>
             </a>
-            {email === entry.id && entry.kind === 'email' && (
-              <div className="email-actions">
-                <input
-                  readOnly
-                  dir="ltr"
-                  value={entry.value}
-                  onFocus={(e) => e.currentTarget.select()}
-                  aria-label={t('Adresse e-mail', 'عنوان الإيميل')}
-                />
-                <div className="row">
-                  <a className="secondary small" href={profileLinkHref(entry)}>
-                    {t('Ouvrir ma messagerie', 'حل تطبيق الإيميل')}
-                  </a>
-                  <button
-                    type="button"
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(entry.value);
-                        onMessage(t('Adresse e-mail copiée.', 'تنسخ عنوان الإيميل.'));
-                      } catch {
-                        onMessage(
-                          t(
-                            'Sélectionnez l’adresse affichée pour la copier.',
-                            'اختار عنوان الإيميل باش تنسخو.',
-                          ),
-                        );
-                      }
-                    }}
-                  >
-                    {t('Copier l’adresse', 'نسخ العنوان')}
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         ))}
       </div>
+      {currentEmail && (
+        <div className="email-actions" id={emailPanelId}>
+          <input
+            readOnly
+            dir="ltr"
+            value={currentEmail.value}
+            onFocus={(event) => event.currentTarget.select()}
+            aria-label={t('Adresse e-mail', 'عنوان الإيميل')}
+          />
+          <div className="row">
+            <a className="secondary small" href={profileLinkHref(currentEmail)}>
+              {t('Ouvrir ma messagerie', 'حل تطبيق الإيميل')}
+            </a>
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(currentEmail.value);
+                  onMessage(t('Adresse e-mail copiée.', 'تنسخ عنوان الإيميل.'));
+                } catch {
+                  onMessage(
+                    t(
+                      'Sélectionnez l’adresse affichée pour la copier.',
+                      'اختار عنوان الإيميل باش تنسخو.',
+                    ),
+                  );
+                }
+              }}
+            >
+              {t('Copier l’adresse', 'نسخ العنوان')}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

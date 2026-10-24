@@ -8,6 +8,7 @@ import {
   applyPrimaryColor,
 } from './lib/card-styles';
 import { useState, useEffect, useId, type Dispatch, type SetStateAction } from 'react';
+import { serviceButtonMode } from './lib/service-buttons';
 import { BRAND } from './lib/brand';
 import { appearance } from './lib/personalization';
 export default function CardStylePicker({
@@ -188,6 +189,25 @@ export default function CardStylePicker({
           )}
         </p>
       </details>
+      <label className="field">
+        {t('Fond des boutons de contact et des réseaux', 'خلفية أزرار التواصل والمواقع')}
+        <select
+          value={serviceButtonMode(data)}
+          onChange={(event) => {
+            const mode = event.target.value;
+            setData((d: any) => ({ ...d, serviceButtonMode: mode }));
+          }}
+        >
+          <option value="official">{t('Couleurs des réseaux', 'ألوان المواقع')}</option>
+          <option value="card">{t('Couleur de ma carte', 'لون البطاقة ديالي')}</option>
+        </select>
+        <span className="hint">
+          {t(
+            'Sans couleur de réseau dédiée, le bouton utilise la couleur principale de votre carte.',
+            'إلا ما كانش لون خاص بالموقع، الزر كياخذ اللون الرئيسي ديال البطاقة.',
+          )}
+        </span>
+      </label>
     </fieldset>
   );
 }

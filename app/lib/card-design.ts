@@ -26,6 +26,7 @@ export const designKeys = [
   'textSize',
   'buttonSize',
   'buttonStyle',
+  'serviceButtonMode',
   'backgroundPhoto',
   'backgroundOpacity',
   'sectionOrder',
@@ -71,7 +72,14 @@ export function clientDesignAllowed(incoming: any, previous: any = null) {
         const variant = palette
           ? { ...candidate, color: palette.color, buttonColor: palette.color }
           : candidate;
-        if (same(after, designSettings(variant), designKeys)) return true;
+        if (
+          same(
+            after,
+            designSettings({ ...variant, serviceButtonMode: after.serviceButtonMode }),
+            designKeys,
+          )
+        )
+          return true;
       }
     }
   }
