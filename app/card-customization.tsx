@@ -27,6 +27,7 @@ export default function Customization({
               textSize: 'normal',
               buttonSize: 'normal',
               buttonStyle: 'filled',
+              serviceButtonMode: 'official',
               cardTheme: 'light',
               cardFont: 'modern',
               buttonShape: 'rounded',
@@ -91,6 +92,14 @@ export default function Customization({
           ['filled', 'Plein', 'عامر'],
           ['outline', 'Contour', 'بالإطار'],
         ])}
+        {select(
+          'serviceButtonMode',
+          t('Fond des boutons de contact et des réseaux', 'خلفية أزرار التواصل والمواقع'),
+          [
+            ['official', 'Couleurs des réseaux', 'ألوان المواقع'],
+            ['card', 'Couleur de ma carte', 'لون البطاقة ديالي'],
+          ],
+        )}
         <div
           className="field color-field"
           role="group"

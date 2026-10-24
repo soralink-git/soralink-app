@@ -1,4 +1,5 @@
 'use client';
+import { serviceButtonStyle } from './lib/service-buttons';
 import { profileKind, profileName } from './lib/profile-identity';
 import ProfileLinksView from './profile-links-view';
 import { visibleProfileLinks } from './lib/profile-links';
@@ -400,28 +401,29 @@ export default function CardView({
             {!a.hidePhone && d.phone && (
               <a
                 href={'tel:' + d.phone}
+                style={serviceButtonStyle(d, 'phone')}
                 aria-label={t('Téléphone', 'الهاتف')}
                 title={t('Téléphone', 'الهاتف')}
               >
                 <Phone size={22} />
-                <span className="contact-label">{t('Téléphone', 'الهاتف')}</span>
               </a>
             )}
             {!a.hideWhatsApp && d.whatsapp && (
               <a
                 href={'https://wa.me/' + String(d.whatsapp).replace(/\D/g, '')}
+                style={serviceButtonStyle(d, 'whatsapp')}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
                 title="WhatsApp"
               >
                 <WhatsAppIcon />
-                <span className="contact-label">WhatsApp</span>
               </a>
             )}
             {!a.hideEmail && d.email && (
               <a
                 href={'mailto:' + String(d.email).trim()}
+                style={serviceButtonStyle(d, 'email')}
                 aria-label={t('Contacter par e-mail', 'تواصل بالإيميل')}
                 title={t('E-mail', 'البريد')}
                 aria-expanded={emailActions}
@@ -431,24 +433,24 @@ export default function CardView({
                 }}
               >
                 <Mail size={22} />
-                <span className="contact-label">{t('E-mail', 'البريد')}</span>
               </a>
             )}
             {!a.hideLocation && (location.directions || location.maps) && (
               <a
                 href={location.directions || location.maps}
+                style={serviceButtonStyle(d, 'address')}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={t('Itinéraire', 'كيفاش توصل')}
                 title={t('Itinéraire', 'كيفاش توصل')}
               >
                 <MapPin size={22} />
-                <span className="contact-label">{t('Itinéraire', 'كيفاش توصل')}</span>
               </a>
             )}
             {d.googleReview && (
               <a
                 href={webLink(d.googleReview)}
+                style={serviceButtonStyle(d, 'googleReview')}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={t('Avis Google 5★', 'تقييم Google 5★')}
@@ -456,7 +458,6 @@ export default function CardView({
                 className="google-review-contact-btn"
               >
                 <Star size={22} fill="currentColor" />
-                <span className="contact-label">{t('Avis 5★', 'تقييم 5★')}</span>
               </a>
             )}
           </div>
@@ -503,37 +504,6 @@ export default function CardView({
               </p>
             </div>
           )}
-          {!a.hideLocation && d.address && (
-            <div className="location-links">
-              <p className="muted">{d.address}</p>
-            </div>
-          )}
-          {d.googleReview && (
-            <div className="google-review-panel-card">
-              <a
-                href={webLink(d.googleReview)}
-                target="_blank"
-                rel="noreferrer"
-                className="google-review-action"
-              >
-                <div className="google-review-stars" aria-hidden="true">
-                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
-                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
-                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
-                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
-                  <Star size={16} fill="#f59e0b" color="#f59e0b" />
-                </div>
-                <div className="google-review-content">
-                  <span className="google-review-title">
-                    {t('Laissez-nous un avis 5★ sur Google', 'قيّمنا 5 نجوم على Google')}
-                  </span>
-                  <span className="google-review-subtitle">
-                    {t('Votre recommandation compte beaucoup !', 'الرأي ديالك كيهمنا بزاف!')}
-                  </span>
-                </div>
-              </a>
-            </div>
-          )}
         </div>
       );
     }
@@ -552,13 +522,13 @@ export default function CardView({
                     <a
                       key={key}
                       href={socialLink(key, d[key])}
+                      style={serviceButtonStyle(d, key)}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={label}
                       title={label}
                     >
                       <SocialIcon network={key} />
-                      <span className="contact-label">{label}</span>
                     </a>
                   ) : null,
                 )}
@@ -794,13 +764,13 @@ export default function CardView({
                   className="secondary full"
                   key={key}
                   href={webLink(d.website)}
+                  style={serviceButtonStyle(d, 'website')}
+                  aria-label={sectionHeading(d, 'links', t('Site web', 'الموقع'))}
+                  title={sectionHeading(d, 'links', t('Site web', 'الموقع'))}
                   target="_blank"
                   rel="noreferrer"
                 >
                   <Globe size={18} />
-                  <span className="contact-label">
-                    {sectionHeading(d, 'links', t('Site web', 'الموقع'))}
-                  </span>
                 </a>
               );
             return null;

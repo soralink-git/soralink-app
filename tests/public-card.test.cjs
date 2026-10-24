@@ -205,7 +205,7 @@ test('PDF catalogue stays inside the card without a native PDF frame or navigati
   }
 });
 
-test('google review renders golden star action and review badge in both languages', () => {
+test('google review renders one accessible icon action without a duplicate text badge in both languages', () => {
   for (const ar of [false, true]) {
     const html = card(
       {
@@ -215,9 +215,10 @@ test('google review renders golden star action and review badge in both language
       { ar },
     );
     assert.match(html, /google-review-contact-btn/);
-    assert.match(html, /google-review-panel-card/);
+    assert.doesNotMatch(html, /google-review-panel-card/);
     assert.match(html, /href="https:\/\/g\.page\/r\/example\/review"/);
-    assert.match(html, ar ? /قيّمنا 5 نجوم على Google/ : /Laissez-nous un avis 5★ sur Google/);
+    assert.doesNotMatch(html, /قيّمنا 5 نجوم على Google|Laissez-nous un avis 5★ sur Google/);
+    assert.equal((html.match(/href="https:\/\/g\.page\/r\/example\/review"/g) || []).length, 1);
   }
 });
 

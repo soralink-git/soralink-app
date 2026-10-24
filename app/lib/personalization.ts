@@ -1,3 +1,4 @@
+import { serviceButtonMode } from './service-buttons';
 import { socialOrder } from './card-styles';
 export const sectionKeys = [
   'coordinates',
@@ -45,6 +46,7 @@ export function appearance(d: any) {
     textSize: ['normal', 'large', 'extra'].includes(d.textSize) ? d.textSize : 'normal',
     buttonSize: d.buttonSize === 'large' ? 'large' : 'normal',
     buttonStyle: d.buttonStyle === 'outline' ? 'outline' : 'filled',
+    serviceButtonMode: serviceButtonMode(d),
     order: [...order, ...sectionKeys.filter((k) => !order.includes(k))],
     hidden,
     avatarShape: d.avatarShape === 'square' ? 'square' : 'circle',
@@ -78,6 +80,7 @@ export function normalizeAppearance(d: any) {
     textSize: a.textSize,
     buttonSize: a.buttonSize,
     buttonStyle: a.buttonStyle,
+    serviceButtonMode: a.serviceButtonMode,
     cardTheme: a.theme,
     cardFont: a.font,
     buttonShape: a.shape,

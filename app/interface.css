@@ -222,7 +222,7 @@
   transform: translateY(-2px) scale(1.05);
   filter: brightness(1.08);
   box-shadow: 0 10px 26px -3px
-    color-mix(in srgb, var(--button-bg, var(--accent)) 60%, rgba(0, 0, 0, 0.3));
+    color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 60%, rgba(0, 0, 0, 0.3));
 }
 .card-design .card-action-icons > button:active {
   transform: translateY(0) scale(0.98);
@@ -252,7 +252,7 @@
   filter: brightness(1.08);
   transform: translateY(-2px);
   box-shadow: 0 10px 26px -3px
-    color-mix(in srgb, var(--button-bg, var(--accent)) 60%, rgba(0, 0, 0, 0.3));
+    color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 60%, rgba(0, 0, 0, 0.3));
 }
 .card-design .card-actions .card-request:active {
   transform: translateY(0);
@@ -342,11 +342,12 @@
   align-items: center;
   justify-content: center;
   flex: 0 0 auto;
-  background: var(--button-bg, var(--accent)) !important;
-  color: var(--button-text, var(--accent-text, #ffffff)) !important;
-  border: 1px solid color-mix(in srgb, var(--button-bg, var(--accent)) 80%, #ffffff);
+  background: var(--service-bg, var(--button-bg, var(--accent))) !important;
+  color: var(--service-fg, var(--button-text, var(--accent-text, #ffffff))) !important;
+  border: 1px solid
+    color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 80%, #ffffff);
   box-shadow: 0 6px 20px -3px
-    color-mix(in srgb, var(--button-bg, var(--accent)) 45%, rgba(0, 0, 0, 0.2));
+    color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 45%, rgba(0, 0, 0, 0.2));
   font-size: 15px;
   font-weight: 600;
   text-decoration: none;
@@ -360,13 +361,6 @@
   height: 24px !important;
   color: inherit;
 }
-.card-design .contact-icons a[href*='wa.me'],
-.card-design .contact-icons a[title='WhatsApp'] {
-  background: #25d366 !important;
-  color: #ffffff !important;
-  border-color: #25d366 !important;
-  box-shadow: 0 6px 20px -3px rgba(37, 211, 102, 0.45) !important;
-}
 .card-design :is(.contact-icons, .social-links, .location-links) a .contact-label,
 .card-design .public-details a.secondary.full .contact-label,
 .card-design .contact-label {
@@ -377,7 +371,7 @@
   transform: translateY(-2px) scale(1.05);
   filter: brightness(1.08);
   box-shadow: 0 10px 26px -3px
-    color-mix(in srgb, var(--button-bg, var(--accent)) 60%, rgba(0, 0, 0, 0.3));
+    color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 60%, rgba(0, 0, 0, 0.3));
 }
 .card-design :is(.contact-icons, .social-links, .location-links) a:active,
 .card-design .public-details a.secondary.full:active {
@@ -849,9 +843,9 @@
 .card-design.button-style-outline .public-details .catalogue-item button.secondary,
 .public-details.button-style-outline :is(.card-button, .exchange-button, .secondary),
 .public-details.button-style-outline .catalogue-item button.secondary {
-  background: transparent !important;
-  color: var(--button-bg, var(--accent)) !important;
-  border: 2px solid var(--button-bg, var(--accent)) !important;
+  background: var(--service-bg, transparent) !important;
+  color: var(--service-fg, var(--button-bg, var(--accent))) !important;
+  border: 2px solid var(--service-bg, var(--button-bg, var(--accent))) !important;
   box-shadow: none !important;
 }
 
@@ -863,9 +857,12 @@
 .card-design.button-style-outline .public-details .catalogue-item button.secondary:hover,
 .public-details.button-style-outline :is(.card-button, .exchange-button, .secondary):hover,
 .public-details.button-style-outline .catalogue-item button.secondary:hover {
-  background: color-mix(in srgb, var(--button-bg, var(--accent)) 12%, transparent) !important;
-  color: var(--button-bg, var(--accent)) !important;
-  border-color: var(--button-bg, var(--accent)) !important;
+  background: var(
+    --service-bg,
+    color-mix(in srgb, var(--button-bg, var(--accent)) 12%, transparent)
+  ) !important;
+  color: var(--service-fg, var(--button-bg, var(--accent))) !important;
+  border-color: var(--service-bg, var(--button-bg, var(--accent))) !important;
   transform: translateY(-2px);
 }
 .card-design .card-footer-brand {
@@ -1303,37 +1300,33 @@
   }
 }
 .card-design .profile-links-list {
-  display: grid;
-  gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
 }
 .card-design .profile-link-public > a {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px;
+  justify-content: center;
+  inline-size: 54px;
+  block-size: 54px;
+  padding: 0;
   border-radius: var(--button-radius, 10px);
   border: 1px solid var(--card-line, #94a3b840);
-  color: var(--card-fg);
+  background: var(--service-bg);
+  color: var(--service-fg);
   text-decoration: none;
-  min-height: 56px;
+  min-height: 54px;
 }
 .card-design .profile-link-public > a > svg {
   flex: 0 0 24px;
   width: 24px;
   height: 24px;
 }
-.card-design .profile-link-public > a > span {
-  min-width: 0;
-}
-.card-design .profile-link-public strong,
-.card-design .profile-link-public small {
-  display: block;
-  overflow-wrap: anywhere;
-}
-.card-design .profile-link-public small {
-  font-size: 12px;
-  opacity: 0.75;
-  margin-top: 4px;
+.card-design .profile-links-panel > .email-actions {
+  margin-block-start: 16px;
+  min-inline-size: 0;
 }
 .network-link-card > .toggle {
   margin-block: 12px 0;
