@@ -977,7 +977,6 @@
   background: rgba(22, 31, 48, 0.7);
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 16px;
-  margin-bottom: 12px;
   overflow: hidden;
   transition: all 0.2s ease;
 }
@@ -1099,12 +1098,7 @@
    ========================================================================== */
 @media (max-width: 1024px) {
   .landing-hero {
-    grid-template-columns: 1fr;
     gap: 40px;
-  }
-  .landing-copy {
-    align-items: center;
-    text-align: center;
   }
   .landing-actions {
     justify-content: center;

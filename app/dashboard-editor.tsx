@@ -171,6 +171,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     uploadCatalogue,
     uploadPromotion,
   } = context;
+  const [metricsOpen, setMetricsOpen] = useState(false);
   const visibleSections = clientSections(subscription);
   const cardKeys = ['coordinates', 'interface', 'actions', 'links'];
   const firstCardSection = cardKeys.find((key) => visibleSections.includes(key as any));
@@ -784,7 +785,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                   )}
                   {rights.activity && activeTab === 'requests' && (
                     <section className="panel">
-                      <DashboardMetricsChart ar={ar} />
                       <div className="panel-title">
                         <h2>{t('Demandes et rendez-vous', 'الطلبات والمواعيد')}</h2>
                         {data.pro && (
@@ -825,6 +825,16 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             )
                           : t('Les demandes restent disponibles ici.', 'الطلبات كيبقاو هنا.')}
                       </p>
+                      <details
+                        className="workspace-metrics"
+                        open={metricsOpen}
+                        onToggle={(event) => setMetricsOpen(event.currentTarget.open)}
+                      >
+                        <summary>
+                          {t('Voir les statistiques de ma carte', 'شوف إحصائيات البطاقة')}
+                        </summary>
+                        {metricsOpen && <DashboardMetricsChart ar={ar} />}
+                      </details>
                       {!inbox.length ? (
                         <div className="empty">
                           <Calendar size={38} />

@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { load } = require('./ts-loader.cjs');
 const { BRAND } = load(path.resolve('app/lib/brand.ts'));
-const css = fs.readFileSync('app/docare.css', 'utf8');
+const css = fs.readFileSync('app/tokens.css', 'utf8');
 function tokens(dark) {
   const root = css.match(/:root\s*\{([^}]+)\}/)[1];
   const override = css.match(/html\[data-theme='dark'\]\s*\{([^}]+)\}/)[1];

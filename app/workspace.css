@@ -134,3 +134,57 @@
     transition: none;
   }
 }
+
+/* Optional reporting never precedes the owner's primary task. */
+.workspace-design .workspace-metrics {
+  margin-block: var(--space-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  padding-inline: var(--space-3);
+}
+.workspace-design .workspace-metrics > summary {
+  min-block-size: var(--control-min);
+  padding-block: var(--space-3);
+  cursor: pointer;
+  font-weight: 600;
+}
+.workspace-design .workspace-metrics .visit-metrics {
+  margin-block: var(--space-3);
+  border: 0;
+  padding: 0;
+}
+.workspace-design .catalog-back {
+  display: none;
+}
+@media (max-width: 700px) {
+  /* A single focused form; returning restores the existing search and position. */
+  .workspace-design .catalog-editor.is-editing .catalog-product-editor:not(.is-editing),
+  .workspace-design .catalog-editor.is-editing .catalog-list-tools,
+  .workspace-design .catalog-editor.is-editing .catalog-list-overview,
+  .workspace-design .catalog-editor.is-editing .catalog-add-item,
+  .workspace-design .catalog-editor.is-editing .catalog-settings,
+  .workspace-design .catalog-product-editor.is-editing .catalog-item-menu {
+    display: none;
+  }
+  .workspace-design .catalog-back {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--control-min);
+    margin-block-end: var(--space-3);
+    padding-inline: 0;
+    text-align: start;
+  }
+  .workspace-design .catalog-product-form > .field {
+    margin-block: var(--space-4);
+  }
+  .workspace-design .catalog-product-form > .catalog-options {
+    margin-block: var(--space-5);
+  }
+  .workspace-design .catalog-product-form > button:last-child {
+    inline-size: 100%;
+    min-block-size: var(--control-min);
+  }
+  .workspace-design .catalog-product-open > span {
+    overflow-wrap: anywhere;
+  }
+}

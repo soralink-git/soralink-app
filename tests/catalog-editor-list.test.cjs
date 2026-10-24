@@ -43,3 +43,42 @@ test('renaming the open article keeps its form visible, while clearing filters r
   const forty = Array.from({ length: 40 }, (_, i) => ({ ...items[0], id: String(i) }));
   assert.equal(catalogEditorItems(forty, { query: '', categoryId: '', ar: false }).length, 40);
 });
+
+const React = require('./ts-loader.cjs').req('react');
+const { renderToStaticMarkup } = require('./ts-loader.cjs').req('react-dom/server');
+const CatalogEditor = load(path.resolve('app/catalog-editor.tsx')).default;
+for (const ar of [false, true]) {
+  test(`forty articles retain one draft form with secondary controls disclosed separately (${ar ? 'ar' : 'fr'})`, () => {
+    const services = Array.from({ length: 40 }, (_, i) => ({
+      id: 'article-' + i,
+      nameFr: i ? 'Article ' + i : '',
+      nameAr: i ? 'منتج ' + i : '',
+      price: '25',
+      type: 'product',
+      availability: 'available',
+    }));
+    const data = { services };
+    const before = JSON.stringify(data);
+    const html = renderToStaticMarkup(
+      React.createElement(CatalogEditor, {
+        data,
+        setData() {},
+        subscription: { plan: 'Catalogue' },
+        ar,
+        busy: false,
+        onMessage() {},
+      }),
+    );
+    assert.match(html, /class="panel catalog-editor is-editing"/);
+    assert.equal((html.match(/class="catalog-product-editor(?: is-editing)?"/g) || []).length, 40);
+    assert.equal((html.match(/class="catalog-product-form"/g) || []).length, 1);
+    const form = html.slice(html.indexOf('class="catalog-product-form"'));
+    const options = form.indexOf('<details class="catalog-options">');
+    assert(options > 0);
+    assert(form.indexOf('inputMode="decimal"') < options);
+    assert(form.indexOf(ar ? 'الاختيارات (اختيارية)' : 'Variantes (facultatives)') > options);
+    assert.match(form.slice(0, options), ar ? /رجع للائحة/ : /Retour à la liste/);
+    assert(!form.slice(options, options + 50).includes(' open'));
+    assert.equal(JSON.stringify(data), before);
+  });
+}

@@ -46,14 +46,7 @@
   background: var(--card-fond, linear-gradient(165deg, #f5b86e 0%, #f9d99c 45%, #fef08a 100%));
 }
 .card-design .card-cover {
-  width: 100%;
-  aspect-ratio: 2.2 / 1;
-  height: auto;
-  min-height: 0;
   background-color: var(--block-bg, #ffffff);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
   border-radius: 32px;
   margin: 0;
   border: 1px solid rgba(255, 255, 255, 0.9);
@@ -517,13 +510,11 @@
   gap: 4px;
 }
 .workspace-nav-group {
-  display: block;
   margin: 18px 6px 7px;
   color: #94a3b8;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 .workspace-nav-item:first-child .workspace-nav-group {
   margin-top: 0;
@@ -573,20 +564,14 @@
   color: #00b5ad;
 }
 .workspace-navigation .nav-count {
-  margin-inline-start: auto;
-  border-radius: 16px;
   background: linear-gradient(135deg, #00b5ad 0%, #0d9488 100%);
   color: #ffffff;
-  padding: 2px 7px;
-  font-size: 12px;
   font-weight: 750;
   box-shadow: 0 2px 6px rgba(0, 181, 173, 0.4);
 }
 .workspace-design .sidebar-note {
   margin-top: 20px;
-  padding-top: 16px;
   border-top: 1px solid rgba(148, 163, 184, 0.12);
-  font-size: 13px;
   color: #94a3b8;
 }
 .workspace-design .workspace-head {
