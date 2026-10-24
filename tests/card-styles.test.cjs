@@ -139,3 +139,24 @@ test('style miniatures follow the selected ambience and retain the selected cust
     );
   }
 });
+
+test('custom main-color controls are localized, editable and show the saved color', () => {
+  const Picker = load(path.resolve('app/card-style-picker.tsx')).default;
+  for (const ar of [false, true]) {
+    const html = renderToStaticMarkup(
+      React.createElement(Picker, {
+        data: { ...demoCard, color: '#12abef', buttonColor: '#12abef' },
+        setData() {},
+        ar,
+      }),
+    );
+    assert(html.includes(ar ? 'لون من اختيارك' : 'Couleur personnalisée'));
+    assert.match(html, /<details class="custom-main-color" open="">/);
+    assert.match(html, /<input[^>]*type="color"[^>]*value="#12abef"/);
+    assert.match(html, /<input[^>]*type="text"[^>]*value="#12abef"/);
+    assert.doesNotMatch(
+      html,
+      ar ? /Couleur personnalisée|Code couleur/ : /لون من اختيارك|كود اللون/,
+    );
+  }
+});

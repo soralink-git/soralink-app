@@ -1,3 +1,4 @@
+import { verifyPrimaryColor } from './verify-primary-color.mjs';
 import { verifyProfileIdentity } from './verify-profile-identity.mjs';
 import { verifyCommerce } from './verify-commerce.mjs';
 import { verifyClientAccess } from './verify-client-access.mjs';
@@ -826,6 +827,7 @@ try {
   );
   saveQueue.stop();
 
+  await verifyPrimaryColor({ db, request, cardId });
   await verifyProfileIdentity({ db, request, cardId, adminId });
   await verifyOffers({ db, request, cardId, adminId, otherId });
   await verifyClientAccess({ db, request, cardId, adminId });
