@@ -188,3 +188,32 @@
     overflow-wrap: anywhere;
   }
 }
+
+.card-style-picker .custom-main-color {
+  margin-block-start: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  padding-inline: var(--space-3);
+}
+.card-style-picker .custom-main-color > summary {
+  min-block-size: var(--control-min);
+  padding-block: var(--space-3);
+  cursor: pointer;
+  font-weight: 600;
+}
+.card-style-picker .main-color-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  align-items: start;
+}
+.card-style-picker .main-color-inputs input {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  min-block-size: var(--control-min);
+  font-size: 16px;
+}
+.card-style-picker .main-color-inputs input[type='color'] {
+  inline-size: 56px;
+  padding: var(--space-1);
+}

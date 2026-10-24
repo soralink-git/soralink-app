@@ -66,3 +66,27 @@ test('admin section editor renders a full preview and localized controls without
     assert.match(html, /section-editor-row/);
   }
 });
+
+test('custom primary colors are allowed without unlocking advanced layout or independent colors', () => {
+  const { applyPrimaryColor, primaryColor } = load(path.resolve('app/lib/card-styles.ts'));
+  const old = { ...demoCard, hiddenSections: ['appointments'], textSize: 'large' };
+  const next = applyPrimaryColor(old, '  #12AbEF ');
+  assert.equal(next.color, '#12abef');
+  assert.equal(next.buttonColor, '#12abef');
+  assert(clientDesignAllowed(next, old));
+  assert(profileSchemaValid(next));
+  assert.equal(primaryColor('ff9125'), '#ff9125');
+  for (const value of ['#123', 'red', 'url(https://example.test)', 'transparent', '#12345678', ''])
+    assert.strictEqual(applyPrimaryColor(old, value), old);
+  for (const patch of [
+    { textSize: 'extra' },
+    { hiddenSections: [] },
+    { fondColor: '#123456' },
+    { buttonColor: '#abcdef' },
+  ])
+    assert.equal(clientDesignAllowed({ ...next, ...patch }, old), false);
+  function profileSchemaValid(data) {
+    return load(path.resolve('app/lib/api-validation.ts')).profileDataSchema.safeParse(data)
+      .success;
+  }
+});

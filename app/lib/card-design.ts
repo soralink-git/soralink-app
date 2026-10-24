@@ -63,7 +63,11 @@ export function clientDesignAllowed(incoming: any, previous: any = null) {
   const bases = [baseline, ...cardStyles.map((style) => applyCardStyle(baseline, style.id))];
   for (const base of bases) {
     for (const candidate of [base, applyCardTheme(base, 'light'), applyCardTheme(base, 'dark')]) {
-      for (const palette of [null, ...cardPalettes]) {
+      const custom =
+        typeof incoming.color === 'string' && /^#[0-9a-f]{6}$/i.test(incoming.color)
+          ? [{ color: incoming.color }]
+          : [];
+      for (const palette of [null, ...cardPalettes, ...custom]) {
         const variant = palette
           ? { ...candidate, color: palette.color, buttonColor: palette.color }
           : candidate;

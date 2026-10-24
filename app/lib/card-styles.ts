@@ -104,3 +104,13 @@ export function applyCardTheme(data: any, theme: string) {
     textColor: theme === 'dark' ? '#f8fafc' : '#17243b',
   };
 }
+
+export function primaryColor(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const hex = value.trim().replace(/^#/, '');
+  return /^[0-9a-f]{6}$/i.test(hex) ? '#' + hex.toLowerCase() : null;
+}
+export function applyPrimaryColor(data: any, value: unknown) {
+  const color = primaryColor(value);
+  return color ? { ...data, color, buttonColor: color } : data;
+}
