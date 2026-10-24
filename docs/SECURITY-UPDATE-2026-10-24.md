@@ -75,3 +75,8 @@ nouvelle alerte élevée fera échouer ce contrôle et demandera une analyse.
 - [undici, content-encodings](https://github.com/nodejs/undici/security/advisories/GHSA-xjj6-f33q-929c).
 - [fast-uri](https://github.com/advisories/GHSA-333x-w4r6-6crp).
 - [Retrait de l’avis braces](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
+
+## Renforcement de maintenance
+
+La livraison suivante porte le contrôle CI au seuil modéré, rend l’audit planifié quotidien
+et ajoute une répétition de reprise D1/R2. Voir le [rapport de maintenance](MAINTENANCE-REPORT-2026-10-24.md).

@@ -7,3 +7,6 @@ dist/
 .next/
 .sites-runtime/
 .vinext/
+
+# Private recovery exports must never be committed.
+/backups/

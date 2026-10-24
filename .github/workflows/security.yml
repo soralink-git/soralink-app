@@ -1,7 +1,7 @@
 name: Dependency review
 on:
   schedule:
-    - cron: '0 8 * * 1'
+    - cron: '0 8 * * *'
   workflow_dispatch:
 permissions:
   contents: read
@@ -16,4 +16,4 @@ jobs:
         with:
           node-version: 24
       - run: pnpm install --frozen-lockfile --ignore-scripts
-      - run: pnpm audit --audit-level high
+      - run: pnpm audit --audit-level moderate

@@ -68,7 +68,7 @@ test('public support addresses consistently use the branded contact email', () =
     'app/ui.tsx',
     'app/conditions/page.tsx',
     'app/confidentialite/page.tsx',
-    'app/dashboard-editor.tsx',
+    'app/dashboard-orders.tsx',
   ]) {
     const source = fs.readFileSync(file, 'utf8');
     assert.doesNotMatch(source, /soratap08@gmail\.com/);

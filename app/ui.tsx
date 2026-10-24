@@ -1,35 +1,30 @@
 'use client';
-import { profileName } from './lib/profile-identity';
-import OfferGrid from './offer-grid';
-import { BRAND } from './lib/brand';
-import ThemeToggle from './theme-toggle';
-import { publicCardPath } from './lib/public-address';
-import { appendUnique, type History, type PageInfo } from './lib/pagination';
-import {
-  selectedPlan,
-  workspacePath,
-  accountPath,
-  offerLabel,
-  languagePath,
-} from './lib/journey-links';
-import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
-import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
-import { X, Calendar, Check, Globe, Users, RotateCcw } from 'lucide-react';
-import QRCode from 'qrcode';
-import useCardAutosave from './use-card-autosave';
-import Pwa from './pwa';
-import ImageCropper from './image-cropper';
-import type { CropTarget } from './lib/crop-geometry';
-import CardView, { type CardViewProps } from './card-view';
-import { WhatsAppIcon } from './card-helpers';
-import { demoCard, demoCardArabic } from './lib/demo-card';
-import { VIDEO_TYPES, mediaError } from './lib/content-media';
+import SiteHeader from './site-header';
 
-import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
+import { X } from 'lucide-react';
+import QRCode from 'qrcode';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { WhatsAppIcon } from './card-helpers';
+import CardView, { type CardViewProps } from './card-view';
+import ImageCropper from './image-cropper';
+import { BRAND } from './lib/brand';
+import { compressPhoto, MAX_SOURCE_PHOTO_BYTES } from './lib/compress-photo';
+import { mediaError, VIDEO_TYPES } from './lib/content-media';
+import type { CropTarget } from './lib/crop-geometry';
+import { demoCard, demoCardArabic } from './lib/demo-card';
+import { languagePath, offerLabel, selectedPlan, workspacePath } from './lib/journey-links';
+import { appendUnique, type History, type PageInfo } from './lib/pagination';
+import { profileName } from './lib/profile-identity';
+import { publicCardPath } from './lib/public-address';
+import OfferGrid from './offer-grid';
+import Pwa from './pwa';
+import useCardAutosave from './use-card-autosave';
+
+import LandingPage from './landing-page';
+import { cataloguePrice, normalizeCatalogue } from './lib/catalogue';
 import { appearance } from './lib/personalization';
 import { normalizePromotions, todayMorocco } from './lib/promotions';
 import { defaults, moroccoNow } from './lib/schedule';
-import LandingPage from './landing-page';
 const DashboardEditor = lazy(() => import('./dashboard-editor'));
 const socialFields = [
   ['instagram', 'Instagram'],
@@ -986,97 +981,20 @@ export default function App({
       dir={ar ? 'rtl' : 'ltr'}
     >
       {view !== 'public' && view !== 'demo' && (
-        <header>
-          <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-            <span className="brand-icon">
-              <svg width="25" height="25" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                <path
-                  d="M23 17h-5a10 10 0 0 0-10 10v10a10 10 0 0 0 10 10h11M41 17h5a10 10 0 0 1 10 10v10a10 10 0 0 1-10 10H35M24 38l16-12"
-                  stroke="currentColor"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </span>
-            Sora<span>Link</span>
-          </a>
-          {(view === 'home' || view === 'pricing') && (
-            <nav aria-label={t('Navigation principale', 'التنقل الرئيسي')}>
-              {[
-                ['fonctionnalites', 'En bref', 'باختصار'],
-                ['tarifs', 'Tarifs', 'الأثمنة'],
-                ['exemples', 'Démo', 'مثال'],
-                ['faq', 'FAQ', 'أسئلة'],
-              ].map(([anchor, f, a]) => (
-                <a
-                  href={
-                    anchor === 'exemples'
-                      ? '/demo' + (ar ? '?lang=ar' : '')
-                      : '/?lang=' + (ar ? 'ar' : 'fr') + '#' + anchor
-                  }
-                  key={anchor}
-                >
-                  {t(f, a)}
-                </a>
-              ))}
-            </nav>
-          )}
-          <div className="header-actions">
-            <ThemeToggle ar={ar} />
-            <button className="language" onClick={toggleLanguage}>
-              <Globe size={16} />
-              {ar ? 'FR' : 'العربية'}
-            </button>
-            {(!sessionChecked && !auth) || (view === 'app' && (!loaded || authLoading) && !auth) ? (
-              <span className="header-login" role="status">
-                {t('Vérification…', 'كنتحققو…')}
-              </span>
-            ) : auth ? (
-              <>
-                {canAdmin && (
-                  <a className="header-login" href={accountPath(canAdmin, ar)}>
-                    {t('Administration', 'الإدارة')}
-                  </a>
-                )}
-                <details className="account-menu">
-                  <summary aria-label={t('Compte connecté', 'الحساب اللي داخل')}>
-                    <span className="account-status-dot" />
-                    <Users size={16} />
-                    <span>{t('Mon compte', 'الحساب')}</span>
-                  </summary>
-                  <div className="account-menu-panel">
-                    <strong>{t('Connecté avec', 'داخل بـ')}</strong>
-                    <span dir="ltr" className="account-email">
-                      {accountEmail || t('Votre compte', 'الحساب ديالك')}
-                    </span>
-                    {(canAdmin || view !== 'app') && (
-                      <a href={accountPath(canAdmin, ar)}>
-                        {canAdmin
-                          ? t('Ouvrir l’administration', 'حل الإدارة')
-                          : t('Ouvrir mon espace', 'حل الحساب ديالي')}
-                      </a>
-                    )}
-                    <button disabled={busy} onClick={logout}>
-                      {t('Se déconnecter', 'خرج من الحساب')}
-                    </button>
-                  </div>
-                </details>
-              </>
-            ) : (
-              <a className="header-login" href={'/auth?mode=login' + (ar ? '&lang=ar' : '')}>
-                {t('Connexion', 'الدخول')}
-              </a>
-            )}
-            {view === 'home' && sessionChecked && !canAdmin && !auth && (
-              <a
-                className="primary small header-start"
-                href={'/auth?mode=signup' + (ar ? '&lang=ar' : '')}
-              >
-                {t('Créer ma carte', 'صايب الكارط')}
-              </a>
-            )}
-          </div>
-        </header>
+        <SiteHeader
+          ar={ar}
+          view={view}
+          t={t}
+          toggleLanguage={toggleLanguage}
+          sessionChecked={sessionChecked}
+          auth={auth}
+          loaded={loaded}
+          authLoading={authLoading}
+          canAdmin={canAdmin}
+          accountEmail={accountEmail}
+          busy={busy}
+          logout={logout}
+        />
       )}
       {crop && (
         <ImageCropper
