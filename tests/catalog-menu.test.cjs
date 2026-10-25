@@ -261,3 +261,39 @@ test('built-in demo media is rendered only in preview while customer upload rule
     '',
   );
 });
+
+test('selection limit counts variants separately and permits an existing line at capacity', () => {
+  const { canAddSelection, selectionKey, MAX_CATALOG_SELECTIONS } = load(
+    path.resolve('app/lib/catalog-order.ts'),
+  );
+  const keys = Array.from({ length: MAX_CATALOG_SELECTIONS }, (_, i) =>
+    selectionKey('product', String(i)),
+  );
+  assert.equal(canAddSelection(keys, selectionKey('product', '40')), false);
+  assert.equal(canAddSelection(keys, keys[0]), true);
+  assert.equal(canAddSelection(keys.slice(1), selectionKey('other')), true);
+  const items = keys.map((_, i) => ({ id: 'product', variantId: String(i), quantity: 1 }));
+  assert.equal(
+    catalogOrderSchema.safeParse({ profile: 'card', language: 'fr', items }).success,
+    true,
+  );
+  assert.equal(
+    catalogOrderSchema.safeParse({
+      profile: 'card',
+      language: 'fr',
+      items: [...items, { id: 'other', quantity: 1 }],
+    }).success,
+    false,
+  );
+});
+
+test('public catalog search handles French accents and Arabic marks without cross-language fallback', () => {
+  const { matchesCatalogSearch } = load(path.resolve('app/lib/catalog-search.ts'));
+  const item = { nameFr: 'Étagère', nameAr: 'رَفّ', reference: 'RF-12' };
+  assert.equal(matchesCatalogSearch(item, ' etage ', false), true);
+  assert.equal(matchesCatalogSearch(item, 'رف', true), true);
+  assert.equal(matchesCatalogSearch(item, 'رف', false), false);
+  assert.equal(matchesCatalogSearch(item, 'étagère', true), false);
+  assert.equal(matchesCatalogSearch(item, 'rf-12', true), true);
+  assert.equal(matchesCatalogSearch(item, '   ', false), true);
+});

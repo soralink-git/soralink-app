@@ -1,7 +1,6 @@
 import type { CatalogueItem } from './catalogue';
 
-const searchable = (value: string) =>
-  value.normalize('NFD').replace(/\p{M}/gu, '').replace(/ـ/g, '').toLowerCase().trim();
+import { matchesCatalogSearch } from './catalog-search';
 
 // Keep original order and object identities: filtering must not affect manual
 // reordering, quotas, saved data or the article currently being edited.
@@ -19,12 +18,9 @@ export function catalogEditorItems(
     editingId?: string;
   },
 ) {
-  const term = searchable(query);
   return items.filter(
     (item) =>
       item.id === editingId ||
-      ((!categoryId || item.categoryId === categoryId) &&
-        (!term ||
-          searchable(`${ar ? item.nameAr : item.nameFr} ${item.reference}`).includes(term))),
+      ((!categoryId || item.categoryId === categoryId) && matchesCatalogSearch(item, query, ar)),
   );
 }

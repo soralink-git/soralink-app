@@ -6,6 +6,10 @@ export const fulfillmentLabels = {
   takeaway: ['À emporter', 'ناخدو معايا'],
   delivery: ['Livraison', 'التوصيل'],
 } as const;
+export const MAX_CATALOG_SELECTIONS = 40;
+export function canAddSelection(keys: readonly string[], key: string) {
+  return keys.includes(key) || keys.length < MAX_CATALOG_SELECTIONS;
+}
 export type Selection = { id: string; quantity: number; variantId?: string };
 export const selectionKey = (id: string, variantId = '') => JSON.stringify([id, variantId]);
 export const catalogOrderSchema = z
@@ -31,7 +35,7 @@ export const catalogOrderSchema = z
         }),
       )
       .min(1)
-      .max(40),
+      .max(MAX_CATALOG_SELECTIONS),
   })
   .refine(
     (v) => new Set(v.items.map((i) => selectionKey(i.id, i.variantId))).size === v.items.length,
