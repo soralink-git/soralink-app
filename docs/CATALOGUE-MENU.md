@@ -1,12 +1,17 @@
-# Catalogue / Menu v1
+# Produits et services — PDF et catalogue dynamique
 
 ## Parcours et limites
 
-Mon espace → Produits et services → PDF, Produits, Photos et vidéos ou Apparence. Chaque enregistrement publie les changements sur une carte déjà publiée ; une carte en brouillon reste privée. La galerie et les vidéos se gèrent dans l’onglet Photos et vidéos du catalogue et apparaissent dans le bloc Produits et services sur la carte publique. Les fichiers existants sont réutilisés. Les anciennes sections Photos et Vidéo ne sont plus affichées séparément. Les promotions restent accessibles dans leur panneau de gestion.
+Mon espace → Produits et services → Produits / services, Documents PDF, Offres et promotions.
+Les réglages de présentation sont repliés dans le module ; les catégories se saisissent dans
+le formulaire de chaque article. Une seule fiche produit ou document est ouverte à la fois.
+Les photos et vidéos accompagnent les offres et contenus du module, sans rubrique autonome
+sur la carte. Chaque enregistrement publie les changements d’une carte déjà publiée ; une
+carte en brouillon reste privée.
 
 Valeurs initiales : 40 articles pour une offre payante comme pour l’essai ; 3 PDF par carte, 25 Mio et 100 pages par PDF ; 400 Mio de stockage partagé, 160 fichiers. Les fichiers en cours de chargement comptent dans les quotas. Une image principale, sa miniature et jusqu’à 5 images supplémentaires sont possibles par article, dans les limites du stockage partagé. Jusqu’à 40 catégories.
 
-Administration → client → Droits Catalogue / Menu : activation, PDF, produits, commandes WhatsApp, téléchargement, nombre de documents/articles, stockage, nombre de fichiers, taille et pages PDF. Les droits sont attribués par carte ; les valeurs par défaut sont communes aux comptes d’essai et payants. Les valeurs maximales du schéma sont des garde-fous : 10 PDF, 200 articles, 2 000 Mio, 500 fichiers ; PDF limités à 25 Mio / 100 pages pour cette version. Rétablir les limites du forfait efface la surcharge.
+Administration → client → Droits Produits et services : activation, PDF, produits, commandes WhatsApp, téléchargement, nombre de documents/articles, stockage, nombre de fichiers, taille et pages PDF. Les droits sont attribués par carte ; les valeurs par défaut sont communes aux comptes d’essai et payants. Les valeurs maximales du schéma sont des garde-fous : 10 PDF, 200 articles, 2 000 Mio, 500 fichiers ; PDF limités à 25 Mio / 100 pages pour cette version. Rétablir les limites du forfait efface la surcharge.
 
 Une baisse du nombre maximal conserve les données et limite immédiatement la projection publique. Elle interdit d’augmenter le nombre enregistré au-delà du quota, mais laisse réduire le contenu ou modifier les articles déjà conservés. Réduire la taille/pages PDF interdit les imports qui dépassent les nouvelles limites et leur nouvel enregistrement. Désactiver une fonction bloque ses mutations et sa diffusion publique. Une mise à jour de coordonnées sans modification du catalogue reste possible.
 
@@ -14,9 +19,9 @@ Les noms et descriptions FR/AR sont distincts. Les anciens champs `name`, `descr
 
 ## Lecture PDF
 
-Les documents s’ouvrent dans la carte sans iframe, sans navigation externe et sans téléchargement automatique. Le premier aperçu est chargé à l’approche de l’écran. Toucher l’aperçu ouvre une boîte de dialogue plein écran ; le document défile verticalement. Pincement, double toucher, déplacement tactile, numéro de page et saut à une page sont disponibles. Les pages proches de la zone visible sont rendues ; les canevas éloignés sont démontés. Les téléchargements automatiques anticipés du lecteur plein écran sont désactivés, les requêtes Range restent autorisées. Les canevas sont bornés en pixels.
+Les documents s’ouvrent dans la carte sans iframe, sans navigation externe et sans téléchargement automatique. Le premier aperçu est chargé à l’approche de l’écran, sans téléchargement anticipé de toutes les pages. Toucher l’aperçu ouvre une boîte de dialogue plein écran ; le document défile verticalement. Pincement, double toucher, déplacement tactile, numéro de page et saut à une page sont disponibles. Les pages proches de la zone visible sont rendues ; les canevas éloignés sont démontés. Les téléchargements automatiques anticipés du lecteur plein écran sont désactivés, les requêtes Range restent autorisées. Les canevas sont bornés en pixels.
 
-Le numéro de page est conservé entre aperçu et plein écran. Le zoom conserve le point ciblé et la position de défilement pendant le geste. La fermeture revient à l’aperçu de la même page. Une entrée temporaire dans l’historique permet au bouton Retour de fermer la visionneuse avant de quitter la carte/PWA. Les boîtes de dialogue photo et fiche produit suivent aussi cet ordre, y compris lorsqu’elles sont imbriquées.
+Le numéro de page est conservé entre aperçu et plein écran. Le zoom conserve le point ciblé et la position de défilement pendant le geste. La fermeture revient à l’aperçu de la même page. L’ouverture du document et son agrandissement possèdent chacun une entrée temporaire dans l’historique : Retour ferme d’abord le plein écran, puis la lecture intégrée avant de quitter la carte/PWA. Le changement de document ouvert ne crée pas une pile de retours supplémentaires. Les boîtes de dialogue photo et fiche produit suivent aussi cet ordre, y compris lorsqu’elles sont imbriquées.
 
 Les documents ont une identité stable indépendante de la clé du fichier : `/api/catalog-documents/{profileId}/{documentId}`. Remplacer le PDF conserve ce chemin et l’adresse de la carte. Un ancien PDF unique garde l’identité `legacy-pdf`. Retirer le PDF dans le nouveau gestionnaire produit un tableau vide explicite : il ne réapparaît pas à partir de l’ancien champ.
 
@@ -24,11 +29,11 @@ Le téléchargement volontaire nécessite le consentement du propriétaire pour 
 
 ## Produits et demandes
 
-Disponibilité disponible/épuisé/masqué, type produit/service, catégorie, ordre, photo principale, galerie, miniature, référence, ancien prix, promotion et dates facultatives. Dates de promotion comparées au jour au Maroc, bornes incluses. Recherche dans le nom de la langue choisie et filtre par catégorie. Affichage par lots de 12 articles, avec « Afficher plus ». La carte publique reçoit au maximum le nombre d’articles autorisé ; le maximum absolu reste 200. Les photos sont compressées avant import, la miniature principale à 480 px ; les autres images à 1 600 px maximum.
+Disponibilité disponible/épuisé/masqué, type produit/service, catégorie, ordre, photo principale, galerie, miniature, référence, ancien prix, promotion et dates facultatives. Dates de promotion comparées au jour au Maroc, bornes incluses. Recherche dans le nom de la langue choisie ou la référence et filtre par catégorie. Les accents français, signes de vocalisation arabes et espaces superflus sont normalisés pour la recherche, sans mélanger les langues de contenu. Affichage par lots de 12 articles, avec « Afficher plus ». La carte publique reçoit au maximum le nombre d’articles autorisé ; le maximum absolu reste 200. Les photos sont compressées avant import, la miniature principale à 480 px ; les autres images à 1 600 px maximum.
 
 Un article masqué ou appartenant à une catégorie masquée est absent de la projection publique et ne peut pas être commandé par son identifiant. Un article épuisé est affiché mais ne peut pas être sélectionné. La fiche détaillée et les photos s’ouvrent à l’intérieur de la carte. Une demande individuelle réutilise le formulaire existant, pour produit ou devis de service.
 
-Sélection de plusieurs articles (40 maximum par envoi, quantités de 1 à 99). Le serveur génère le message WhatsApp à partir des données courantes, après vérification des droits, de la publication, de la disponibilité, des prix visibles et du numéro WhatsApp public. Le message contient noms, quantités, références et prix indicatifs lorsque permis. Le visiteur confirme lui-même l’envoi dans WhatsApp. Aucun paiement en ligne et aucune API Meta.
+Sélection de plusieurs articles (40 lignes article/variante maximum par envoi, quantités de 1 à 99). La limite est appliquée dans le panier comme sur le serveur ; modifier une ligne déjà sélectionnée reste possible à capacité maximale. Le serveur génère le message WhatsApp à partir des données courantes, après vérification des droits, de la publication, de la disponibilité, des prix visibles et du numéro WhatsApp public. Le message contient noms, quantités, références et prix indicatifs lorsque permis. Le visiteur confirme lui-même l’envoi dans WhatsApp. Aucun paiement en ligne et aucune API Meta.
 
 ## Données et API
 
@@ -43,7 +48,7 @@ Routes conformes aux conventions existantes :
 - `POST /api/data`, action `save` : mutations atomiques de la carte et du catalogue, contrôle du propriétaire et de la révision.
 - `POST /api/upload` : fichier, contrôle de session et d’origine, signature réelle, taille, pages PDF, réservation atomique du stockage.
 - `GET /api/catalog-documents/{profile}/{document}` : lecture propriétaire ou publique autorisée, requêtes Range.
-- `POST /api/catalog-order` : sélection visiteur, origine et schéma borné, génération du lien WhatsApp sans envoi ni stockage d’une commande.
+- `POST /api/catalog-order` : sélection visiteur, origine et schéma borné, génération du lien WhatsApp sans envoi automatique. Un identifiant de demande rend la préparation idempotente ; selon les droits d’activité, le suivi et la file de notification sont enregistrés atomiquement. Préparer un message ne prouve pas son envoi dans WhatsApp.
 - `POST /api/admin`, action `catalogRights` : droits par carte, session administrateur et journal d’audit.
 
 Tous les fichiers du module sont inclus dans l’index `profile_media`, y compris les documents/produits masqués et les miniatures. Validation de propriété à l’enregistrement, vérification du type des images et PDF. Un lien inséré dans un texte libre ne constitue pas une preuve de propriété pour lire un fichier privé d’un autre compte. Les remplacements/suppressions marquent les fichiers sans référence pour nettoyage ; les fichiers encore référencés sont protégés. Les imports abandonnés depuis 24 h sont nettoyés à la prochaine action de stockage.
@@ -64,12 +69,12 @@ Avant validation définitive sur téléphone : importer sur Android puis iPhone,
 
 Vérification visuelle en prévisualisation sur navigateur de bureau : recherche, fiche produit FR/AR, sélection de deux articles, photo imbriquée puis Retour vers la fiche, passage fiche → formulaire sans soumission, ouverture PDF, défilement jusqu’à la page 2, double toucher à 200 %, Retour vers l’aperçu de la page 2. Les gestes multitactiles physiques Android/iPhone et la PWA restent à valider sur appareils.
 
-Les contrôles de visibilité et les titres des photos/vidéos sont accessibles dans l’onglet Photos et vidéos. Leur position suit le bloc Produits et services ; ils ne figurent plus comme sections indépendantes dans Interface. Masquer ce bloc ou désactiver le module retire aussi ces médias de la projection publique et de la lecture anonyme des fichiers. Désactiver le module administrativement interdit leurs modifications tout en conservant les fichiers enregistrés. Les quotas et les contrôles de propriété existants restent appliqués.
+Les médias sont gérés avec les offres et contenus du module. Leur position suit le bloc Produits et services ; ils ne figurent plus comme sections indépendantes dans Interface. Masquer ce bloc ou désactiver le module retire aussi ces médias de la projection publique et de la lecture anonyme des fichiers. Désactiver le module administrativement interdit leurs modifications tout en conservant les fichiers enregistrés. Les quotas et les contrôles de propriété existants restent appliqués.
 
 ### Prise en main du propriétaire
 
 La section s’ouvre sur les produits et services, avec une action d’ajout en tête de liste.
-Les documents PDF, photos et vidéos, offres et réglages sont consultés séparément.
+Les documents PDF et les offres ont leurs onglets ; les réglages secondaires restent repliés.
 Les offres ne sont plus affichées sous chaque écran du module.
 Une seule langue de contenu est éditée à la fois, initialement celle de l’interface ;
 changer la langue de saisie conserve les textes déjà renseignés dans l’autre langue.
@@ -77,3 +82,9 @@ Les options de classement, promotion, galerie supplémentaire et suppression se 
 à la demande. Une seule fiche produit ou document est ouverte à la fois ; saisir son
 nom ne ferme pas la fiche. Les réglages des médias et les informations de stockage
 sont repliés. L’enregistrement commun et l’aperçu de carte restent accessibles.
+
+## Finitions du 25 octobre 2026
+
+Le [rapport de finalisation](CATALOG-FINALIZATION-2026-10-25.md) détaille les corrections de retour navigateur,
+de conservation de position des PDF mixtes, de recherche et de limite du panier.
+Les tests sur Android et iPhone physiques restent distincts de la recette navigateur.

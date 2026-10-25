@@ -1,5 +1,12 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import {
+  pdfPageHeight,
+  pdfPageTop,
+  pdfAnchor,
+  pdfAnchorTop,
+  type PdfAnchor,
+} from './lib/pdf-layout';
 import type { PDFDocumentProxy, PDFPageProxy, RenderTask } from 'pdfjs-dist';
 import { bindPdfGestures } from './lib/pdf-gestures';
 export default function PdfScrollReader({
@@ -18,7 +25,8 @@ export default function PdfScrollReader({
     loadedAt = useRef(false),
     frame = useRef(0),
     currentRef = useRef(initialPage),
-    callback = useRef(onPage);
+    callback = useRef(onPage),
+    pagesCount = useRef(1);
   callback.current = onPage;
   const [pdf, setPdf] = useState<PDFDocumentProxy | null>(null),
     [failed, setFailed] = useState(false),
@@ -27,7 +35,27 @@ export default function PdfScrollReader({
     [zoom, setZoom] = useState(1),
     [page, setPage] = useState(initialPage),
     [ratios, setRatios] = useState<Record<number, number>>({});
+  const layout = useRef({ width, zoom, ratios });
+  const pendingAnchor = useRef<PdfAnchor | null>(null);
   const t = (fr: string, a: string) => (ar ? a : fr);
+  const rememberPosition = () => {
+    const el = stage.current;
+    const previous = layout.current;
+    if (!pendingAnchor.current && el && pdf && loadedAt.current && previous.width)
+      pendingAnchor.current = pdfAnchor(
+        el.scrollTop,
+        pdf.numPages,
+        previous.width,
+        previous.zoom,
+        previous.ratios,
+      );
+  };
+  useLayoutEffect(() => {
+    if (pendingAnchor.current && stage.current && layout.current.zoom === zoom)
+      stage.current.scrollTop = pdfAnchorTop(pendingAnchor.current, width, zoom, ratios);
+    pendingAnchor.current = null;
+    layout.current = { width, zoom, ratios };
+  }, [width, zoom, ratios]);
   useEffect(() => {
     let gone = false;
     let task: ReturnType<typeof import('pdfjs-dist').getDocument> | undefined;
@@ -50,7 +78,10 @@ export default function PdfScrollReader({
           disableStream: true,
         });
         const doc = await task.promise;
-        if (!gone) setPdf(doc);
+        if (!gone) {
+          pagesCount.current = doc.numPages;
+          setPdf(doc);
+        }
       } catch {
         if (!gone) setFailed(true);
       }
@@ -64,25 +95,29 @@ export default function PdfScrollReader({
     const el = stage.current;
     if (!el) return;
     const resize = new ResizeObserver(([entry]) => {
-      const previous = el.scrollWidth || 1;
-      const position = el.scrollTop / previous;
+      const previous = layout.current;
+      if (loadedAt.current && previous.width)
+        pendingAnchor.current = pdfAnchor(
+          el.scrollTop,
+          pagesCount.current,
+          previous.width,
+          previous.zoom,
+          previous.ratios,
+        );
       setWidth(Math.max(1, entry.contentRect.width - 16));
-      requestAnimationFrame(() => {
-        el.scrollTop = position * el.scrollWidth;
-      });
     });
     resize.observe(el);
     return () => resize.disconnect();
   }, []);
-  const height = (n: number) => width * zoom * (ratios[n] || 1.41421356) + 12 * zoom;
+  const height = (n: number) => pdfPageHeight(n, width, zoom, ratios);
   function scrollTo(n: number) {
     const el = stage.current;
     if (!el || !pdf) return;
     const target = Math.min(pdf.numPages, Math.max(1, n));
-    el.scrollTop = Array.from({ length: target - 1 }, (_, i) => height(i + 1)).reduce(
-      (a, b) => a + b,
-      0,
-    );
+    el.scrollTop = pdfPageTop(target, width, zoom, ratios);
+    currentRef.current = target;
+    setPage(target);
+    callback.current(target);
   }
   useEffect(() => {
     if (pdf && width && !loadedAt.current) {
@@ -184,9 +219,11 @@ export default function PdfScrollReader({
                   gap={12 * zoom}
                   root={stage.current}
                   ar={ar}
-                  onRatio={(ratio) =>
-                    setRatios((old) => (old[n] === ratio ? old : { ...old, [n]: ratio }))
-                  }
+                  onRatio={(ratio) => {
+                    if (layout.current.ratios[n] === ratio) return;
+                    rememberPosition();
+                    setRatios((old) => (old[n] === ratio ? old : { ...old, [n]: ratio }));
+                  }}
                 />
               ))}
           </div>

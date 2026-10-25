@@ -163,6 +163,8 @@ function PdfReader({
           standardFontDataUrl: '/assets/pdfjs/standard_fonts/',
           wasmUrl: '/assets/pdfjs/wasm/',
           isEvalSupported: false,
+          disableAutoFetch: true,
+          disableStream: true,
         });
         const document = await task.promise;
         if (!disposed) {

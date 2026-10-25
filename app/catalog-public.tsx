@@ -1,7 +1,10 @@
 'use client';
+import { matchesCatalogSearch } from './lib/catalog-search';
 import StickyCardBar from './sticky-card-bar';
 import {
   selectionKey,
+  canAddSelection,
+  MAX_CATALOG_SELECTIONS,
   selectedProduct,
   selectionTotal,
   fulfillmentLabels,
@@ -35,9 +38,20 @@ export function CatalogDocuments({
   preview?: boolean;
 }) {
   const [opened, setOpened] = useState('');
+  const closeDocument = useRef<() => void>(() => {});
   const t = (fr: string, a: string) => (ar ? a : fr),
     docs = catalogDocuments(data, preview).filter((d) => d.visible),
     settings = catalogSettings(data);
+  const documentOpen = settings.enabled && settings.pdf && docs.some((d) => d.id === opened);
+  useEffect(() => {
+    if (!documentOpen) return;
+    const navigation = modalHistory(() => setOpened(''));
+    closeDocument.current = navigation.close;
+    return () => {
+      closeDocument.current = () => {};
+      navigation.dispose();
+    };
+  }, [documentOpen]);
   if (!settings.enabled || !settings.pdf || !docs.length) return null;
   return (
     <div className="catalog-documents">
@@ -58,7 +72,10 @@ export function CatalogDocuments({
               type="button"
               className="secondary full"
               aria-expanded={opened === d.id}
-              onClick={() => setOpened(opened === d.id ? '' : d.id)}
+              onClick={() => {
+                if (opened === d.id) closeDocument.current();
+                else setOpened(d.id);
+              }}
             >
               {opened === d.id
                 ? t('Fermer le document', 'إغلاق الوثيقة')
@@ -157,7 +174,7 @@ export default function CatalogProducts({
   const filtered = items.filter(
     (p) =>
       (!category || (p.categoryId || p.category) === category) &&
-      (!search || name(p).toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())),
+      matchesCatalogSearch(p, search, ar),
   );
   const legacyCategories = [
     ...new Set(items.filter((p) => !p.categoryId && p.category).map((p) => p.category)),
@@ -178,9 +195,24 @@ export default function CatalogProducts({
       );
       return;
     }
-    setDetail('');
+    if (ordering) return;
     if (canOrder && (data.activity === false || settings.fulfillmentModes.length)) {
       const key = selectionKey(p.id, variantId(p));
+      if (
+        !canAddSelection(
+          selected.map((line) => line.key),
+          key,
+        )
+      ) {
+        onMessage(
+          t(
+            `Votre sélection est limitée à ${MAX_CATALOG_SELECTIONS} articles ou variantes.`,
+            `الاختيار محدود فـ ${MAX_CATALOG_SELECTIONS} منتج ولا نوع.`,
+          ),
+        );
+        return;
+      }
+      setDetail('');
       setCart((c) => ({ ...c, [key]: c[key] || 1 }));
       setTimeout(
         () =>
@@ -189,6 +221,7 @@ export default function CatalogProducts({
       );
       return;
     }
+    setDetail('');
     onRequest(p.type === 'product' ? 'commande' : 'devis', {
       ...selectedPrice(p),
       variantId: variantId(p) || undefined,
@@ -298,7 +331,12 @@ export default function CatalogProducts({
         (!p.variants.length || !!variantId(p)) &&
         (data.activity !== false || canOrder) && (
           <>
-            <button className="secondary full" type="button" onClick={() => choose(p)}>
+            <button
+              className="secondary full"
+              type="button"
+              disabled={ordering}
+              onClick={() => choose(p)}
+            >
               {p.type === 'service'
                 ? t('Demander un devis', 'طلب عرض ثمن')
                 : t('Commander / Demander', 'طلب المنتج')}
@@ -312,7 +350,9 @@ export default function CatalogProducts({
                   min={0}
                   max={99}
                   disabled={
-                    ordering || (!cart[selectionKey(p.id, variantId(p))] && selected.length >= 40)
+                    ordering ||
+                    (!cart[selectionKey(p.id, variantId(p))] &&
+                      selected.length >= MAX_CATALOG_SELECTIONS)
                   }
                   value={cart[selectionKey(p.id, variantId(p))] || 0}
                   onChange={(e) =>
@@ -440,6 +480,7 @@ export default function CatalogProducts({
                 <button
                   type="button"
                   aria-label={t('Retirer ', 'حذف ') + name(p)}
+                  disabled={ordering}
                   onClick={() => setCart((c) => ({ ...c, [key]: 0 }))}
                 >
                   ×
@@ -498,6 +539,7 @@ export default function CatalogProducts({
               <input
                 maxLength={120}
                 autoComplete="name"
+                disabled={ordering}
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
               />
@@ -509,6 +551,7 @@ export default function CatalogProducts({
                 inputMode="tel"
                 autoComplete="tel"
                 dir="ltr"
+                disabled={ordering}
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
               />
