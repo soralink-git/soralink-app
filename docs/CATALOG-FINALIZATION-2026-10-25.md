@@ -35,7 +35,7 @@ Aucun changement des tarifs, des comptes ou du modèle D1/R2.
 | ------------------------------- | ---------------------------------------------------------------------------------------------- |
 | Importer/publier PDF            | Parcours du Worker avec vrais PDF dans D1/R2 isolés                                            |
 | Lecture intégrée                | PDF.js local, sans iframe externe ; URLs stables de document                                   |
-| Gestes et Retour                | Tests des gestes, historique imbriqué ; recette navigateur prévue en préversion                |
+| Gestes et Retour                | Tests des gestes et historique imbriqué ; lecture/zoom/Retour vérifiés en préversion           |
 | Modifier un prix                | Enregistrement et projection publique vérifiés dans le parcours                                |
 | Masquer produits/catégories/PDF | Projection et lecture directe refusées lorsque nécessaire                                      |
 | Sélection WhatsApp              | Message calculé côté serveur, variantes, quantités, références, prix indicatifs et idempotence |
@@ -70,3 +70,17 @@ pnpm verify:recovery
 Six régressions supplémentaires couvrent les formats PDF mixtes, la conservation de position,
 la rotation/largeur, les bornes, le panier à capacité maximale et la recherche bilingue.
 Les vérifications de reprise utilisent uniquement des données synthétiques.
+
+## Recette navigateur réalisée
+
+Sur la préversion Cloudflare, dans Chrome de bureau :
+
+- recherche `identite` : trouve E‑Identité sans saisir les accents ;
+- sélection de deux exemplaires NFC et d’une E‑Identité : total indicatif 347 DH ;
+- PDF intégré de quatre pages : ouverture, passage à la page 2 et double clic à 200 % ;
+- premier Retour : fermeture du plein écran avec aperçu à la page 2 ; second Retour :
+  fermeture de la lecture intégrée, carte toujours affichée ;
+- interface arabe, fiche produit et photo imbriquée : Retour ferme la photo puis la fiche.
+
+Aucun clic d’envoi WhatsApp ni soumission de demande réelle effectué. Cette recette
+ne remplace pas les gestes multitactiles Android/iPhone ni la PWA installée.
