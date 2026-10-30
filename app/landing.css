@@ -49,14 +49,14 @@
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  border-radius: 9999px;
+  border-radius: var(--radius-control, 12px);
   background: rgba(0, 181, 173, 0.09);
   border: 1px solid rgba(0, 181, 173, 0.35);
   color: #5eead4;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
   margin-bottom: 20px;
   backdrop-filter: blur(8px);
   box-shadow: 0 4px 16px rgba(0, 181, 173, 0.15);
@@ -249,13 +249,13 @@
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  letter-spacing: 0.08em;
-  font-weight: 700;
+  letter-spacing: normal;
+  font-weight: 600;
   color: #ecd296;
-  text-transform: uppercase;
+  text-transform: none;
   margin-bottom: 12px;
   padding: 4px 12px;
-  border-radius: 9999px;
+  border-radius: var(--radius-control, 12px);
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(213, 182, 111, 0.2);
 }
@@ -406,7 +406,7 @@
 }
 
 .showcase-nfc:hover {
-  transform: rotate(0deg) scale(1.04);
+  transform: rotate(0deg);
 }
 
 .showcase-nfc > span[dir='ltr'],
@@ -434,10 +434,10 @@
   align-items: center;
   justify-content: space-between;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: normal;
   color: #94a3b8;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .showcase-note {
@@ -861,15 +861,15 @@
   box-shadow:
     0 25px 60px -15px rgba(0, 0, 0, 0.7),
     0 0 45px rgba(0, 181, 173, 0.25);
-  transform: scale(1.03);
+  transform: translateY(-2px);
 }
 
 .landing-price-grid .eyebrow {
   display: inline-block;
   font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
   color: #00b5ad;
   margin-bottom: 12px;
 }

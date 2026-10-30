@@ -119,7 +119,7 @@
     box-shadow 0.28s ease;
 }
 .card-design .avatar:hover {
-  transform: scale(1.04);
+  transform: translateY(-2px);
   box-shadow:
     0 0 0 5px var(--button-bg, var(--accent)),
     0 18px 36px -4px rgba(0, 0, 0, 0.32);
@@ -224,13 +224,13 @@
   color: inherit;
 }
 .card-design .card-action-icons > button:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
   filter: brightness(1.08);
   box-shadow: 0 10px 26px -3px
     color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 60%, rgba(0, 0, 0, 0.3));
 }
 .card-design .card-action-icons > button:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
 }
 .card-design .card-actions .card-request {
   width: 100%;
@@ -383,14 +383,14 @@
 }
 .card-design :is(.contact-icons, .social-links, .location-links) a:hover,
 .card-design .public-details a.secondary.full:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
   filter: brightness(1.08);
   box-shadow: 0 10px 26px -3px
     color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 60%, rgba(0, 0, 0, 0.3));
 }
 .card-design :is(.contact-icons, .social-links, .location-links) a:active,
 .card-design .public-details a.secondary.full:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
 }
 .card-design .location-links p {
   font-size: var(--card-text-size);
@@ -450,7 +450,7 @@
 }
 .card-design .public-details .catalogue-item:hover img,
 .card-design .public-details .promotion-item:hover img {
-  transform: scale(1.03);
+  opacity: 0.95;
 }
 .card-design.compact .avatar {
   width: 90px;
@@ -600,9 +600,9 @@
 .workspace-design .workspace-head .eyebrow {
   margin-bottom: 6px;
   color: #00b5ad;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
 }
 .workspace-design .workspace-head h1 {
   font-size: 30px;
@@ -716,9 +716,9 @@
   margin: 0;
   color: #ecd296;
   font-size: 12px;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
 }
 .preview-live-dot {
   width: 7px;
