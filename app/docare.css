@@ -1787,6 +1787,75 @@ textarea,
   color: var(--muted);
 }
 
+/* Welcome banner & workspace header polish */
+.workspace-main > .callout,
+.workspace-welcome {
+  display: flex !important;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px !important;
+  border-radius: 16px !important;
+  background: var(--brand-tint) !important;
+  border: 1px solid var(--brand-tint-border) !important;
+  border-inline-start: 3px solid var(--brand-orange) !important;
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.04) !important;
+  margin: 0 0 20px !important;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+html[data-theme='dark'] .workspace-main > .callout,
+html[data-theme='dark'] .workspace-welcome {
+  background: rgba(255, 145, 37, 0.08) !important;
+  border: 1px solid rgba(255, 145, 37, 0.22) !important;
+  border-inline-start: 3px solid var(--brand-orange) !important;
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.35) !important;
+}
+.workspace-main > .callout > svg,
+.workspace-welcome > svg {
+  color: var(--brand-orange) !important;
+  flex-shrink: 0;
+}
+.workspace-main > .callout p,
+.workspace-welcome p {
+  margin: 0 !important;
+  font-size: 13.5px !important;
+  line-height: 1.55 !important;
+  color: var(--ink) !important;
+}
+.workspace-main > .callout strong,
+.workspace-welcome strong {
+  color: var(--brand-strong) !important;
+  font-weight: 750 !important;
+}
+.workspace-design .workspace-head {
+  margin-block-end: 22px;
+}
+.workspace-design .workspace-head .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--brand-strong) !important;
+  font-size: 11px !important;
+  font-weight: 750 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.workspace-design .workspace-head h1 {
+  font-size: clamp(26px, 3.2vw, 32px) !important;
+  font-weight: 850 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.25 !important;
+  color: var(--ink) !important;
+  margin: 0 0 6px !important;
+}
+.workspace-design .workspace-intro {
+  font-size: 14.5px !important;
+  color: var(--muted) !important;
+  line-height: 1.55 !important;
+  margin: 0 !important;
+}
+
 /* Small labels and hover states use the same palette in both interface themes. */
 .landing-proof,
 .landing-sharing > p,

@@ -37,6 +37,7 @@ import {
   Phone,
   Plus,
   Settings,
+  Sparkles,
   Users,
   X,
 } from 'lucide-react';
@@ -380,11 +381,13 @@ export default function DashboardEditor({ context }: { context: DashboardContext
       </aside>
       <div className="workspace-main">
         {loaded && auth && !id && (
-          <div className="callout">
+          <div className="callout workspace-welcome">
+            <Sparkles size={18} aria-hidden="true" />
             <p>
+              <strong>{t('Bienvenue !', 'مرحبا !')}</strong>{' '}
               {t(
-                'Bienvenue ! Complétez votre carte. Les modifications sont enregistrées automatiquement ; activez sa visibilité quand elle est prête.',
-                'مرحبا! عمّر الكارط ديالك. التغييرات كيتسجلو تلقائياً، وفعّل الظهور ديالها ملي تكون واجدة.',
+                'Complétez votre carte. Les modifications sont enregistrées automatiquement ; activez sa visibilité quand elle est prête.',
+                'عمّر الكارط ديالك. التغييرات كيتسجلو تلقائياً، وفعّل الظهور ديالها ملي تكون واجدة.',
               )}
             </p>
           </div>
