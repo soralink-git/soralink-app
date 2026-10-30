@@ -155,7 +155,10 @@
     inset 0 1px 1px rgba(255, 255, 255, 0.6);
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
 }
 
 .landing .primary:hover {
@@ -184,7 +187,11 @@
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
   backdrop-filter: blur(10px);
 }
 
@@ -496,7 +503,10 @@
   color: #cbd5e1;
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .landing-sharing span:hover {
@@ -556,7 +566,10 @@
   border: 1px solid rgba(148, 163, 184, 0.16);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(12px);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
   box-sizing: border-box;
 }
 
@@ -788,7 +801,9 @@
   border: 1px solid rgba(148, 163, 184, 0.14);
   box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.4);
   text-align: start;
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .usecase-grid article:hover {
@@ -864,6 +879,7 @@
   font-weight: 850;
   color: #ffffff;
   margin: 0 0 16px;
+  font-variant-numeric: tabular-nums;
 }
 
 .landing-price {
@@ -872,6 +888,7 @@
   color: #ffffff;
   line-height: 1;
   margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
 }
 
 .landing-price small {
@@ -917,7 +934,10 @@
   background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .landing-price-grid article a.secondary:hover {
@@ -978,7 +998,9 @@
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 16px;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .landing-faq details[open] {

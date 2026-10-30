@@ -77,7 +77,12 @@ header a.header-login,
   box-sizing: border-box !important;
   line-height: 1 !important;
   cursor: pointer !important;
-  transition: all 160ms ease !important;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease !important;
 }
 .theme-toggle {
   gap: 8px !important;
@@ -259,7 +264,10 @@ textarea {
   border: 1px solid var(--brand-input-border);
   border-radius: 22px;
   min-height: 48px;
-  transition: all 160ms ease;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
 }
 textarea {
   border-radius: 20px;
@@ -857,7 +865,11 @@ html[data-theme='dark'] .workspace-nav-group {
   gap: 12px;
   font-size: 14px;
   white-space: nowrap;
-  transition: all 160ms ease !important;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease !important;
 }
 .workspace-navigation button > svg,
 .workspace-design .setup-launch > svg,
@@ -1544,7 +1556,10 @@ input[type='file']::file-selector-button {
   font-weight: 600;
   font-size: 12px;
   cursor: pointer;
-  transition: all 160ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
 }
 input[type='file']::file-selector-button:hover {
   background: var(--brand-accent);
@@ -1600,7 +1615,10 @@ input[type='file']::file-selector-button:hover {
   border: 1px solid var(--line);
   padding: 8px 18px;
   font-weight: 600;
-  transition: all 160ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease;
 }
 .catalog-tabs button:hover {
   background: var(--brand-tint);

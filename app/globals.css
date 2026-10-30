@@ -481,6 +481,7 @@ nav button.active {
 }
 .price-card h2 {
   font-size: 25px;
+  font-variant-numeric: tabular-nums;
 }
 .price-card p {
   font-size: 14px;
@@ -490,6 +491,7 @@ nav button.active {
   font-size: 48px;
   font-weight: 800;
   letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
 }
 .price span {
   font-size: 17px;
@@ -1284,9 +1286,9 @@ html[dir='rtl'] .hero-stage .profile-card {
 body {
   background-color: #0b111e;
   background-image:
-    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.08) 0px, transparent 45%),
-    radial-gradient(at 85% 20%, rgba(213, 182, 111, 0.1) 0px, transparent 50%),
-    radial-gradient(at 50% 85%, rgba(14, 165, 233, 0.07) 0px, transparent 55%);
+    radial-gradient(at 15% 15%, rgba(36, 44, 57, 0.4) 0px, transparent 45%),
+    radial-gradient(at 85% 20%, rgba(213, 182, 111, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 85%, rgba(17, 24, 39, 0.5) 0px, transparent 55%);
   background-attachment: fixed;
 }
 .brand-icon {
@@ -1441,6 +1443,7 @@ textarea::placeholder {
 }
 .admin-stats b {
   font-size: 30px;
+  font-variant-numeric: tabular-nums;
 }
 .admin-stats span {
   font-size: 14px;
@@ -3241,6 +3244,7 @@ header nav {
 .landing-price {
   font-size: 42px;
   letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
 }
 .landing-price small {
   font-size: 18px;
@@ -4918,6 +4922,7 @@ header nav {
   font-weight: 800;
   color: #d5b66f;
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 .impact-stat-label {
   font-size: 12px;
