@@ -112,40 +112,43 @@ const profileObjectSchema = z
     catalogSettings: catalogSettingsSchema.optional(),
     catalogCategories: catalogCategoriesSchema.optional(),
     services: z
-      .array(
-        z.union([
-          text(120),
-          z
-            .object({
-              id: text(80).nullish(),
-              type: z.enum(['product', 'service']).nullish(),
-              name: text(120).nullish(),
-              description: text(800).nullish(),
-              category: text(80).nullish(),
-              price: text(30).nullish(),
-              image: text(4000).nullish(),
-              thumbnail: assetURL.optional(),
-              nameFr: text(120).nullish(),
-              nameAr: text(120).nullish(),
-              descriptionAr: text(800).nullish(),
-              categoryAr: text(80).nullish(),
-              categoryId: text(80).nullish(),
-              images: z
-                .array(assetURL.refine((v) => !!v))
-                .max(5)
-                .optional(),
-              oldPrice: text(30).nullish(),
-              reference: text(80).nullish(),
-              variants: catalogueVariantsSchema.optional(),
-              availability: z.enum(['available', 'soldout', 'hidden']).optional(),
-              promotion: z.boolean().optional(),
-              promoStart: text(10).nullish(),
-              promoEnd: text(10).nullish(),
-            })
-            .passthrough(),
-        ]),
-      )
+      .array(z.any())
       .max(HARD_CATALOGUE_ITEMS)
+      .pipe(
+        z.array(
+          z.union([
+            text(120),
+            z
+              .object({
+                id: text(80).nullish(),
+                type: z.enum(['product', 'service']).nullish(),
+                name: text(120).nullish(),
+                description: text(800).nullish(),
+                category: text(80).nullish(),
+                price: text(30).nullish(),
+                image: text(4000).nullish(),
+                thumbnail: assetURL.optional(),
+                nameFr: text(120).nullish(),
+                nameAr: text(120).nullish(),
+                descriptionAr: text(800).nullish(),
+                categoryAr: text(80).nullish(),
+                categoryId: text(80).nullish(),
+                images: z
+                  .array(assetURL.refine((v) => !!v))
+                  .max(5)
+                  .optional(),
+                oldPrice: text(30).nullish(),
+                reference: text(80).nullish(),
+                variants: catalogueVariantsSchema.optional(),
+                availability: z.enum(['available', 'soldout', 'hidden']).optional(),
+                promotion: z.boolean().optional(),
+                promoStart: text(10).nullish(),
+                promoEnd: text(10).nullish(),
+              })
+              .passthrough(),
+          ]),
+        ),
+      )
       .optional(),
     promotions: z
       .array(
@@ -240,7 +243,9 @@ export const profileDataSchema = profileObjectSchema.superRefine((d, ctx) => {
     });
   const errors = [
     JSON.stringify(d).length > 700000 ? 'Informations invalides : carte trop volumineuse.' : null,
-    catalogueError(d.services, HARD_CATALOGUE_ITEMS),
+    Array.isArray(d.services) && d.services.length > HARD_CATALOGUE_ITEMS
+      ? null
+      : catalogueError(d.services, HARD_CATALOGUE_ITEMS),
     promotionError(d.promotions),
     d.recordedVideo && !recordedVideoUrl(d.recordedVideo) ? 'Lien de vidéo invalide' : null,
   ];
@@ -452,7 +457,11 @@ export function validateInput<S extends z.ZodTypeAny>(schema: S, value: unknown)
     const first = result.error.issues[0];
     const field = first.path[first.path.length - 1];
     let message = issue?.message;
-    if (!message && first.code === 'invalid_union' && first.path.at(-1) === 'action')
+    if (
+      !message &&
+      (first.code === 'invalid_union_discriminator' ||
+        (first.code === 'invalid_union' && first.path.at(-1) === 'action'))
+    )
       message = 'Action inconnue';
     if (!message && field === 'email') message = 'Renseignez une adresse e-mail valide.';
     if (!message && field === 'password')
