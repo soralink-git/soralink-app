@@ -17,6 +17,11 @@
   --overlay-crop: rgba(17, 17, 17, 0.8);
   --brand-glow-subtle: rgba(255, 145, 37, 0.1);
   --brand-glow-border: rgba(255, 145, 37, 0.22);
+  --welcome-dark-bg: rgba(255, 255, 255, 0.03);
+  --welcome-dark-border: rgba(255, 255, 255, 0.08);
+  --welcome-dark-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --welcome-icon-bg: rgba(232, 89, 12, 0.12);
+  --welcome-icon-dark-bg: rgba(232, 89, 12, 0.18);
 }
 html,
 body {
@@ -1834,10 +1839,10 @@ textarea,
   display: flex !important;
   align-items: center;
   gap: 14px;
-  padding: 14px 18px !important;
-  border-radius: 16px !important;
-  background: var(--brand-tint) !important;
-  border: 1px solid var(--brand-tint-border) !important;
+  padding: 12px 18px !important;
+  border-radius: 12px !important;
+  background: var(--brand-surface) !important;
+  border: 1px solid var(--line) !important;
   border-inline-start: 3px solid var(--brand-orange) !important;
   box-shadow: var(--shadow-subtle) !important;
   margin: 0 0 20px !important;
@@ -1846,10 +1851,25 @@ textarea,
 }
 html[data-theme='dark'] .workspace-main > .callout,
 html[data-theme='dark'] .workspace-welcome {
-  background: var(--brand-glow-subtle) !important;
-  border: 1px solid var(--brand-glow-border) !important;
+  background: var(--welcome-dark-bg) !important;
+  border: 1px solid var(--welcome-dark-border) !important;
   border-inline-start: 3px solid var(--brand-orange) !important;
-  box-shadow: var(--shadow-popover) !important;
+  box-shadow: var(--welcome-dark-shadow) !important;
+}
+.workspace-welcome-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--welcome-icon-bg);
+  color: var(--brand-orange);
+  flex-shrink: 0;
+}
+html[data-theme='dark'] .workspace-welcome-icon {
+  background: var(--welcome-icon-dark-bg);
+  color: var(--brand-orange);
 }
 .workspace-main > .callout > svg,
 .workspace-welcome > svg {
@@ -1865,8 +1885,8 @@ html[data-theme='dark'] .workspace-welcome {
 }
 .workspace-main > .callout strong,
 .workspace-welcome strong {
-  color: var(--brand-strong) !important;
-  font-weight: 750 !important;
+  color: var(--ink) !important;
+  font-weight: 700 !important;
 }
 .workspace-design .workspace-head {
   margin-block-end: 24px;
@@ -1874,12 +1894,12 @@ html[data-theme='dark'] .workspace-welcome {
 .workspace-design .workspace-head .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: var(--brand-strong) !important;
-  font-size: 11px !important;
-  font-weight: 700 !important;
+  gap: 6px;
+  color: var(--brand-orange) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
   letter-spacing: normal !important;
-  text-transform: none;
+  text-transform: none !important;
   margin-bottom: 8px;
 }
 .workspace-design .workspace-head h1 {

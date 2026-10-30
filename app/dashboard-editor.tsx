@@ -382,7 +382,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
       <div className="workspace-main">
         {loaded && auth && !id && (
           <div className="callout workspace-welcome">
-            <Sparkles size={18} aria-hidden="true" />
+            <span className="workspace-welcome-icon" aria-hidden="true">
+              <Sparkles size={16} />
+            </span>
             <p>
               <strong>{t('Bienvenue !', 'مرحبا !')}</strong>{' '}
               {t(
@@ -395,7 +397,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         <div className="workspace-head">
           <div>
             <span className="eyebrow">
-              <span dir="ltr">SoraLink</span> / {t('ESPACE CLIENT', 'حساب الزبون')}
+              <span dir="ltr">SoraLink</span> · {t('Espace client', 'حساب الزبون')}
             </span>
             <h1>
               {showSetup ? t('Créer ma carte', 'صايب الكارط ديالي') : t(current[2], current[3])}
@@ -1157,7 +1159,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
             </div>
             <PinnedCardPreview ar={ar}>
               <div className="preview-heading">
-                <span className="eyebrow">{t('APERÇU EN DIRECT', 'معاينة مباشرة')}</span>
+                <span className="eyebrow">{t('Aperçu en direct', 'معاينة مباشرة')}</span>
                 <span className="preview-live-dot" aria-hidden="true" />
               </div>
               <Card

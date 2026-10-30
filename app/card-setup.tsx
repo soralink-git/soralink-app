@@ -28,7 +28,7 @@ export default function CardSetup({
     <section className="panel card-setup" dir={ar ? 'rtl' : 'ltr'}>
       <div className="setup-heading">
         <div>
-          <span className="eyebrow">{t('CRÉATION GUIDÉE', 'صايب الكارط خطوة بخطوة')}</span>
+          <span className="eyebrow">{t('Création guidée', 'صايب الكارط خطوة بخطوة')}</span>
           <h2>{t('Votre carte, simplement', 'الكارط ديالك بسهولة')}</h2>
         </div>
         <button type="button" className="text-button" disabled={busy} onClick={onExit}>
