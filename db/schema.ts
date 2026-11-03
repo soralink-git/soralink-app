@@ -20,7 +20,20 @@ export const profiles = sqliteTable('profiles', {
   proEnabled: integer('pro_enabled').notNull().default(0),
   catalogRights: text('catalog_rights'),
   clientAccess: text('client_access'),
+  cardLimit: integer('card_limit').notNull().default(1),
 });
+export const secondaryCards = sqliteTable(
+  'secondary_cards',
+  {
+    id: text('id').primaryKey(),
+    owner: text('owner').notNull(),
+    data: text('data').notNull(),
+    published: integer('published').notNull().default(0),
+    updated: text('updated').notNull(),
+    created: text('created').notNull(),
+  },
+  (t) => [index('secondary_cards_owner_idx').on(t.owner)],
+);
 export const requests = sqliteTable(
   'requests',
   {

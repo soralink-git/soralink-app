@@ -9,19 +9,42 @@ import { normalizePublicName, publicNameError, publicCardPath } from './public-a
 
 type ProfileKey = { id: string } | { name: string };
 async function readProfile(key: ProfileKey) {
-  if ('id' in key)
-    return db()
+  if ('id' in key) {
+    const primary = await db()
       .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
       .bind(key.id)
       .first<any>();
+    if (primary) return primary;
+    try {
+      return await db()
+        .prepare(
+          'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner WHERE s.id=? AND s.published=1',
+        )
+        .bind(key.id)
+        .first<any>();
+    } catch {
+      return null;
+    }
+  }
   const name = normalizePublicName(key.name);
   if (publicNameError(name)) return null;
-  return db()
+  const primaryByName = await db()
     .prepare(
       'SELECT p.* FROM profiles p JOIN profile_addresses a ON a.profile=p.id WHERE a.name=? AND p.published=1',
     )
     .bind(name)
     .first<any>();
+  if (primaryByName) return primaryByName;
+  try {
+    return await db()
+      .prepare(
+        'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner JOIN profile_addresses a ON a.profile=s.id WHERE a.name=? AND s.published=1',
+      )
+      .bind(name)
+      .first<any>();
+  } catch {
+    return null;
+  }
 }
 export async function publicProfileMetadata(key: ProfileKey) {
   try {

@@ -41,7 +41,7 @@ export async function GET(req: Request) {
           // instr treats %, _ and quotes literally and keeps the search parameterized.
           return readPage(
             db(),
-            'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights,client_access FROM profiles',
+            'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights,client_access,coalesce(card_limit, 1) AS card_limit FROM profiles',
             "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.business'),'')),lower(?))>0)",
             [query.search, query.search, query.search, query.search],
             cursor,
@@ -74,6 +74,7 @@ export async function GET(req: Request) {
     return json({
       profiles: profiles.items.map((p: any) => ({
         ...p,
+        cardLimit: p.card_limit ?? 1,
         catalogRights: catalogRights(p),
         clientAccess: readClientAccess(p),
         clientSections: clientSections(p),
@@ -248,7 +249,7 @@ export async function POST(req: Request) {
       if (b.state !== 'suspended' && !b.expires)
         return json({ error: 'Renseignez une échéance pour activer ce profil.' }, 400);
       const expires = b.expires ? new Date(b.expires + 'T23:59:59Z').toISOString() : null;
-      if (b.clientAccess !== undefined) {
+      if (b.clientAccess !== undefined || b.cardLimit !== undefined) {
         const current: any = await db()
           .prepare('SELECT * FROM profiles WHERE id=?')
           .bind(b.id)
@@ -263,22 +264,31 @@ export async function POST(req: Request) {
             },
             409,
           );
+        const cardLimit = b.cardLimit !== undefined ? b.cardLimit : (current.card_limit ?? 1);
+        const nextAccess =
+          b.clientAccess !== undefined
+            ? b.clientAccess
+              ? JSON.stringify(b.clientAccess)
+              : null
+            : current.client_access;
         const result = await db()
           .prepare(
-            'UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=?,client_access=? WHERE id=? AND client_access IS ? AND plan=? AND state=? AND expires IS ? AND pro_enabled=?',
+            'UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=?,client_access=?,card_limit=? WHERE id=? AND client_access IS ? AND plan=? AND state=? AND expires IS ? AND pro_enabled=? AND coalesce(card_limit, 1)=?',
           )
           .bind(
             b.state,
             b.plan,
             expires,
             isPlatformPlan(b.plan) ? (b.plan === 'Activite' ? 1 : 0) : b.pro ? 1 : 0,
-            b.clientAccess ? JSON.stringify(b.clientAccess) : null,
+            nextAccess,
+            cardLimit,
             b.id,
             current.client_access ?? null,
             current.plan,
             current.state,
             current.expires,
             current.pro_enabled,
+            current.card_limit ?? 1,
           )
           .run();
         if (!result.meta.changes)

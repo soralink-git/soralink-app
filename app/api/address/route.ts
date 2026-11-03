@@ -4,7 +4,9 @@ import { normalizePublicName, publicNameError } from '../../lib/public-address';
 import { reservePublicName } from '../../lib/address-storage';
 import { readValidatedJSON, inputErrorResponse } from '../../lib/api-validation';
 import { z } from 'zod';
-const schema = z.object({ name: z.string().max(80) }).strict();
+const schema = z
+  .object({ name: z.string().max(80), cardId: z.string().max(128).optional() })
+  .strict();
 export async function GET(request: Request) {
   try {
     const { user } = await identity();
@@ -33,10 +35,20 @@ export async function POST(request: Request) {
     const name = normalizePublicName(body.name);
     const invalid = publicNameError(name);
     if (invalid) return json({ error: invalid }, 400);
-    const profile = await db()
-      .prepare('SELECT * FROM profiles WHERE owner=?')
-      .bind(user.userId)
+    let profile = await db()
+      .prepare(
+        body.cardId
+          ? 'SELECT * FROM profiles WHERE id=? AND owner=?'
+          : 'SELECT * FROM profiles WHERE owner=? ORDER BY rowid ASC',
+      )
+      .bind(body.cardId || user.userId, ...(body.cardId ? [user.userId] : []))
       .first<any>();
+    if (!profile && body.cardId) {
+      profile = await db()
+        .prepare('SELECT * FROM secondary_cards WHERE id=? AND owner=?')
+        .bind(body.cardId, user.userId)
+        .first<any>();
+    }
     if (!profile) return json({ error: 'save-first' }, 409);
     if (!clientSectionAllowed(profile, 'share'))
       return json({ error: 'disabled', errorAr: 'هاد القسم موقوف من طرف SoraLink.' }, 403);

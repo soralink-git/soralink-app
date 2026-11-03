@@ -119,7 +119,7 @@
     box-shadow 0.28s ease;
 }
 .card-design .avatar:hover {
-  transform: scale(1.04);
+  transform: translateY(-2px);
   box-shadow:
     0 0 0 5px var(--button-bg, var(--accent)),
     0 18px 36px -4px rgba(0, 0, 0, 0.32);
@@ -210,7 +210,12 @@
   font-size: 13px;
   font-weight: 700;
   box-sizing: border-box;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
 }
 .card-design .card-action-icons > button svg {
   flex-shrink: 0;
@@ -219,13 +224,13 @@
   color: inherit;
 }
 .card-design .card-action-icons > button:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
   filter: brightness(1.08);
   box-shadow: 0 10px 26px -3px
     color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 60%, rgba(0, 0, 0, 0.3));
 }
 .card-design .card-action-icons > button:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
 }
 .card-design .card-actions .card-request {
   width: 100%;
@@ -244,7 +249,12 @@
   box-shadow: 0 6px 20px -3px
     color-mix(in srgb, var(--button-bg, var(--accent)) 45%, rgba(0, 0, 0, 0.2));
   box-sizing: border-box;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
   margin: 0 auto;
 }
 .card-design .card-actions .card-request:hover {
@@ -352,7 +362,12 @@
   font-weight: 600;
   text-decoration: none;
   box-sizing: border-box;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
 }
 .card-design :is(.contact-icons, .social-links, .location-links) a svg,
 .card-design .public-details a.secondary.full svg {
@@ -368,14 +383,14 @@
 }
 .card-design :is(.contact-icons, .social-links, .location-links) a:hover,
 .card-design .public-details a.secondary.full:hover {
-  transform: translateY(-2px) scale(1.05);
+  transform: translateY(-2px);
   filter: brightness(1.08);
   box-shadow: 0 10px 26px -3px
     color-mix(in srgb, var(--service-bg, var(--button-bg, var(--accent))) 60%, rgba(0, 0, 0, 0.3));
 }
 .card-design :is(.contact-icons, .social-links, .location-links) a:active,
 .card-design .public-details a.secondary.full:active {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(0);
 }
 .card-design .location-links p {
   font-size: var(--card-text-size);
@@ -399,7 +414,12 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
   box-sizing: border-box;
 }
 .card-design .public-details .catalogue-item button.secondary:hover {
@@ -430,7 +450,7 @@
 }
 .card-design .public-details .catalogue-item:hover img,
 .card-design .public-details .promotion-item:hover img {
-  transform: scale(1.03);
+  opacity: 0.95;
 }
 .card-design.compact .avatar {
   width: 90px;
@@ -527,7 +547,12 @@
   color: #cbd5e1;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .workspace-navigation button > span {
   white-space: nowrap;
@@ -575,9 +600,9 @@
 .workspace-design .workspace-head .eyebrow {
   margin-bottom: 6px;
   color: #00b5ad;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
 }
 .workspace-design .workspace-head h1 {
   font-size: 30px;
@@ -658,7 +683,11 @@
   box-shadow: 0 4px 16px rgba(0, 181, 173, 0.35);
   font-weight: 700;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 .workspace-design .primary:hover,
 .workspace-save-action .primary:hover {
@@ -687,9 +716,9 @@
   margin: 0;
   color: #ecd296;
   font-size: 12px;
-  font-weight: 750;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
 }
 .preview-live-dot {
   width: 7px;

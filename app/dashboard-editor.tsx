@@ -26,6 +26,7 @@ import SaveBar from './save-bar';
 import {
   Calendar,
   Clock,
+  CreditCard,
   Crop,
   ExternalLink,
   FileText,
@@ -37,6 +38,7 @@ import {
   Phone,
   Plus,
   Settings,
+  Sparkles,
   Users,
   X,
 } from 'lucide-react';
@@ -111,6 +113,19 @@ export type DashboardContext = {
   uploadPromotion: (file: File, promoId: string) => Promise<void>;
   uploadVideo: (file: File) => Promise<void>;
   videoCaptureRef: RefObject<HTMLInputElement | null>;
+  cards?: Array<{
+    id: string;
+    name: string;
+    published: boolean;
+    updated: string;
+    isPrimary: boolean;
+    publicName?: string;
+  }>;
+  cardLimit?: number;
+  cardsCount?: number;
+  activeCardId?: string;
+  switchCard?: (cardId: string) => Promise<void>;
+  createCard?: (name?: string) => Promise<void>;
 };
 export default function DashboardEditor({ context }: { context: DashboardContext }) {
   const {
@@ -165,7 +180,17 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     upload,
     uploadCatalogue,
     uploadPromotion,
+    cards = [],
+    cardLimit = 1,
+    cardsCount = 1,
+    activeCardId = id,
+    switchCard,
+    createCard,
   } = context;
+  const [newCardOpen, setNewCardOpen] = useState(false);
+  const [newCardName, setNewCardName] = useState('');
+  const [newCardBusy, setNewCardBusy] = useState(false);
+  const [quotaOpen, setQuotaOpen] = useState(false);
   const [metricsOpen, setMetricsOpen] = useState(false);
   const visibleSections = clientSections(subscription);
   const cardKeys = ['coordinates', 'interface', 'actions', 'links'];
@@ -249,6 +274,69 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     <main className="workspace workspace-design">
       <aside>
         <h3>{t('Mon espace', 'الحساب ديالي')}</h3>
+        {auth && (cards.length > 1 || cardLimit > 1) && (
+          <div className="workspace-sidebar-cards">
+            <div className="sidebar-cards-header">
+              <span className="sidebar-cards-title">{t('Mes cartes', 'البطاقات ديالي')}</span>
+              <span className="sidebar-cards-quota">
+                {cardsCount} / {cardLimit}
+              </span>
+            </div>
+            {cards.length > 0 && (
+              <div className="sidebar-cards-list" role="list">
+                {cards.map((c, idx) => {
+                  const isActive = c.id === (id || activeCardId);
+                  const title =
+                    c.name ||
+                    (c.isPrimary
+                      ? t('Carte principale', 'البطاقة الرئيسية')
+                      : `${t('Carte', 'بطاقة')} ${idx + 1}`);
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      className={'sidebar-card-item' + (isActive ? ' active' : '')}
+                      disabled={isActive || busy || newCardBusy}
+                      onClick={() => switchCard && void switchCard(c.id)}
+                      title={title}
+                    >
+                      <CreditCard size={15} />
+                      <span className="sidebar-card-name">{title}</span>
+                      <span
+                        className={'sidebar-card-status ' + (c.published ? 'published' : 'draft')}
+                      >
+                        {c.published ? t('Publiée', 'منشورة') : t('Brouillon', 'مسودة')}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {cardsCount < cardLimit ? (
+              <button
+                type="button"
+                className="secondary small full sidebar-new-card-btn"
+                disabled={busy || newCardBusy}
+                onClick={() => {
+                  setNewCardName('');
+                  setNewCardOpen(true);
+                }}
+              >
+                <Plus size={15} />
+                <span>{t('Nouvelle carte', 'بطاقة جديدة')}</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="secondary small full sidebar-new-card-btn quota-reached"
+                onClick={() => setQuotaOpen(true)}
+              >
+                <Plus size={15} />
+                <span>{t('Nouvelle carte', 'بطاقة جديدة')}</span>
+              </button>
+            )}
+          </div>
+        )}
         <label className="workspace-mobile-location">
           <span>{t('Mon espace', 'الحساب ديالي')}</span>
           <select
@@ -380,11 +468,15 @@ export default function DashboardEditor({ context }: { context: DashboardContext
       </aside>
       <div className="workspace-main">
         {loaded && auth && !id && (
-          <div className="callout">
+          <div className="callout workspace-welcome">
+            <span className="workspace-welcome-icon" aria-hidden="true">
+              <Sparkles size={16} />
+            </span>
             <p>
+              <strong>{t('Bienvenue !', 'مرحبا !')}</strong>{' '}
               {t(
-                'Bienvenue ! Complétez votre carte. Les modifications sont enregistrées automatiquement ; activez sa visibilité quand elle est prête.',
-                'مرحبا! عمّر الكارط ديالك. التغييرات كيتسجلو تلقائياً، وفعّل الظهور ديالها ملي تكون واجدة.',
+                'Complétez votre carte. Les modifications sont enregistrées automatiquement ; activez sa visibilité quand elle est prête.',
+                'عمّر الكارط ديالك. التغييرات كيتسجلو تلقائياً، وفعّل الظهور ديالها ملي تكون واجدة.',
               )}
             </p>
           </div>
@@ -392,7 +484,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         <div className="workspace-head">
           <div>
             <span className="eyebrow">
-              <span dir="ltr">SoraLink</span> / {t('ESPACE CLIENT', 'حساب الزبون')}
+              <span dir="ltr">SoraLink</span> · {t('Espace client', 'حساب الزبون')}
             </span>
             <h1>
               {showSetup ? t('Créer ma carte', 'صايب الكارط ديالي') : t(current[2], current[3])}
@@ -403,6 +495,65 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 : t(...introductions[activeTab])}
             </p>
           </div>
+          {auth && (cards.length > 1 || cardLimit > 1) && (
+            <div className="workspace-card-switcher-box">
+              <div className="card-switcher-meta">
+                <span className="card-quota-badge">
+                  {cardsCount} / {cardLimit}{' '}
+                  {cardsCount > 1 ? t('cartes', 'بطاقات') : t('carte', 'بطاقة')}
+                </span>
+                {cardsCount < cardLimit ? (
+                  <button
+                    type="button"
+                    className="secondary small new-card-trigger"
+                    disabled={busy || newCardBusy}
+                    onClick={() => {
+                      setNewCardName('');
+                      setNewCardOpen(true);
+                    }}
+                  >
+                    <Plus size={15} />
+                    <span>{t('Nouvelle carte', 'بطاقة جديدة')}</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    className="secondary small new-card-trigger quota-limit"
+                    onClick={() => setQuotaOpen(true)}
+                    title={t('Limite atteinte pour votre forfait', 'وصلتي للحد الأقصى ديال الباقة')}
+                  >
+                    <Plus size={15} />
+                    <span>{t('Nouvelle carte', 'بطاقة جديدة')}</span>
+                  </button>
+                )}
+              </div>
+              {cards.length > 1 && (
+                <label className="card-switcher-select-label">
+                  <span className="sr-only">{t('Changer de carte', 'تبديل البطاقة')}</span>
+                  <select
+                    className="card-switcher-select"
+                    value={id || activeCardId}
+                    disabled={busy || newCardBusy}
+                    onChange={(e) => {
+                      if (switchCard && e.target.value !== id) {
+                        void switchCard(e.target.value);
+                      }
+                    }}
+                  >
+                    {cards.map((c, index) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name ||
+                          (c.isPrimary
+                            ? t('Carte principale', 'البطاقة الرئيسية')
+                            : `${t('Carte', 'بطاقة')} ${index + 1}`)}{' '}
+                        ({c.published ? t('Publiée', 'منشورة') : t('Brouillon', 'مسودة')})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
+            </div>
+          )}
         </div>
         {auth && canEdit && (
           <SaveBar
@@ -1154,7 +1305,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
             </div>
             <PinnedCardPreview ar={ar}>
               <div className="preview-heading">
-                <span className="eyebrow">{t('APERÇU EN DIRECT', 'معاينة مباشرة')}</span>
+                <span className="eyebrow">{t('Aperçu en direct', 'معاينة مباشرة')}</span>
                 <span className="preview-live-dot" aria-hidden="true" />
               </div>
               <Card
@@ -1195,6 +1346,120 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           </div>
         )}
       </div>
+      {newCardOpen && (
+        <div className="modal-backdrop" onClick={() => setNewCardOpen(false)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('Créer une nouvelle carte', 'إنشاء بطاقة جديدة')}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="close"
+              aria-label={t('Fermer', 'إغلاق')}
+              onClick={() => setNewCardOpen(false)}
+            >
+              <X size={20} />
+            </button>
+            <span className="eyebrow">{t('Multi-cartes SoraLink', 'بطاقات متعددة SoraLink')}</span>
+            <h2>{t('Créer une nouvelle carte', 'إنشاء بطاقة جديدة')}</h2>
+            <p className="hint">
+              {t(
+                `Vous utilisez ${cardsCount} sur ${cardLimit} carte(s) autorisée(s). Donnez un nom pour identifier votre nouvelle carte :`,
+                `كتستعمل ${cardsCount} من أصل ${cardLimit} بطاقة مسموحة. سمّي البطاقة الجديدة ديالك:`,
+              )}
+            </p>
+            <form
+              className="card-modal-form"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (createCard) {
+                  setNewCardBusy(true);
+                  try {
+                    await createCard(newCardName);
+                    setNewCardOpen(false);
+                    setNewCardName('');
+                  } finally {
+                    setNewCardBusy(false);
+                  }
+                }
+              }}
+            >
+              <label className="field">
+                <span>
+                  {t('Nom ou usage de la carte (optionnel)', 'اسم أو استعمال البطاقة (اختياري)')}
+                </span>
+                <input
+                  type="text"
+                  maxLength={80}
+                  value={newCardName}
+                  onChange={(e) => setNewCardName(e.target.value)}
+                  placeholder={t(
+                    'ex : Commercial, Boutique, Personnel…',
+                    'مثال: مهني، متجر، شخصي...',
+                  )}
+                  autoFocus
+                />
+              </label>
+              <div className="card-modal-actions">
+                <button
+                  type="button"
+                  className="secondary"
+                  disabled={newCardBusy}
+                  onClick={() => setNewCardOpen(false)}
+                >
+                  {t('Annuler', 'إلغاء')}
+                </button>
+                <button type="submit" className="primary" disabled={newCardBusy}>
+                  {newCardBusy ? t('Création…', 'كنصايبو…') : t('Créer la carte', 'صايب الكارط')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {quotaOpen && (
+        <div className="modal-backdrop" onClick={() => setQuotaOpen(false)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={t('Limite de cartes atteinte', 'وصلتي للحد الأقصى ديال البطاقات')}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              className="close"
+              aria-label={t('Fermer', 'إغلاق')}
+              onClick={() => setQuotaOpen(false)}
+            >
+              <X size={20} />
+            </button>
+            <span className="eyebrow">{t('Quota du forfait', 'حدود الباقة')}</span>
+            <h2>{t('Limite de cartes atteinte', 'وصلتي للحد الأقصى')}</h2>
+            <p className="hint">
+              {t(
+                `Votre forfait actuel vous permet de gérer jusqu’à ${cardLimit} carte(s) SoraLink (${cardsCount} utilisée(s)). Pour ajouter des cartes supplémentaires, contactez votre administrateur SoraLink pour augmenter votre quota.`,
+                `الباقة الحالية ديالك كتسمح ليك بإدارة حتى لـ ${cardLimit} بطاقة SoraLink (${cardsCount} مستعملة). باش تزيد بطاقات أخرى، تواصل مع إدارة SoraLink باش ترفع الحصة ديالك.`,
+              )}
+            </p>
+            <div className="card-modal-actions">
+              <a
+                className="secondary"
+                href="https://wa.me/212600000000"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <WhatsAppIcon />
+                <span>{t('Contacter l’assistance', 'تواصل مع الدعم')}</span>
+              </a>
+              <button type="button" className="primary" onClick={() => setQuotaOpen(false)}>
+                {t('Compris', 'مفهوم')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

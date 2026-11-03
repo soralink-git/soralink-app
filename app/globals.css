@@ -129,7 +129,10 @@ nav button.active {
   box-shadow: 0 4px 14px rgba(0, 181, 173, 0.35);
   font-weight: 700;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 .primary:hover {
   background: linear-gradient(135deg, #02c3ba 0%, #0f766e 100%);
@@ -140,7 +143,10 @@ nav button.active {
   border: 1px solid var(--line);
   background: white;
   border-radius: 9999px;
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 .secondary:hover {
   border-color: #00b5ad;
@@ -481,6 +487,7 @@ nav button.active {
 }
 .price-card h2 {
   font-size: 25px;
+  font-variant-numeric: tabular-nums;
 }
 .price-card p {
   font-size: 14px;
@@ -490,6 +497,7 @@ nav button.active {
   font-size: 48px;
   font-weight: 800;
   letter-spacing: -2px;
+  font-variant-numeric: tabular-nums;
 }
 .price span {
   font-size: 17px;
@@ -1284,9 +1292,9 @@ html[dir='rtl'] .hero-stage .profile-card {
 body {
   background-color: #0b111e;
   background-image:
-    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.08) 0px, transparent 45%),
-    radial-gradient(at 85% 20%, rgba(213, 182, 111, 0.1) 0px, transparent 50%),
-    radial-gradient(at 50% 85%, rgba(14, 165, 233, 0.07) 0px, transparent 55%);
+    radial-gradient(at 15% 15%, rgba(36, 44, 57, 0.4) 0px, transparent 45%),
+    radial-gradient(at 85% 20%, rgba(213, 182, 111, 0.08) 0px, transparent 50%),
+    radial-gradient(at 50% 85%, rgba(17, 24, 39, 0.5) 0px, transparent 55%);
   background-attachment: fixed;
 }
 .brand-icon {
@@ -1441,6 +1449,7 @@ textarea::placeholder {
 }
 .admin-stats b {
   font-size: 30px;
+  font-variant-numeric: tabular-nums;
 }
 .admin-stats span {
   font-size: 14px;
@@ -1665,7 +1674,10 @@ textarea::placeholder {
   background: var(--card-bg, #ffffff);
   color: var(--card-fg, #1e293b);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
   font-family: inherit;
   flex-shrink: 0;
 }
@@ -1682,7 +1694,7 @@ textarea::placeholder {
 .docare-date-pill .pill-day {
   font-size: 11px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: none;
   opacity: 0.85;
 }
 .docare-date-pill .pill-num {
@@ -2191,7 +2203,10 @@ textarea::placeholder {
   color: #0f172a !important;
   font-weight: 700 !important;
   box-shadow: 0 10px 25px -5px rgba(245, 158, 11, 0.45) !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 .btn-glow:hover {
   transform: translateY(-2px);
@@ -2202,7 +2217,10 @@ textarea::placeholder {
   color: #0f172a !important;
   font-weight: 700 !important;
   box-shadow: 0 12px 28px -5px rgba(245, 158, 11, 0.5) !important;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 .btn-glow-gold:hover {
   transform: translateY(-2px);
@@ -2219,7 +2237,10 @@ textarea::placeholder {
   gap: 10px;
   text-decoration: none;
   box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.45);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .whatsapp-btn-glow:hover {
   transform: translateY(-2px);
@@ -2339,7 +2360,7 @@ textarea::placeholder {
   transform: rotate(-4deg);
 }
 [dir='rtl'] .showcase-nfc:hover {
-  transform: rotate(0deg) scale(1.04);
+  transform: rotate(0deg);
 }
 .showcase-note {
   justify-content: center;
@@ -2400,7 +2421,10 @@ textarea::placeholder {
   border-radius: 18px;
   background: linear-gradient(145deg, #131926 0%, #0f172a 100%);
   border: 1px solid #1e293b;
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
 }
@@ -2589,7 +2613,9 @@ textarea::placeholder {
   border-radius: 14px;
   background: #0f172a;
   border: 1px solid #1e293b;
-  transition: all 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease;
 }
 .step-card:hover {
   transform: translateY(-4px);
@@ -3077,7 +3103,10 @@ header nav {
   cursor: pointer;
   white-space: nowrap;
   font-size: 14px;
-  transition: all 0.25s ease;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 .persona-tab-btn:hover {
   background: #1e293b;
@@ -3137,7 +3166,10 @@ header nav {
   border: 1px solid #1e293b;
   border-radius: 14px;
   background: #131926;
-  transition: all 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    background-color 0.25s ease;
 }
 .usecase-card:hover {
   transform: translateY(-4px);
@@ -3176,7 +3208,9 @@ header nav {
   border: 1px solid #1e293b;
   border-radius: 16px;
   background: #131926;
-  transition: all 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    transform 0.3s ease;
   position: relative;
 }
 .pricing-card:hover {
@@ -3189,13 +3223,12 @@ header nav {
   box-shadow:
     0 20px 45px -10px rgba(79, 70, 229, 0.35),
     0 0 0 1px #f59e0b !important;
-  transform: scale(1.03);
   position: relative;
   z-index: 2;
   padding-top: 34px;
 }
 .pack-hybride-highlight:hover {
-  transform: scale(1.05) translateY(-4px);
+  transform: translateY(-4px);
   box-shadow:
     0 25px 55px -10px rgba(79, 70, 229, 0.45),
     0 0 0 1px #f59e0b !important;
@@ -3241,6 +3274,7 @@ header nav {
 .landing-price {
   font-size: 42px;
   letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
 }
 .landing-price small {
   font-size: 18px;
@@ -3335,7 +3369,9 @@ header nav {
   align-items: flex-start;
   border-radius: 12px;
   padding: 18px;
-  transition: all 0.25s ease;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 .special-card-google {
   background: linear-gradient(145deg, #1f1b11 0%, #13120f 100%) !important;
@@ -3935,7 +3971,10 @@ header nav {
   padding: 9px 15px;
   font-weight: 600;
   white-space: nowrap;
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 .account-menu summary:hover {
   background: var(--brand-tint, #e9f7f3);
@@ -3971,10 +4010,10 @@ header nav {
 }
 .account-menu-panel strong {
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  text-transform: none;
+  letter-spacing: normal;
 }
 .account-email {
   font-size: 14px;
@@ -4389,7 +4428,12 @@ header nav {
   font-weight: 600;
   text-decoration: none;
   letter-spacing: 0.01em;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 2px 8px -2px #00000018;
 }
 .card-footer-brand .card-brand:hover,
@@ -4502,9 +4546,9 @@ header nav {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
   color: #ecd296;
   margin-bottom: 10px;
 }
@@ -4918,6 +4962,7 @@ header nav {
   font-weight: 800;
   color: #d5b66f;
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 .impact-stat-label {
   font-size: 12px;

@@ -49,14 +49,14 @@
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  border-radius: 9999px;
+  border-radius: var(--radius-control, 12px);
   background: rgba(0, 181, 173, 0.09);
   border: 1px solid rgba(0, 181, 173, 0.35);
   color: #5eead4;
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
   margin-bottom: 20px;
   backdrop-filter: blur(8px);
   box-shadow: 0 4px 16px rgba(0, 181, 173, 0.15);
@@ -155,7 +155,10 @@
     inset 0 1px 1px rgba(255, 255, 255, 0.6);
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
 }
 
 .landing .primary:hover {
@@ -184,7 +187,11 @@
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
   backdrop-filter: blur(10px);
 }
 
@@ -242,13 +249,13 @@
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  letter-spacing: 0.08em;
-  font-weight: 700;
+  letter-spacing: normal;
+  font-weight: 600;
   color: #ecd296;
-  text-transform: uppercase;
+  text-transform: none;
   margin-bottom: 12px;
   padding: 4px 12px;
-  border-radius: 9999px;
+  border-radius: var(--radius-control, 12px);
   background: rgba(15, 23, 42, 0.8);
   border: 1px solid rgba(213, 182, 111, 0.2);
 }
@@ -399,7 +406,7 @@
 }
 
 .showcase-nfc:hover {
-  transform: rotate(0deg) scale(1.04);
+  transform: rotate(0deg);
 }
 
 .showcase-nfc > span[dir='ltr'],
@@ -427,10 +434,10 @@
   align-items: center;
   justify-content: space-between;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: normal;
   color: #94a3b8;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .showcase-note {
@@ -496,7 +503,10 @@
   color: #cbd5e1;
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .landing-sharing span:hover {
@@ -556,7 +566,10 @@
   border: 1px solid rgba(148, 163, 184, 0.16);
   box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(12px);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
   box-sizing: border-box;
 }
 
@@ -788,7 +801,9 @@
   border: 1px solid rgba(148, 163, 184, 0.14);
   box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.4);
   text-align: start;
-  transition: all 0.2s ease;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .usecase-grid article:hover {
@@ -846,15 +861,15 @@
   box-shadow:
     0 25px 60px -15px rgba(0, 0, 0, 0.7),
     0 0 45px rgba(0, 181, 173, 0.25);
-  transform: scale(1.03);
+  transform: translateY(-2px);
 }
 
 .landing-price-grid .eyebrow {
   display: inline-block;
   font-size: 11px;
-  font-weight: 750;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
   color: #00b5ad;
   margin-bottom: 12px;
 }
@@ -864,6 +879,7 @@
   font-weight: 850;
   color: #ffffff;
   margin: 0 0 16px;
+  font-variant-numeric: tabular-nums;
 }
 
 .landing-price {
@@ -872,6 +888,7 @@
   color: #ffffff;
   line-height: 1;
   margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
 }
 
 .landing-price small {
@@ -917,7 +934,10 @@
   background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: all 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .landing-price-grid article a.secondary:hover {
@@ -978,7 +998,9 @@
   border: 1px solid rgba(148, 163, 184, 0.14);
   border-radius: 16px;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .landing-faq details[open] {

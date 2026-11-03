@@ -8,6 +8,7 @@ import { readHistory, requestNotifications } from '../history';
 import { mailEnabled } from '../notifications';
 import { capabilities } from '../offers';
 import { publicCardData } from '../public-card';
+import { profileName } from '../profile-identity';
 import { active, db, identity, json } from '../server';
 export async function readData(req: Request) {
   const query = validateInput(dataQuerySchema, Object.fromEntries(new URL(req.url).searchParams));
@@ -22,10 +23,18 @@ export async function readData(req: Request) {
   }
   const id = query.id;
   if (id) {
-    const p: any = await db()
+    let p: any = await db()
       .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
       .bind(id)
       .first();
+    if (!p) {
+      p = await db()
+        .prepare(
+          'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner WHERE s.id=? AND s.published=1',
+        )
+        .bind(id)
+        .first();
+    }
     if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
     const d = publicCardData(
       JSON.parse(p.data),
@@ -44,10 +53,39 @@ export async function readData(req: Request) {
     .prepare('SELECT * FROM profiles WHERE owner=?')
     .bind(user.userId)
     .first();
+  const secondary: any[] = p
+    ? (
+        await db()
+          .prepare(
+            'SELECT id, data, published, updated, created FROM secondary_cards WHERE owner=? ORDER BY created ASC',
+          )
+          .bind(user.userId)
+          .all()
+      ).results || []
+    : [];
+  const targetId = query.cardId;
+  const sec = targetId && secondary.find((s) => s.id === targetId);
+  const activeProfile: any = sec
+    ? {
+        id: sec.id,
+        owner: user.userId,
+        data: sec.data,
+        published: sec.published,
+        updated: sec.updated,
+        email: p.email,
+        state: p.state,
+        plan: p.plan,
+        expires: p.expires,
+        pro_enabled: p.pro_enabled,
+        catalog_rights: p.catalog_rights,
+        client_access: p.client_access,
+        card_limit: p.card_limit ?? 1,
+      }
+    : p;
   if (query.history) {
     if (
       query.history !== 'orders' &&
-      !clientSectionAllowed(p, query.history === 'contacts' ? 'contacts' : 'requests')
+      !clientSectionAllowed(activeProfile, query.history === 'contacts' ? 'contacts' : 'requests')
     )
       return json(
         {
@@ -56,37 +94,81 @@ export async function readData(req: Request) {
         },
         403,
       );
-    const page = await readHistory(db(), user.userId, p?.id, query.history, query.cursor);
+    const page = await readHistory(
+      db(),
+      user.userId,
+      activeProfile?.id,
+      query.history,
+      query.cursor,
+    );
     return json({
       items: page.items,
       nextCursor: page.nextCursor,
       notifications:
         query.history === 'requests'
-          ? await requestNotifications(db(), p?.id, page.items as { id: string }[])
+          ? await requestNotifications(db(), activeProfile?.id, page.items as { id: string }[])
           : [],
     });
   }
-  if (p) {
-    p.publicName = await currentPublicName(db(), p.id);
-    p.catalogRights = catalogRights(p);
-    await db().prepare('UPDATE profiles SET email=? WHERE id=?').bind(user.email, p.id).run();
-    const d = JSON.parse(p.data);
-    d.pro = capabilities(p).appointments;
-    d.activity = capabilities(p).activity;
-    p.data = JSON.stringify(d);
+  if (activeProfile) {
+    activeProfile.publicName = await currentPublicName(db(), activeProfile.id);
+    activeProfile.catalogRights = catalogRights(activeProfile);
+    if (activeProfile.id === p?.id) {
+      await db().prepare('UPDATE profiles SET email=? WHERE id=?').bind(user.email, p.id).run();
+    }
+    const d = JSON.parse(activeProfile.data);
+    d.pro = capabilities(activeProfile).appointments;
+    d.activity = capabilities(activeProfile).activity;
+    activeProfile.data = JSON.stringify(d);
   }
   const histories = ['requests', 'contacts', 'orders'] as const;
   const pages = await Promise.all(
     histories.map((kind) =>
-      kind !== 'orders' && !clientSectionAllowed(p, kind === 'contacts' ? 'contacts' : 'requests')
+      kind !== 'orders' &&
+      !clientSectionAllowed(activeProfile, kind === 'contacts' ? 'contacts' : 'requests')
         ? Promise.resolve({ items: [], nextCursor: null })
-        : readHistory(db(), user.userId, p?.id, kind),
+        : readHistory(db(), user.userId, activeProfile?.id, kind),
     ),
   );
   const [inbox, contacts, orders] = pages;
-  const notifications = await requestNotifications(db(), p?.id, inbox.items as { id: string }[]);
+  const notifications = await requestNotifications(
+    db(),
+    activeProfile?.id,
+    inbox.items as { id: string }[],
+  );
+  const cards = p
+    ? [
+        {
+          id: p.id,
+          name: profileName(JSON.parse(p.data)) || '',
+          published: !!p.published,
+          updated: p.updated,
+          isPrimary: true,
+          publicName: await currentPublicName(db(), p.id),
+        },
+        ...(await Promise.all(
+          secondary.map(async (s: any) => {
+            let name = '';
+            try {
+              name = profileName(JSON.parse(s.data)) || '';
+            } catch {}
+            return {
+              id: s.id,
+              name,
+              published: !!s.published,
+              updated: s.updated,
+              isPrimary: false,
+              publicName: await currentPublicName(db(), s.id),
+            };
+          }),
+        )),
+      ]
+    : [];
   return json({
-    profile: p,
+    profile: activeProfile,
+    cards,
+    cardLimit: p?.card_limit ?? 1,
+    cardsCount: cards.length,
     requests: inbox.items,
     contacts: contacts.items,
     notifications,
