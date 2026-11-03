@@ -28,12 +28,16 @@ export async function readData(req: Request) {
       .bind(id)
       .first();
     if (!p) {
-      p = await db()
-        .prepare(
-          'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner WHERE s.id=? AND s.published=1',
-        )
-        .bind(id)
-        .first();
+      try {
+        p = await db()
+          .prepare(
+            'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner WHERE s.id=? AND s.published=1',
+          )
+          .bind(id)
+          .first();
+      } catch {
+        p = null;
+      }
     }
     if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
     const d = publicCardData(
@@ -53,16 +57,20 @@ export async function readData(req: Request) {
     .prepare('SELECT * FROM profiles WHERE owner=?')
     .bind(user.userId)
     .first();
-  const secondary: any[] = p
-    ? (
-        await db()
-          .prepare(
-            'SELECT id, data, published, updated, created FROM secondary_cards WHERE owner=? ORDER BY created ASC',
-          )
-          .bind(user.userId)
-          .all()
-      ).results || []
-    : [];
+  let secondary: any[] = [];
+  if (p) {
+    try {
+      const res: any = await db()
+        .prepare(
+          'SELECT id, data, published, updated, created FROM secondary_cards WHERE owner=? ORDER BY created ASC',
+        )
+        .bind(user.userId)
+        .all();
+      secondary = res?.results || [];
+    } catch {
+      secondary = [];
+    }
+  }
   const targetId = query.cardId;
   const sec = targetId && secondary.find((s) => s.id === targetId);
   const activeProfile: any = sec

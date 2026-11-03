@@ -39,14 +39,25 @@ export async function GET(req: Request) {
         const cursor = query.section === section ? query.cursor : undefined;
         if (section === 'profiles') {
           // instr treats %, _ and quotes literally and keeps the search parameterized.
-          return readPage(
-            db(),
-            'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights,client_access,coalesce(card_limit, 1) AS card_limit FROM profiles',
-            "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.business'),'')),lower(?))>0)",
-            [query.search, query.search, query.search, query.search],
-            cursor,
-            'updated',
-          );
+          try {
+            return await readPage(
+              db(),
+              'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights,client_access,coalesce(card_limit, 1) AS card_limit FROM profiles',
+              "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.business'),'')),lower(?))>0)",
+              [query.search, query.search, query.search, query.search],
+              cursor,
+              'updated',
+            );
+          } catch {
+            return await readPage(
+              db(),
+              'SELECT id,email,state,plan,expires,pro_enabled,published,data,updated,catalog_rights,client_access FROM profiles',
+              "(?='' OR instr(lower(coalesce(email,'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.name'),'')),lower(?))>0 OR instr(lower(coalesce(json_extract(data,'$.business'),'')),lower(?))>0)",
+              [query.search, query.search, query.search, query.search],
+              cursor,
+              'updated',
+            );
+          }
         }
         if (section === 'orders')
           return readPage(
@@ -271,26 +282,48 @@ export async function POST(req: Request) {
               ? JSON.stringify(b.clientAccess)
               : null
             : current.client_access;
-        const result = await db()
-          .prepare(
-            'UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=?,client_access=?,card_limit=? WHERE id=? AND client_access IS ? AND plan=? AND state=? AND expires IS ? AND pro_enabled=? AND coalesce(card_limit, 1)=?',
-          )
-          .bind(
-            b.state,
-            b.plan,
-            expires,
-            isPlatformPlan(b.plan) ? (b.plan === 'Activite' ? 1 : 0) : b.pro ? 1 : 0,
-            nextAccess,
-            cardLimit,
-            b.id,
-            current.client_access ?? null,
-            current.plan,
-            current.state,
-            current.expires,
-            current.pro_enabled,
-            current.card_limit ?? 1,
-          )
-          .run();
+        let result: any;
+        try {
+          result = await db()
+            .prepare(
+              'UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=?,client_access=?,card_limit=? WHERE id=? AND client_access IS ? AND plan=? AND state=? AND expires IS ? AND pro_enabled=? AND coalesce(card_limit, 1)=?',
+            )
+            .bind(
+              b.state,
+              b.plan,
+              expires,
+              isPlatformPlan(b.plan) ? (b.plan === 'Activite' ? 1 : 0) : b.pro ? 1 : 0,
+              nextAccess,
+              cardLimit,
+              b.id,
+              current.client_access ?? null,
+              current.plan,
+              current.state,
+              current.expires,
+              current.pro_enabled,
+              current.card_limit ?? 1,
+            )
+            .run();
+        } catch {
+          result = await db()
+            .prepare(
+              'UPDATE profiles SET state=?,plan=?,expires=?,pro_enabled=?,client_access=? WHERE id=? AND client_access IS ? AND plan=? AND state=? AND expires IS ? AND pro_enabled=?',
+            )
+            .bind(
+              b.state,
+              b.plan,
+              expires,
+              isPlatformPlan(b.plan) ? (b.plan === 'Activite' ? 1 : 0) : b.pro ? 1 : 0,
+              nextAccess,
+              b.id,
+              current.client_access ?? null,
+              current.plan,
+              current.state,
+              current.expires,
+              current.pro_enabled,
+            )
+            .run();
+        }
         if (!result.meta.changes)
           return json(
             {

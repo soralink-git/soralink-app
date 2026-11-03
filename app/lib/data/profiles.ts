@@ -30,10 +30,15 @@ export async function saveProfile(b: Action<'save'>, user: DataUser, admin: bool
   const isSecondary = b.id && p && b.id !== p.id;
   let targetProfile = p;
   if (isSecondary) {
-    const sec: any = await db()
-      .prepare('SELECT * FROM secondary_cards WHERE id=? AND owner=?')
-      .bind(b.id, user.userId)
-      .first();
+    let sec: any = null;
+    try {
+      sec = await db()
+        .prepare('SELECT * FROM secondary_cards WHERE id=? AND owner=?')
+        .bind(b.id, user.userId)
+        .first();
+    } catch {
+      sec = null;
+    }
     if (!sec)
       return json(
         {
@@ -241,11 +246,16 @@ export async function createCard(b: Action<'createCard'>, user: DataUser) {
     );
   }
   const limit = p.card_limit ?? 1;
-  const countRow: any = await db()
-    .prepare('SELECT COUNT(*) AS count FROM secondary_cards WHERE owner=?')
-    .bind(user.userId)
-    .first();
-  const currentCount = 1 + (Number(countRow?.count) || 0);
+  let currentCount = 1;
+  try {
+    const countRow: any = await db()
+      .prepare('SELECT COUNT(*) AS count FROM secondary_cards WHERE owner=?')
+      .bind(user.userId)
+      .first();
+    currentCount = 1 + (Number(countRow?.count) || 0);
+  } catch {
+    currentCount = 1;
+  }
   if (currentCount >= limit) {
     return json(
       {
