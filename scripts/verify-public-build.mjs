@@ -55,6 +55,11 @@ try {
   )) {
     if (sql.trim()) await db.prepare(sql).run();
   }
+  for (const sql of (await readFile('drizzle/0014_secondary_cards.sql', 'utf8')).split(
+    '--> statement-breakpoint',
+  )) {
+    if (sql.trim()) await db.prepare(sql).run();
+  }
   const data = {
     name: 'Public rendering test',
     business: 'Public business',

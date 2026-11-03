@@ -55,7 +55,10 @@
   },
   "type": "module",
   "overrides": {
-    "sharp": "0.35.5"
+    "sharp": "0.35.5",
+    "satori": "0.63.2",
+    "minimatch": "11.0.4",
+    "fflate": "0.8.3"
   },
   "packageManager": "pnpm@11.25.0"
 }

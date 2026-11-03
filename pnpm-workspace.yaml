@@ -4,6 +4,8 @@ minimumReleaseAgeIgnoreMissingTime: false
 # Reviewed security fix; keep the seven-day policy for every other release.
 minimumReleaseAgeExclude:
   - fast-uri@3.1.9
+  - minimatch@11.0.4
+  - '@isaacs/nonrecursive-glob-match@1.0.3'
 trustLockfile: false
 strictDepBuilds: true
 allowBuilds:
@@ -22,6 +24,9 @@ verifyDepsBeforeRun: false
 optimisticRepeatInstall: false
 overrides:
   sharp: 0.35.5
+  satori: 0.63.2
+  minimatch: 11.0.4
+  fflate: 0.8.3
 
   # Security patch pins for transitive versions fixed by the audit.
   undici@7: 7.30.1

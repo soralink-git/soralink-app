@@ -15,12 +15,16 @@ async function readProfile(key: ProfileKey) {
       .bind(key.id)
       .first<any>();
     if (primary) return primary;
-    return db()
-      .prepare(
-        'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner WHERE s.id=? AND s.published=1',
-      )
-      .bind(key.id)
-      .first<any>();
+    try {
+      return await db()
+        .prepare(
+          'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner WHERE s.id=? AND s.published=1',
+        )
+        .bind(key.id)
+        .first<any>();
+    } catch {
+      return null;
+    }
   }
   const name = normalizePublicName(key.name);
   if (publicNameError(name)) return null;
@@ -31,12 +35,16 @@ async function readProfile(key: ProfileKey) {
     .bind(name)
     .first<any>();
   if (primaryByName) return primaryByName;
-  return db()
-    .prepare(
-      'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner JOIN profile_addresses a ON a.profile=s.id WHERE a.name=? AND s.published=1',
-    )
-    .bind(name)
-    .first<any>();
+  try {
+    return await db()
+      .prepare(
+        'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner JOIN profile_addresses a ON a.profile=s.id WHERE a.name=? AND s.published=1',
+      )
+      .bind(name)
+      .first<any>();
+  } catch {
+    return null;
+  }
 }
 export async function publicProfileMetadata(key: ProfileKey) {
   try {

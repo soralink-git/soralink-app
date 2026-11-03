@@ -466,7 +466,7 @@ export function validateInput<S extends z.ZodTypeAny>(schema: S, value: unknown)
     let message = issue?.message;
     if (
       !message &&
-      (first.code === 'invalid_union_discriminator' ||
+      ((first.code as string) === 'invalid_union_discriminator' ||
         (first.code === 'invalid_union' && first.path.at(-1) === 'action'))
     )
       message = 'Action inconnue';

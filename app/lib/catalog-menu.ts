@@ -86,7 +86,16 @@ export const catalogSettingsSchema = z
     layout: z.enum(['grid', 'list']).default('grid'),
     accent: z.union([z.literal(''), z.string().regex(/^#[0-9a-f]{6}$/i)]).default(''),
   })
-  .default({});
+  .default({
+    enabled: true,
+    pdf: true,
+    products: true,
+    whatsapp: true,
+    showPrices: true,
+    fulfillmentModes: [],
+    layout: 'grid',
+    accent: '',
+  });
 export const catalogCategoriesSchema = z
   .array(
     z.object({
