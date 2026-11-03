@@ -294,10 +294,15 @@ export const dataActionSchema = z
     requestObject,
     z.object({
       action: z.literal('save'),
+      id: id.optional(),
       revision: z.string().max(64).nullable(),
       expectedOwner: z.string().min(1).max(128).optional(),
       data: profileDataSchema,
       published: z.boolean().default(false),
+    }),
+    z.object({
+      action: z.literal('createCard'),
+      name: formText(120).optional(),
     }),
     z.object({
       action: z.literal('manual'),
@@ -413,6 +418,7 @@ export const authActionSchema = z
 export const dataQuerySchema = z
   .object({
     id: id.optional(),
+    cardId: id.optional(),
     exchange: z.literal('1').optional(),
     history: z.enum(['requests', 'contacts', 'orders']).optional(),
     cursor: cursorSchema.optional(),

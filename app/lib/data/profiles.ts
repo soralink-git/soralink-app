@@ -11,6 +11,7 @@ import { replaceProfileLinks } from '../profile-links';
 import { normalizePromotions } from '../promotions';
 import { normalizeSchedule } from '../schedule';
 import { active, db, json } from '../server';
+import { trialExpiry } from '../subscription';
 import type { Action, DataUser } from './types';
 
 export async function saveProfile(b: Action<'save'>, user: DataUser, admin: boolean) {
@@ -26,7 +27,35 @@ export async function saveProfile(b: Action<'save'>, user: DataUser, admin: bool
     .prepare('SELECT * FROM profiles WHERE owner=?')
     .bind(user.userId)
     .first();
-  if (b.revision !== (p?.updated || null))
+  const isSecondary = b.id && p && b.id !== p.id;
+  let targetProfile = p;
+  if (isSecondary) {
+    const sec: any = await db()
+      .prepare('SELECT * FROM secondary_cards WHERE id=? AND owner=?')
+      .bind(b.id, user.userId)
+      .first();
+    if (!sec)
+      return json(
+        {
+          error: 'Carte introuvable ou accès non autorisé.',
+          errorAr: 'ما لقيناش الكارط ولا ما عندكش الحق تعدّلها.',
+        },
+        404,
+      );
+    targetProfile = {
+      ...p,
+      ...sec,
+      id: sec.id,
+      data: sec.data,
+      updated: sec.updated,
+      published: sec.published,
+    };
+  } else if (b.id && !p) {
+    // First card creation
+  } else if (b.id && p && b.id === p.id) {
+    targetProfile = p;
+  }
+  if (b.revision !== (targetProfile?.updated || null))
     return json(
       {
         error: 'Votre carte a changé. Rechargez-la avant d’enregistrer.',
@@ -180,8 +209,91 @@ export async function saveProfile(b: Action<'save'>, user: DataUser, admin: bool
         400,
       );
   }
+  if (isSecondary) {
+    const res = await db()
+      .prepare(
+        'UPDATE secondary_cards SET data=?, published=?, updated=? WHERE id=? AND owner=? AND updated=?',
+      )
+      .bind(
+        JSON.stringify(d),
+        b.published ? 1 : 0,
+        stamp,
+        b.id,
+        user.userId,
+        targetProfile.updated,
+      )
+      .run();
+    if (!res.meta.changes)
+      return json({ error: 'Votre carte a changé. Actualisez avant d’enregistrer.' }, 409);
+    return json({ ok: true, id: b.id, revision: stamp, cleanupPending: false });
+  }
   if (!(await saveProfileWithMedia(user.userId, p, id, d, !!b.published, user.email, stamp)))
     return json({ error: 'Votre carte a changé. Actualisez avant d’enregistrer.' }, 409);
   const cleaned = await cleanupMedia(user.userId);
   return json({ ok: true, id, revision: stamp, cleanupPending: !cleaned });
+}
+
+export async function createCard(b: Action<'createCard'>, user: DataUser) {
+  const p: any = await db()
+    .prepare('SELECT * FROM profiles WHERE owner=?')
+    .bind(user.userId)
+    .first();
+  if (!p) {
+    return json(
+      {
+        error: 'Créez d’abord votre première carte.',
+        errorAr: 'سجّل الكارط الأولى ديالك الأول.',
+      },
+      400,
+    );
+  }
+  const limit = p.card_limit ?? 1;
+  const countRow: any = await db()
+    .prepare('SELECT COUNT(*) AS count FROM secondary_cards WHERE owner=?')
+    .bind(user.userId)
+    .first();
+  const currentCount = 1 + (Number(countRow?.count) || 0);
+  if (currentCount >= limit) {
+    return json(
+      {
+        error: 'Limite de cartes atteinte pour votre forfait.',
+        errorAr: 'وصلتي للحد الأقصى ديال الكارطات المسموحة فهاد الباقة.',
+      },
+      403,
+    );
+  }
+  const newId = crypto.randomUUID();
+  const stamp = new Date().toISOString();
+  const initialData = {
+    name: b.name?.trim() || '',
+    business: '',
+    job: '',
+    bio: '',
+    color: '#00b5ad',
+    cardTheme: 'dark',
+    cardFont: 'modern',
+    buttonShape: 'pill',
+    avatarShape: 'circle',
+    defaultLanguage: 'fr',
+    links: [],
+    actions: [],
+    services: [],
+    promotions: [],
+    catalogDocuments: [],
+    pdf: '',
+    catalogCategories: [],
+    catalogSettings: { enabled: true, pdf: true, products: true, whatsapp: true },
+  };
+  await db()
+    .prepare(
+      'INSERT INTO secondary_cards (id, owner, data, published, updated, created) VALUES (?, ?, ?, 0, ?, ?)',
+    )
+    .bind(newId, user.userId, JSON.stringify(initialData), stamp, stamp)
+    .run();
+  return json({
+    ok: true,
+    id: newId,
+    cardsCount: currentCount + 1,
+    cardLimit: limit,
+  });
 }

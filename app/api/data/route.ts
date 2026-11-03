@@ -2,7 +2,7 @@ import { dataActionSchema, inputErrorResponse, readValidatedJSON } from '../../l
 import { clientSectionAllowed } from '../../lib/client-access';
 import { createAppointment, deleteContact, updateRequestStatus } from '../../lib/data/activity';
 import { createOrder } from '../../lib/data/orders';
-import { saveProfile } from '../../lib/data/profiles';
+import { createCard, saveProfile } from '../../lib/data/profiles';
 import { readData } from '../../lib/data/read';
 import { submitPublicRequest } from '../../lib/data/requests';
 import { capabilities } from '../../lib/offers';
@@ -46,6 +46,8 @@ export async function POST(req: Request) {
     switch (b.action) {
       case 'save':
         return await saveProfile(b, user, admin);
+      case 'createCard':
+        return await createCard(b, user);
       case 'manual':
         return await createAppointment(b, user);
       case 'status':
