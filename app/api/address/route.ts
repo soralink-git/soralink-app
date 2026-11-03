@@ -44,10 +44,14 @@ export async function POST(request: Request) {
       .bind(body.cardId || user.userId, ...(body.cardId ? [user.userId] : []))
       .first<any>();
     if (!profile && body.cardId) {
-      profile = await db()
-        .prepare('SELECT * FROM secondary_cards WHERE id=? AND owner=?')
-        .bind(body.cardId, user.userId)
-        .first<any>();
+      try {
+        profile = await db()
+          .prepare('SELECT * FROM secondary_cards WHERE id=? AND owner=?')
+          .bind(body.cardId, user.userId)
+          .first<any>();
+      } catch {
+        profile = null;
+      }
     }
     if (!profile) return json({ error: 'save-first' }, 409);
     if (!clientSectionAllowed(profile, 'share'))
