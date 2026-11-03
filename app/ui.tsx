@@ -172,6 +172,10 @@ export default function App({
   const [myContactCard, setMyContactCard] = useState<any>(null),
     [useMyCard, setUseMyCard] = useState(false),
     [cardCheck, setCardCheck] = useState('');
+  const [cards, setCards] = useState<any[]>([]);
+  const [cardLimit, setCardLimit] = useState(1);
+  const [cardsCount, setCardsCount] = useState(1);
+  const [activeCardId, setActiveCardId] = useState<string>('');
   const [contacts, setContacts] = useState<any[]>([]);
   const [storage, setStorage] = useState<any>(null);
   const [accountEmail, setAccountEmail] = useState(''),
@@ -187,6 +191,7 @@ export default function App({
     previousValue?: string;
   } | null>(null);
   const autosave = useCardAutosave({
+    id,
     data,
     published,
     ar,
@@ -194,6 +199,12 @@ export default function App({
     paused: busy || catalogWorking || !!crop,
     onSaved: (result) => {
       setId(result.id);
+      setActiveCardId(result.id);
+      setCards((prev) =>
+        prev.map((c) =>
+          c.id === result.id ? { ...c, name: profileName(data) || c.name, published } : c,
+        ),
+      );
       if (result.cleanupPending)
         setMsg(
           ar ? 'تنظيف التخزين غادي يتعاود من بعد.' : 'Le nettoyage du stockage sera réessayé.',
@@ -500,7 +511,7 @@ export default function App({
       setHistoryBusy(false);
     }
   }
-  async function load(authMode = 'login', discard = false) {
+  async function load(authMode = 'login', discard = false, targetCardId?: string) {
     if (!discard && autosave.queue.isDirty() && !(await autosave.queue.flush())) {
       setMsg(
         t(
@@ -517,7 +528,9 @@ export default function App({
     setAuthLoading(true);
     setAuthLoadError(false);
     try {
-      const r = await fetch('/api/data');
+      const cardToLoad = targetCardId !== undefined ? targetCardId : activeCardId;
+      const url = cardToLoad ? `/api/data?cardId=${encodeURIComponent(cardToLoad)}` : '/api/data';
+      const r = await fetch(url);
       const b: any = await r.json();
       if (epoch !== authEpoch.current) return;
       if (r.status === 401) {
@@ -540,6 +553,9 @@ export default function App({
         setSessionChecked(true);
         setCanAdmin(!!b.admin);
         setSubscription(b.profile);
+        setCards(b.cards || []);
+        setCardLimit(b.cardLimit ?? 1);
+        setCardsCount(b.cardsCount ?? (b.cards?.length || 1));
 
         if (!autosave.queue.isDirty() || discard) {
           autosave.ownerRef.current = b.saveOwner || null;
@@ -565,6 +581,7 @@ export default function App({
             setData(hydrated);
             setPublished(!!b.profile.published);
             setId(b.profile.id);
+            setActiveCardId(b.profile.id);
             setPublicName(b.profile.publicName || '');
           } else {
             autosave.queue.reset(
@@ -590,6 +607,48 @@ export default function App({
     setBusy(false);
     setAuthLoading(false);
     setLoaded(true);
+  }
+  async function switchCard(nextCardId: string) {
+    if (!nextCardId || nextCardId === id) return;
+    if (autosave.queue.isDirty()) {
+      const flushed = await autosave.queue.flush();
+      if (!flushed) {
+        const confirmDiscard = window.confirm(
+          t(
+            'Des modifications non enregistrées sont en cours. Voulez-vous continuer et abandonner ces modifications ?',
+            'كاينين تعديلات ما تسجلوش. واش متأكد باغي تكمّل وتتراجع عليهم؟',
+          ),
+        );
+        if (!confirmDiscard) return;
+      }
+    }
+    await load('login', true, nextCardId);
+  }
+  async function createCard(name?: string) {
+    if (cardsCount >= cardLimit) {
+      setMsg(
+        t(
+          `Limite de ${cardLimit} carte(s) atteinte pour votre forfait. Contactez l'administrateur pour en ajouter.`,
+          `وصلتي للحد الأقصى ديال ${cardLimit} بطاقة المسموحة فهاد الباقة. تواصل مع الإدارة باش تزيد.`,
+        ),
+      );
+      return;
+    }
+    if (autosave.queue.isDirty()) {
+      await autosave.queue.flush();
+    }
+    setBusy(true);
+    try {
+      const res = await action({ action: 'createCard', name: name?.trim() || undefined });
+      if (res?.ok && res.id) {
+        setMsg(t('Nouvelle carte créée avec succès !', 'تم إنشاء البطاقة الجديدة بنجاح !'));
+        await load('login', true, res.id);
+      }
+    } catch (err: any) {
+      setMsg(err.message || t('Impossible de créer la carte.', 'ما قدرناش نصايبو الكارط.'));
+    } finally {
+      setBusy(false);
+    }
   }
   async function action(body: any) {
     setBusy(true);
@@ -1171,6 +1230,12 @@ export default function App({
               uploadPromotion,
               uploadVideo,
               videoCaptureRef,
+              cards,
+              cardLimit,
+              cardsCount,
+              activeCardId: id,
+              switchCard,
+              createCard,
             }}
           />
         </Suspense>

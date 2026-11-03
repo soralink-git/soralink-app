@@ -7,6 +7,7 @@ import {
   type SaveState,
 } from './lib/save-queue';
 export default function useCardAutosave({
+  id,
   data,
   published,
   ar,
@@ -14,6 +15,7 @@ export default function useCardAutosave({
   paused,
   onSaved,
 }: {
+  id?: string | null;
   data: any;
   published: boolean;
   ar: boolean;
@@ -27,6 +29,8 @@ export default function useCardAutosave({
   const language = useRef(ar);
   language.current = ar;
   const ownerRef = useRef<string | null>(null);
+  const idRef = useRef(id);
+  idRef.current = id;
   const active = useRef(enabled);
   const wasActive = useRef(enabled);
   active.current = enabled;
@@ -61,7 +65,13 @@ export default function useCardAutosave({
           const response = await fetch('/api/data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'save', ...snapshot, revision, expectedOwner }),
+            body: JSON.stringify({
+              action: 'save',
+              id: idRef.current || undefined,
+              ...snapshot,
+              revision,
+              expectedOwner,
+            }),
             signal: controller.signal,
           });
           const result = (await response.json()) as any;

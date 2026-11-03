@@ -214,14 +214,7 @@ export async function saveProfile(b: Action<'save'>, user: DataUser, admin: bool
       .prepare(
         'UPDATE secondary_cards SET data=?, published=?, updated=? WHERE id=? AND owner=? AND updated=?',
       )
-      .bind(
-        JSON.stringify(d),
-        b.published ? 1 : 0,
-        stamp,
-        b.id,
-        user.userId,
-        targetProfile.updated,
-      )
+      .bind(JSON.stringify(d), b.published ? 1 : 0, stamp, b.id, user.userId, targetProfile.updated)
       .run();
     if (!res.meta.changes)
       return json({ error: 'Votre carte a changé. Actualisez avant d’enregistrer.' }, 409);

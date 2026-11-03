@@ -139,14 +139,8 @@ test('admin configuration accepts only known booleans and records conflict ident
     managementRevision(profile),
     managementRevision({ ...profile, client_access: JSON.stringify(payload.clientAccess) }),
   );
-  assert.notEqual(
-    managementRevision(profile),
-    managementRevision({ ...profile, cardLimit: 2 }),
-  );
-  assert.notEqual(
-    managementRevision(profile),
-    managementRevision({ ...profile, card_limit: 3 }),
-  );
+  assert.notEqual(managementRevision(profile), managementRevision({ ...profile, cardLimit: 2 }));
+  assert.notEqual(managementRevision(profile), managementRevision({ ...profile, card_limit: 3 }));
   assert.equal(readClientAccess(profile).modules.activity, undefined);
 });
 test('the administrator sees separate subscription, function and workspace controls in French and Arabic', () => {

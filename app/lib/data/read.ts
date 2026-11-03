@@ -94,7 +94,13 @@ export async function readData(req: Request) {
         },
         403,
       );
-    const page = await readHistory(db(), user.userId, activeProfile?.id, query.history, query.cursor);
+    const page = await readHistory(
+      db(),
+      user.userId,
+      activeProfile?.id,
+      query.history,
+      query.cursor,
+    );
     return json({
       items: page.items,
       nextCursor: page.nextCursor,
@@ -118,13 +124,18 @@ export async function readData(req: Request) {
   const histories = ['requests', 'contacts', 'orders'] as const;
   const pages = await Promise.all(
     histories.map((kind) =>
-      kind !== 'orders' && !clientSectionAllowed(activeProfile, kind === 'contacts' ? 'contacts' : 'requests')
+      kind !== 'orders' &&
+      !clientSectionAllowed(activeProfile, kind === 'contacts' ? 'contacts' : 'requests')
         ? Promise.resolve({ items: [], nextCursor: null })
         : readHistory(db(), user.userId, activeProfile?.id, kind),
     ),
   );
   const [inbox, contacts, orders] = pages;
-  const notifications = await requestNotifications(db(), activeProfile?.id, inbox.items as { id: string }[]);
+  const notifications = await requestNotifications(
+    db(),
+    activeProfile?.id,
+    inbox.items as { id: string }[],
+  );
   const cards = p
     ? [
         {

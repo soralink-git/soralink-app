@@ -17,17 +17,17 @@ export async function reservePublicName(
     database
       .prepare(
         `UPDATE profile_addresses SET is_current=0 WHERE profile=?
-      AND EXISTS(SELECT 1 FROM profiles WHERE id=? AND owner=?)
+      AND (EXISTS(SELECT 1 FROM profiles WHERE id=? AND owner=?) OR EXISTS(SELECT 1 FROM secondary_cards WHERE id=? AND owner=?))
       AND NOT EXISTS(SELECT 1 FROM profile_addresses WHERE name=? AND profile<>?)`,
       )
-      .bind(profile, profile, owner, name, profile),
+      .bind(profile, profile, owner, profile, owner, name, profile),
     database
       .prepare(
         `INSERT INTO profile_addresses(name,profile,is_current,created)
-      SELECT ?,?,1,? WHERE EXISTS(SELECT 1 FROM profiles WHERE id=? AND owner=?)
+      SELECT ?,?,1,? WHERE (EXISTS(SELECT 1 FROM profiles WHERE id=? AND owner=?) OR EXISTS(SELECT 1 FROM secondary_cards WHERE id=? AND owner=?))
       ON CONFLICT(name) DO UPDATE SET is_current=1 WHERE profile_addresses.profile=excluded.profile`,
       )
-      .bind(name, profile, new Date().toISOString(), profile, owner),
+      .bind(name, profile, new Date().toISOString(), profile, owner, profile, owner),
   ]);
   return results[1].meta.changes === 1;
 }

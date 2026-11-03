@@ -27,8 +27,8 @@ export default function AdminClientEditor({
   const [state, setState] = useState(profile.state);
   const [expires, setExpires] = useState(profile.expires?.slice(0, 10) || '');
   const [pro, setPro] = useState(!!profile.pro_enabled);
-  const [cardLimit, setCardLimit] = useState<number>(
-    () => Number(profile.card_limit ?? profile.cardLimit ?? 1),
+  const [cardLimit, setCardLimit] = useState<number>(() =>
+    Number(profile.card_limit ?? profile.cardLimit ?? 1),
   );
   const [access, setAccess] = useState<ClientAccess>(() => readClientAccess(profile));
   const draft = { ...profile, plan, pro_enabled: pro ? 1 : 0, client_access: access };
@@ -59,9 +59,7 @@ export default function AdminClientEditor({
               : t('Actif', 'مفعّل')}
         </span>
         <span className="badge">
-          {cardLimit > 1
-            ? `${cardLimit} ${t('cartes', 'بطاقات')}`
-            : `1 ${t('carte', 'بطاقة')}`}
+          {cardLimit > 1 ? `${cardLimit} ${t('cartes', 'بطاقات')}` : `1 ${t('carte', 'بطاقة')}`}
         </span>
         <span className="admin-client-open-label">{t('Gérer le client', 'دبّر حساب الزبون')}</span>
       </summary>
