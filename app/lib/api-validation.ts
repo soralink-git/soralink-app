@@ -364,6 +364,7 @@ export const adminActionSchema = z.discriminatedUnion('action', [
     ),
     pro: z.boolean().default(false),
     clientAccess: clientAccessSchema.nullable().optional(),
+    cardLimit: z.number().int().min(1).max(100).optional(),
     expectedSettings: z.string().max(5000).optional(),
   }),
   z.object({

@@ -53,5 +53,6 @@ export function managementRevision(profile: any) {
     profile.expires ?? null,
     profile.pro_enabled ?? 0,
     profile.client_access ?? null,
+    profile.card_limit ?? profile.cardLimit ?? 1,
   ]);
 }

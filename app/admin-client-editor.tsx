@@ -27,6 +27,9 @@ export default function AdminClientEditor({
   const [state, setState] = useState(profile.state);
   const [expires, setExpires] = useState(profile.expires?.slice(0, 10) || '');
   const [pro, setPro] = useState(!!profile.pro_enabled);
+  const [cardLimit, setCardLimit] = useState<number>(
+    () => Number(profile.card_limit ?? profile.cardLimit ?? 1),
+  );
   const [access, setAccess] = useState<ClientAccess>(() => readClientAccess(profile));
   const draft = { ...profile, plan, pro_enabled: pro ? 1 : 0, client_access: access };
   const base = capabilities({ ...draft, client_access: null });
@@ -55,6 +58,11 @@ export default function AdminClientEditor({
               ? t('Essai', 'تجربة')
               : t('Actif', 'مفعّل')}
         </span>
+        <span className="badge">
+          {cardLimit > 1
+            ? `${cardLimit} ${t('cartes', 'بطاقات')}`
+            : `1 ${t('carte', 'بطاقة')}`}
+        </span>
         <span className="admin-client-open-label">{t('Gérer le client', 'دبّر حساب الزبون')}</span>
       </summary>
       <form
@@ -67,6 +75,7 @@ export default function AdminClientEditor({
             state,
             expires,
             pro,
+            cardLimit,
             clientAccess: access,
             expectedSettings: profile.managementRevision || managementRevision(profile),
           });
@@ -92,6 +101,19 @@ export default function AdminClientEditor({
                 ),
               )}
             </select>
+          </label>
+          <label className="field">
+            {t('Nombre de cartes', 'عدد البطاقات')}
+            <input
+              disabled={busy}
+              type="number"
+              min={1}
+              max={50}
+              value={cardLimit}
+              onChange={(event) =>
+                setCardLimit(Math.max(1, Math.min(50, parseInt(event.target.value, 10) || 1)))
+              }
+            />
           </label>
           <label className="field">
             {t('État', 'الحالة')}

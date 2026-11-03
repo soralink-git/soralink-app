@@ -20,6 +20,7 @@ export const profiles = sqliteTable('profiles', {
   proEnabled: integer('pro_enabled').notNull().default(0),
   catalogRights: text('catalog_rights'),
   clientAccess: text('client_access'),
+  cardLimit: integer('card_limit').notNull().default(1),
 });
 export const requests = sqliteTable(
   'requests',

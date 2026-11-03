@@ -113,6 +113,10 @@ test('admin configuration accepts only known booleans and records conflict ident
     expectedSettings: managementRevision(profile),
   };
   assert.equal(adminActionSchema.safeParse(payload).success, true);
+  assert.equal(adminActionSchema.safeParse({ ...payload, cardLimit: 3 }).success, true);
+  assert.equal(adminActionSchema.safeParse({ ...payload, cardLimit: 0 }).success, false);
+  assert.equal(adminActionSchema.safeParse({ ...payload, cardLimit: -1 }).success, false);
+  assert.equal(adminActionSchema.safeParse({ ...payload, cardLimit: 1.5 }).success, false);
   assert.equal(
     adminActionSchema.safeParse({ ...payload, clientAccess: { sections: { admin: true } } })
       .success,
@@ -135,6 +139,14 @@ test('admin configuration accepts only known booleans and records conflict ident
     managementRevision(profile),
     managementRevision({ ...profile, client_access: JSON.stringify(payload.clientAccess) }),
   );
+  assert.notEqual(
+    managementRevision(profile),
+    managementRevision({ ...profile, cardLimit: 2 }),
+  );
+  assert.notEqual(
+    managementRevision(profile),
+    managementRevision({ ...profile, card_limit: 3 }),
+  );
   assert.equal(readClientAccess(profile).modules.activity, undefined);
 });
 test('the administrator sees separate subscription, function and workspace controls in French and Arabic', () => {
@@ -151,6 +163,7 @@ test('the administrator sees separate subscription, function and workspace contr
           expires: '2027-01-01',
           data: '{"name":"Test"}',
           client_access: null,
+          card_limit: 3,
         },
         ar,
         busy: false,
@@ -158,6 +171,8 @@ test('the administrator sees separate subscription, function and workspace contr
       }),
     );
     assert.match(html, ar ? /الباقة والاشتراك/ : /Forfait et abonnement/);
+    assert.match(html, ar ? /عدد البطاقات/ : /Nombre de cartes/);
+    assert.match(html, ar ? /3 بطاقات/ : /3 cartes/);
     assert.match(html, ar ? /الوظائف المسموحة/ : /Fonctions autorisées/);
     assert.match(html, ar ? /الأقسام اللي كيبانو/ : /Rubriques visibles/);
     assert.match(html, ar ? /الزبون غادي يشوف/ : /Le client verra/);
