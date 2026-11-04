@@ -10,3 +10,4 @@ dist/
 
 # Private recovery exports must never be committed.
 /backups/
+.agents/
