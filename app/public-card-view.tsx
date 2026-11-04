@@ -75,7 +75,7 @@ export default function PublicCardView({
     }
   }
   return (
-    <div className="site public-card-page" dir={ar ? 'rtl' : 'ltr'}>
+    <div className="site public-card-page" data-view={view} dir={ar ? 'rtl' : 'ltr'}>
       {msg && (
         <div className="notice" role="status">
           {msg}
