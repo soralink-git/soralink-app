@@ -12,10 +12,26 @@ const SECURITY_HEADERS: Record<string, string> = {
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
 };
 
+// Report-only first: collecting violations must not break the live site.
+// Promote to Content-Security-Policy once the inline theme/RSC scripts use nonces.
+const CSP_REPORT_ONLY = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' data: https://fonts.gstatic.com",
+  "img-src 'self' data: blob:",
+  "connect-src 'self' https://*.supabase.co https://static.cloudflareinsights.com",
+  "frame-ancestors 'self'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join('; ');
+
 function secure(response: Response, status?: number) {
   const headers = new Headers(response.headers);
   for (const [name, value] of Object.entries(SECURITY_HEADERS))
     if (!headers.has(name)) headers.set(name, value);
+  if (!headers.has('Content-Security-Policy-Report-Only'))
+    headers.set('Content-Security-Policy-Report-Only', CSP_REPORT_ONLY);
   if (status && status !== response.status) {
     return new Response(response.body, { status, statusText: 'Not Found', headers });
   }
@@ -120,6 +136,9 @@ export default {
       routeExists === false &&
       response.status === 200 &&
       (response.headers.get('content-type') || '').includes('text/html');
-    return secure(response, notFound ? 404 : undefined);
+    const secured = secure(response, notFound ? 404 : undefined);
+    // *.pages.dev duplicates the production site: keep it out of search indexes.
+    if (url.hostname.endsWith('.pages.dev')) secured.headers.set('X-Robots-Tag', 'noindex');
+    return secured;
   },
 };

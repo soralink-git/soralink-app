@@ -59,6 +59,16 @@ export async function startAppSession(owner: string) {
   });
   return expires;
 }
+// A password change must invalidate sessions opened on other devices.
+export async function revokeOtherSessions(owner: string) {
+  const id = await currentId();
+  if (!id) return 0;
+  const result = await sessionDB()
+    .prepare('DELETE FROM app_sessions WHERE owner=? AND id<>?')
+    .bind(owner, id)
+    .run();
+  return result.meta.changes ?? 0;
+}
 export async function renewAppSession(owner: string) {
   const id = await currentId();
   if (!id) return null;

@@ -81,8 +81,8 @@ export async function saveProfile(b: Action<'save'>, user: DataUser, admin: bool
     rights.maxProducts,
     normalizeCatalogue(p ? JSON.parse(p.data).services : []).length,
   );
-  const old = p ? JSON.parse(p.data) : {};
-  if (!clientDesignAllowed(b.data, p ? old : null))
+  const old = targetProfile ? JSON.parse(targetProfile.data) : {};
+  if (!clientDesignAllowed(b.data, targetProfile ? old : null))
     return json(
       {
         error: 'Les sections et la personnalisation avancée sont gérées par l’équipe SoraLink.',
@@ -246,25 +246,6 @@ export async function createCard(b: Action<'createCard'>, user: DataUser) {
     );
   }
   const limit = p.card_limit ?? 1;
-  let currentCount = 1;
-  try {
-    const countRow: any = await db()
-      .prepare('SELECT COUNT(*) AS count FROM secondary_cards WHERE owner=?')
-      .bind(user.userId)
-      .first();
-    currentCount = 1 + (Number(countRow?.count) || 0);
-  } catch {
-    currentCount = 1;
-  }
-  if (currentCount >= limit) {
-    return json(
-      {
-        error: 'Limite de cartes atteinte pour votre forfait.',
-        errorAr: 'وصلتي للحد الأقصى ديال الكارطات المسموحة فهاد الباقة.',
-      },
-      403,
-    );
-  }
   const newId = crypto.randomUUID();
   const stamp = new Date().toISOString();
   const initialData = {
@@ -287,16 +268,43 @@ export async function createCard(b: Action<'createCard'>, user: DataUser) {
     catalogCategories: [],
     catalogSettings: { enabled: true, pdf: true, products: true, whatsapp: true },
   };
-  await db()
+  // The limit is enforced inside the INSERT so two concurrent requests cannot both pass a count check.
+  const created = await db()
     .prepare(
-      'INSERT INTO secondary_cards (id, owner, data, published, updated, created) VALUES (?, ?, ?, 0, ?, ?)',
+      'INSERT INTO secondary_cards (id, owner, data, published, updated, created) SELECT ?, ?, ?, 0, ?, ? WHERE (SELECT COUNT(*) FROM secondary_cards WHERE owner=?) < ?',
     )
-    .bind(newId, user.userId, JSON.stringify(initialData), stamp, stamp)
+    .bind(
+      newId,
+      user.userId,
+      JSON.stringify(initialData),
+      stamp,
+      stamp,
+      user.userId,
+      Math.max(0, limit - 1),
+    )
     .run();
+  if (!created.meta.changes)
+    return json(
+      {
+        error: 'Limite de cartes atteinte pour votre forfait.',
+        errorAr: 'وصلتي للحد الأقصى ديال الكارطات المسموحة فهاد الباقة.',
+      },
+      403,
+    );
+  const cardsCount =
+    1 +
+    Number(
+      (
+        await db()
+          .prepare('SELECT COUNT(*) AS count FROM secondary_cards WHERE owner=?')
+          .bind(user.userId)
+          .first<any>()
+      )?.count || 0,
+    );
   return json({
     ok: true,
     id: newId,
-    cardsCount: currentCount + 1,
+    cardsCount,
     cardLimit: limit,
   });
 }

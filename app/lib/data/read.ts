@@ -121,9 +121,6 @@ export async function readData(req: Request) {
   if (activeProfile) {
     activeProfile.publicName = await currentPublicName(db(), activeProfile.id);
     activeProfile.catalogRights = catalogRights(activeProfile);
-    if (activeProfile.id === p?.id) {
-      await db().prepare('UPDATE profiles SET email=? WHERE id=?').bind(user.email, p.id).run();
-    }
     const d = JSON.parse(activeProfile.data);
     d.pro = capabilities(activeProfile).appointments;
     d.activity = capabilities(activeProfile).activity;

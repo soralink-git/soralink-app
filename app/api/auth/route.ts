@@ -2,7 +2,12 @@ import { authActionSchema, readValidatedJSON, inputErrorResponse } from '../../l
 import { authFailure } from '../../lib/auth-errors';
 import { accountPath } from '../../lib/journey-links';
 import { authClient } from '../../lib/supabase';
-import { startAppSession, endAppSession, renewAppSession } from '../../lib/idle-session';
+import {
+  startAppSession,
+  endAppSession,
+  renewAppSession,
+  revokeOtherSessions,
+} from '../../lib/idle-session';
 import { json, identity, isAdministrator } from '../../lib/server';
 import { cookies } from 'next/headers';
 import { getChatGPTUser } from '../../chatgpt-auth';
@@ -80,6 +85,7 @@ export async function POST(req: Request) {
         return json({ error: 'Ouvrez le lien de récupération reçu par e-mail.' }, 401);
       const { error } = await s.auth.updateUser({ password: b.password });
       if (error) return failed(error, b.action);
+      await revokeOtherSessions('sb:' + data.user.id);
       return json({
         ok: true,
         message: 'Mot de passe mis à jour.',

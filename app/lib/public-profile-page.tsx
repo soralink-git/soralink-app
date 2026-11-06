@@ -93,15 +93,39 @@ export async function publicProfilePage(key: ProfileKey, lang?: string) {
   }
   if (!initialData && initialError === 'notfound') notFound();
   if (initialError === 'service') throw new Error('Card storage unavailable');
-  return (
-    <PublicCardView
-      cardId={cardId}
-      publicName={publicName}
-      initialData={initialData}
-      initialError={initialError}
-      initialAr={
-        lang ? lang === 'ar' : initialData?.defaultLanguage === 'ar' || initialData?.lang === 'ar'
+  const jsonLd = initialData
+    ? {
+        '@context': 'https://schema.org',
+        '@type': initialData.profileType === 'person' ? 'Person' : 'LocalBusiness',
+        name: profileName(initialData),
+        description: initialData.bio || undefined,
+        jobTitle: initialData.job || undefined,
+        telephone: initialData.phone || undefined,
+        image: initialData.avatar
+          ? 'https://soralink.link' + initialData.avatar
+          : 'https://soralink.link/og-soralink.png',
+        url: 'https://soralink.link' + publicCardPath(cardId, publicName),
       }
-    />
+    : null;
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+          }}
+        />
+      )}
+      <PublicCardView
+        cardId={cardId}
+        publicName={publicName}
+        initialData={initialData}
+        initialError={initialError}
+        initialAr={
+          lang ? lang === 'ar' : initialData?.defaultLanguage === 'ar' || initialData?.lang === 'ar'
+        }
+      />
+    </>
   );
 }
