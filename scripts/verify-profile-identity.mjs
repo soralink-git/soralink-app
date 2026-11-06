@@ -35,7 +35,7 @@ export async function verifyProfileIdentity({ db, request, cardId, adminId }) {
     assert(matching.some((profile) => profile.id === cardId));
     for (const lang of ['fr', 'ar']) {
       const html = (await request('/c/' + cardId + '?lang=' + lang)).text;
-      assert.match(html, /<h2>Atelier Atlas<\/h2>/);
+      assert.match(html, /<h1>Atelier Atlas<\/h1>/);
     }
     for (const invalid of [
       { ...stored, business: ' ', name: 'Amine' },

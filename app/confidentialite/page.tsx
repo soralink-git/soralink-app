@@ -1,5 +1,10 @@
 import LegalView from '../legal-view';
-export const metadata = { title: 'Confidentialité — SoraLink · Version pilote' };
+export const metadata = {
+  title: 'Confidentialité — SoraLink · Version pilote',
+  description:
+    'Politique de confidentialité SoraLink : compte, carte publique, demandes reçues, fichiers et services utilisés.',
+  alternates: { canonical: 'https://soralink.link/confidentialite' },
+};
 export default async function Page({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {
   const params = await searchParams;
   return (

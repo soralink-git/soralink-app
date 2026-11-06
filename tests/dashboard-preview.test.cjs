@@ -160,7 +160,13 @@ for (const ar of [false, true])
       }),
     );
     const article = (html) => html.match(/<article\b[\s\S]*?<\/article>/)[0];
-    assert.equal(article(previewHtml), article(publicHtml));
+    // The public page owns the single h1 of the document; the dashboard preview
+    // keeps h2 so the workspace heading stays the only h1 of that page.
+    const headings = (html) => html.replaceAll('</h1>', '</h2>').replaceAll('<h1>', '<h2>');
+    assert.equal(headings(article(previewHtml)), headings(article(publicHtml)));
+    assert.match(article(publicHtml), /<h1>/);
+    assert.equal((article(publicHtml).match(/<h1>/g) || []).length, 1);
+    assert.doesNotMatch(article(previewHtml), /<h1>/);
     assert.doesNotMatch(article(previewHtml), /compact/);
     assert.doesNotMatch(article(previewHtml), /card-language/);
   });

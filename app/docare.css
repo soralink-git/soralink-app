@@ -1390,7 +1390,7 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
   transform: none;
   box-shadow: 0 0 0 2px var(--button-bg, var(--accent));
 }
-.card-design .card-identity h2 {
+.card-design .card-identity :is(h1, h2) {
   text-transform: none;
   letter-spacing: -0.025em;
   font-weight: 700;

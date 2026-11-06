@@ -32,6 +32,7 @@ export type CardViewProps = {
   d: any;
   small?: boolean;
   preview?: boolean;
+  publicHeading?: boolean;
   onChoose?: () => void;
   withSections?: boolean;
 };
@@ -106,12 +107,14 @@ export default function CardView({
     d,
     small = false,
     preview = false,
+    publicHeading = false,
     onChoose,
     withSections = false,
   }: {
     d: any;
     small?: boolean;
     preview?: boolean;
+    publicHeading?: boolean;
     onChoose?: () => void;
     withSections?: boolean;
   }) {
@@ -209,7 +212,7 @@ export default function CardView({
                 </div>
               )}
               {subtitle && <span className="eyebrow">{subtitle}</span>}
-              {title && <h2>{title}</h2>}
+              {title && (publicHeading ? <h1>{title}</h1> : <h2>{title}</h2>)}
               {d.job && <p className="job">{d.job}</p>}
               {d.bio && <p className="bio">{d.bio}</p>}
             </section>

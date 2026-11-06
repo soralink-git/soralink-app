@@ -3,6 +3,11 @@ import { identity } from '../../lib/server';
 import { accountPath } from '../../lib/journey-links';
 import { redirect } from 'next/navigation';
 
+export const metadata = {
+  title: 'Connexion administrateur — SoraLink',
+  robots: { index: false, follow: false },
+};
+
 export default async function Page({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {
   const params = await searchParams;
   let admin = false;

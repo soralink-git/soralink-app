@@ -91,8 +91,17 @@ try {
     .run();
   const response = await mf.dispatchFetch('https://soralink.link/c/public-test');
   assert.equal(response.status, 200);
+  for (const [name, value] of Object.entries({
+    'strict-transport-security': 'max-age=31536000; includeSubDomains',
+    'x-content-type-options': 'nosniff',
+    'referrer-policy': 'strict-origin-when-cross-origin',
+    'x-frame-options': 'SAMEORIGIN',
+    'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+  }))
+    assert.equal(response.headers.get(name), value, name);
   const html = await response.text();
   assert(html.includes('Public rendering test'));
+  assert.match(html, /<h1[^>]*>Public rendering test<\/h1>/);
   assert(html.includes('Demander un rendez-vous'));
   assert(html.includes('https://soralink.link/og-soralink.png'));
   for (const secret of [
@@ -104,7 +113,8 @@ try {
     assert(!html.includes(secret), `${secret} must not be serialized`);
   const mainAsset = html.match(/src="([^\"]+\/index-[^\"]+\.js)"/)[1];
   assert.equal((await mf.dispatchFetch('https://soralink.link' + mainAsset)).status, 200);
-  assert.equal((await mf.dispatchFetch('https://soralink.link/c/missing')).status, 404);
+  for (const route of ['/c/missing', '/inconnu-abc123'])
+    assert.equal((await mf.dispatchFetch('https://soralink.link' + route)).status, 404, route);
   for (const page of [
     '/',
     '/auth',
@@ -179,13 +189,28 @@ try {
     'Public card images must remain crawlable',
   );
   assert.match(robotsText, /Sitemap: https:\/\/soralink.link\/sitemap.xml/);
+  for (const [route, canonical] of [
+    ['/conditions', 'https://soralink.link/conditions'],
+    ['/confidentialite', 'https://soralink.link/confidentialite'],
+  ]) {
+    const page = await mf.dispatchFetch('https://soralink.link' + route);
+    assert.equal(page.status, 200, route);
+    const markup = await page.text();
+    assert(markup.includes('rel="canonical"') && markup.includes(canonical), route);
+    assert(/<meta[^>]*name="description"[^>]*content="[^"]+"/.test(markup), route);
+  }
+  const headersFile = await readFile(path.join(root, '_headers'), 'utf8');
+  assert.match(headersFile, /Strict-Transport-Security: max-age=31536000/);
+  assert.match(headersFile, /X-Frame-Options: SAMEORIGIN/);
   const sitemap = await mf.dispatchFetch('https://soralink.link/sitemap.xml');
   assert.equal(sitemap.status, 200);
   assert.match(sitemap.headers.get('Content-Type'), /xml/);
   const xml = await sitemap.text();
-  assert.equal((xml.match(/<loc>/g) || []).length, 2);
+  assert.equal((xml.match(/<loc>/g) || []).length, 4);
   assert(xml.includes('<loc>https://soralink.link/</loc>'));
   assert(xml.includes('<loc>https://soralink.link/?lang=ar</loc>'));
+  assert(xml.includes('<loc>https://soralink.link/conditions</loc>'));
+  assert(xml.includes('<loc>https://soralink.link/confidentialite</loc>'));
   assert(!/public-test|PRIVATE_OWNER|auth|admin/.test(xml));
   console.log(
     'Public build: isolated JS graph, server-rendered card, private-field filtering, assets, main routes, bilingual SEO, private-page noindex and sitemap/robots verified',
