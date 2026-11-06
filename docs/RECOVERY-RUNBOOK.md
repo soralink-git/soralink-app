@@ -57,3 +57,51 @@ restent à dimensionner selon le volume, le coût et les besoins réels.
 
 - [D1 Time Travel](https://developers.cloudflare.com/d1/reference/time-travel/).
 - [Export et import D1](https://developers.cloudflare.com/d1/best-practices/import-export-data/).
+
+## Sauvegarde planifi�e et restauration test�e (6 novembre 2026)
+
+### Proc�dure
+
+```sh
+# 1. Sauvegarde chiffr�e vers R2 (bucket priv� soralink-backups)
+BACKUP_ENCRYPTION_KEY=<64 hex> node scripts/backup-d1.mjs --db=soralink-db
+
+# 2. Restauration vers une base d�di�e (jamais la production sans --force)
+BACKUP_ENCRYPTION_KEY=<64 hex> node scripts/restore-backup.mjs \
+  --key=backups/soralink-db/<fichier>.sql.enc \
+  --target-db=soralink-restore-rehearsal --remote
+```
+
+Le script exporte la base avec `wrangler d1 export --remote`, la chiffre en
+AES-256-GCM (en-t�te `SORA1` + IV + tag) puis d�pose l'objet dans
+`soralink-backups/backups/soralink-db/`. La cl� n'est jamais stock�e dans le
+d�p�t : elle vit dans le secret `BACKUP_ENCRYPTION_KEY`. Le workflow
+`.github/workflows/backup.yml` l'ex�cute chaque lundi � 03:00 UTC.
+
+### R�p�tition du 6 novembre 2026
+
+- Objet produit : `backups/soralink-db/2026-11-06T23-25-48-135Z-8f72d20a3536.sql.enc`
+  (39 321 octets, 38,4 Ko d�chiffr�s).
+- Restauration r�elle dans la base D1 temporaire `soralink-restore-rehearsal`
+  (`--remote`), puis contr�le des lignes :
+
+| Table         | Production | Restaur�e |
+| ------------- | ---------: | --------: |
+| profiles      |          2 |         2 |
+| notifications |          5 |         5 |
+| requests      |          2 |         2 |
+| orders        |          2 |         2 |
+| media_assets  |         51 |        51 |
+
+La base temporaire a �t� supprim�e apr�s le contr�le.
+
+### Limites connues
+
+- La sauvegarde couvre **D1 uniquement** (sch�ma + donn�es). Les fichiers R2
+  (m�dias, justificatifs) ne sont pas copi�s : ils restent dans le bucket
+  `soralink-files`. Une reprise compl�te exige une copie inter-comptes ou un
+  export S3 de ce bucket.
+- Aucune r�tention automatique n'est configur�e : pr�voir une r�gle de cycle de
+  vie sur `backups/` (par exemple 12 semaines) ou un nettoyage manuel.
+- La cl� de chiffrement doit �tre sauvegard�e hors du compte Cloudflare : sans
+  elle, les objets sont illisibles.
