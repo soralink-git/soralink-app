@@ -8,6 +8,9 @@ Variables Cloudflare Pages : SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY (secret), SO
 
 Bindings : DB (D1), BUCKET (R2). Initialiser une base vide avec les migrations de drizzle, dans l’ordre. Ajouter https://soralink.link/auth/callback aux URL autorisées dans Supabase Auth.
 
+Migrations : `pnpm db:status` puis `pnpm db:migrate` (suivi dans `schema_migrations`).
+Détails et limites dans [docs/MIGRATIONS.md](docs/MIGRATIONS.md).
+
 Le code ne contient ni les comptes clients, ni les données de la base de l’aperçu, ni les fichiers déposés par les clients. Ces données nécessitent une migration séparée.
 
 ## Corrections de l’audit
