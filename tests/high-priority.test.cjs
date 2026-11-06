@@ -307,6 +307,7 @@ test('Pages dispatch waits for successful mutation and attaches work to waitUnti
 test('scheduled worker drains the queue without a site request', async () => {
   let calls = 0;
   const worker = load('notifications-worker.ts', {
+    './app/lib/renewal': { sendRenewalReminders: async () => 0 },
     './app/lib/notifications': {
       sendPending: async (env) => {
         assert.equal(env.DB, 'shared-db');
@@ -541,6 +542,7 @@ test('Pages dispatch uses the internal binding without copying the provider key'
 test('internal notification entrypoint rejects unrelated requests and bounds sending to one', async () => {
   let calls = 0;
   const worker = load('notifications-worker.ts', {
+    './app/lib/renewal': { sendRenewalReminders: async () => 0 },
     './app/lib/notifications': {
       sendPending: async (env, sender, limit) => {
         assert.equal(env.DB, 'shared-db');

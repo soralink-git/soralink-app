@@ -17,6 +17,7 @@ import type { CropTarget } from './lib/crop-geometry';
 import { capabilities } from './lib/offers';
 import type { History, PageInfo } from './lib/pagination';
 import { profileName } from './lib/profile-identity';
+import { renewalNotice } from './lib/renewal';
 import type { SaveState } from './lib/save-queue';
 import LoadMore from './load-more';
 import PinnedCardPreview from './pinned-card-preview';
@@ -214,6 +215,28 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     setTab(next);
   };
   const rights = capabilities(subscription);
+  const renewal = renewalNotice(subscription);
+  const renewalDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(ar ? 'ar-MA' : 'fr-MA', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  const renewalText =
+    renewal.stage === 'soon'
+      ? t(
+          `Votre abonnement expire dans ${renewal.days} jour${renewal.days > 1 ? 's' : ''}, le ${renewalDate(subscription.expires)}.`,
+          `الاشتراك كيسالي فـ ${renewal.days} أيام، نهار ${renewalDate(subscription.expires)}.`,
+        )
+      : renewal.stage === 'grace'
+        ? t(
+            `Abonnement expiré. Votre carte reste visible jusqu’au ${renewalDate(renewal.until!)} (période de grâce).`,
+            `الاشتراك سالا. الكارط باقية باينة حتى ${renewalDate(renewal.until!)} (مدة السماح).`,
+          )
+        : t(
+            'Abonnement expiré. Votre carte publique n’est plus visible.',
+            'الاشتراك سالا. الكارط العمومية ما بقاتش باينة.',
+          );
   const tabs = [
     ['interface', Palette, 'Logo et modèle', 'اللوگو والستايل', 'card'],
     ['coordinates', Users, 'Ma carte', 'الكارط ديالي', 'card'],
@@ -467,6 +490,14 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         </div>
       </aside>
       <div className="workspace-main">
+        {loaded && auth && renewal.stage !== 'none' && (
+          <div className={'callout workspace-renewal ' + renewal.stage} role="status">
+            <span>{renewalText}</span>
+            <a className="primary small" href={'/?app=1&tab=orders&lang=' + (ar ? 'ar' : 'fr')}>
+              {t('Renouveler', 'جدّد')}
+            </a>
+          </div>
+        )}
         {loaded && auth && !id && (
           <div className="callout workspace-welcome">
             <span className="workspace-welcome-icon" aria-hidden="true">

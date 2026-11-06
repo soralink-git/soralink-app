@@ -395,3 +395,16 @@ html[dir='rtl'] .workspace-card-switcher-box {
   justify-content: flex-end;
   margin-top: 16px;
 }
+
+.workspace-renewal {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  border-inline-start: 3px solid var(--brand-accent);
+}
+.workspace-renewal.grace,
+.workspace-renewal.expired {
+  border-inline-start-color: var(--brand-strong);
+}
