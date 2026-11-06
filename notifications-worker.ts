@@ -1,4 +1,5 @@
 import { sendPending, type MailEnv } from './app/lib/notifications';
+import { sendRenewalReminders } from './app/lib/renewal';
 
 // Deploy separately from Pages, binding DB to the same D1 database.
 export default {
@@ -15,6 +16,7 @@ export default {
     return new Response(null, { status: 204 });
   },
   async scheduled(_event: ScheduledController, env: MailEnv) {
+    await sendRenewalReminders(env);
     await sendPending(env);
   },
 } satisfies ExportedHandler<MailEnv>;

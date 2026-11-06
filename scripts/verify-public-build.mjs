@@ -125,6 +125,11 @@ try {
     '/confidentialite?lang=fr',
   ])
     assert.equal((await mf.dispatchFetch('https://soralink.link' + page)).status, 200, page);
+  const health = await mf.dispatchFetch('https://soralink.link/api/health');
+  assert.equal(health.status, 200);
+  const healthBody = await health.json();
+  assert.equal(healthBody.status, 'ok');
+  assert.equal(healthBody.database, 'ok');
   for (const lang of ['fr', 'ar']) {
     const response = await mf.dispatchFetch('https://soralink.link/api/manifest?lang=' + lang);
     assert.equal(response.status, 200);
