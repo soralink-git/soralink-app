@@ -115,7 +115,19 @@ export default {
         routeExists = null;
       }
     }
-    const response = await handler.fetch(request, env, ctx);
+    // The root layout cannot read searchParams; hand it the language through a header
+    // so <html lang dir> is correct in the server-rendered markup (SEO, screen readers).
+    let inbound = request;
+    const requestedLang = url.searchParams.get('lang');
+    if (
+      (request.method === 'GET' || request.method === 'HEAD') &&
+      (requestedLang === 'ar' || requestedLang === 'fr')
+    ) {
+      const forwarded = new Headers(request.headers);
+      forwarded.set('x-soralink-lang', requestedLang);
+      inbound = new Request(request.url, { method: request.method, headers: forwarded });
+    }
+    const response = await handler.fetch(inbound, env, ctx);
     if (
       request.method === 'POST' &&
       ['/api/data', '/api/catalog-order'].includes(url.pathname) &&

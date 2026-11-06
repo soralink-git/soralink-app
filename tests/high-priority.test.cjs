@@ -24,6 +24,7 @@ function load(file, dependencies = {}) {
       console,
       crypto: globalThis.crypto,
       require(name) {
+        if (name.endsWith('.css')) return {};
         if (name in dependencies) return dependencies[name];
         throw Error('Unexpected dependency: ' + name);
       },

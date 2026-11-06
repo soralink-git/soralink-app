@@ -1,4 +1,5 @@
 'use client';
+import './landing.css';
 import OfferGrid from './offer-grid';
 import { ExternalLink, Users, ShoppingBag, RefreshCw } from 'lucide-react';
 import { WhatsAppIcon } from './card-helpers';
