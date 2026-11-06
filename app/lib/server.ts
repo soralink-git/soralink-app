@@ -1,6 +1,4 @@
 import { env } from 'cloudflare:workers';
-import { cookies } from 'next/headers';
-import { getChatGPTUser } from '../chatgpt-auth';
 import { authClient } from './supabase';
 import { activeAppSession } from './idle-session';
 export function db() {
@@ -29,10 +27,6 @@ export async function identity() {
       source = 'email';
       // Ownership is bound to the verified user ID, never reclaimed by email.
     }
-  }
-  if (!user && (await cookies()).get('soratap_legacy')?.value === '1') {
-    user = await getChatGPTUser();
-    if (user) source = 'chatgpt';
   }
   if (user?.userId !== session.owner)
     return { user: null, source: '', admin: false, expiresAt: null };

@@ -3,13 +3,16 @@
 Application React/Vinext adaptée à Cloudflare Pages. Le fichier HTML de démonstration est remplacé par l’application complète.
 
 Construction : pnpm install --frozen-lockfile puis pnpm build. Sortie : dist/pages. Node 24.
+Qualité : `pnpm check` (TypeScript), `pnpm lint` (ESLint), `pnpm test` (node:test), `pnpm verify` (les trois plus Prettier).
 
-Variables Cloudflare Pages : SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY (secret), SORATAP_ADMIN_EMAIL. Compatibilité : nodejs_compat.
+Variables Cloudflare Pages : SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY (secret), SORATAP_ADMIN_EMAIL, PUBLIC_SITE_URL, EMAIL_FROM, NOTIFICATIONS_ENABLED. Optionnel : TURNSTILE_SITE_KEY (publique) et TURNSTILE_SECRET_KEY (secret) pour activer le contrôle anti-robot du formulaire public. Compatibilité : nodejs_compat.
 
-Bindings : DB (D1), BUCKET (R2). Initialiser une base vide avec les migrations de drizzle, dans l’ordre. Ajouter https://soralink.link/auth/callback aux URL autorisées dans Supabase Auth.
+Bindings : DB (D1), BUCKET (R2), NOTIFICATIONS (service Worker, optionnel). Initialiser une base vide avec les migrations de drizzle, dans l’ordre. Ajouter https://soralink.link/auth/callback aux URL autorisées dans Supabase Auth.
 
 Migrations : `pnpm db:status` puis `pnpm db:migrate` (suivi dans `schema_migrations`).
 Détails et limites dans [docs/MIGRATIONS.md](docs/MIGRATIONS.md).
+
+Notifications : `worker.ts` déclenche un envoi borné après chaque demande ou changement de statut. Le Worker planifié `soralink-notifications` (`wrangler.notifications.jsonc`, cron `* * * * *`) draine les reprises et les files en retard ; le déployer sur la même base D1 avec `RESEND_API_KEY`.
 
 Le code ne contient ni les comptes clients, ni les données de la base de l’aperçu, ni les fichiers déposés par les clients. Ces données nécessitent une migration séparée.
 

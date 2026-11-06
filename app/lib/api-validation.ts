@@ -421,7 +421,6 @@ export const authActionSchema = z
     z.object({ action: z.literal('resend'), email: authEmail }),
     z.object({ action: z.literal('logout') }),
     z.object({ action: z.literal('activity') }),
-    z.object({ action: z.literal('legacy') }),
   ])
   .and(
     z.object({

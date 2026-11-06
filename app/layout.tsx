@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { headers } from 'next/headers';
+import { env } from 'cloudflare:workers';
 import { BRAND } from './lib/brand';
 import './fonts.css';
 import './globals.css';
@@ -15,37 +16,40 @@ import { HOME_TITLE, HOME_DESCRIPTION } from './lib/site-seo';
 
 export const viewport: Viewport = { themeColor: BRAND.charcoal };
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://soralink.link'),
-  openGraph: {
-    type: 'website',
-    siteName: 'SoraLink',
+export async function generateMetadata(): Promise<Metadata> {
+  const base = new URL(env.PUBLIC_SITE_URL || 'https://soralink.link');
+  return {
+    metadataBase: base,
+    openGraph: {
+      type: 'website',
+      siteName: 'SoraLink',
+      title: HOME_TITLE,
+      description: HOME_DESCRIPTION,
+      images: [
+        {
+          url: new URL('/og-soralink.png', base).href,
+          width: 1200,
+          height: 630,
+          alt: 'SoraLink — carte digitale NFC et QR',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'SoraLink',
+      images: [new URL('/og-soralink.png', base).href],
+    },
+    manifest: '/manifest.webmanifest',
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
-    images: [
-      {
-        url: 'https://soralink.link/og-soralink.png',
-        width: 1200,
-        height: 630,
-        alt: 'SoraLink — carte digitale NFC et QR',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'SoraLink',
-    images: ['https://soralink.link/og-soralink.png'],
-  },
-  manifest: '/manifest.webmanifest',
-  title: HOME_TITLE,
-  description: HOME_DESCRIPTION,
-  appleWebApp: { capable: true, title: 'SoraLink', statusBarStyle: 'black-translucent' },
-  icons: {
-    apple: '/icons/apple-touch-icon.png',
-    icon: '/favicon.svg',
-    shortcut: '/favicon.svg',
-  },
-};
+    appleWebApp: { capable: true, title: 'SoraLink', statusBarStyle: 'black-translucent' },
+    icons: {
+      apple: '/icons/apple-touch-icon.png',
+      icon: '/favicon.svg',
+      shortcut: '/favicon.svg',
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
