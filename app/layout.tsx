@@ -53,6 +53,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const language = (await headers()).get('x-soralink-lang');
+  const turnstileSiteKey = (await headers()).get('x-turnstile-site-key') || '';
   const arabic = language === 'ar';
   return (
     <html
@@ -69,6 +70,13 @@ export default async function RootLayout({
           type="font/woff2"
           crossOrigin=""
         />
+        {turnstileSiteKey && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: 'window.__TURNSTILE_SITE_KEY__=' + JSON.stringify(turnstileSiteKey) + ';',
+            }}
+          />
+        )}
       </head>
       <body className="antialiased">
         <AppearanceProvider>

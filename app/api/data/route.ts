@@ -7,6 +7,8 @@ import { readData } from '../../lib/data/read';
 import { submitPublicRequest } from '../../lib/data/requests';
 import { capabilities } from '../../lib/offers';
 import { active, db, identity, json } from '../../lib/server';
+import { allowRequest, verifyTurnstile } from '../../lib/rate-limit';
+import { env } from 'cloudflare:workers';
 export async function GET(req: Request) {
   try {
     return await readData(req);
@@ -22,7 +24,26 @@ export async function POST(req: Request) {
       return json({ error: 'Accès refusé' }, 403);
     const b = await readValidatedJSON(req, dataActionSchema);
     const { user, admin } = await identity();
-    if (b.action === 'request') return await submitPublicRequest(b, user);
+    if (b.action === 'request') {
+      const ip = req.headers.get('cf-connecting-ip') || '';
+      if (ip && !(await allowRequest(db(), 'request:' + ip, 10, 3600000)))
+        return json(
+          {
+            error: 'Trop de demandes envoyées. Réessayez dans une heure.',
+            errorAr: 'سيفطتي بزاف من الطلبات. عاود جرّب من بعد ساعة.',
+          },
+          429,
+        );
+      if (!(await verifyTurnstile(env.TURNSTILE_SECRET_KEY, b.turnstileToken, ip || undefined)))
+        return json(
+          {
+            error: 'Vérification anti-robot échouée. Rechargez la page et réessayez.',
+            errorAr: 'التحقق من أنك ماشي روبوت ما نجحش. عاود حمّل الصفحة.',
+          },
+          400,
+        );
+      return await submitPublicRequest(b, user);
+    }
     if (!user) return json({ error: 'Connexion requise' }, 401);
     if (['manual', 'status', 'deleteContact'].includes(b.action)) {
       const ownerProfile: any = await db()

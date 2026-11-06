@@ -16,12 +16,12 @@ const SECURITY_HEADERS: Record<string, string> = {
 // Promote to Content-Security-Policy once the inline theme/RSC scripts use nonces.
 const CSP_REPORT_ONLY = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
   "img-src 'self' data: blob:",
   "media-src 'self'",
-  "frame-src 'self' https://www.youtube-nocookie.com",
+  "frame-src 'self' https://www.youtube-nocookie.com https://challenges.cloudflare.com",
   "worker-src 'self' blob:",
   "connect-src 'self' https://*.supabase.co https://static.cloudflareinsights.com",
   "frame-ancestors 'self'",
@@ -121,14 +121,15 @@ export default {
     }
     // The root layout cannot read searchParams; hand it the language through a header
     // so <html lang dir> is correct in the server-rendered markup (SEO, screen readers).
+    // The public Turnstile site key is forwarded the same way (it is not a secret).
     let inbound = request;
     const requestedLang = url.searchParams.get('lang');
-    if (
-      (request.method === 'GET' || request.method === 'HEAD') &&
-      (requestedLang === 'ar' || requestedLang === 'fr')
-    ) {
+    const language = requestedLang === 'ar' || requestedLang === 'fr' ? requestedLang : '';
+    const siteKey = env.TURNSTILE_SITE_KEY || '';
+    if ((request.method === 'GET' || request.method === 'HEAD') && (language || siteKey)) {
       const forwarded = new Headers(request.headers);
-      forwarded.set('x-soralink-lang', requestedLang);
+      if (language) forwarded.set('x-soralink-lang', language);
+      if (siteKey) forwarded.set('x-turnstile-site-key', siteKey);
       inbound = new Request(request.url, { method: request.method, headers: forwarded });
     }
     const response = await handler.fetch(inbound, env, ctx);

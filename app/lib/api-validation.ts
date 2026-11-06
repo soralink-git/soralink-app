@@ -281,6 +281,7 @@ const requestObject = z.object({
   shareCard: z.boolean().default(false),
   consent: z.boolean().optional(),
   trap: formText(0),
+  turnstileToken: z.string().max(2048).optional(),
 });
 function requestRules(b: z.infer<typeof requestObject>, ctx: z.RefinementCtx, resolved = false) {
   const issue = (message: string) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
