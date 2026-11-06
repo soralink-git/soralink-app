@@ -6,7 +6,8 @@ const vm = require('node:vm');
 const ts = require('typescript');
 const { DatabaseSync } = require('node:sqlite');
 const { load: loadModule, req } = require('./ts-loader.cjs');
-const { readPage, appendUnique, cursorSchema } = loadModule(path.resolve('app/lib/pagination.ts'));
+const { readPage, appendUnique } = loadModule(path.resolve('app/lib/pagination.ts'));
+const { cursorSchema } = loadModule(path.resolve('app/lib/pagination-schema.ts'));
 const { readHistory, requestNotifications } = loadModule(path.resolve('app/lib/history.ts'));
 const stamp = '2026-10-15T12:00:00.000Z';
 function fixture() {

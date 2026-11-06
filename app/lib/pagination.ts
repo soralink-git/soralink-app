@@ -1,20 +1,25 @@
-import { z } from 'zod';
-
 export const PAGE_SIZE = 50;
-const position = z.tuple([z.string().datetime(), z.string().min(1).max(128)]);
-export const cursorSchema = z
-  .string()
-  .max(400)
-  .refine((value) => {
-    try {
-      return position.safeParse(JSON.parse(value)).success;
-    } catch {
-      return false;
-    }
-  }, 'Position de lecture invalide.');
 
 export type History = 'requests' | 'contacts' | 'orders';
 export type PageInfo = { nextCursor: string | null };
+
+const DATETIME_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
+
+// Cursor parsing without zod: this module is imported by client components.
+export function parsePosition(value: unknown): [string, string] | null {
+  let parsed: unknown;
+  try {
+    parsed = typeof value === 'string' ? JSON.parse(value) : value;
+  } catch {
+    return null;
+  }
+  if (!Array.isArray(parsed) || parsed.length !== 2) return null;
+  const [date, id] = parsed;
+  if (typeof date !== 'string' || !DATETIME_RE.test(date) || Number.isNaN(Date.parse(date)))
+    return null;
+  if (typeof id !== 'string' || id.length < 1 || id.length > 128) return null;
+  return [date, id];
+}
 
 // SQL fragments are supplied only by server code. Cursor values remain bound parameters.
 export async function readPage(
@@ -28,7 +33,9 @@ export async function readPage(
 ) {
   const params = [...values];
   if (cursor) {
-    const [date, id] = position.parse(JSON.parse(cursor));
+    const position = parsePosition(cursor);
+    if (!position) throw new Error('Position de lecture invalide.');
+    const [date, id] = position;
     where += ` AND (${dateColumn} < ? OR (${dateColumn} = ? AND ${idColumn} < ?))`;
     params.push(date, date, id);
   }

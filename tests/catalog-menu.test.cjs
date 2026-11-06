@@ -3,10 +3,12 @@ const test = require('node:test'),
   path = require('node:path');
 const { load, req } = require('./ts-loader.cjs');
 const menu = load(path.resolve('app/lib/catalog-menu.ts'));
+const catalogSchemas = load(path.resolve('app/lib/catalog-schemas.ts'));
 const { publicCardData } = load(path.resolve('app/lib/public-card.ts'));
 const { normalizeCatalogue, catalogueError } = load(path.resolve('app/lib/catalogue.ts'));
 const { profileDataSchema } = load(path.resolve('app/lib/api-validation.ts'));
-const { catalogOrderSchema, catalogOrderMessage } = load(path.resolve('app/lib/catalog-order.ts'));
+const { catalogOrderMessage } = load(path.resolve('app/lib/catalog-order.ts'));
+const { catalogOrderSchema } = load(path.resolve('app/lib/catalog-order-schema.ts'));
 const React = req('react'),
   { renderToStaticMarkup } = req('react-dom/server');
 const Products = load(path.resolve('app/catalog-public.tsx')).default;
@@ -40,8 +42,14 @@ test('trial and paid defaults allow forty products with bounded admin overrides'
   assert.equal(rights.pdfMB, 25);
   assert.equal(rights.pdfPages, 100);
   assert.equal(rights.maxDocuments, 3);
-  assert.equal(menu.catalogRightsSchema.safeParse({ ...rights, maxProducts: 201 }).success, false);
-  assert.equal(menu.catalogRightsSchema.safeParse({ ...rights, pdfPages: 101 }).success, false);
+  assert.equal(
+    catalogSchemas.catalogRightsSchema.safeParse({ ...rights, maxProducts: 201 }).success,
+    false,
+  );
+  assert.equal(
+    catalogSchemas.catalogRightsSchema.safeParse({ ...rights, pdfPages: 101 }).success,
+    false,
+  );
   assert.equal(
     menu.catalogRights({
       plan: 'Digital',
@@ -253,7 +261,10 @@ test('built-in demo media is rendered only in preview while customer upload rule
   );
   assert.equal(new Set(demo.services.map((item) => item.image)).size, 5);
   assert(catalogueError(demo.services));
-  assert.equal(menu.catalogDocumentSchema.safeParse(demo.catalogDocuments[0]).success, false);
+  assert.equal(
+    catalogSchemas.catalogDocumentSchema.safeParse(demo.catalogDocuments[0]).success,
+    false,
+  );
   const external = { ...demo.catalogDocuments[0], src: 'https://example.com/private.pdf' };
   assert.equal(menu.catalogDocuments({ catalogDocuments: [external] }, true).length, 0);
   assert.equal(

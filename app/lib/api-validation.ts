@@ -1,6 +1,6 @@
 import { serviceButtonModes } from './service-buttons';
 import { profileKind, profileName } from './profile-identity';
-import { clientAccessSchema } from './client-access-config';
+import { clientAccessSchema } from './client-access-schema';
 import { acceptedPlans } from './offers';
 import { profileLinkKinds, profileLinkValue } from './profile-links';
 import {
@@ -9,10 +9,11 @@ import {
   catalogCategoriesSchema,
   catalogRightsSchema,
   assetURL,
-} from './catalog-menu';
+} from './catalog-schemas';
 import { z } from 'zod';
-import { cursorSchema } from './pagination';
-import { catalogueError, HARD_CATALOGUE_ITEMS, catalogueVariantsSchema } from './catalogue';
+import { cursorSchema } from './pagination-schema';
+import { catalogueError, HARD_CATALOGUE_ITEMS } from './catalogue';
+import { catalogueVariantsSchema } from './catalogue-schema';
 import { promotionError } from './promotions';
 import { recordedVideoUrl, mediaError } from './content-media';
 import { sectionKeys } from './personalization';

@@ -24,6 +24,7 @@ function load(f) {
       module: m,
       exports: m.exports,
       require: (n) => {
+        if (n.endsWith('.css')) return {};
         if (!n.startsWith('.')) return req(n);
         const b = path.resolve(path.dirname(f), n);
         return load(['.ts', '.tsx', '.js'].map((ext) => b + ext).find(fs.existsSync) || b);

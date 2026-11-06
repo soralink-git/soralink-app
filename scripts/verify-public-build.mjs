@@ -164,6 +164,11 @@ try {
     assert(markup.includes('application/ld+json'));
     assert(markup.includes('https://soralink.link/#website'));
     assert(!/<meta[^>]*name="robots"[^>]*noindex/.test(markup));
+    assert.match(
+      markup,
+      query === '?lang=ar' ? /<html lang="ar" dir="rtl"/ : /<html lang="fr" dir="ltr"/,
+      'lang and dir must be server-rendered',
+    );
   }
   for (const route of [
     '/?app=1',

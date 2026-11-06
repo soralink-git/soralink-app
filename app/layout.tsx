@@ -1,9 +1,10 @@
 import type { Metadata, Viewport } from 'next';
+import { headers } from 'next/headers';
 import { BRAND } from './lib/brand';
+import './fonts.css';
 import './globals.css';
 import './tokens.css';
 import './interface.css';
-import './landing.css';
 import './docare.css';
 import './workspace.css';
 import './usability.css';
@@ -46,13 +47,29 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const language = (await headers()).get('x-soralink-lang');
+  const arabic = language === 'ar';
   return (
-    <html lang="fr" data-theme="dark" suppressHydrationWarning>
+    <html
+      lang={arabic ? 'ar' : 'fr'}
+      dir={arabic ? 'rtl' : 'ltr'}
+      data-theme="dark"
+      suppressHydrationWarning
+    >
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/dm-sans-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin=""
+        />
+      </head>
       <body className="antialiased">
         <AppearanceProvider>
           <NavigationProgress />

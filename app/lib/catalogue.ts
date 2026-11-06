@@ -1,4 +1,3 @@
-import { z } from 'zod';
 export const MAX_CATALOGUE_ITEMS = 40;
 export const PAID_CATALOGUE_ITEMS = 40;
 export const HARD_CATALOGUE_ITEMS = 200;
@@ -8,28 +7,43 @@ export function catalogueLimit(profile: { state?: string } | null | undefined) {
     ? PAID_CATALOGUE_ITEMS
     : TRIAL_CATALOGUE_ITEMS;
 }
-export const catalogueVariantSchema = z
-  .object({
-    id: z.string().min(1).max(80),
-    nameFr: z.string().trim().max(80).default(''),
-    nameAr: z.string().trim().max(80).default(''),
-    price: z
-      .string()
-      .max(30)
-      .default('')
-      .refine((v) => !v || /^\d{1,9}([.,]\d{1,2})?$/.test(v)),
-    availability: z.enum(['available', 'soldout']).default('available'),
-  })
-  .strict()
-  .refine((v) => !!(v.nameFr || v.nameAr), 'Nommez chaque variante.');
-export const catalogueVariantsSchema = z
-  .array(catalogueVariantSchema)
-  .max(12)
-  .refine(
-    (v) => new Set(v.map((i) => i.id)).size === v.length,
-    'Identifiants de variantes dupliqués.',
-  );
-export type CatalogueVariant = z.infer<typeof catalogueVariantSchema>;
+export type CatalogueVariant = {
+  id: string;
+  nameFr: string;
+  nameAr: string;
+  price: string;
+  availability: 'available' | 'soldout';
+};
+// Mirrors catalogueVariantsSchema (server-side) without importing zod here:
+// catalogue.ts is part of the public card bundle.
+const variantKeys = ['id', 'nameFr', 'nameAr', 'price', 'availability'];
+function variantsValid(value: unknown): boolean {
+  if (!Array.isArray(value) || value.length > 12) return false;
+  const ids = new Set<string>();
+  for (const raw of value) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return false;
+    const variant = raw as Record<string, unknown>;
+    if (Object.keys(variant).some((key) => !variantKeys.includes(key))) return false;
+    if (typeof variant.id !== 'string' || !variant.id.length || variant.id.length > 80)
+      return false;
+    if (ids.has(variant.id)) return false;
+    ids.add(variant.id);
+    const nameFr = variant.nameFr === undefined ? '' : variant.nameFr;
+    const nameAr = variant.nameAr === undefined ? '' : variant.nameAr;
+    if (typeof nameFr !== 'string' || typeof nameAr !== 'string') return false;
+    if (nameFr.trim().length > 80 || nameAr.trim().length > 80) return false;
+    const price = variant.price === undefined ? '' : variant.price;
+    if (typeof price !== 'string' || price.length > 30) return false;
+    if (price && !/^\d{1,9}([.,]\d{1,2})?$/.test(price)) return false;
+    if (
+      variant.availability !== undefined &&
+      !['available', 'soldout'].includes(variant.availability as string)
+    )
+      return false;
+    if (!nameFr.trim() && !nameAr.trim()) return false;
+  }
+  return true;
+}
 export type CatalogueItem = {
   id: string;
   variants: CatalogueVariant[];
@@ -153,7 +167,7 @@ export function catalogueError(value: unknown, limit = MAX_CATALOGUE_ITEMS) {
     if (item.thumbnail && !imageValid(item.thumbnail)) return 'Miniature invalide.';
     if (item.image && !imageValid(item.image))
       return 'Ajoutez les photos du catalogue avec le bouton prévu.';
-    if (item.variants !== undefined && !catalogueVariantsSchema.safeParse(item.variants).success)
+    if (item.variants !== undefined && !variantsValid(item.variants))
       return 'Vérifiez les noms, les prix et les identifiants des variantes (12 maximum).';
     const id = text(item.id, 80) || 'legacy-' + i;
     if (ids.has(id))

@@ -1,29 +1,78 @@
 import { capabilities } from './offers';
 import { normalizePromotions } from './promotions';
-import { z } from 'zod';
-import { normalizeCatalogue } from './catalogue';
-import { catalogueLimit } from './catalogue';
-export const assetURL = z
-  .string()
-  .regex(/^(?:|\/api\/upload\?key=[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/);
-const label = z.string().max(120).default('');
-const description = z.string().max(800).default('');
-export const catalogRightsSchema = z.object({
-  enabled: z.boolean(),
-  pdf: z.boolean(),
-  products: z.boolean(),
-  whatsapp: z.boolean(),
-  downloads: z.boolean(),
-  maxDocuments: z.number().int().min(0).max(10),
-  maxProducts: z.number().int().min(0).max(200),
-  storageMB: z.number().int().min(1).max(2000),
-  maxFiles: z.number().int().min(1).max(500),
-  pdfMB: z.number().int().min(1).max(25),
-  pdfPages: z.number().int().min(1).max(100),
-});
-export type CatalogRights = z.infer<typeof catalogRightsSchema>;
+import { normalizeCatalogue, catalogueLimit } from './catalogue';
+
+// Runtime helpers used by both the server and the browser. The matching zod
+// schemas live in catalog-schemas.ts so the public bundle does not ship zod.
+export type CatalogRights = {
+  enabled: boolean;
+  pdf: boolean;
+  products: boolean;
+  whatsapp: boolean;
+  downloads: boolean;
+  maxDocuments: number;
+  maxProducts: number;
+  storageMB: number;
+  maxFiles: number;
+  pdfMB: number;
+  pdfPages: number;
+};
+export type CatalogDocument = {
+  id: string;
+  src: string;
+  titleFr: string;
+  titleAr: string;
+  descriptionFr: string;
+  descriptionAr: string;
+  cover: string;
+  visible: boolean;
+  allowDownload: boolean;
+};
+export type CatalogSettings = {
+  enabled: boolean;
+  pdf: boolean;
+  products: boolean;
+  whatsapp: boolean;
+  showPrices: boolean;
+  fulfillmentModes: ('onsite' | 'takeaway' | 'delivery')[];
+  layout: 'grid' | 'list';
+  accent: string;
+};
+export type CatalogCategory = { id: string; nameFr: string; nameAr: string; visible: boolean };
+
+const ASSET_RE =
+  /^(?:|\/api\/upload\?key=[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/;
+const DOC_ID_RE = /^(?:legacy-pdf|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/;
+const DEMO_DOCUMENTS = [
+  '/demo/soralink/catalogue-fr.pdf',
+  '/demo/soralink/catalogue-ar.pdf',
+  '/demo/soralink/catalogue-v2-fr.pdf',
+  '/demo/soralink/catalogue-v2-ar.pdf',
+];
+const DEMO_COVERS = ['/soralink-pack-hero.webp', '/demo/soralink/premium/nfc.webp'];
+const SETTINGS_DEFAULT: CatalogSettings = {
+  enabled: true,
+  pdf: true,
+  products: true,
+  whatsapp: true,
+  showPrices: true,
+  fulfillmentModes: [],
+  layout: 'grid',
+  accent: '',
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null && !Array.isArray(value);
+const text = (value: unknown, max: number) =>
+  typeof value === 'string' && value.length <= max ? value : undefined;
+const flag = (value: unknown) => (typeof value === 'boolean' ? value : undefined);
+const integer = (value: unknown, min: number, max: number) =>
+  typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max
+    ? value
+    : undefined;
+
 export function catalogRights(profile?: any): CatalogRights {
-  const defaults = {
+  const defaults: CatalogRights = {
     enabled: true,
     pdf: true,
     products: true,
@@ -39,7 +88,7 @@ export function catalogRights(profile?: any): CatalogRights {
   const raw = profile?.catalog_rights ?? profile?.catalogRights;
   const allowed = capabilities(profile).catalogue;
   if (raw == null && allowed) return defaults;
-  const denied = {
+  const denied: CatalogRights = {
     ...defaults,
     enabled: false,
     pdf: false,
@@ -50,90 +99,98 @@ export function catalogRights(profile?: any): CatalogRights {
     maxProducts: 0,
   };
   if (!allowed) return denied;
-  try {
-    const parsed = catalogRightsSchema.safeParse(typeof raw === 'string' ? JSON.parse(raw) : raw);
-    return parsed.success ? parsed.data : denied;
-  } catch {
-    return denied;
+  let value: unknown = raw;
+  if (typeof raw === 'string') {
+    try {
+      value = JSON.parse(raw);
+    } catch {
+      return denied;
+    }
   }
+  if (!isRecord(value)) return denied;
+  const booleans = ['enabled', 'pdf', 'products', 'whatsapp', 'downloads'] as const;
+  const ranges = {
+    maxDocuments: [0, 10],
+    maxProducts: [0, 200],
+    storageMB: [1, 2000],
+    maxFiles: [1, 500],
+    pdfMB: [1, 25],
+    pdfPages: [1, 100],
+  } as const;
+  const parsed: Record<string, boolean | number> = {};
+  for (const key of booleans) {
+    if (typeof value[key] !== 'boolean') return denied;
+    parsed[key] = value[key];
+  }
+  for (const [key, [min, max]] of Object.entries(ranges)) {
+    const candidate = value[key];
+    if (
+      typeof candidate !== 'number' ||
+      !Number.isInteger(candidate) ||
+      candidate < min ||
+      candidate > max
+    )
+      return denied;
+    parsed[key] = candidate;
+  }
+  return parsed as CatalogRights;
 }
-export const catalogDocumentSchema = z.object({
-  id: z
-    .string()
-    .regex(/^(?:legacy-pdf|[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12})$/),
-  src: assetURL,
-  titleFr: label,
-  titleAr: label,
-  descriptionFr: description,
-  descriptionAr: description,
-  cover: assetURL.default(''),
-  visible: z.boolean().default(true),
-  allowDownload: z.boolean().default(false),
-});
-export type CatalogDocument = z.infer<typeof catalogDocumentSchema>;
-export const catalogSettingsSchema = z
-  .object({
-    enabled: z.boolean().default(true),
-    pdf: z.boolean().default(true),
-    products: z.boolean().default(true),
-    whatsapp: z.boolean().default(true),
-    showPrices: z.boolean().default(true),
-    fulfillmentModes: z
-      .array(z.enum(['onsite', 'takeaway', 'delivery']))
-      .max(3)
-      .refine((v) => new Set(v).size === v.length)
-      .default([]),
-    layout: z.enum(['grid', 'list']).default('grid'),
-    accent: z.union([z.literal(''), z.string().regex(/^#[0-9a-f]{6}$/i)]).default(''),
-  })
-  .default({
-    enabled: true,
-    pdf: true,
-    products: true,
-    whatsapp: true,
-    showPrices: true,
-    fulfillmentModes: [],
-    layout: 'grid',
-    accent: '',
-  });
-export const catalogCategoriesSchema = z
-  .array(
-    z.object({
-      id: z.string().min(1).max(80),
-      nameFr: label,
-      nameAr: label,
-      visible: z.boolean().default(true),
-    }),
+
+function documentFrom(value: unknown, demo = false): CatalogDocument | null {
+  if (!isRecord(value) || typeof value.id !== 'string' || !DOC_ID_RE.test(value.id)) return null;
+  if (typeof value.src !== 'string') return null;
+  if (demo) {
+    if (!DEMO_DOCUMENTS.includes(value.src)) return null;
+    if (typeof value.cover !== 'string' || !DEMO_COVERS.includes(value.cover)) return null;
+  } else if (!ASSET_RE.test(value.src)) {
+    return null;
+  }
+  const titleFr = text(value.titleFr ?? '', 120);
+  const titleAr = text(value.titleAr ?? '', 120);
+  const descriptionFr = text(value.descriptionFr ?? '', 800);
+  const descriptionAr = text(value.descriptionAr ?? '', 800);
+  const cover = text(value.cover ?? '', 400);
+  const visible = flag(value.visible ?? true);
+  const allowDownload = flag(value.allowDownload ?? false);
+  if (
+    titleFr === undefined ||
+    titleAr === undefined ||
+    descriptionFr === undefined ||
+    descriptionAr === undefined ||
+    cover === undefined ||
+    (!demo && !ASSET_RE.test(cover)) ||
+    visible === undefined ||
+    allowDownload === undefined
   )
-  .max(40);
-export function catalogSettings(data: any) {
-  const p = catalogSettingsSchema.safeParse(data?.catalogSettings);
-  return p.success ? p.data : catalogSettingsSchema.parse({});
+    return null;
+  return {
+    id: value.id,
+    src: value.src,
+    titleFr,
+    titleAr,
+    descriptionFr,
+    descriptionAr,
+    cover,
+    visible,
+    allowDownload,
+  };
 }
-// Built-in demo files are accepted only by the preview renderer. Upload validation stays strict.
-const demoDocumentSchema = catalogDocumentSchema.extend({
-  src: z.enum([
-    '/demo/soralink/catalogue-fr.pdf',
-    '/demo/soralink/catalogue-ar.pdf',
-    '/demo/soralink/catalogue-v2-fr.pdf',
-    '/demo/soralink/catalogue-v2-ar.pdf',
-  ]),
-  cover: z.enum(['/soralink-pack-hero.webp', '/demo/soralink/premium/nfc.webp']),
-});
+
 export function catalogDocuments(data: any, demo = false): CatalogDocument[] {
   if (Array.isArray(data?.catalogDocuments))
     return data.catalogDocuments
-      .flatMap((v: unknown) => {
-        const normal = catalogDocumentSchema.safeParse(v);
-        const p = !normal.success && demo ? demoDocumentSchema.safeParse(v) : normal;
-        return p.success ? [p.data] : [];
+      .flatMap((value: unknown) => {
+        const document = documentFrom(value) || (demo ? documentFrom(value, true) : null);
+        return document ? [document] : [];
       })
       .slice(0, 10);
-  return assetURL.safeParse(data?.pdf).success && data.pdf
+  const legacy =
+    typeof data?.pdf === 'string' && data.pdf.length > 0 && ASSET_RE.test(data.pdf) ? data.pdf : '';
+  return legacy
     ? [
         {
           id: 'legacy-pdf',
-          src: data.pdf,
+          src: legacy,
           titleFr: '',
           titleAr: '',
           descriptionFr: '',
@@ -145,10 +202,68 @@ export function catalogDocuments(data: any, demo = false): CatalogDocument[] {
       ]
     : [];
 }
-export function catalogCategories(data: any) {
-  const p = catalogCategoriesSchema.safeParse(data?.catalogCategories);
-  return p.success ? p.data : [];
+
+function settingsFrom(value: unknown): CatalogSettings | null {
+  if (value === undefined) return { ...SETTINGS_DEFAULT };
+  if (!isRecord(value)) return null;
+  const settings: CatalogSettings = { ...SETTINGS_DEFAULT };
+  for (const key of ['enabled', 'pdf', 'products', 'whatsapp', 'showPrices'] as const) {
+    if (key in value) {
+      const parsed = flag(value[key]);
+      if (parsed === undefined) return null;
+      settings[key] = parsed;
+    }
+  }
+  if ('fulfillmentModes' in value) {
+    const modes = value.fulfillmentModes;
+    if (
+      !Array.isArray(modes) ||
+      modes.length > 3 ||
+      modes.some((mode) => !['onsite', 'takeaway', 'delivery'].includes(mode as string)) ||
+      new Set(modes).size !== modes.length
+    )
+      return null;
+    settings.fulfillmentModes = modes as CatalogSettings['fulfillmentModes'];
+  }
+  if ('layout' in value) {
+    if (!['grid', 'list'].includes(value.layout as string)) return null;
+    settings.layout = value.layout as CatalogSettings['layout'];
+  }
+  if ('accent' in value) {
+    const accent = value.accent;
+    if (!(accent === '' || (typeof accent === 'string' && /^#[0-9a-f]{6}$/i.test(accent))))
+      return null;
+    settings.accent = accent as string;
+  }
+  return settings;
 }
+
+export function catalogSettings(data: any): CatalogSettings {
+  return settingsFrom(data?.catalogSettings) ?? { ...SETTINGS_DEFAULT };
+}
+
+function categoryFrom(value: unknown): CatalogCategory | null {
+  if (!isRecord(value) || typeof value.id !== 'string' || !value.id.length || value.id.length > 80)
+    return null;
+  const nameFr = text(value.nameFr ?? '', 120);
+  const nameAr = text(value.nameAr ?? '', 120);
+  const visible = flag(value.visible ?? true);
+  if (nameFr === undefined || nameAr === undefined || visible === undefined) return null;
+  return { id: value.id, nameFr, nameAr, visible };
+}
+
+export function catalogCategories(data: any): CatalogCategory[] {
+  const value = data?.catalogCategories;
+  if (!Array.isArray(value) || value.length > 40) return [];
+  const categories: CatalogCategory[] = [];
+  for (const entry of value) {
+    const category = categoryFrom(entry);
+    if (!category) return [];
+    categories.push(category);
+  }
+  return categories;
+}
+
 export function catalogEnabled(
   data: any,
   rights: CatalogRights,
@@ -157,6 +272,7 @@ export function catalogEnabled(
   const s = catalogSettings(data);
   return rights.enabled && rights[kind] && s.enabled && s[kind];
 }
+
 export function catalogContentIssue(data: any, previous: any, rights: CatalogRights) {
   const docs = catalogDocuments(data),
     items = normalizeCatalogue(data.services);
@@ -205,6 +321,7 @@ export function catalogContentIssue(data: any, previous: any, rights: CatalogRig
     return 'Les commandes WhatsApp sont désactivées pour votre compte.';
   return '';
 }
+
 export function catalogText(
   fr: string | undefined,
   ar: string | undefined,
@@ -216,6 +333,7 @@ export function catalogText(
   if (optional && !fr && !ar) return '';
   return arabic ? 'المحتوى غير متوفر بالعربية' : 'Contenu indisponible en français';
 }
+
 export function visibleProducts(data: any) {
   const cats = catalogCategories(data);
   return (data.services || []).filter(
@@ -224,6 +342,7 @@ export function visibleProducts(data: any) {
       (!p.categoryId || cats.some((c) => c.id === p.categoryId && c.visible)),
   );
 }
+
 export function documentContentPath(profile: string, document: string) {
   return (
     '/api/catalog-documents/' + encodeURIComponent(profile) + '/' + encodeURIComponent(document)
