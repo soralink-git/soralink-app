@@ -405,6 +405,22 @@ test('offline asset remains accessible after Pages redirects .html to its canoni
   }
 });
 
+test('www host is redirected to the canonical domain', async () => {
+  const worker = load('worker.ts', {
+    ...publicDependencies,
+    'vinext/server/fetch-handler': {
+      default: { fetch: async () => new Response(null, { status: 200 }) },
+    },
+    './app/lib/notifications': { mailEnabled: () => false, mailReady: () => false },
+  }).default;
+  const response = await worker.fetch(
+    new Request('https://www.soralink.link/soraprint?lang=ar'),
+    { DB: {} },
+    {},
+  );
+  assert.equal(response.status, 301);
+  assert.equal(response.headers.get('location'), 'https://soralink.link/soraprint?lang=ar');
+});
 test('unknown or inactive public cards are answered with a real 404 while active cards keep 200', async () => {
   const expires = new Date(Date.now() + 86400000).toISOString();
   const profiles = {

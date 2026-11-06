@@ -85,6 +85,12 @@ function wantsHtml(request: Request) {
 export default {
   async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext) {
     const url = new URL(request.url);
+    // One canonical host: www is served by Pages but must not duplicate the site.
+    if (url.hostname === 'www.soralink.link') {
+      const target = new URL(request.url);
+      target.hostname = 'soralink.link';
+      return Response.redirect(target.toString(), 301);
+    }
     if (
       url.pathname.startsWith('/_next/static/') ||
       url.pathname.startsWith('/assets/') ||
