@@ -1,4 +1,4 @@
-import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { appendFile, cp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { createRequire, builtinModules } from 'node:module';
 const require = createRequire(import.meta.url);
 // Reuse the esbuild version installed by the pinned Wrangler dependency.
@@ -61,7 +61,26 @@ await writeFile(
       '/offline',
       '/og-soralink.png',
       '/demo-design.svg',
+      '/demo-nfc-qr.svg',
+      '/demo-profile-cover.svg',
+      '/soralink-pack-hero.webp',
+      '/file.svg',
+      '/globe.svg',
+      '/window.svg',
+      '/licenses/*',
     ],
   }),
+);
+// `_headers` only covers static assets; dynamic responses get the same
+// protections in worker.ts before they leave the Worker.
+await appendFile(
+  'dist/pages/_headers',
+  `/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+`,
 );
 console.log('Application Pages prête : dist/pages');

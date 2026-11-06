@@ -18,6 +18,7 @@ function load(file, dependencies = {}) {
       URLSearchParams,
       Response,
       Request,
+      Headers,
       AbortSignal,
       fetch,
       console,
@@ -30,6 +31,16 @@ function load(file, dependencies = {}) {
   );
   return module.exports;
 }
+// The Pages entry point resolves public routes before rendering so an unknown
+// card can be answered with 404. These collaborators are replaced in tests.
+const publicDependencies = {
+  './app/lib/public-address': {
+    normalizePublicName: (value) => String(value).trim().toLowerCase(),
+    publicNameError: () => null,
+  },
+  './app/lib/public-profile-lookup': { readPublicProfile: async () => null },
+  './app/lib/subscription': { active: () => false },
+};
 test('verified identity never queries or transfers profiles by email, including reused addresses', async () => {
   for (const id of ['original-owner', 'new-owner']) {
     const server = load('app/lib/server.ts', {
@@ -237,6 +248,7 @@ test('Pages dispatch waits for successful mutation and attaches work to waitUnti
       sends = 0;
     const tasks = [];
     const worker = load('worker.ts', {
+      ...publicDependencies,
       'vinext/server/fetch-handler': {
         default: {
           fetch: async () => {
@@ -367,6 +379,7 @@ test('Pages queues notifications without a provider secret; only the dispatcher 
 
 test('offline asset remains accessible after Pages redirects .html to its canonical extensionless URL', async () => {
   const worker = load('worker.ts', {
+    ...publicDependencies,
     'vinext/server/fetch-handler': {
       default: {
         fetch() {
@@ -392,10 +405,61 @@ test('offline asset remains accessible after Pages redirects .html to its canoni
   }
 });
 
+test('unknown or inactive public cards are answered with a real 404 while active cards keep 200', async () => {
+  const expires = new Date(Date.now() + 86400000).toISOString();
+  const profiles = {
+    'live-id': { id: 'live-id', state: 'active', expires },
+    'expired-id': { id: 'expired-id', state: 'active', expires: '2000-01-01T00:00:00.000Z' },
+    'suspended-id': { id: 'suspended-id', state: 'suspended', expires },
+  };
+  const worker = load('worker.ts', {
+    ...publicDependencies,
+    'vinext/server/fetch-handler': {
+      default: {
+        fetch: async () =>
+          new Response('<article>card</article>', {
+            status: 200,
+            headers: { 'Content-Type': 'text/html; charset=utf-8' },
+          }),
+      },
+    },
+    './app/lib/public-profile-lookup': {
+      readPublicProfile: async (key) => profiles[key.id || key.name] || null,
+    },
+    './app/lib/subscription': load('app/lib/subscription.ts'),
+    './app/lib/notifications': { mailEnabled: () => false, mailReady: () => false },
+  }).default;
+  const env = {
+    DB: {},
+    ASSETS: { fetch: async () => new Response('asset', { status: 200 }) },
+  };
+  const get = (path, headers = { accept: 'text/html' }) =>
+    worker.fetch(new Request('https://soralink.link' + path, { headers }), env, {});
+
+  const live = await get('/c/live-id');
+  assert.equal(live.status, 200);
+  assert.equal(await live.text(), '<article>card</article>');
+  for (const [name, value] of Object.entries({
+    'strict-transport-security': 'max-age=31536000; includeSubDomains',
+    'x-content-type-options': 'nosniff',
+    'referrer-policy': 'strict-origin-when-cross-origin',
+    'x-frame-options': 'SAMEORIGIN',
+    'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+  }))
+    assert.equal(live.headers.get(name), value, name);
+
+  assert.equal((await get('/live-id')).status, 200);
+  for (const path of ['/c/missing', '/c/expired-id', '/c/suspended-id', '/adresse-inconnue'])
+    assert.equal((await get(path)).status, 404, path);
+  // RSC navigations and static assets must keep their own status.
+  assert.equal((await get('/c/missing', { accept: 'text/html', rsc: '1' })).status, 200);
+  assert.equal((await get('/favicon.svg')).status, 200);
+});
 test('Pages dispatch uses the internal binding without copying the provider key', async () => {
   let calls = 0;
   const tasks = [];
   const worker = load('worker.ts', {
+    ...publicDependencies,
     'vinext/server/fetch-handler': {
       default: { fetch: async () => new Response(null, { status: 200 }) },
     },

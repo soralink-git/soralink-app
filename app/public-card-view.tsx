@@ -91,6 +91,7 @@ export default function PublicCardView({
             ar={ar}
             setAr={setAr}
             view={view}
+            publicHeading={view === 'public'}
             id={cardId}
             publicName={publicName}
             onMessage={setMsg}

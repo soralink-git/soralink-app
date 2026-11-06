@@ -1,5 +1,10 @@
 import LegalView from '../legal-view';
-export const metadata = { title: 'Conditions de service — SoraLink · Version pilote' };
+export const metadata = {
+  title: 'Conditions de service — SoraLink · Version pilote',
+  description:
+    'Conditions de service SoraLink : offres, paiement, renouvellement, délais et limites des cartes digitales NFC.',
+  alternates: { canonical: 'https://soralink.link/conditions' },
+};
 export default async function Page({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {
   const params = await searchParams;
   return (

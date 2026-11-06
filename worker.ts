@@ -1,5 +1,71 @@
 import handler from 'vinext/server/fetch-handler';
 import { mailEnabled, mailReady, sendPending } from './app/lib/notifications';
+import { normalizePublicName, publicNameError } from './app/lib/public-address';
+import { readPublicProfile } from './app/lib/public-profile-lookup';
+import { active } from './app/lib/subscription';
+
+const SECURITY_HEADERS: Record<string, string> = {
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+};
+
+function secure(response: Response, status?: number) {
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(SECURITY_HEADERS))
+    if (!headers.has(name)) headers.set(name, value);
+  if (status && status !== response.status) {
+    return new Response(response.body, { status, statusText: 'Not Found', headers });
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+// The public card page streams its shell before D1 resolves, so notFound()
+// alone can still be sent with a 200 on Cloudflare. Resolve the route up front
+// and correct the status before the response leaves the Worker.
+async function publicRouteExists(pathname: string): Promise<boolean | null> {
+  const card = /^\/c\/([^/]+)$/.exec(pathname);
+  if (card) {
+    let id = card[1];
+    try {
+      id = decodeURIComponent(id);
+    } catch {
+      return false;
+    }
+    const profile = await readPublicProfile({ id });
+    return !!profile && active(profile);
+  }
+  if (!/^\/[^/]+$/.test(pathname)) return null;
+  let raw = pathname.slice(1);
+  try {
+    raw = decodeURIComponent(raw);
+  } catch {
+    return null;
+  }
+  // Static files served through the Worker are not profile routes.
+  if (/\.[a-z0-9]{1,8}$/i.test(raw)) return null;
+  const name = normalizePublicName(raw);
+  // Reserved application paths are handled by their own routes.
+  if (publicNameError(name)) return null;
+  const profile = await readPublicProfile({ name });
+  return !!profile && active(profile);
+}
+
+function wantsHtml(request: Request) {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return false;
+  if (request.headers.get('rsc') === '1') return false;
+  const accept = request.headers.get('accept');
+  // No Accept header or a wildcard still means a page may be served; a client
+  // asking explicitly for JSON or another type must not hit the profile lookup.
+  return !accept || /\btext\/html\b/.test(accept) || accept.includes('*/*');
+}
+
 export default {
   async fetch(request: Request, env: Cloudflare.Env, ctx: ExecutionContext) {
     const url = new URL(request.url);
@@ -17,7 +83,16 @@ export default {
         '/demo-design.svg',
       ].includes(url.pathname)
     )
-      return env.ASSETS.fetch(request);
+      return secure(await env.ASSETS.fetch(request));
+    let routeExists: boolean | null = null;
+    if (wantsHtml(request) && env.DB) {
+      try {
+        routeExists = await publicRouteExists(url.pathname);
+      } catch {
+        // A storage error must surface as the page's own 5xx, not as a 404.
+        routeExists = null;
+      }
+    }
     const response = await handler.fetch(request, env, ctx);
     if (
       request.method === 'POST' &&
@@ -41,6 +116,10 @@ export default {
         }),
       );
     }
-    return response;
+    const notFound =
+      routeExists === false &&
+      response.status === 200 &&
+      (response.headers.get('content-type') || '').includes('text/html');
+    return secure(response, notFound ? 404 : undefined);
   },
 };

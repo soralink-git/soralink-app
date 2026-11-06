@@ -138,7 +138,7 @@
   text-transform: uppercase;
   font-weight: 700;
 }
-.card-design .card-identity h2 {
+.card-design .card-identity :is(h1, h2) {
   margin: 0;
   font-size: 26px;
   color: var(--card-fg, var(--block-fg, color-mix(in srgb, var(--accent) 65%, #0f172a)));
@@ -148,7 +148,7 @@
   text-transform: uppercase;
   overflow-wrap: anywhere;
 }
-.card-design.theme-dark .card-identity h2 {
+.card-design.theme-dark .card-identity :is(h1, h2) {
   color: var(--card-fg, var(--block-fg, #f8fafc));
 }
 .card-design .card-identity .job {
@@ -464,7 +464,7 @@
 .card-design.compact .card-content {
   padding-inline: 16px;
 }
-.card-design.compact .card-identity h2 {
+.card-design.compact .card-identity :is(h1, h2) {
   font-size: calc(var(--card-text-size) + 8px);
 }
 .card-design.compact .public-details .panel,
@@ -490,8 +490,8 @@
 .card-design.compact .contact-label {
   display: none;
 }
-.card-design[dir='rtl'] .card-identity h2,
-[dir='rtl'] .card-design .card-identity h2 {
+.card-design[dir='rtl'] .card-identity :is(h1, h2),
+[dir='rtl'] .card-design .card-identity :is(h1, h2) {
   letter-spacing: 0;
 }
 
