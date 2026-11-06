@@ -212,6 +212,27 @@ test('transient failures are retried with the same idempotency key; permanent fa
     f.sqlite.close();
   }
 });
+test('a network error is retried later and never loses the queued mail', async () => {
+  const f = fixture();
+  try {
+    f.add('offline');
+    await notifications.sendPending(f.env, async () => {
+      throw new TypeError('fetch failed');
+    });
+    assert.equal(f.row('offline').state, 'pending');
+    assert.equal(f.row('offline').attempts, 1);
+    assert.equal(f.row('offline').error, 'network_error');
+    assert.ok(f.row('offline').next_attempt > new Date().toISOString());
+    f.sqlite.prepare("UPDATE notifications SET next_attempt='2000-01-01' WHERE id='offline'").run();
+    await notifications.sendPending(f.env, async (_, options) => {
+      assert.equal(options.headers['Idempotency-Key'], 'offline');
+      return Response.json({ id: 'provider-offline' });
+    });
+    assert.equal(f.row('offline').state, 'accepted');
+  } finally {
+    f.sqlite.close();
+  }
+});
 test('disabled mail does not send; old mail expires; post-response batches are bounded', async () => {
   const f = fixture();
   try {
