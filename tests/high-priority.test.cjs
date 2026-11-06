@@ -485,6 +485,16 @@ test('unknown or inactive public cards are answered with a real 404 while active
     'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
   }))
     assert.equal(live.headers.get(name), value, name);
+  const csp = live.headers.get('content-security-policy-report-only') || '';
+  for (const directive of [
+    "default-src 'self'",
+    "frame-src 'self' https://www.youtube-nocookie.com",
+    "media-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "frame-ancestors 'self'",
+  ])
+    assert(csp.includes(directive), directive);
 
   assert.equal((await get('/live-id')).status, 200);
   for (const path of ['/c/missing', '/c/expired-id', '/c/suspended-id', '/adresse-inconnue'])

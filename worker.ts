@@ -20,10 +20,14 @@ const CSP_REPORT_ONLY = [
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self' data:",
   "img-src 'self' data: blob:",
+  "media-src 'self'",
+  "frame-src 'self' https://www.youtube-nocookie.com",
+  "worker-src 'self' blob:",
   "connect-src 'self' https://*.supabase.co https://static.cloudflareinsights.com",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",
+  "object-src 'none'",
 ].join('; ');
 
 function secure(response: Response, status?: number) {
