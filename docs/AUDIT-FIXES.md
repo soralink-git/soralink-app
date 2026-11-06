@@ -29,7 +29,7 @@ Le bouton WhatsApp prépare un message ; il ne l’envoie pas automatiquement.
 | 3     | Langue et offre conservées, assistance historique corrigée                              | Liens validés et rendu FR/AR ; messages traduits                                |
 | 3     | Accès légal discret et dialogue accessible au clavier                                   | Rendu serveur ; gestion du focus et d’Échap implémentée                         |
 | 4     | Vrais statuts 404 pour cartes absentes/inactives                                        | Worker compilé isolé                                                            |
-| 4     | Index demandes/commandes, métadonnées Drizzle cohérentes                                | Génération sans différence résiduelle ; migrations locales                      |
+| 4     | Index demandes/commandes, métadonnées Drizzle cohérentes                                | Index ajoutés ; journal Drizzle toujours à régénérer (0008→0016)                |
 | 4     | CI sur PR/main, audit hebdomadaire, logs Worker                                         | Workflows fournis ; aucun réglage GitHub modifié                                |
 | 4     | Correctifs des dépendances Next/React/RSC/Vite et transitives                           | Compilation et tests rejoués ; audit documenté ci-dessous                       |
 

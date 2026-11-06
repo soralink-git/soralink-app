@@ -22,7 +22,7 @@ articles/documents référencés, demandes, commandes, métriques et justificati
 Il exporte la base SQL et les objets R2 paginés, écrit une copie temporaire privée,
 contrôle les empreintes SHA-256 et restaure les données dans les autres bindings.
 
-Les contrôles comparent les 14 tables, leurs lignes, index et triggers ; ils vérifient
+Les contrôles comparent les 16 tables, leurs lignes, index et triggers ; ils vérifient
 les contenus et métadonnées R2, le rejet d’une copie corrompue, l’unicité du propriétaire,
 les clés étrangères et le fonctionnement du trigger des médias après restauration.
 Les données temporaires sont supprimées à la fin. La CI rejoue cette répétition.
