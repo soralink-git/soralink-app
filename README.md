@@ -23,6 +23,22 @@ Activer la double authentification Supabase sur ce compte (Authentication → Us
 compte administrateur → MFA, ou réglage MFA du projet), puis vérifier que la session
 admin reste utilisable. L’interface n’affiche jamais cette adresse.
 
+## Exploitation
+
+- **Santé** : `GET /api/health` renvoie `200 {"status":"ok","database":"ok"}` ou `503` si
+  D1 ne répond pas. Le workflow `.github/workflows/uptime.yml` l’interroge toutes les
+  15 minutes, vérifie l’accueil, ouvre un ticket « Incident » et le referme au retour à
+  la normale.
+- **Sauvegarde** : `.github/workflows/backup.yml` (lundi 03:00 UTC) exécute
+  `scripts/backup-d1.mjs` — export D1, chiffrement AES-256-GCM, dépôt dans
+  `soralink-backups/backups/soralink-db/`. Secrets requis : `CLOUDFLARE_API_TOKEN`,
+  `CLOUDFLARE_ACCOUNT_ID`, `BACKUP_ENCRYPTION_KEY`. Restauration :
+  `scripts/restore-backup.mjs`, procédure et répétition datée dans
+  [docs/RECOVERY-RUNBOOK.md](docs/RECOVERY-RUNBOOK.md).
+- **Alerting Cloudflare** (erreurs Workers/Pages) : à créer dans le dashboard
+  (Notifications → Add policy → Workers / Pages), le jeton d’automatisation n’ayant pas
+  les droits `Alerting`. Le workflow d’uptime couvre la disponibilité.
+
 ## Corrections de l’audit
 
 Les étapes et prérequis de mise en service sont détaillés dans

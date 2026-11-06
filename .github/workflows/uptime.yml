@@ -1,0 +1,58 @@
+name: Uptime
+
+on:
+  schedule:
+    # Toutes les 15 minutes.
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Santé applicative
+        id: health
+        run: |
+          set +e
+          body=$(curl -sS --max-time 20 -w '\n%{http_code}' https://soralink.link/api/health)
+          code=$(printf '%s' "$body" | tail -n1)
+          payload=$(printf '%s' "$body" | sed '$d')
+          echo "code=$code"
+          printf '%s\n' "$payload"
+          if [ "$code" != "200" ]; then echo "failure=1" >> "$GITHUB_OUTPUT"; fi
+      - name: Page d'accueil
+        id: home
+        if: steps.health.outputs.failure != '1'
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 https://soralink.link/)
+          echo "code=$code"
+          if [ "$code" != "200" ]; then echo "failure=1" >> "$GITHUB_OUTPUT"; fi
+      - name: Ouvrir ou mettre à jour l'incident
+        if: steps.health.outputs.failure == '1' || steps.home.outputs.failure == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          stamp=$(date -u +%FT%TZ)
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search 'Incident soralink.link in:title' --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Nouvel échec détecté le $stamp (santé=${{ steps.health.outputs.code || 'n/a' }}, accueil=${{ steps.home.outputs.failure || 'ok' }})."
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" \
+              --title "Incident soralink.link — $stamp" \
+              --body "La vérification automatique a échoué le $stamp. Vérifier /api/health, les logs Pages et le dernier déploiement."
+          fi
+      - name: Clore l'incident après rétablissement
+        if: steps.health.outputs.failure != '1' && (steps.home.outputs.failure != '1')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search 'Incident soralink.link in:title' --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Service rétabli le $(date -u +%FT%TZ)."
+            gh issue close "$existing" --repo "$GITHUB_REPOSITORY"
+          fi
