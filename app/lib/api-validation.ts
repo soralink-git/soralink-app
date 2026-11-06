@@ -18,6 +18,7 @@ import { promotionError } from './promotions';
 import { recordedVideoUrl, mediaError } from './content-media';
 import { sectionKeys } from './personalization';
 import { whatsappNumber } from './whatsapp-notification';
+import { isAllowedMedia, MEDIA_FIELDS } from './media-url';
 
 const text = (max: number) => z.string().max(max);
 const formText = (max: number) => z.preprocess((v) => (v == null ? '' : v), text(max)).default('');
@@ -252,6 +253,17 @@ export const profileDataSchema = profileObjectSchema.superRefine((d, ctx) => {
   ];
   for (const error of errors)
     if (error) ctx.addIssue({ code: z.ZodIssueCode.custom, message: error });
+  // Media fields only accept an uploaded key; an external URL would be injected
+  // into <img>, <iframe> or background-image on the public card.
+  for (const field of MEDIA_FIELDS) {
+    const value = (d as Record<string, unknown>)[field];
+    if (typeof value === 'string' && value !== '' && !isAllowedMedia(value))
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [field],
+        message: 'Fichier invalide : importez-le depuis votre espace.',
+      });
+  }
 });
 const requestObject = z.object({
   action: z.literal('request'),
@@ -269,6 +281,7 @@ const requestObject = z.object({
   shareCard: z.boolean().default(false),
   consent: z.boolean().optional(),
   trap: formText(0),
+  turnstileToken: z.string().max(2048).optional(),
 });
 function requestRules(b: z.infer<typeof requestObject>, ctx: z.RefinementCtx, resolved = false) {
   const issue = (message: string) => ctx.addIssue({ code: z.ZodIssueCode.custom, message });
@@ -408,7 +421,6 @@ export const authActionSchema = z
     z.object({ action: z.literal('resend'), email: authEmail }),
     z.object({ action: z.literal('logout') }),
     z.object({ action: z.literal('activity') }),
-    z.object({ action: z.literal('legacy') }),
   ])
   .and(
     z.object({

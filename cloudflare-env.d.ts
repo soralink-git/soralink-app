@@ -10,6 +10,8 @@ declare namespace Cloudflare {
     SUPABASE_URL?: string;
     SUPABASE_PUBLISHABLE_KEY?: string;
     BUCKET?: R2Bucket;
+    TURNSTILE_SECRET_KEY?: string;
+    TURNSTILE_SITE_KEY?: string;
   }
 }
 

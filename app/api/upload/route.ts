@@ -24,7 +24,10 @@ export async function POST(req: Request) {
     if (!u) return Response.json({ error: 'Connexion requise' }, { status: 401 });
     if (req.headers.get('origin') !== new URL(req.url).origin)
       return new Response(null, { status: 403 });
-    const length = Number(req.headers.get('content-length'));
+    const declaredLength = req.headers.get('content-length');
+    const length = Number(declaredLength);
+    if (declaredLength === null || !Number.isFinite(length) || length < 0)
+      return Response.json({ error: 'Taille du fichier manquante ou invalide.' }, { status: 411 });
     if (length > MAX_VIDEO_BYTES + 1024 * 1024)
       return Response.json({ error: 'Fichier trop volumineux' }, { status: 413 });
     let form: FormData;
@@ -244,7 +247,7 @@ export async function GET(req: Request) {
       'Content-Type': f.httpMetadata?.contentType || 'application/octet-stream',
       'X-Content-Type-Options': 'nosniff',
       'Accept-Ranges': 'bytes',
-      'Cache-Control': visible ? 'public, max-age=86400, must-revalidate' : 'no-store',
+      'Cache-Control': visible ? 'public, max-age=3600' : 'no-store',
       'Content-Length': String(range?.length ?? f.size),
     });
     if (url.searchParams.get('download') === '1')

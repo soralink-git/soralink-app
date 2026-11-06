@@ -13,6 +13,7 @@ import { normalizeAppearance } from './personalization';
 import { normalizeCatalogue } from './catalogue';
 import { activePromotions } from './promotions';
 import { normalizeSchedule } from './schedule';
+import { isAllowedMedia } from './media-url';
 const textFields = [
   'name',
   'job',
@@ -52,6 +53,9 @@ export function publicCardData(
   const d = normalizeAppearance(saved),
     out: Record<string, any> = {};
   for (const key of textFields) out[key] = typeof d[key] === 'string' ? d[key] : '';
+  // Neutralise les anciennes valeurs externes déjà enregistrées.
+  for (const key of ['avatar', 'cover', 'backgroundPhoto', 'pdf'])
+    if (!isAllowedMedia(out[key])) out[key] = '';
   for (const key of [
     'fondColor',
     'backgroundOpacity',

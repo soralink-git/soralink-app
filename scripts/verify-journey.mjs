@@ -125,8 +125,13 @@ async function request(
 ) {
   if (body instanceof FormData) {
     const encoded = new Request(base + endpoint, { method: 'POST', body });
-    headers = { ...headers, 'Content-Type': encoded.headers.get('content-type') };
+    headers = {
+      ...headers,
+      'Content-Type': encoded.headers.get('content-type'),
+    };
     body = await encoded.arrayBuffer();
+    // A real browser sends the multipart length; the worker rejects a missing one.
+    headers['Content-Length'] = String(body.byteLength);
   }
   const response = await mf.dispatchFetch(base + endpoint, {
     method,

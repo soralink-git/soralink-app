@@ -7,21 +7,25 @@ import {
   index,
   primaryKey,
 } from 'drizzle-orm/sqlite-core';
-export const profiles = sqliteTable('profiles', {
-  id: text('id').primaryKey(),
-  owner: text('owner').notNull().unique(),
-  data: text('data').notNull(),
-  published: integer('published').notNull().default(0),
-  updated: text('updated').notNull(),
-  email: text('email').notNull().default(''),
-  state: text('state').notNull().default('trial'),
-  plan: text('plan').notNull().default('Identite'),
-  expires: text('expires'),
-  proEnabled: integer('pro_enabled').notNull().default(0),
-  catalogRights: text('catalog_rights'),
-  clientAccess: text('client_access'),
-  cardLimit: integer('card_limit').notNull().default(1),
-});
+export const profiles = sqliteTable(
+  'profiles',
+  {
+    id: text('id').primaryKey(),
+    owner: text('owner').notNull().unique(),
+    data: text('data').notNull(),
+    published: integer('published').notNull().default(0),
+    updated: text('updated').notNull(),
+    email: text('email').notNull().default(''),
+    state: text('state').notNull().default('trial'),
+    plan: text('plan').notNull().default('Identite'),
+    expires: text('expires'),
+    proEnabled: integer('pro_enabled').notNull().default(0),
+    catalogRights: text('catalog_rights'),
+    clientAccess: text('client_access'),
+    cardLimit: integer('card_limit').notNull().default(1),
+  },
+  (t) => [index('profiles_email').on(t.email)],
+);
 export const secondaryCards = sqliteTable(
   'secondary_cards',
   {

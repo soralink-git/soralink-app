@@ -22,11 +22,7 @@ export async function GET(req: Request) {
   try {
     const { user, admin } = await identity();
     if (!user) return json({ error: 'Connexion requise' }, 401);
-    if (!admin)
-      return json(
-        { error: 'Connectez-vous avec le compte SoraLink autorisé pour l’administration.' },
-        403,
-      );
+    if (!admin) return json({ error: 'Accès refusé' }, 403);
     const query = validateInput(
       adminQuerySchema,
       Object.fromEntries(new URL(req.url).searchParams),

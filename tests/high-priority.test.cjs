@@ -212,6 +212,27 @@ test('transient failures are retried with the same idempotency key; permanent fa
     f.sqlite.close();
   }
 });
+test('a network error is retried later and never loses the queued mail', async () => {
+  const f = fixture();
+  try {
+    f.add('offline');
+    await notifications.sendPending(f.env, async () => {
+      throw new TypeError('fetch failed');
+    });
+    assert.equal(f.row('offline').state, 'pending');
+    assert.equal(f.row('offline').attempts, 1);
+    assert.equal(f.row('offline').error, 'network_error');
+    assert.ok(f.row('offline').next_attempt > new Date().toISOString());
+    f.sqlite.prepare("UPDATE notifications SET next_attempt='2000-01-01' WHERE id='offline'").run();
+    await notifications.sendPending(f.env, async (_, options) => {
+      assert.equal(options.headers['Idempotency-Key'], 'offline');
+      return Response.json({ id: 'provider-offline' });
+    });
+    assert.equal(f.row('offline').state, 'accepted');
+  } finally {
+    f.sqlite.close();
+  }
+});
 test('disabled mail does not send; old mail expires; post-response batches are bounded', async () => {
   const f = fixture();
   try {
@@ -464,6 +485,16 @@ test('unknown or inactive public cards are answered with a real 404 while active
     'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
   }))
     assert.equal(live.headers.get(name), value, name);
+  const csp = live.headers.get('content-security-policy-report-only') || '';
+  for (const directive of [
+    "default-src 'self'",
+    "frame-src 'self' https://www.youtube-nocookie.com",
+    "media-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "frame-ancestors 'self'",
+  ])
+    assert(csp.includes(directive), directive);
 
   assert.equal((await get('/live-id')).status, 200);
   for (const path of ['/c/missing', '/c/expired-id', '/c/suspended-id', '/adresse-inconnue'])

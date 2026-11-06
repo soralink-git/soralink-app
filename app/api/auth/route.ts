@@ -9,8 +9,6 @@ import {
   revokeOtherSessions,
 } from '../../lib/idle-session';
 import { json, identity, isAdministrator } from '../../lib/server';
-import { cookies } from 'next/headers';
-import { getChatGPTUser } from '../../chatgpt-auth';
 function failed(error: any, action: string) {
   const result = authFailure(error);
   console.warn('soralink_auth_error', {
@@ -45,19 +43,6 @@ export async function POST(req: Request) {
         ? json({ expiresAt: session.expires })
         : json({ error: 'Session expirée', errorAr: 'سالات مدة الدخول' }, 401);
     }
-    if (b.action === 'legacy') {
-      const user = await getChatGPTUser();
-      if (!user) return json({ error: 'Connexion ChatGPT requise' }, 401);
-      (await cookies()).set('soratap_legacy', '1', {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 86400 * 7,
-      });
-      await startAppSession(user.userId);
-      return json({ ok: true });
-    }
     if (b.action === 'logout') await endAppSession();
     const s = await authClient();
     const base = new URL(req.url).origin;
@@ -65,7 +50,6 @@ export async function POST(req: Request) {
     callback.searchParams.set('lang', b.lang);
     if (b.offer) callback.searchParams.set('offer', b.offer);
     if (b.action === 'logout') {
-      (await cookies()).delete('soratap_legacy');
       const { error } = await s.auth.signOut({ scope: 'local' });
       if (error) return json({ error: 'Déconnexion impossible. Réessayez.' }, 400);
       return json({ ok: true });
@@ -138,7 +122,6 @@ export async function POST(req: Request) {
         await s.auth.signOut({ scope: 'local' });
         return json({ error: 'Confirmez votre e-mail avant de vous connecter.' }, 403);
       }
-      (await cookies()).delete('soratap_legacy');
       await startAppSession('sb:' + data.user.id);
       return json({
         ok: true,

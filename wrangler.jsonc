@@ -4,4 +4,20 @@
   "observability": { "enabled": true, "head_sampling_rate": 1 },
   "compatibility_date": "2026-05-15",
   "compatibility_flags": ["nodejs_compat"],
+  // Production : les bindings et variables sont configurés dans le projet
+  // Cloudflare Pages (Production et Preview). Ce fichier sert à `vinext build`
+  // et au développement local ; décommenter avec les identifiants réels pour
+  // `wrangler dev` / `wrangler deploy`.
+  //
+  // "d1_databases": [
+  //   { "binding": "DB", "database_name": "soralink-db", "database_id": "<identifiant D1>" }
+  // ],
+  // "r2_buckets": [{ "binding": "BUCKET", "bucket_name": "soralink-files" }],
+  // "vars": {
+  //   "PUBLIC_SITE_URL": "https://soralink.link",
+  //   "SORATAP_ADMIN_EMAIL": "<adresse admin>",
+  //   "EMAIL_FROM": "SoraLink <notifications@soralink.link>",
+  //   "NOTIFICATIONS_ENABLED": "true",
+  //   "TURNSTILE_SITE_KEY": "<clé publique Turnstile, optionnelle>"
+  // }
 }

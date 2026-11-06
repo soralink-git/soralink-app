@@ -23,6 +23,40 @@ export default function PublicRequestModal({
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr);
   const dialog = useRef<HTMLDivElement>(null);
+  const turnstileRef = useRef<HTMLDivElement>(null);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileSiteKey =
+    typeof window === 'undefined' ? '' : (window as any).__TURNSTILE_SITE_KEY__ || '';
+  useEffect(() => {
+    if (!turnstileSiteKey || !turnstileRef.current) return;
+    let cancelled = false;
+    const render = () => {
+      const turnstile = (window as any).turnstile;
+      if (cancelled || !turnstile || !turnstileRef.current) return;
+      turnstile.render(turnstileRef.current, {
+        sitekey: turnstileSiteKey,
+        theme: 'auto',
+        callback: (token: string) => setTurnstileToken(token),
+        'expired-callback': () => setTurnstileToken(''),
+        'error-callback': () => setTurnstileToken(''),
+      });
+    };
+    if ((window as any).turnstile) {
+      render();
+      return () => {
+        cancelled = true;
+      };
+    }
+    const script = document.createElement('script');
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    script.async = true;
+    script.onload = render;
+    document.head.appendChild(script);
+    return () => {
+      cancelled = true;
+      script.remove();
+    };
+  }, [turnstileSiteKey]);
   const [formError, setFormError] = useState('');
   const [busy, setBusy] = useState(false),
     [date, setDate] = useState(moroccoNow().slice(0, 10)),
@@ -204,6 +238,7 @@ export default function PublicRequestModal({
                   : undefined,
                 slot: f.get('slot'),
                 trap: f.get('company'),
+                turnstileToken: turnstileToken || undefined,
                 shareCard: modal === 'contact' && useMyCard,
                 consent: modal === 'contact' ? f.get('consent') === 'on' : undefined,
               });
@@ -440,6 +475,13 @@ export default function PublicRequestModal({
             </label>
           )}
           <input className="honeypot" name="company" tabIndex={-1} autoComplete="off" />
+          {turnstileSiteKey && (
+            <div
+              ref={turnstileRef}
+              className="turnstile-slot"
+              aria-label={t('Vérification anti-robot', 'التحقق من أنك ماشي روبوت')}
+            />
+          )}
           <p className="hint">
             {t(
               'Renseignez uniquement les informations nécessaires. Votre demande est visible par ce professionnel.',
@@ -455,6 +497,7 @@ export default function PublicRequestModal({
             className="primary full"
             disabled={
               busy ||
+              (!!turnstileSiteKey && !turnstileToken) ||
               (modal === 'contact' && useMyCard && !myContactCard) ||
               (modal === 'rdv' && (slotsBusy || !slots.length))
             }
