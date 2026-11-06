@@ -13,6 +13,13 @@ Détails et limites dans [docs/MIGRATIONS.md](docs/MIGRATIONS.md).
 
 Le code ne contient ni les comptes clients, ni les données de la base de l’aperçu, ni les fichiers déposés par les clients. Ces données nécessitent une migration séparée.
 
+## Sécurité du compte administrateur
+
+L’accès `/admin` est autorisé uniquement pour l’adresse vérifiée `SORATAP_ADMIN_EMAIL`.
+Activer la double authentification Supabase sur ce compte (Authentication → Users →
+compte administrateur → MFA, ou réglage MFA du projet), puis vérifier que la session
+admin reste utilisable. L’interface n’affiche jamais cette adresse.
+
 ## Corrections de l’audit
 
 Les étapes et prérequis de mise en service sont détaillés dans
