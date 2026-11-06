@@ -27,10 +27,7 @@ export async function POST(req: Request) {
     const declaredLength = req.headers.get('content-length');
     const length = Number(declaredLength);
     if (declaredLength === null || !Number.isFinite(length) || length < 0)
-      return Response.json(
-        { error: 'Taille du fichier manquante ou invalide.' },
-        { status: 411 },
-      );
+      return Response.json({ error: 'Taille du fichier manquante ou invalide.' }, { status: 411 });
     if (length > MAX_VIDEO_BYTES + 1024 * 1024)
       return Response.json({ error: 'Fichier trop volumineux' }, { status: 413 });
     let form: FormData;
