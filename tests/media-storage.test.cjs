@@ -8,6 +8,13 @@ const ts = require('typescript');
 const { Miniflare } = createRequire(require.resolve('wrangler'))('miniflare');
 const migration = fs.readFileSync(path.resolve('drizzle/0004_profile_media.sql'), 'utf8');
 const statements = migration.split('--> statement-breakpoint').map((s) => s.trim());
+const secondaryMigration = fs.readFileSync(
+  path.resolve('drizzle/0015_secondary_media.sql'),
+  'utf8',
+);
+const secondaryStatements = secondaryMigration
+  .split('--> statement-breakpoint')
+  .map((s) => s.trim());
 const A = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 const B = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 const C = 'cccccccc-cccc-cccc-cccc-cccccccccccc';
@@ -30,8 +37,12 @@ before(async () => {
       'CREATE TABLE media_assets(key TEXT PRIMARY KEY,owner TEXT NOT NULL,bytes INTEGER NOT NULL,state TEXT NOT NULL,created TEXT NOT NULL)',
     ),
     db.prepare('CREATE INDEX media_owner_state ON media_assets(owner,state)'),
+    db.prepare(
+      'CREATE TABLE secondary_cards(id TEXT PRIMARY KEY,owner TEXT NOT NULL,data TEXT NOT NULL,published INTEGER NOT NULL DEFAULT 0,updated TEXT NOT NULL,created TEXT NOT NULL)',
+    ),
   ]);
   await db.batch(statements.map((sql) => db.prepare(sql)));
+  await db.batch(secondaryStatements.map((sql) => db.prepare(sql)));
   const module = { exports: {} };
   vm.runInNewContext(
     ts.transpileModule(fs.readFileSync('app/lib/media-storage.ts', 'utf8'), {
@@ -65,7 +76,11 @@ before(async () => {
 beforeEach(async () => {
   deleted = [];
   failDelete = false;
-  await db.batch([db.prepare('DELETE FROM profiles'), db.prepare('DELETE FROM media_assets')]);
+  await db.batch([
+    db.prepare('DELETE FROM profiles'),
+    db.prepare('DELETE FROM media_assets'),
+    db.prepare('DELETE FROM secondary_cards'),
+  ]);
 });
 after(async () => {
   await mf?.dispose();
@@ -87,6 +102,22 @@ async function keys(id = 'card') {
   return (
     await db
       .prepare('SELECT media_key FROM profile_media WHERE profile_id=? ORDER BY media_key')
+      .bind(id)
+      .all()
+  ).results.map((r) => r.media_key);
+}
+async function secondaryCard(id = 'second', owner = 'owner', data = {}) {
+  await db
+    .prepare(
+      'INSERT INTO secondary_cards(id,owner,data,published,updated,created) VALUES(?,?,?,?,?,?)',
+    )
+    .bind(id, owner, JSON.stringify(data), 1, 'old', '2020-01-01T00:00:00.000Z')
+    .run();
+}
+async function secondaryKeys(id = 'second') {
+  return (
+    await db
+      .prepare('SELECT media_key FROM secondary_card_media WHERE card_id=? ORDER BY media_key')
       .bind(id)
       .all()
   ).results.map((r) => r.media_key);
@@ -125,6 +156,33 @@ test('cleanup preserves referenced files and recent uploads, deletes only old un
   assert.deepEqual(deleted, [B]);
   assert.equal(await state(A), 'ready');
   assert.equal(await state(C), 'pending');
+});
+test('media referenced only by a secondary card survives cleanup', async () => {
+  await asset(A);
+  await secondaryCard('second', 'owner', { photos: [url(A)] });
+  assert.deepEqual(await secondaryKeys(), [A]);
+  assert.equal(await media.cleanupMedia('owner'), true);
+  assert.deepEqual(deleted, []);
+  assert.equal(await state(A), 'ready');
+});
+test('removing a secondary-card reference releases its files to cleanup', async () => {
+  await asset(A);
+  await secondaryCard('second', 'owner', { photos: [url(A)] });
+  await db
+    .prepare('UPDATE secondary_cards SET data=? WHERE id=?')
+    .bind(JSON.stringify({ photos: [] }), 'second')
+    .run();
+  assert.deepEqual(await secondaryKeys(), []);
+  assert.equal(await media.cleanupMedia('owner'), true);
+  assert.deepEqual(deleted, [A]);
+});
+test('deleting a secondary card cascades its media references', async () => {
+  await asset(A);
+  await secondaryCard('second', 'owner', { avatar: url(A) });
+  await db.prepare('DELETE FROM secondary_cards WHERE id=?').bind('second').run();
+  assert.deepEqual(await secondaryKeys(), []);
+  await media.cleanupMedia('owner');
+  assert.deepEqual(deleted, [A]);
 });
 test('save atomically updates references and handles D1 trigger write counts', async () => {
   await asset(A);

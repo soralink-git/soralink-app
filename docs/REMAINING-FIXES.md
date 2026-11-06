@@ -65,7 +65,8 @@ les clients mis à jour utilisent en plus les métadonnées de pagination.
   avait été vérifié. Ce lot ne lit ni ne modifie les médias de production.
 - Recette visuelle sur Android/iPhone, partage natif, vCard et installation PWA à effectuer
   sur appareils réels. Les vérifications de rendu et d’agent utilisateur ne la remplacent pas.
-- Vérification effective du SMTP Supabase, de MFA et de la protection de branche :
-  à faire avec les accès d’administration appropriés.
+- Vérification effective du SMTP Supabase et de MFA : à faire avec les accès d’administration
+  appropriés. La protection de branche `main` a été vérifiée le 6 novembre 2026 (check `verify`
+  obligatoire, force-push et suppression interdits, administrateurs soumis à la règle).
 - Nettoyage automatique des imports abandonnés sans visite du compte : nécessite un Worker
   d’entretien configuré et une politique de conservation validée avant activation en production.

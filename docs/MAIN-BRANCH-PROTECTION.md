@@ -1,5 +1,10 @@
 # Protection de main — configuration préparée
 
+> **Mise à jour du 6 novembre 2026** : la protection est désormais vérifiée avec un accès
+> administrateur. `GET /repos/soralink-git/soralink-app/branches/main/protection` renvoie
+> `required_status_checks: ["verify"]`, `enforce_admins: true`, force-push et suppression
+> interdits. Le reste de ce document conserve l'historique de la préparation.
+
 ## Limite d’accès constatée
 
 Le 24 octobre 2026, la lecture des rulesets retourne une liste vide. La lecture de

@@ -14,7 +14,7 @@
     },
   ],
   "vars": {
-    "NOTIFICATIONS_ENABLED": "false",
+    "NOTIFICATIONS_ENABLED": "true",
     "PUBLIC_SITE_URL": "https://soralink.link",
     "EMAIL_FROM": "SoraLink <notifications@soralink.link>",
   },

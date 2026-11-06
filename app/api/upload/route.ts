@@ -64,6 +64,8 @@ export async function POST(req: Request) {
         { error: 'Profil introuvable', errorAr: 'ما لقيناش الكارط.' },
         { status: 404 },
       );
+    // An account without a card can still prepare an avatar, but with a small quota
+    // so the 400 MB allowance cannot be used before any offer is chosen.
     const owner = profileId !== null ? String(profile!.owner) : u.userId;
     if (profile && !active(profile))
       return Response.json(
@@ -73,8 +75,22 @@ export async function POST(req: Request) {
         },
         { status: 403 },
       );
-    const rights = catalogRights(profile);
+    const baseRights = catalogRights(profile);
+    const rights =
+      profile || admin
+        ? baseRights
+        : {
+            ...baseRights,
+            enabled: false,
+            products: false,
+            pdf: false,
+            storageMB: 20,
+            maxFiles: 5,
+          };
     const purpose = form.get('purpose');
+    const allowedPurposes = ['catalog-image', 'catalog-offer', 'catalog-cover', 'catalog-pdf'];
+    if (purpose !== null && (typeof purpose !== 'string' || !allowedPurposes.includes(purpose)))
+      return Response.json({ error: 'Type d’import inconnu.' }, { status: 400 });
     if (
       (purpose === 'catalog-image' && (!rights.enabled || !rights.products)) ||
       (purpose === 'catalog-offer' && !rights.enabled) ||
@@ -140,8 +156,7 @@ export async function GET(req: Request) {
         .prepare('SELECT * FROM profiles WHERE owner=?')
         .bind(user.userId)
         .first();
-      await adoptLegacy(user.userId, p);
-      await cleanupMedia(user.userId);
+      // A GET must not mutate storage: legacy adoption and cleanup run on upload or save.
       return Response.json(await storageUsage(user.userId, catalogRights(p)), {
         headers: { 'Cache-Control': 'no-store' },
       });
@@ -154,38 +169,54 @@ export async function GET(req: Request) {
       .first();
     if (asset && asset.state !== 'ready')
       return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store' } });
-    const references = await db()
-      .prepare(
-        'SELECT p.* FROM profiles p JOIN profile_media m ON m.profile_id=p.id WHERE m.media_key=? AND p.published=1',
-      )
-      .bind(key)
-      .all();
-    const visible = references.results.some(
-      (p: any) =>
-        active(p) &&
-        mediaKeys(
-          publicCardData(JSON.parse(p.data), !!p.pro_enabled, catalogRights(p), capabilities(p)),
-        ).includes(key),
-    );
+    const [primaryRefs, secondaryRefs] = await Promise.all([
+      db()
+        .prepare(
+          'SELECT p.* FROM profiles p JOIN profile_media m ON m.profile_id=p.id WHERE m.media_key=? AND p.published=1',
+        )
+        .bind(key)
+        .all(),
+      db()
+        .prepare(
+          'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner JOIN secondary_card_media m ON m.card_id=s.id WHERE m.media_key=? AND s.published=1',
+        )
+        .bind(key)
+        .all(),
+    ]);
+    const references = [...primaryRefs.results, ...secondaryRefs.results];
+    const exposes = (row: any) =>
+      active(row) &&
+      mediaKeys(
+        publicCardData(
+          JSON.parse(row.data),
+          !!row.pro_enabled,
+          catalogRights(row),
+          capabilities(row),
+        ),
+      ).includes(key);
+    const visible = references.some(exposes);
     if (!visible) {
       const { user, admin } = await identity();
-      const linked: any = user
-        ? await db()
-            .prepare(
-              'SELECT p.data FROM profiles p JOIN profile_media m ON m.profile_id=p.id WHERE m.media_key=? AND p.owner=?',
-            )
-            .bind(key, user.userId)
-            .first()
-        : null;
+      let linked: any = null;
+      if (user) {
+        linked = await db()
+          .prepare(
+            'SELECT p.data FROM profiles p JOIN profile_media m ON m.profile_id=p.id WHERE m.media_key=? AND p.owner=? UNION ALL SELECT s.data FROM secondary_cards s JOIN secondary_card_media m ON m.card_id=s.id WHERE m.media_key=? AND s.owner=?',
+          )
+          .bind(key, user.userId, key, user.userId)
+          .all();
+      }
       const owned =
         user &&
         (asset?.owner === user.userId ||
-          (linked && mediaKeys(JSON.parse(linked.data)).includes(key)));
+          (linked?.results || []).some((row: any) =>
+            mediaKeys(JSON.parse(row.data)).includes(key),
+          ));
       if (!owned && !admin)
         return new Response(null, { status: 404, headers: { 'Cache-Control': 'no-store' } });
     }
     if (url.searchParams.get('download') === '1') {
-      const allowed = references.results.some(
+      const allowed = references.some(
         (p: any) =>
           active(p) &&
           catalogDocuments(
@@ -213,7 +244,7 @@ export async function GET(req: Request) {
       'Content-Type': f.httpMetadata?.contentType || 'application/octet-stream',
       'X-Content-Type-Options': 'nosniff',
       'Accept-Ranges': 'bytes',
-      'Cache-Control': visible ? 'public, max-age=300, must-revalidate' : 'no-store',
+      'Cache-Control': visible ? 'public, max-age=86400, must-revalidate' : 'no-store',
       'Content-Length': String(range?.length ?? f.size),
     });
     if (url.searchParams.get('download') === '1')

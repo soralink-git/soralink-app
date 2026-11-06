@@ -3,7 +3,7 @@
 ## Résultat
 
 Le nettoyage et le découpage sont réalisés sans changement des forfaits, des droits,
-des URLs publiques ni des données clients. La compilation, les 294 tests existants,
+des URLs publiques ni des données clients. La compilation, les 311 tests existants,
 le contrôle du build public, les parcours du Worker et la nouvelle répétition de
 récupération réussissent. L’audit ne remonte aucune vulnérabilité connue.
 
@@ -72,7 +72,7 @@ technique ni validé une refonte complète de l’éditeur.
 
 - Production, lecture seule : `PRAGMA quick_check` retourne `ok` et un bookmark D1
   Time Travel est disponible.
-- Répétition isolée : les 14 tables, leurs lignes, index et triggers sont exportés puis
+- Répétition isolée : les 16 tables, leurs lignes, index et triggers sont exportés puis
   restaurés. Trois objets R2 sont copiés en liste paginée et comparés par SHA-256,
   contenu et métadonnées, y compris un justificatif fictif privé.
 - Le test détecte une copie corrompue et vérifie l’unicité du propriétaire, les clés

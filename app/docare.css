@@ -1,5 +1,5 @@
-/* Hallmark · theme: brand (by request) · shape: app screen · critique: Digital identity and card platform for Moroccan professionals · built: the project · redesign: polish · copy: verbatim · posture: committed · surface: absolute */
-/* Hallmark · waive 47b · .phone-notch · carte vitrine mobile pour professionnels sur soralink maroc */
+/* Hallmark Â· theme: brand (by request) Â· shape: app screen Â· critique: Digital identity and card platform for Moroccan professionals Â· built: the project Â· redesign: polish Â· copy: verbatim Â· posture: committed Â· surface: absolute */
+/* Hallmark Â· waive 47b Â· .phone-notch Â· carte vitrine mobile pour professionnels sur soralink maroc */
 :root {
   --shadow-primary: 0 4px 14px rgba(255, 145, 37, 0.35);
   --shadow-primary-hover: 0 6px 20px rgba(255, 145, 37, 0.45);
@@ -1976,7 +1976,7 @@ html[data-theme='dark'] .workspace-welcome-icon {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--brand-orange) !important;
+  color: var(--brand-strong) !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   letter-spacing: normal !important;
@@ -2094,7 +2094,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   font-size: 20px;
 }
 .workspace-secondary-nav[open] > summary::before {
-  content: '−';
+  content: 'âˆ’';
 }
 .card-edit-navigation {
   display: flex;
