@@ -244,7 +244,7 @@ export async function GET(req: Request) {
       'Content-Type': f.httpMetadata?.contentType || 'application/octet-stream',
       'X-Content-Type-Options': 'nosniff',
       'Accept-Ranges': 'bytes',
-      'Cache-Control': visible ? 'public, max-age=86400, must-revalidate' : 'no-store',
+      'Cache-Control': visible ? 'public, max-age=3600' : 'no-store',
       'Content-Length': String(range?.length ?? f.size),
     });
     if (url.searchParams.get('download') === '1')
