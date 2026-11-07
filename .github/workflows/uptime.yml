@@ -24,7 +24,10 @@ jobs:
           payload=$(printf '%s' "$body" | sed '$d')
           echo "code=$code"
           printf '%s\n' "$payload"
+          email=$(printf '%s' "$payload" | jq -r '.email // "unknown"' 2>/dev/null || echo unknown)
+          echo "email=$email"
           if [ "$code" != "200" ]; then echo "failure=1" >> "$GITHUB_OUTPUT"; fi
+          if [ "$email" = "failing" ]; then echo "email_failure=1" >> "$GITHUB_OUTPUT"; fi
       - name: Page d'accueil
         id: home
         if: steps.health.outputs.failure != '1'
@@ -33,21 +36,22 @@ jobs:
           echo "code=$code"
           if [ "$code" != "200" ]; then echo "failure=1" >> "$GITHUB_OUTPUT"; fi
       - name: Ouvrir ou mettre à jour l'incident
-        if: steps.health.outputs.failure == '1' || steps.home.outputs.failure == '1'
+        if: steps.health.outputs.failure == '1' || steps.home.outputs.failure == '1' || steps.health.outputs.email_failure == '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           stamp=$(date -u +%FT%TZ)
+          reason="santé=${{ steps.health.outputs.code || 'n/a' }}, accueil=${{ steps.home.outputs.failure || 'ok' }}, e-mail=${{ steps.health.outputs.email || 'n/a' }}"
           existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search 'Incident soralink.link in:title' --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
-            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Nouvel échec détecté le $stamp (santé=${{ steps.health.outputs.code || 'n/a' }}, accueil=${{ steps.home.outputs.failure || 'ok' }})."
+            gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Nouvel échec détecté le $stamp ($reason)."
           else
             gh issue create --repo "$GITHUB_REPOSITORY" \
               --title "Incident soralink.link — $stamp" \
-              --body "La vérification automatique a échoué le $stamp. Vérifier /api/health, les logs Pages et le dernier déploiement."
+              --body "La vérification automatique a échoué le $stamp ($reason). Vérifier /api/health, la clé Resend si l'e-mail est en cause, les logs Pages et le dernier déploiement."
           fi
       - name: Clore l'incident après rétablissement
-        if: steps.health.outputs.failure != '1' && (steps.home.outputs.failure != '1')
+        if: steps.health.outputs.failure != '1' && steps.home.outputs.failure != '1' && steps.health.outputs.email_failure != '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

@@ -50,6 +50,11 @@ try {
       "CREATE TABLE profiles(id TEXT PRIMARY KEY, owner TEXT, data TEXT, published INTEGER, state TEXT, expires TEXT, pro_enabled INTEGER, plan TEXT DEFAULT 'Digital')",
     )
     .run();
+  await db
+    .prepare(
+      'CREATE TABLE notifications(id TEXT PRIMARY KEY, state TEXT, error TEXT, created TEXT)',
+    )
+    .run();
   for (const sql of (await readFile('drizzle/0006_public_addresses.sql', 'utf8')).split(
     '--> statement-breakpoint',
   )) {
@@ -130,6 +135,20 @@ try {
   const healthBody = await health.json();
   assert.equal(healthBody.status, 'ok');
   assert.equal(healthBody.database, 'ok');
+  assert.equal(healthBody.email, 'ok');
+  // A provider-level failure must surface in the health probe.
+  await db
+    .prepare(
+      "INSERT INTO notifications(id,state,error,created) VALUES('health-test','failed','provider_http_401',?)",
+    )
+    .bind(new Date().toISOString())
+    .run();
+  const failing = await (await mf.dispatchFetch('https://soralink.link/api/health')).json();
+  assert.equal(failing.email, 'failing');
+  assert.equal(failing.status, 'ok');
+  await db.prepare("DELETE FROM notifications WHERE id='health-test'").run();
+  const recovered = await (await mf.dispatchFetch('https://soralink.link/api/health')).json();
+  assert.equal(recovered.email, 'ok');
   for (const lang of ['fr', 'ar']) {
     const response = await mf.dispatchFetch('https://soralink.link/api/manifest?lang=' + lang);
     assert.equal(response.status, 200);
