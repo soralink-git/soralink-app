@@ -1240,3 +1240,46 @@
     left: 0;
   }
 }
+
+/* Th�me clair : la palette de la landing a �t� con�ue pour le fond sombre.
+   Ces surcharges r�tablissent la lisibilit� (titre, badges, packs, FAQ). */
+html[data-theme='light'] .landing-copy h1,
+html[data-theme='light'] .landing-copy > p {
+  color: var(--brand-charcoal);
+}
+html[data-theme='light'] .landing-copy h1 em,
+html[data-theme='light'] .landing-copy h1 .hero-gradient {
+  background: linear-gradient(135deg, var(--brand-strong) 0%, var(--brand-orange) 100%);
+}
+html[data-theme='light'] .landing-kicker {
+  color: var(--brand-strong);
+  background: var(--brand-tint);
+}
+html[data-theme='light'] .landing-kicker > span:first-child {
+  background: var(--brand-orange);
+  box-shadow: none;
+}
+html[data-theme='light'] .landing-price-grid article {
+  background: var(--brand-white);
+  border-color: rgba(17, 17, 17, 0.12);
+}
+html[data-theme='light'] .landing-price-grid h3 {
+  color: var(--brand-charcoal);
+}
+html[data-theme='light'] .landing-price-grid .eyebrow {
+  color: var(--brand-strong);
+}
+html[data-theme='light'] .landing-price {
+  color: var(--brand-charcoal);
+}
+html[data-theme='light'] .landing-faq details {
+  background: var(--brand-white);
+  color: var(--brand-charcoal);
+  border: 1px solid rgba(17, 17, 17, 0.12);
+}
+html[data-theme='light'] .landing-faq summary {
+  color: var(--brand-charcoal);
+}
+html[data-theme='light'] .landing-faq details p {
+  color: rgba(17, 17, 17, 0.78);
+}
