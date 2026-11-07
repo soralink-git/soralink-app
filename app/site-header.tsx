@@ -70,7 +70,7 @@ export default function SiteHeader({
         <ThemeToggle ar={ar} />
         <button className="language" onClick={toggleLanguage}>
           <Globe size={16} />
-          {ar ? 'FR' : 'العربية'}
+          <span className="language-label">{ar ? 'FR' : 'العربية'}</span>
         </button>
         {(!sessionChecked && !auth) || (view === 'app' && (!loaded || authLoading) && !auth) ? (
           <span className="header-login" role="status">
