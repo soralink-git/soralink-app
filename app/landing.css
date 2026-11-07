@@ -1250,6 +1250,10 @@ html[data-theme='light'] .landing-copy > p {
 html[data-theme='light'] .landing-copy h1 em,
 html[data-theme='light'] .landing-copy h1 .hero-gradient {
   background: linear-gradient(135deg, var(--brand-strong) 0%, var(--brand-orange) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--brand-strong);
 }
 html[data-theme='light'] .landing-kicker {
   color: var(--brand-strong);
@@ -1282,4 +1286,7 @@ html[data-theme='light'] .landing-faq summary {
 }
 html[data-theme='light'] .landing-faq details p {
   color: rgba(17, 17, 17, 0.78);
+}
+html[data-theme='light'] .landing {
+  color: var(--brand-charcoal);
 }
