@@ -68,7 +68,11 @@ export default function SiteHeader({
       )}
       <div className="header-actions">
         <ThemeToggle ar={ar} />
-        <button className="language" onClick={toggleLanguage}>
+        <button
+          className="language"
+          onClick={toggleLanguage}
+          aria-label={ar ? 'Passer en français' : 'التبديل إلى العربية'}
+        >
           <Globe size={16} />
           <span className="language-label">{ar ? 'FR' : 'العربية'}</span>
         </button>
