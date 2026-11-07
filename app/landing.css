@@ -24,7 +24,7 @@
   height: 700px;
   background: radial-gradient(
     ellipse 900px 500px at 50% 120px,
-    rgba(0, 181, 173, 0.18),
+    rgba(255, 145, 37, 0.18),
     transparent 70%
   );
   pointer-events: none;
@@ -38,7 +38,7 @@
   right: -150px;
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle 350px at 50% 50%, rgba(0, 181, 173, 0.15), transparent 70%);
+  background: radial-gradient(circle 350px at 50% 50%, rgba(255, 145, 37, 0.15), transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -50,24 +50,24 @@
   gap: 8px;
   padding: 6px 14px;
   border-radius: var(--radius-control, 12px);
-  background: rgba(0, 181, 173, 0.09);
-  border: 1px solid rgba(0, 181, 173, 0.35);
-  color: #5eead4;
+  background: rgba(255, 145, 37, 0.09);
+  border: 1px solid rgba(255, 145, 37, 0.35);
+  color: var(--brand-orange);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: normal;
   text-transform: none;
   margin-bottom: 20px;
   backdrop-filter: blur(8px);
-  box-shadow: 0 4px 16px rgba(0, 181, 173, 0.15);
+  box-shadow: 0 4px 16px rgba(255, 145, 37, 0.15);
 }
 
 .landing-kicker > span:first-child {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #00b5ad;
-  box-shadow: 0 0 10px #00b5ad;
+  background: var(--brand-orange);
+  box-shadow: 0 0 10px var(--brand-orange);
   animation: pulse-glow 2s infinite ease-in-out;
 }
 
@@ -115,7 +115,7 @@
 .landing-copy h1 em,
 .landing-copy h1 .hero-gradient {
   font-style: normal;
-  background: linear-gradient(135deg, #ffffff 0%, #a7f3d0 45%, #00b5ad 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #ffd7b0 45%, var(--brand-orange) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -148,10 +148,15 @@
   font-size: 15px;
   font-weight: 750;
   color: #ffffff !important;
-  background: linear-gradient(135deg, #00b5ad 0%, #0d9488 60%, #047857 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-orange) 0%,
+    var(--brand-strong) 60%,
+    #a33a12 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.35);
   box-shadow:
-    0 8px 24px -4px rgba(0, 181, 173, 0.45),
+    0 8px 24px -4px rgba(255, 145, 37, 0.45),
     inset 0 1px 1px rgba(255, 255, 255, 0.6);
   text-decoration: none;
   cursor: pointer;
@@ -165,7 +170,7 @@
   transform: translateY(-2px);
   filter: brightness(1.08);
   box-shadow:
-    0 12px 32px -4px rgba(0, 181, 173, 0.65),
+    0 12px 32px -4px rgba(255, 145, 37, 0.65),
     inset 0 1px 1px rgba(255, 255, 255, 0.8);
 }
 
@@ -857,10 +862,10 @@
 
 .landing-price-grid article.featured {
   background: linear-gradient(145deg, rgba(30, 42, 66, 0.95) 0%, rgba(17, 24, 40, 0.98) 100%);
-  border: 2px solid rgba(0, 181, 173, 0.7);
+  border: 2px solid rgba(255, 145, 37, 0.7);
   box-shadow:
     0 25px 60px -15px rgba(0, 0, 0, 0.7),
-    0 0 45px rgba(0, 181, 173, 0.25);
+    0 0 45px rgba(255, 145, 37, 0.25);
   transform: translateY(-2px);
 }
 
@@ -870,7 +875,7 @@
   font-weight: 600;
   letter-spacing: normal;
   text-transform: none;
-  color: #00b5ad;
+  color: var(--brand-orange);
   margin-bottom: 12px;
 }
 
@@ -925,9 +930,14 @@
 
 .landing-price-grid article a.primary {
   color: #ffffff !important;
-  background: linear-gradient(135deg, #00b5ad 0%, #0d9488 60%, #047857 100%);
+  background: linear-gradient(
+    135deg,
+    var(--brand-orange) 0%,
+    var(--brand-strong) 60%,
+    #a33a12 100%
+  );
   border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 8px 24px -4px rgba(0, 181, 173, 0.45);
+  box-shadow: 0 8px 24px -4px rgba(255, 145, 37, 0.45);
 }
 
 .landing-price-grid article a.secondary {
@@ -941,9 +951,9 @@
 }
 
 .landing-price-grid article a.secondary:hover {
-  background: rgba(0, 181, 173, 0.08);
-  border-color: rgba(0, 181, 173, 0.35);
-  color: #5eead4;
+  background: rgba(255, 145, 37, 0.08);
+  border-color: rgba(255, 145, 37, 0.35);
+  color: var(--brand-orange);
 }
 
 .landing-price-grid article > small {
@@ -1289,4 +1299,48 @@ html[data-theme='light'] .landing-faq summary {
 }
 html[data-theme='light'] .landing-faq details p {
   color: rgba(17, 17, 17, 0.78);
+}
+
+/* Réglages RTL et titres repris de l'ancien bloc de globals.css. */
+@keyframes nfc-pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.8;
+  }
+}
+
+[dir='rtl'] .landing h1 {
+  letter-spacing: 0;
+  font-size: clamp(34px, 3.6vw, 46px);
+}
+
+[dir='rtl'] .landing h2 {
+  letter-spacing: 0;
+  font-size: 30px;
+}
+
+[dir='rtl'] .landing-kicker {
+  letter-spacing: 0;
+}
+
+[dir='rtl'] .showcase-phone {
+  margin: 0 auto;
+}
+
+[dir='rtl'] .showcase-nfc:hover {
+  transform: rotate(0deg);
+}
+
+.landing-faq h2 {
+  white-space: pre-line;
+  line-height: 1.3;
+  margin: 16px 0;
 }
