@@ -1,7 +1,8 @@
 import { PDFDocument } from 'pdf-lib';
 import QRCode from 'qrcode';
+import { drawLogoBadge } from './lib/qr-logo';
 // Print-ready A5 at roughly 300 dpi. Browser font shaping preserves Arabic text.
-export async function qrStandPDF(url: string, business: string, ar: boolean) {
+export async function qrStandPDF(url: string, business: string, ar: boolean, logoChoice?: string) {
   const canvas = document.createElement('canvas');
   canvas.width = 1748;
   canvas.height = 2480;
@@ -47,6 +48,20 @@ export async function qrStandPDF(url: string, business: string, ar: boolean) {
     errorCorrectionLevel: 'H',
     color: { dark: '#000000', light: '#ffffff' },
   });
+  if (logoChoice) {
+    if (logoChoice === 'brand') {
+      drawLogoBadge(qr, null, true);
+    } else {
+      try {
+        const picture = new Image();
+        picture.src = logoChoice;
+        await picture.decode();
+        drawLogoBadge(qr, picture, false);
+      } catch {
+        drawLogoBadge(qr, null, true);
+      }
+    }
+  }
   ctx.drawImage(qr, 264, 790, 1220, 1220);
   ctx.fillStyle = '#ff9125';
   ctx.font = '700 56px ' + font;
