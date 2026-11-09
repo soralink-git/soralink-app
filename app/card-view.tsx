@@ -109,7 +109,7 @@ export default function CardView({
     d,
     small = false,
     preview = false,
-    publicHeading = view === 'public',
+    publicHeading = false,
     onChoose,
     withSections = false,
   }: {
