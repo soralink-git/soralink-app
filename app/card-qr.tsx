@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import { trackedCardURL } from './lib/metric-links';
+import { drawLogoBadge } from './lib/qr-logo';
+
 export default function CardQR({
   id,
   publicName,
@@ -17,14 +19,19 @@ export default function CardQR({
 }) {
   const [origin, setOrigin] = useState('');
   useEffect(() => setOrigin(location.origin), []);
-  const [withLogo, setWithLogo] = useState(false);
+  const [withLogo, setWithLogo] = useState(true);
   const [image, setImage] = useState('');
   const [error, setError] = useState(false);
   const [exporting, setExporting] = useState(false),
     [exportError, setExportError] = useState(false);
   const t = (fr: string, a: string) => (ar ? a : fr);
   const eligibleLogo =
-    typeof logo === 'string' && /^\/api\/upload\?key=[a-f0-9-]{36}$/.test(logo) ? logo : '';
+    typeof logo === 'string' &&
+    (/^\/api\/upload\?key=[a-f0-9-]{36}$/.test(logo) ||
+      logo.startsWith('data:image/') ||
+      logo.startsWith('/assets/'))
+      ? logo
+      : '';
   useEffect(() => {
     let cancelled = false;
     setImage('');
@@ -38,32 +45,21 @@ export default function CardQR({
           margin: 4,
           errorCorrectionLevel: 'H',
         });
-        if (withLogo && eligibleLogo) {
-          const picture = new Image();
-          picture.src = eligibleLogo;
-          await picture.decode();
-          if (cancelled) return;
-          const ctx = canvas.getContext('2d');
-          if (!ctx) throw Error('canvas');
-          // Preserve a quiet border around a small logo; the outer QR quiet zone stays untouched.
-          const area = Math.round(canvas.width * 0.18),
-            padding = Math.round(canvas.width * 0.015);
-          const x = (canvas.width - area) / 2;
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(x, x, area, area);
-          const scale = Math.min(
-            (area - padding * 2) / picture.naturalWidth,
-            (area - padding * 2) / picture.naturalHeight,
-          );
-          const width = picture.naturalWidth * scale,
-            height = picture.naturalHeight * scale;
-          ctx.drawImage(
-            picture,
-            (canvas.width - width) / 2,
-            (canvas.height - height) / 2,
-            width,
-            height,
-          );
+        if (withLogo) {
+          if (eligibleLogo) {
+            try {
+              const picture = new Image();
+              picture.src = eligibleLogo;
+              await picture.decode();
+              if (cancelled) return;
+              drawLogoBadge(canvas, picture, false);
+            } catch {
+              if (cancelled) return;
+              drawLogoBadge(canvas, null, true);
+            }
+          } else {
+            drawLogoBadge(canvas, null, true);
+          }
         }
         if (!cancelled) setImage(canvas.toDataURL('image/png'));
       } catch {
@@ -85,15 +81,19 @@ export default function CardQR({
     );
   return (
     <div className="card-qr-panel">
-      {eligibleLogo && (
-        <label className="toggle">
-          <input
-            type="checkbox"
-            checked={withLogo}
-            onChange={(e) => setWithLogo(e.target.checked)}
-          />
-          {t('Ajouter mon logo au centre', 'زيد اللوگو ديالي فالوسط')}
-        </label>
+      <label className="toggle">
+        <input type="checkbox" checked={withLogo} onChange={(e) => setWithLogo(e.target.checked)} />
+        {eligibleLogo
+          ? t('Ajouter mon logo au centre', 'زيد اللوگو ديالي فالوسط')
+          : t('Ajouter le logo SoraLink au centre', 'زيد رمز SoraLink فالوسط')}
+      </label>
+      {!eligibleLogo && withLogo && (
+        <p className="hint" style={{ marginTop: '-4px', fontSize: '12px' }}>
+          {t(
+            'Ajoutez votre photo ou logo dans l’onglet Profil pour l’afficher au centre du QR.',
+            'أضف صورتك أو شعارك في تبويب الملف الشخصي لعرضه في وسط رمز QR.',
+          )}
+        </p>
       )}
       {image ? (
         <img
@@ -115,7 +115,7 @@ export default function CardQR({
       <a
         className="secondary"
         href={image || undefined}
-        download="soralink-qr.png"
+        download={`${publicName || id}-qr.png`}
         aria-disabled={!image}
         onClick={(e) => {
           if (!image) e.preventDefault();
@@ -136,11 +136,12 @@ export default function CardQR({
               trackedCardURL(location.origin, id, publicName, 'qr'),
               business,
               ar,
+              withLogo ? eligibleLogo || 'brand' : undefined,
             );
             const url = URL.createObjectURL(blob),
               link = document.createElement('a');
             link.href = url;
-            link.download = 'soralink-chevalet-a5.pdf';
+            link.download = `chevalet-a5-${publicName || 'soralink'}.pdf`;
             link.click();
             setTimeout(() => URL.revokeObjectURL(url), 60000);
           } catch {
