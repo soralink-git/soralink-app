@@ -174,7 +174,7 @@ test('the administrator sees separate subscription, function and workspace contr
       html,
       ar ? /Fonctions autorisées|Rétablir les accès/ : /الوظائف المسموحة|الباقة والاشتراك/,
     );
-    assert.equal((html.match(/type="checkbox"/g) || []).length, 12);
+    assert.equal((html.match(/type="checkbox"/g) || []).length, 13);
     // Advanced rights stay available inside a closed disclosure; ordinary plan
     // controls remain before it, so changing an expiry does not require opening it.
     assert.match(html, /<details class="admin-client-advanced">/);

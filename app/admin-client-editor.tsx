@@ -42,6 +42,7 @@ export default function AdminClientEditor({
     ['catalogue', 'Produits et services', 'المنتجات والخدمات'],
     ['activity', 'Suivi des contacts et demandes', 'تتبّع معلومات التواصل والطلبات'],
     ['appointments', 'Gestion des rendez-vous', 'تدبير المواعيد'],
+    ['single_action', 'Action unique (Lien unique)', 'الإجراء الموحد (الرابط الفريد)'],
   ] as const;
   return (
     <details className="panel admin-client-management">
@@ -175,13 +176,15 @@ export default function AdminClientEditor({
                   type="checkbox"
                   disabled={
                     busy ||
-                    !base[key] ||
+                    (key !== 'single_action' && !base[key]) ||
                     (key === 'appointments' && access.modules.activity === false)
                   }
                   checked={
-                    base[key] &&
-                    access.modules[key] !== false &&
-                    (key !== 'appointments' || access.modules.activity !== false)
+                    key === 'single_action'
+                      ? access.modules.single_action !== false
+                      : base[key] &&
+                        access.modules[key] !== false &&
+                        (key !== 'appointments' || access.modules.activity !== false)
                   }
                   onChange={(event) =>
                     setAccess((current) => ({
@@ -192,7 +195,7 @@ export default function AdminClientEditor({
                 />
                 <span>
                   {t(fr, da)}
-                  {!base[key] && (
+                  {key !== 'single_action' && !base[key] && (
                     <small>{t('Non inclus dans ce forfait', 'ما داخلاش فهاد الباقة')}</small>
                   )}
                 </span>

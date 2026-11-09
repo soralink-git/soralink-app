@@ -11,7 +11,7 @@ export const clientSectionKeys = [
 ] as const;
 export type ClientSection = (typeof clientSectionKeys)[number];
 
-const moduleKeys = ['catalogue', 'activity', 'appointments'] as const;
+const moduleKeys = ['catalogue', 'activity', 'appointments', 'single_action'] as const;
 
 export type ClientAccess = {
   modules: Partial<Record<(typeof moduleKeys)[number], boolean>>;

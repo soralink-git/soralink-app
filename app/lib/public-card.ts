@@ -82,6 +82,31 @@ export function publicCardData(
   ])
     out[key] = d[key];
   out.profileType = profileKind(saved);
+  if (d.singleAction && typeof d.singleAction === 'object') {
+    out.singleAction = {
+      enabled: !!d.singleAction.enabled,
+      type: typeof d.singleAction.type === 'string' ? d.singleAction.type : 'google_review',
+      value: typeof d.singleAction.value === 'string' ? d.singleAction.value : '',
+      message:
+        typeof d.singleAction.message === 'string'
+          ? d.singleAction.message
+          : typeof d.singleAction.whatsappMessage === 'string'
+            ? d.singleAction.whatsappMessage
+            : '',
+      labelFr:
+        typeof d.singleAction.labelFr === 'string'
+          ? d.singleAction.labelFr
+          : typeof d.singleAction.customLabelFr === 'string'
+            ? d.singleAction.customLabelFr
+            : '',
+      labelAr:
+        typeof d.singleAction.labelAr === 'string'
+          ? d.singleAction.labelAr
+          : typeof d.singleAction.customLabelAr === 'string'
+            ? d.singleAction.customLabelAr
+            : '',
+    };
+  }
   out.pro = pro;
   out.activity = features.activity;
   out.defaultLanguage = d.defaultLanguage === 'ar' || d.lang === 'ar' ? 'ar' : 'fr';

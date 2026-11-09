@@ -57,6 +57,11 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
       const r = await fetch('/api/admin?' + query);
       const b: any = await r.json();
       if (epoch !== loadEpoch.current) return;
+      if (r.status === 401 || r.status === 403) {
+        setData(null);
+        setError('');
+        return;
+      }
       if (!r.ok) throw new Error(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
       activeSearch.current = requestedSearch;
       setData((current: any) => {
@@ -215,7 +220,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
             'تسيير المنصة · ولوج مستقل على كارطات واشتراكات الزبناء.',
           )}
         </p>
-        {error && (
+        {error && data && (
           <div className="notice" role="alert">
             {error}
           </div>

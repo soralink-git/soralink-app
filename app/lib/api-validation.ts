@@ -19,6 +19,7 @@ import { recordedVideoUrl, mediaError } from './content-media';
 import { sectionKeys } from './personalization';
 import { whatsappNumber } from './whatsapp-notification';
 import { isAllowedMedia, MEDIA_FIELDS } from './media-url';
+import { singleActionTypes, isSingleActionValid } from './single-action';
 
 const text = (max: number) => z.string().max(max);
 const formText = (max: number) => z.preprocess((v) => (v == null ? '' : v), text(max)).default('');
@@ -195,6 +196,21 @@ const profileObjectSchema = z
     buttonSize: z.enum(['normal', 'large']).optional(),
     buttonStyle: z.enum(['filled', 'outline']).optional(),
     serviceButtonMode: z.enum(serviceButtonModes).optional(),
+    singleAction: z
+      .object({
+        enabled: z.boolean().default(false),
+        type: z.enum(singleActionTypes).default('google_review'),
+        value: formText(4000),
+        message: text(500).nullish(),
+        labelFr: text(120).nullish(),
+        labelAr: text(120).nullish(),
+      })
+      .refine((action) => {
+        if (!action.enabled) return true;
+        if (!action.value || !action.value.trim()) return false;
+        return isSingleActionValid(action.type, action.value);
+      }, 'Valeur ou lien d’action invalide.')
+      .optional(),
     sectionOrder: z.array(z.enum(sectionKeys)).max(9).optional(),
     hiddenSections: z.array(z.enum(sectionKeys)).max(9).optional(),
     sectionTitles: z
