@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { Copy, Check } from 'lucide-react';
 import QRCode from 'qrcode';
 import { trackedCardURL } from './lib/metric-links';
 import { drawLogoBadge } from './lib/qr-logo';
@@ -24,7 +25,9 @@ export default function CardQR({
   const [error, setError] = useState(false);
   const [exporting, setExporting] = useState(false),
     [exportError, setExportError] = useState(false);
+  const [copiedNfc, setCopiedNfc] = useState(false);
   const t = (fr: string, a: string) => (ar ? a : fr);
+  const nfcUrl = origin ? trackedCardURL(origin, id, publicName, 'nfc') : '';
   const eligibleLogo =
     typeof logo === 'string' &&
     (/^\/api\/upload\?key=[a-f0-9-]{36}$/.test(logo) ||
@@ -160,12 +163,31 @@ export default function CardQR({
       )}
       <label className="field">
         {t('Lien à programmer dans votre carte NFC', 'الرابط اللي خاص يتبرمج فبطاقة NFC')}
-        <input
-          readOnly
-          dir="ltr"
-          value={origin ? trackedCardURL(origin, id, publicName, 'nfc') : ''}
-          onFocus={(e) => e.currentTarget.select()}
-        />
+        <div className="nfc-link-row">
+          <input
+            readOnly
+            dir="ltr"
+            className="nfc-link-input"
+            value={nfcUrl}
+            onFocus={(e) => e.currentTarget.select()}
+          />
+          <button
+            type="button"
+            className="secondary nfc-copy-btn"
+            disabled={!nfcUrl}
+            onClick={async () => {
+              if (!nfcUrl) return;
+              try {
+                await navigator.clipboard.writeText(nfcUrl);
+                setCopiedNfc(true);
+                setTimeout(() => setCopiedNfc(false), 2000);
+              } catch {}
+            }}
+          >
+            {copiedNfc ? <Check size={16} /> : <Copy size={16} />}
+            {copiedNfc ? t('Copié !', 'تم النسخ!') : t('Copier', 'نسخ')}
+          </button>
+        </div>
       </label>
       <p className="hint">
         {t(

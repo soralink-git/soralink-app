@@ -546,6 +546,7 @@ export default function App({
         return;
       } else if (!r.ok) {
         setAuthLoadError(true);
+        setSessionChecked(true);
         setMsg(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
       } else {
         setAuth(true);
@@ -602,6 +603,7 @@ export default function App({
     } catch {
       if (epoch !== authEpoch.current) return;
       setAuthLoadError(true);
+      setSessionChecked(true);
       setMsg(t('Service indisponible. Réessayez.', 'الخدمة ما متوفراش. عاود جرّب.'));
     }
     setBusy(false);

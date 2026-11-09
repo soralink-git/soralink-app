@@ -10,6 +10,7 @@ export const clientAccessSchema = z
         catalogue: z.boolean().optional(),
         activity: z.boolean().optional(),
         appointments: z.boolean().optional(),
+        single_action: z.boolean().optional(),
       })
       .strict()
       .default({}),

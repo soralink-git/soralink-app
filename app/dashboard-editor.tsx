@@ -23,6 +23,7 @@ import LoadMore from './load-more';
 import PinnedCardPreview from './pinned-card-preview';
 import ProfileIdentityFields from './profile-identity-fields';
 import SaveBar from './save-bar';
+import SingleActionEditor from './single-action-editor';
 
 import {
   Calendar,
@@ -42,6 +43,7 @@ import {
   Sparkles,
   Users,
   X,
+  Zap,
 } from 'lucide-react';
 
 import { WhatsAppIcon } from './card-helpers';
@@ -251,10 +253,14 @@ export default function DashboardEditor({ context }: { context: DashboardContext
   ].filter(([key]) => key === 'orders' || visibleSections.includes(key as any)) as Array<
     [string, LucideIcon, string, string, string]
   >;
+  const singleActionAllowed = subscription?.client_access?.modules?.single_action !== false;
   const requestedTab = normalizeClientTab(tab);
-  const activeTab = tabs.some(([key]) => key === requestedTab)
-    ? requestedTab
-    : firstCardSection || tabs[0]?.[0] || 'orders';
+  const activeTab =
+    requestedTab === 'single-action' && singleActionAllowed
+      ? 'single-action'
+      : tabs.some(([key]) => key === requestedTab)
+        ? requestedTab
+        : firstCardSection || tabs[0]?.[0] || 'orders';
   useEffect(() => {
     if (normalizeClientTab(tab) !== activeTab) setTab(activeTab);
   }, [tab, activeTab]);
@@ -268,6 +274,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     interface: ['Logo et modèle', 'اللوگو والستايل'],
     actions: ['Coordonnées', 'معلومات التواصل'],
     links: ['Réseaux et liens', 'مواقع التواصل والروابط'],
+    'single-action': ['Action unique', 'الإجراء الموحد'],
   };
   const introductions: Record<string, [string, string]> = {
     coordinates: ['Présentez-vous en quelques mots.', 'عرّف براسك بكلمات قليلة.'],
@@ -277,6 +284,10 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     ],
     actions: ['Ajoutez les moyens de vous contacter.', 'زيد الطرق باش يتواصلو معاك.'],
     links: ['Rassemblez vos réseaux sociaux et vos liens.', 'جمع مواقع التواصل والروابط ديالك.'],
+    'single-action': [
+      'Choisissez une seule action principale pour votre carte.',
+      'اختر إجراءً رئيسياً واحداً لبطاقتك.',
+    ],
     content: ['Ajoutez vos produits, services et offres.', 'زيد المنتجات والخدمات والعروض ديالك.'],
     contacts: [
       'Retrouvez les personnes qui vous ont laissé leurs coordonnées.',
@@ -297,7 +308,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     <main className="workspace workspace-design">
       <aside>
         <h3>{t('Mon espace', 'الحساب ديالي')}</h3>
-        {auth && (cards.length > 1 || cardLimit > 1) && (
+        {auth && (
           <div className="workspace-sidebar-cards">
             <div className="sidebar-cards-header">
               <span className="sidebar-cards-title">{t('Mes cartes', 'البطاقات ديالي')}</span>
@@ -335,6 +346,33 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 })}
               </div>
             )}
+            {singleActionAllowed && (
+              <button
+                type="button"
+                className={
+                  'secondary small full sidebar-single-action-btn' +
+                  (activeTab === 'single-action' ? ' active' : '')
+                }
+                onClick={() => navigate('single-action')}
+                title={t(
+                  'Configurer l’action unique pour cette carte',
+                  'إعداد الإجراء الموحد لهذه البطاقة',
+                )}
+                style={{ marginBlock: '4px 6px' }}
+              >
+                <Zap
+                  size={14}
+                  style={{
+                    color: data?.singleAction?.enabled ? 'var(--brand-accent)' : 'inherit',
+                  }}
+                />
+                <span>
+                  {data?.singleAction?.enabled
+                    ? t('Lien unique : Activé', 'الرابط الفريد: مفعّل')
+                    : t('Option lien unique', 'خيار الرابط الفريد')}
+                </span>
+              </button>
+            )}
             {cardsCount < cardLimit ? (
               <button
                 type="button"
@@ -348,7 +386,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 <Plus size={15} />
                 <span>{t('Nouvelle carte', 'بطاقة جديدة')}</span>
               </button>
-            ) : (
+            ) : cardLimit > 1 ? (
               <button
                 type="button"
                 className="secondary small full sidebar-new-card-btn quota-reached"
@@ -357,7 +395,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 <Plus size={15} />
                 <span>{t('Nouvelle carte', 'بطاقة جديدة')}</span>
               </button>
-            )}
+            ) : null}
           </div>
         )}
         <label className="workspace-mobile-location">
@@ -376,6 +414,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       {t(...cardLabels[key])}
                     </option>
                   ))}
+                {singleActionAllowed && (
+                  <option value="single-action">
+                    {t('Action unique (Lien unique)', 'الإجراء الموحد (الرابط الفريد)')}
+                  </option>
+                )}
               </optgroup>
             )}
             {tabs
@@ -410,7 +453,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               className={
                 (
                   key === firstCardSection
-                    ? ['coordinates', 'interface', 'actions', 'links'].includes(activeTab)
+                    ? ['coordinates', 'interface', 'actions', 'links', 'single-action'].includes(
+                        activeTab,
+                      )
                     : activeTab === key
                 )
                   ? 'selected'
@@ -419,7 +464,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
               onClick={() => navigate(key)}
               aria-pressed={
                 key === firstCardSection
-                  ? ['coordinates', 'interface', 'actions', 'links'].includes(activeTab)
+                  ? ['coordinates', 'interface', 'actions', 'links', 'single-action'].includes(
+                      activeTab,
+                    )
                   : activeTab === key
               }
             >
@@ -609,10 +656,23 @@ export default function DashboardEditor({ context }: { context: DashboardContext
         ) : authLoadError && !auth ? (
           <div className="empty">
             <h2>{t('Votre espace n’a pas pu être chargé', 'ما قدرناش نحمّلو الحساب')}</h2>
-            <p>{t('Réessayez de charger votre espace.', 'عاود جرّب تحمّل الحساب.')}</p>
-            <button className="primary" onClick={() => load()}>
-              {t('Réessayer', 'عاود جرّب')}
-            </button>
+            <p>
+              {t(
+                'Réessayez de charger votre espace ou reconnectez-vous.',
+                'عاود جرّب تحمّل الحساب ولا عاود دخل.',
+              )}
+            </p>
+            <div
+              className="row auth-error-actions"
+              style={{ gap: '12px', justifyContent: 'center' }}
+            >
+              <button className="primary" onClick={() => load()}>
+                {t('Réessayer', 'عاود جرّب')}
+              </button>
+              <a className="secondary" href="/auth" target="_top">
+                {t('Se connecter', 'تسجيل الدخول')}
+              </a>
+            </div>
           </div>
         ) : !auth ? (
           <div className="empty">
@@ -638,7 +698,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                 <CardSetup context={context} onExit={closeSetup} />
               ) : (
                 <>
-                  {['coordinates', 'interface', 'actions', 'links'].includes(activeTab) && (
+                  {['coordinates', 'interface', 'actions', 'links', 'single-action'].includes(
+                    activeTab,
+                  ) && (
                     <nav
                       className="card-edit-navigation"
                       aria-label={t('Modifier ma carte', 'بدّل الكارط ديالي')}
@@ -648,8 +710,13 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         ['interface', 'Logo et modèle', 'اللوگو والستايل'],
                         ['actions', 'Coordonnées', 'معلومات التواصل'],
                         ['links', 'Réseaux et liens', 'مواقع التواصل والروابط'],
+                        ['single-action', 'Action unique', 'الإجراء الموحد'],
                       ]
-                        .filter(([key]) => visibleSections.includes(key as any))
+                        .filter(([key]) =>
+                          key === 'single-action'
+                            ? singleActionAllowed
+                            : visibleSections.includes(key as any),
+                        )
                         .map(([key, fr, da]) => (
                           <button
                             type="button"
@@ -710,6 +777,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         <SocialLinksEditor context={context} />
                       )}
                     </section>
+                  )}
+                  {activeTab === 'single-action' && (
+                    <SingleActionEditor data={data} setData={setData} ar={ar} busy={busy} />
                   )}
                   {rights.catalogue && activeTab === 'content' && (
                     <>

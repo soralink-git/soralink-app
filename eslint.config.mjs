@@ -33,6 +33,7 @@ const config = [
       'node_modules/**',
       'public/**',
       'drizzle/**',
+      '.agents/**',
     ],
   },
   ...tuned,

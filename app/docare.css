@@ -2976,20 +2976,27 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   padding-inline-end: 2px !important;
 }
 
+html[data-theme='dark'] .workspace-design .workspace-tab-content .field .address-input input,
+html[data-theme='dark'] .address-editor .address-input input,
+html .workspace-design .workspace-tab-content .field .address-input input,
+html .address-editor .address-input input,
 .workspace-design .workspace-tab-content .field .address-input input,
+.address-editor .address-input input,
 .address-input input {
-  flex: 1 !important;
+  flex: 1 1 auto !important;
   min-width: 0 !important;
   height: 100% !important;
   min-height: 100% !important;
-  border: none !important;
+  border: 0 none transparent !important;
+  outline: none !important;
   background: transparent !important;
   border-radius: 0 !important;
   padding: 0 10px !important;
-  font-size: 14px !important;
+  margin: 0 !important;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
   color: var(--ink) !important;
   box-shadow: none !important;
-  outline: none !important;
 }
 
 .address-editor > button.primary {
@@ -3206,4 +3213,192 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   font-weight: 600 !important;
   letter-spacing: 0.5px !important;
   box-sizing: border-box !important;
+}
+
+/* NFC Link Row & Copy Button */
+.nfc-link-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  margin-top: 4px !important;
+}
+
+.nfc-link-input {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 13.5px !important;
+  text-overflow: ellipsis !important;
+}
+
+.nfc-copy-btn {
+  flex: 0 0 auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  min-height: 44px !important;
+  height: 44px !important;
+  padding: 0 16px !important;
+  white-space: nowrap !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+}
+
+/* Auth Error Actions */
+.auth-error-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  margin-top: 8px !important;
+}
+
+.auth-error-actions a.secondary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 44px !important;
+  padding: 0 20px !important;
+  border-radius: 12px !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+}
+
+/* Single Action Module */
+.card-single-action-wrapper {
+  margin-block: 16px !important;
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+.card-button.card-single-action {
+  width: 100% !important;
+  max-width: 420px !important;
+  min-height: 52px !important;
+  padding: 14px 24px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  border-radius: var(--button-radius, 14px) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease !important;
+  text-decoration: none !important;
+}
+
+.card-button.card-single-action:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18) !important;
+  opacity: 0.96 !important;
+}
+
+.single-action-panel {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+}
+
+.single-action-toggle-card {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  background: var(--brand-soft) !important;
+  border: 1px solid var(--line) !important;
+}
+
+.single-action-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+  gap: 10px !important;
+}
+
+.single-action-choice {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 14px 10px !important;
+  min-height: 78px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 12px !important;
+  background: var(--brand-field) !important;
+  color: var(--ink) !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+}
+
+.single-action-choice:hover:not(:disabled) {
+  border-color: var(--brand-accent) !important;
+  background: var(--brand-soft) !important;
+}
+
+.single-action-choice.selected {
+  border-color: var(--brand-accent) !important;
+  background: var(--brand-tint) !important;
+  color: var(--brand-strong) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 0 2px var(--brand-accent) !important;
+}
+
+.single-action-form-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 14px !important;
+  padding: 18px !important;
+  background: var(--brand-soft) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px !important;
+}
+
+.single-action-error-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  background: rgba(220, 38, 38, 0.1) !important;
+  color: #dc2626 !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(220, 38, 38, 0.25) !important;
+}
+
+.single-action-success-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  background: rgba(16, 185, 129, 0.1) !important;
+  color: #059669 !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  border: 1px solid rgba(16, 185, 129, 0.25) !important;
+}
+
+.single-action-preview-section {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  padding: 16px !important;
+  border-radius: 12px !important;
+  background: var(--brand-field) !important;
+  border: 1px dashed var(--line) !important;
 }

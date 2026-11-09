@@ -28,6 +28,8 @@ import {
   accentText,
   download,
 } from './card-helpers';
+import { resolveSingleAction } from './lib/single-action';
+import { SingleActionIcon } from './single-action-editor';
 export type CardViewProps = {
   d: any;
   small?: boolean;
@@ -135,6 +137,7 @@ export default function CardView({
     const hasIdentity = !!(d.avatar || title || subtitle || d.job || d.bio);
     const location = mapLinks(d),
       a = appearance(d);
+    const singleAction = resolveSingleAction(d, ar);
     const isDarkBlock = a.blockColor ? accentText(a.blockColor) === '#ffffff' : a.theme === 'dark';
     const defaultTextFg = isDarkBlock ? '#f8fafc' : '#1e293b';
     const defaultTextMuted = isDarkBlock ? 'rgba(248, 250, 252, 0.72)' : 'rgba(30, 41, 59, 0.72)';
@@ -236,98 +239,115 @@ export default function CardView({
             </button>
           ) : (
             <div className="card-actions">
-              <div className="card-action-icons">
-                <button
-                  className="card-button card-save"
-                  aria-label={t('Enregistrer le contact', 'سجّل الكونطاكت')}
-                  onClick={() => {
-                    const blob = new Blob(
-                      [
-                        vcardText({
-                          name: d.name,
-                          profileType: d.profileType,
-                          ...(Array.isArray(d.profileLinks)
-                            ? { entries: visibleProfileLinks(d) }
-                            : {}),
-                          phone: a.hidePhone ? '' : d.phone,
-                          email: a.hideEmail ? '' : d.email,
-                          business: d.business,
-                          job: d.job,
-                          address: a.hideLocation ? '' : d.address,
-                          website: a.hidden.includes('links') ? '' : webLink(d.website),
-                        }),
-                      ],
-                      { type: 'text/vcard' },
-                    );
-                    download(blob, 'contact.vcf');
-                    if (view === 'public' && !preview && d.activity !== false)
-                      onMessage(
-                        t(
-                          'Pour me laisser vos coordonnées, utilisez le bouton Échanger (facultatif).',
-                          'إلى بغيتي تخلّي معلومات التواصل ديالك استعمل زر التبادل (اختياري).',
-                        ),
-                      );
-                  }}
-                >
-                  <Download size={22} />
-                </button>
-                <button
-                  className="exchange-button"
-                  aria-label={t('Partager cette carte', 'شارك هاد الكارط')}
-                  onClick={() => void sharePublicCard(d, preview)}
-                >
-                  <Share2 size={22} />
-                </button>
-                {d.activity !== false && (
-                  <button
-                    className="exchange-button"
-                    aria-label={t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
-                    onClick={() => {
-                      if (preview || view === 'demo') {
-                        setMsg(
-                          t(
-                            'Aperçu : le formulaire sera disponible sur votre carte publique.',
-                            'معاينة: الفورميلير غادي يخدم فالصفحة العمومية ديالك.',
-                          ),
-                        );
-                        return;
-                      }
-                      onRequest('contact');
-                    }}
+              {singleAction ? (
+                <div className="card-single-action-wrapper">
+                  <a
+                    href={singleAction.href}
+                    target={singleAction.isExternal ? '_blank' : undefined}
+                    rel={singleAction.isExternal ? 'noopener noreferrer' : undefined}
+                    className="card-button card-single-action"
+                    aria-label={singleAction.label}
                   >
-                    <Users size={22} />
-                  </button>
-                )}
-              </div>
-              {d.activity !== false && !d.pro && (
-                <button
-                  className="card-button card-request"
-                  onClick={() => {
-                    if (preview) {
-                      setMsg(
-                        t(
-                          'Aperçu : ce bouton sera disponible sur votre carte publique.',
-                          'معاينة: هاد الزر غادي يخدم فالصفحة العمومية ديالك.',
-                        ),
-                      );
-                      return;
-                    }
-                    if (view === 'demo') {
-                      setMsg(
-                        t(
-                          'Exemple : créez votre carte pour recevoir des demandes.',
-                          'هادشي مثال، صايب الكارط ديالك باش توصّل بالطلبات.',
-                        ),
-                      );
-                      return;
-                    }
-                    onRequest(d.pro ? 'rdv' : 'devis');
-                  }}
-                >
-                  {d.pro
-                    ? t('Demander un rendez-vous', 'طلب موعد')
-                    : t('Demander un devis', 'طلب الثمن')}
-                </button>
+                    <SingleActionIcon type={singleAction.type} size={20} />
+                    <span>{singleAction.label}</span>
+                  </a>
+                </div>
+              ) : (
+                <>
+                  <div className="card-action-icons">
+                    <button
+                      className="card-button card-save"
+                      aria-label={t('Enregistrer le contact', 'سجّل الكونطاكت')}
+                      onClick={() => {
+                        const blob = new Blob(
+                          [
+                            vcardText({
+                              name: d.name,
+                              profileType: d.profileType,
+                              ...(Array.isArray(d.profileLinks)
+                                ? { entries: visibleProfileLinks(d) }
+                                : {}),
+                              phone: a.hidePhone ? '' : d.phone,
+                              email: a.hideEmail ? '' : d.email,
+                              business: d.business,
+                              job: d.job,
+                              address: a.hideLocation ? '' : d.address,
+                              website: a.hidden.includes('links') ? '' : webLink(d.website),
+                            }),
+                          ],
+                          { type: 'text/vcard' },
+                        );
+                        download(blob, 'contact.vcf');
+                        if (view === 'public' && !preview && d.activity !== false)
+                          onMessage(
+                            t(
+                              'Pour me laisser vos coordonnées, utilisez le bouton Échanger (facultatif).',
+                              'إلى بغيتي تخلّي معلومات التواصل ديالك استعمل زر التبادل (اختياري).',
+                            ),
+                          );
+                      }}
+                    >
+                      <Download size={22} />
+                    </button>
+                    <button
+                      className="exchange-button"
+                      aria-label={t('Partager cette carte', 'شارك هاد الكارط')}
+                      onClick={() => void sharePublicCard(d, preview)}
+                    >
+                      <Share2 size={22} />
+                    </button>
+                    {d.activity !== false && (
+                      <button
+                        className="exchange-button"
+                        aria-label={t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
+                        onClick={() => {
+                          if (preview || view === 'demo') {
+                            setMsg(
+                              t(
+                                'Aperçu : le formulaire sera disponible sur votre carte publique.',
+                                'معاينة: الفورميلير غادي يخدم فالصفحة العمومية ديالك.',
+                              ),
+                            );
+                            return;
+                          }
+                          onRequest('contact');
+                        }}
+                      >
+                        <Users size={22} />
+                      </button>
+                    )}
+                  </div>
+                  {d.activity !== false && !d.pro && (
+                    <button
+                      className="card-button card-request"
+                      onClick={() => {
+                        if (preview) {
+                          setMsg(
+                            t(
+                              'Aperçu : ce bouton sera disponible sur votre carte publique.',
+                              'معاينة: هاد الزر غادي يخدم فالصفحة العمومية ديالك.',
+                            ),
+                          );
+                          return;
+                        }
+                        if (view === 'demo') {
+                          setMsg(
+                            t(
+                              'Exemple : créez votre carte pour recevoir des demandes.',
+                              'هادشي مثال، صايب الكارط ديالك باش توصّل بالطلبات.',
+                            ),
+                          );
+                          return;
+                        }
+                        onRequest(d.pro ? 'rdv' : 'devis');
+                      }}
+                    >
+                      {d.pro
+                        ? t('Demander un rendez-vous', 'طلب موعد')
+                        : t('Demander un devis', 'طلب الثمن')}
+                    </button>
+                  )}
+                </>
               )}
               {manualShareUrl && !preview && view === 'public' && (
                 <label className="field card-share-link">
