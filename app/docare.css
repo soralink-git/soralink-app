@@ -2982,7 +2982,11 @@ html .workspace-design .workspace-tab-content .field .address-input input,
 html .address-editor .address-input input,
 .workspace-design .workspace-tab-content .field .address-input input,
 .address-editor .address-input input,
-.address-input input {
+.address-input input,
+.address-input input:focus,
+.address-input input:focus-visible,
+.address-input input:hover,
+.address-input input:active {
   flex: 1 1 auto !important;
   min-width: 0 !important;
   height: 100% !important;
@@ -2990,6 +2994,7 @@ html .address-editor .address-input input,
   border: 0 none transparent !important;
   outline: none !important;
   background: transparent !important;
+  background-color: transparent !important;
   border-radius: 0 !important;
   padding: 0 10px !important;
   margin: 0 !important;

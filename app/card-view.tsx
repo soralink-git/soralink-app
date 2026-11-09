@@ -248,7 +248,7 @@ export default function CardView({
                     className="card-button card-single-action"
                     aria-label={singleAction.label}
                   >
-                    <SingleActionIcon type={singleAction.type} size={20} />
+                    <SingleActionIcon type={singleAction.type} size={22} colored={true} />
                     <span>{singleAction.label}</span>
                   </a>
                 </div>
