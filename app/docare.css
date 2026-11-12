@@ -3262,6 +3262,17 @@ html .address-editor .address-input input,
   margin-top: 8px !important;
 }
 
+.header-login-skeleton {
+  min-height: 38px !important;
+  height: 38px !important;
+  width: 76px !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 .auth-error-actions a.secondary {
   display: inline-flex !important;
   align-items: center !important;

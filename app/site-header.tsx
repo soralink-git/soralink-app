@@ -77,9 +77,15 @@ export default function SiteHeader({
           <span className="language-label">{ar ? 'FR' : 'العربية'}</span>
         </button>
         {(!sessionChecked && !auth) || (view === 'app' && (!loaded || authLoading) && !auth) ? (
-          <span className="header-login" role="status">
-            {t('Vérification…', 'كنتحققو…')}
-          </span>
+          view === 'app' ? (
+            <span className="header-login" role="status">
+              {t('Vérification…', 'كنتحققو…')}
+            </span>
+          ) : (
+            <span className="header-login header-login-skeleton" aria-hidden="true">
+              <span className="header-skeleton-bar" />
+            </span>
+          )
         ) : auth ? (
           <>
             {canAdmin && (

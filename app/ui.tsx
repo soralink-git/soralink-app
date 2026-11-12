@@ -1554,7 +1554,12 @@ export default function App({
           </div>
           <div className="footer-contact">
             <strong>{t('Parlons de votre carte', 'نهضرو على الكارط ديالك')}</strong>
-            <a dir="ltr" href="mailto:contact@soralink.link">
+            <a
+              dir="ltr"
+              href="mailto:contact@soralink.link"
+              className="footer-email-link"
+              title={t('Nous écrire par e-mail', 'مراسلتنا عبر البريد الإلكتروني')}
+            >
               contact@soralink.link
             </a>
             <a dir="ltr" href="tel:+212661446664">
@@ -1567,7 +1572,7 @@ export default function App({
           </div>
           <div className="footer-links">
             <a href={'/conditions?lang=' + (ar ? 'ar' : 'fr')}>
-              {t('Conditions de service · pilote', 'شروط الخدمة · تجريبية')}
+              {t('Conditions de service', 'شروط الخدمة')}
             </a>
             <a href={'/confidentialite?lang=' + (ar ? 'ar' : 'fr')}>
               {t('Confidentialité', 'الخصوصية')}
