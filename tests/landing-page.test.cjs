@@ -19,7 +19,7 @@ for (const ar of [false, true])
       html,
       /persona-tabs|landing-bento-grid|landing-process|special-offer-grid|Dr\. Yasmine|Dentaire|الأسنان|Studio créatif/,
     );
-    assert.doesNotMatch(html, /LE PLUS CHOISI|Le plus populaire|الأكثر طلباً/);
+    assert.match(html, ar ? /الأكثر اختياراً/ : /LE PLUS CHOISI/);
     assert.match(html, /class="landing-quick-benefits"/);
     assert.match(html, /class="single-action-offer"/);
     assert.doesNotMatch(html, /<details[^>]*\bopen/);
