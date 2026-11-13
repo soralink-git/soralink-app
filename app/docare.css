@@ -3418,3 +3418,630 @@ html .address-editor .address-input input,
   background: var(--brand-field) !important;
   border: 1px dashed var(--line) !important;
 }
+
+/* ==========================================================================
+   WEB DESIGN ENGINEERING: GLOBAL CRAFT & TOKENS
+   Elevates visual hierarchy, typography, cohesive surface architecture,
+   responsive mobile-first ergonomics (375px+), and tactile micro-interactions.
+   ========================================================================== */
+
+:root {
+  --bg-canvas: var(--brand-canvas);
+  --bg-surface: var(--brand-surface);
+  --text-primary: var(--ink);
+  --text-secondary: var(--muted);
+  --accent-primary: var(--brand-accent);
+  --border-subtle: var(--line);
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-tactile: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Micro-Typography & Readability Rhythm */
+.landing-copy h1,
+.landing-heading h2,
+.landing h2,
+.comparison-col h3,
+.usecase-card h3,
+.pricing-card h3,
+.workspace-head h1,
+.profile-card h1,
+.profile-card h2 {
+  letter-spacing: -0.025em;
+}
+
+[dir='rtl']
+  :is(
+    .landing-copy h1,
+    .landing-heading h2,
+    .landing h2,
+    .workspace-head h1,
+    .profile-card h1,
+    .profile-card h2,
+    .comparison-col h3
+  ) {
+  letter-spacing: 0;
+}
+
+.landing-copy p,
+.landing-heading p,
+.workspace-intro,
+.hint,
+.usecase-card p,
+.comparison-col p {
+  max-width: 65ch;
+}
+
+/* Tabular Numbers for all metrics, prices, countdowns, quotas */
+.landing-price,
+.landing-price span,
+.single-action-price strong,
+.pricing-card-price,
+.price-tag,
+.sidebar-cards-quota,
+.workspace-metric-value,
+.stat-number,
+[data-tabular] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   1. LE SITE (Landing Page, Sections, Navigation & CRO)
+   ========================================================================== */
+
+/* Section Spacing Rhythm */
+.landing-comparison,
+.landing-usecases,
+.landing-testimonials,
+.landing-section-offers,
+.landing-faq {
+  padding-block: clamp(52px, 6.5vw, 88px) !important;
+}
+
+/* Hero Above-the-fold Enhancements */
+.landing-hero {
+  padding: clamp(32px, 5vw, 60px) 0 clamp(48px, 6vw, 76px) !important;
+}
+
+.landing-kicker {
+  box-shadow: 0 2px 10px rgba(255, 145, 37, 0.12) !important;
+  border: 1px solid rgba(255, 145, 37, 0.35) !important;
+}
+
+.landing-actions .primary {
+  min-height: 50px !important;
+  padding: 0 24px !important;
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  border-radius: 14px !important;
+}
+
+.landing-actions .secondary {
+  min-height: 50px !important;
+  padding: 0 20px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  border-radius: 14px !important;
+}
+
+/* Comparison Section: Asymmetric High-Craft Bento */
+.comparison-table {
+  gap: 24px !important;
+}
+
+.comparison-col {
+  border-radius: 20px !important;
+  padding: clamp(24px, 3.5vw, 36px) !important;
+  box-sizing: border-box !important;
+}
+
+.comparison-col.soralink-col {
+  position: relative !important;
+  border: 1.5px solid rgba(255, 145, 37, 0.65) !important;
+  background: linear-gradient(
+    155deg,
+    rgba(32, 44, 68, 0.98) 0%,
+    rgba(18, 25, 42, 0.99) 100%
+  ) !important;
+  box-shadow:
+    0 18px 48px -12px rgba(0, 0, 0, 0.55),
+    0 0 28px rgba(255, 145, 37, 0.15) !important;
+}
+
+html[data-theme='light'] .comparison-col.soralink-col {
+  background: #ffffff !important;
+  border: 2px solid var(--brand-orange) !important;
+  box-shadow:
+    0 16px 36px -10px rgba(255, 145, 37, 0.18),
+    0 2px 10px rgba(0, 0, 0, 0.04) !important;
+}
+
+.comparison-col.paper-col {
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+}
+
+html[data-theme='light'] .comparison-col.paper-col {
+  background: #f8fafc !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+.comparison-col ul {
+  gap: 16px !important;
+}
+
+.comparison-col li {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+
+/* Use Cases by Profession: Responsive Bento Grid */
+.usecase-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr)) !important;
+  gap: 20px !important;
+}
+
+.usecase-grid article {
+  border-radius: 18px !important;
+  padding: 24px !important;
+  background: var(--brand-surface) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--shadow-subtle) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  min-height: 220px !important;
+  box-sizing: border-box !important;
+}
+
+.usecase-icon {
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  background: rgba(255, 145, 37, 0.12) !important;
+  color: var(--brand-accent) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Testimonials: Authentic Moroccan Social Proof */
+.testimonials-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)) !important;
+  gap: 22px !important;
+}
+
+.testimonial-card {
+  border-radius: 18px !important;
+  padding: 24px !important;
+  background: var(--brand-surface) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--shadow-subtle) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+}
+
+.testimonial-stars {
+  display: flex !important;
+  gap: 3px !important;
+  color: #f59e0b !important;
+}
+
+.testimonial-card p {
+  font-size: 14.5px !important;
+  line-height: 1.65 !important;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+}
+
+.testimonial-author {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid var(--line) !important;
+}
+
+.testimonial-avatar {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 50% !important;
+  background: var(--brand-tint) !important;
+  color: var(--brand-strong) !important;
+  font-weight: 700 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 1px solid var(--brand-tint-border) !important;
+}
+
+/* Pricing Grid Refinements */
+.single-action-offer {
+  border-radius: 20px !important;
+  padding: clamp(24px, 3.5vw, 36px) !important;
+}
+
+.single-action-offer .offer-wa-btn {
+  min-height: 46px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  font-weight: 600 !important;
+}
+
+.landing-price-grid .pricing-card {
+  border-radius: 20px !important;
+  padding: clamp(24px, 3.5vw, 36px) !important;
+}
+
+.pricing-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 14px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #ff9125, #ef552c) !important;
+  color: #ffffff !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em !important;
+  box-shadow: 0 4px 14px rgba(239, 85, 44, 0.35) !important;
+}
+
+/* ==========================================================================
+   2. LE DASHBOARD (Workspace, Mes Cartes, Navigation & Forms)
+   ========================================================================== */
+
+/* Workspace Sidebar & Cards Management */
+.workspace-sidebar-cards {
+  background: var(--brand-soft) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 16px !important;
+  padding: 14px !important;
+  margin-block: 10px 16px !important;
+}
+
+.sidebar-cards-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 10px !important;
+  padding-bottom: 8px !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+
+.sidebar-cards-title {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+}
+
+.sidebar-cards-quota {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 2px 8px !important;
+  border-radius: 8px !important;
+  background: var(--brand-surface) !important;
+  color: var(--muted) !important;
+  border: 1px solid var(--line) !important;
+}
+
+.sidebar-cards-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  margin-bottom: 8px !important;
+}
+
+.sidebar-card-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 44px !important;
+  padding: 8px 12px !important;
+  border-radius: 10px !important;
+  border: 1px solid transparent !important;
+  background: var(--brand-surface) !important;
+  color: var(--ink) !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  text-align: start !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.sidebar-card-item:hover:not(:disabled) {
+  border-color: var(--brand-accent) !important;
+  background: var(--brand-tint) !important;
+}
+
+.sidebar-card-item.active {
+  border-color: var(--brand-accent) !important;
+  background: var(--brand-tint) !important;
+  box-shadow: 0 0 0 1px var(--brand-accent) !important;
+  cursor: default !important;
+}
+
+.sidebar-card-name {
+  flex: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.sidebar-card-status {
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  padding: 2px 7px !important;
+  border-radius: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+.sidebar-card-status.published {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #059669 !important;
+}
+
+.sidebar-card-status.draft {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #d97706 !important;
+}
+
+.sidebar-single-action-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 44px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  margin-block: 4px 6px !important;
+}
+
+.sidebar-single-action-btn.active {
+  border-color: var(--brand-accent) !important;
+  background: var(--brand-tint) !important;
+  color: var(--brand-strong) !important;
+  font-weight: 700 !important;
+}
+
+.sidebar-new-card-btn {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: 44px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+/* Touch Ergonomics on Inputs & Fields */
+.workspace-design .field :is(input, select, textarea) {
+  min-height: 44px !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  box-sizing: border-box !important;
+}
+
+.workspace-design .field textarea {
+  min-height: 90px !important;
+}
+
+/* Mobile Rubric Selector (under 1100px) */
+@media (max-width: 1100px) {
+  .workspace-mobile-location select {
+    min-height: 48px !important;
+    border-radius: 12px !important;
+    font-size: 16px !important;
+    border: 1.5px solid var(--brand-input-border) !important;
+    background-color: var(--brand-field) !important;
+    color: var(--ink) !important;
+  }
+}
+
+/* ==========================================================================
+   3. LA CARTE DIGITALE (Public Card & Smartphone Preview)
+   ========================================================================== */
+
+/* Frame & Elevation */
+.profile-card.card-design {
+  border-radius: 24px !important;
+  box-shadow:
+    0 16px 40px -12px rgba(0, 0, 0, 0.16),
+    0 2px 8px -2px rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Prominent Single Action Button */
+.card-single-action-wrapper {
+  margin-block: 16px 12px !important;
+  padding-inline: 4px !important;
+  box-sizing: border-box !important;
+}
+
+.card-button.card-single-action {
+  min-height: 52px !important;
+  padding: 12px 22px !important;
+  font-size: 15.5px !important;
+  font-weight: 700 !important;
+  border-radius: 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+/* Contact Action Buttons & vCard Download */
+.card-actions .card-action-icons {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.card-button.card-save {
+  flex: 1 !important;
+  min-height: 48px !important;
+  padding: 10px 18px !important;
+  font-size: 14.5px !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+.card-button.card-share {
+  min-width: 48px !important;
+  min-height: 48px !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.contact-icons a,
+.card-social-links a {
+  min-width: 46px !important;
+  min-height: 46px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 12px !important;
+}
+
+/* Product & Services Catalog Layout */
+.catalog-product-list {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)) !important;
+  gap: 16px !important;
+}
+
+.catalog-product-card {
+  border-radius: 16px !important;
+  border: 1px solid var(--line) !important;
+  background: var(--brand-surface) !important;
+  box-shadow: var(--shadow-subtle) !important;
+  overflow: hidden !important;
+}
+
+.catalog-product-card .price-tag {
+  font-variant-numeric: tabular-nums !important;
+  font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   4. MOTION & MICRO-INTERACTIONS (GPU-Only, Respects Reduced Motion)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  .landing-actions .primary,
+  .landing-actions .secondary,
+  .offer-wa-btn,
+  .single-action-offer,
+  .landing-price-grid .pricing-card,
+  .usecase-grid article,
+  .testimonial-card,
+  .sidebar-card-item,
+  .card-button.card-single-action,
+  .card-button.card-save,
+  .card-button.card-share,
+  .contact-icons a {
+    transition:
+      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 200ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+  }
+
+  .landing-actions .primary:hover,
+  .offer-wa-btn:hover,
+  .card-button.card-single-action:hover,
+  .card-button.card-save:hover,
+  .card-button.card-share:hover,
+  .contact-icons a:hover {
+    transform: translateY(-2px) !important;
+  }
+
+  .usecase-grid article:hover,
+  .testimonial-card:hover {
+    transform: translateY(-3px) !important;
+    border-color: rgba(255, 145, 37, 0.35) !important;
+    box-shadow: var(--shadow-panel) !important;
+  }
+
+  .landing-actions .primary:active,
+  .offer-wa-btn:active,
+  .card-button.card-single-action:active,
+  .card-button.card-save:active,
+  .card-button.card-share:active,
+  .contact-icons a:active {
+    transform: translateY(0) !important;
+  }
+}
+
+/* ==========================================================================
+   5. MOBILE-FIRST 375PX RESPONSIVE AUDIT & ERGONOMICS
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .landing-actions {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 12px !important;
+  }
+
+  .landing-actions .primary,
+  .landing-actions .secondary {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .landing-reassurance {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .landing-reassurance .sep {
+    display: none !important;
+  }
+
+  .single-action-price {
+    align-items: stretch !important;
+    width: 100% !important;
+  }
+
+  .single-action-price .offer-wa-btn {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .comparison-col {
+    padding: 20px 16px !important;
+  }
+
+  .usecase-grid article,
+  .testimonial-card {
+    padding: 18px 16px !important;
+  }
+}
