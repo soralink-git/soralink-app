@@ -1543,7 +1543,7 @@ export default function App({
           </div>
         </div>
       )}
-      {view === 'public' || view === 'demo' ? null : (
+      {view === 'public' || view === 'demo' || view === 'app' ? null : (
         <footer className="site-footer">
           <div>
             <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>

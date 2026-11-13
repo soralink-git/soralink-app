@@ -20,7 +20,9 @@ export default function PinnedCardPreview({ ar, children }: { ar: boolean; child
       pending = 0;
       const rect = anchor.getBoundingClientRect();
       const visible = window.visualViewport;
-      const saveBar = anchor.closest('.workspace-main')?.querySelector('.workspace-save-action');
+      const saveBar = (
+        anchor.closest('.workspace') || anchor.closest('.workspace-main')
+      )?.querySelector('.workspace-save-action');
       const frame = previewFrame(rect, {
         width: window.innerWidth,
         height: visible?.height || window.innerHeight,
