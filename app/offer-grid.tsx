@@ -98,50 +98,58 @@ export default function OfferGrid({ ar, auth }: { ar: boolean; auth: boolean }) 
               ) : (
                 <p className="hint">{t('Première année incluse', 'العام الأول داخل فالثمن')}</p>
               )}
-              <ul className="landing-price-features">
-                {offer.features.map((feature) => (
-                  <li key={feature[0]}>
-                    <Check size={16} />
-                    <span>{feature[ar ? 1 : 0]}</span>
-                  </li>
-                ))}
-                {offer.id === 'Identite' && (
-                  <li className="feature-option">
-                    <Check size={16} />
-                    <span>
-                      <em>
-                        {t('Option Carte NFC physique disponible', 'إمكانية إضافة بطاقة NFC مادية')}
-                      </em>
-                    </span>
-                  </li>
-                )}
-                {isFeatured && (
-                  <li className="feature-option">
-                    <Check size={16} />
-                    <span>
-                      <em>
-                        {t(
-                          'Option Carte NFC personnalisée disponible',
-                          'إمكانية إضافة بطاقة NFC مخصصة',
-                        )}
-                      </em>
-                    </span>
-                  </li>
-                )}
-                {offer.id === 'Activite' && (
-                  <li className="feature-option">
-                    <Check size={16} />
-                    <span>
-                      <em>
-                        {t(
-                          'Option Carte NFC personnalisée disponible',
-                          'إمكانية إضافة بطاقة NFC مخصصة',
-                        )}
-                      </em>
-                    </span>
-                  </li>
-                )}
-              </ul>
+              <details className="offer-details">
+                <summary>
+                  {t('Voir les fonctionnalités incluses', 'شوف الوظائف اللي داخلة')}
+                </summary>
+                <ul className="landing-price-features">
+                  {offer.features.map((feature) => (
+                    <li key={feature[0]}>
+                      <Check size={16} />
+                      <span>{feature[ar ? 1 : 0]}</span>
+                    </li>
+                  ))}
+                  {offer.id === 'Identite' && (
+                    <li className="feature-option">
+                      <Check size={16} />
+                      <span>
+                        <em>
+                          {t(
+                            'Option Carte NFC physique disponible',
+                            'إمكانية إضافة بطاقة NFC مادية',
+                          )}
+                        </em>
+                      </span>
+                    </li>
+                  )}
+                  {isFeatured && (
+                    <li className="feature-option">
+                      <Check size={16} />
+                      <span>
+                        <em>
+                          {t(
+                            'Option Carte NFC personnalisée disponible',
+                            'إمكانية إضافة بطاقة NFC مخصصة',
+                          )}
+                        </em>
+                      </span>
+                    </li>
+                  )}
+                  {offer.id === 'Activite' && (
+                    <li className="feature-option">
+                      <Check size={16} />
+                      <span>
+                        <em>
+                          {t(
+                            'Option Carte NFC personnalisée disponible',
+                            'إمكانية إضافة بطاقة NFC مخصصة',
+                          )}
+                        </em>
+                      </span>
+                    </li>
+                  )}
+                </ul>
+              </details>
               <a
                 className={(isFeatured ? 'primary' : 'secondary') + ' full offer-wa-btn'}
                 target="_blank"

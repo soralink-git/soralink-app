@@ -1,0 +1,583 @@
+/* Platform design contract. Customer color/shape variables remain authoritative.
+   1px borders, type metrics and circular artwork are optical, not spacing tokens. */
+:root {
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+  --space-8: 64px;
+  --container-max: 1344px;
+  --motion-duration: 200ms;
+  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --type-body: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+  --type-h4: clamp(1.125rem, 1rem + 0.4vw, 1.25rem);
+  --type-h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5625rem);
+  --type-h2: clamp(1.5625rem, 1.2rem + 1vw, 1.953125rem);
+  --type-h1: clamp(2rem, 1.4rem + 2.5vw, 3.8125rem);
+}
+.design-system {
+  background: var(--brand-canvas);
+  color: var(--ink);
+  line-height: 1.5;
+}
+.design-system .site {
+  font-size: var(--type-body);
+  color: var(--ink);
+  background: var(--brand-canvas);
+}
+.design-system .site :is(h1, h2, h3, h4) {
+  line-height: 1.2;
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+.design-system .site h1 {
+  font-size: var(--type-h1);
+}
+.design-system .site h2 {
+  font-size: var(--type-h2);
+}
+.design-system .site h3 {
+  font-size: var(--type-h3);
+}
+.design-system .site h4 {
+  font-size: var(--type-h4);
+}
+.design-system .site :is(p, blockquote) {
+  line-height: 1.6;
+  max-inline-size: 65ch;
+}
+.design-system
+  :is(
+    .landing-price,
+    .price,
+    .metric-row,
+    .stats,
+    .catalog-total,
+    table,
+    input[type='number'],
+    input[type='date'],
+    input[type='time'],
+    .card-quota-badge,
+    .sidebar-cards-quota
+  ) {
+  font-variant-numeric: tabular-nums;
+}
+/* Equal-height controls, including former small variants. Long translations can wrap. */
+.design-system
+  .site
+  :is(
+    .primary,
+    .secondary,
+    .text-button,
+    .language,
+    .theme-toggle,
+    .header-login,
+    .header-start,
+    .close,
+    .load-more-action,
+    .sidebar-new-card-btn,
+    .new-card-trigger,
+    .sidebar-single-action-btn
+  ),
+.design-system .ux-dialog :is(.primary, .secondary, .text-button, .close) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  min-height: var(--control-min) !important;
+  min-block-size: var(--control-min) !important;
+  min-inline-size: var(--control-min);
+  height: auto !important;
+  padding: 8px 24px !important;
+  border-radius: var(--radius-control) !important;
+  font-size: 1rem !important;
+  line-height: 1.5 !important;
+  font-weight: 600 !important;
+  white-space: normal;
+  text-align: center;
+  box-shadow: none !important;
+  transform: none;
+}
+.design-system .site :is(.primary, .secondary).full {
+  inline-size: 100%;
+}
+.design-system .site .primary {
+  background: var(--brand-accent) !important;
+  color: var(--brand-on-accent) !important;
+  border: 1px solid transparent !important;
+}
+.design-system .site .secondary {
+  background: var(--brand-surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--brand-input-border) !important;
+}
+.design-system .site :is(.text-button, .language, .header-login) {
+  color: var(--ink);
+  background: transparent;
+}
+.design-system .site :is(button, a, summary, input, select, textarea),
+.design-system .ux-dialog :is(button, a, summary, input, select, textarea) {
+  transition-property: background-color, border-color, color, opacity, transform;
+  transition-duration: var(--motion-duration);
+  transition-timing-function: var(--motion-ease);
+  touch-action: manipulation;
+}
+.design-system
+  :is(.site, .ux-dialog)
+  :is(button, a, summary, input, select, textarea):focus-visible {
+  outline: 3px solid var(--brand-strong) !important;
+  outline-offset: 3px;
+  box-shadow: none;
+}
+@media (hover: hover) {
+  .design-system .site .primary:hover:not(:disabled) {
+    background: var(--brand-accent-hover) !important;
+  }
+  .design-system
+    .site
+    :is(.secondary, .text-button, .language, .header-login):hover:not(:disabled) {
+    background: var(--brand-soft) !important;
+  }
+}
+.design-system :is(.site, .ux-dialog) :is(button, a, summary):active:not(:disabled) {
+  transform: scale(0.98) !important;
+}
+.design-system :is(.site, .ux-dialog) :is(button, input, select, textarea):disabled,
+.design-system :is(.site, .ux-dialog) [aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none !important;
+}
+.design-system .site > header {
+  max-inline-size: var(--container-max);
+  min-height: 96px;
+  height: auto;
+  padding: 16px 24px;
+  gap: 24px;
+}
+.design-system
+  .site
+  :is(.header-actions, nav, .landing-actions, .card-modal-actions, .catalog-actions) {
+  gap: 8px;
+}
+.design-system .site header :is(a, button, summary) {
+  min-block-size: 48px;
+}
+.design-system .site header nav a {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px;
+}
+.design-system .site .landing {
+  max-width: var(--container-max);
+  padding: 32px 24px 64px;
+  color: var(--ink);
+}
+.design-system .site .landing > section {
+  margin-block: 0 64px;
+  padding-block: 0;
+}
+.design-system .site .landing .landing-hero {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+  padding-block: 32px !important;
+}
+.design-system .site .landing-copy {
+  grid-column: span 6;
+  min-inline-size: 0;
+}
+.design-system .site .landing-brand-visual {
+  grid-column: span 6;
+  min-inline-size: 0;
+  padding: 16px !important;
+  border-radius: 32px !important;
+}
+.design-system .site .landing-brand-visual img {
+  inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 1679 / 937;
+  border-radius: 16px;
+}
+.design-system
+  .site
+  .landing
+  :is(
+    .landing-features,
+    .landing-steps,
+    .usecase-grid,
+    .landing-price-grid,
+    .testimonials-grid,
+    .comparison-table
+  ) {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+  gap: 32px !important;
+}
+.design-system
+  .site
+  .landing
+  :is(.landing-features, .landing-steps, .usecase-grid, .landing-price-grid, .testimonials-grid)
+  > * {
+  grid-column: span 4;
+  min-inline-size: 0;
+}
+.design-system .site .landing .comparison-table > * {
+  grid-column: span 6;
+}
+.design-system
+  .site
+  .landing
+  :is(
+    .landing-features article,
+    .landing-steps article,
+    .usecase-grid article,
+    .pricing-card,
+    .testimonial-card,
+    .comparison-col,
+    .single-action-offer
+  ) {
+  padding: 24px !important;
+  border-radius: 32px !important;
+  background: var(--brand-surface) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--ink);
+  box-shadow: none !important;
+}
+.design-system
+  .site
+  .landing
+  :is(.landing-kicker, .landing-sharing span, .pricing-monthly-anchor, .pricing-badge) {
+  background: var(--brand-soft) !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+}
+.design-system
+  .site
+  .landing
+  :is(
+    .feature-index,
+    .stars,
+    .check-badge,
+    .landing-price,
+    .landing-price-grid h3,
+    .usecase-grid h3,
+    .comparison-col h3,
+    .testimonial-author strong
+  ) {
+  color: var(--ink);
+}
+.design-system
+  .site
+  .landing
+  :is(p, blockquote, .hint, .testimonial-author span, .landing-price-features) {
+  color: var(--muted) !important;
+}
+.design-system .site .landing :is(.landing-final, .landing-pilot, .nfc-explainer, .pricing-notes) {
+  background: var(--brand-surface) !important;
+  border: 1px solid var(--line);
+  border-radius: 32px !important;
+  padding: 24px !important;
+  color: var(--ink);
+}
+.design-system .site .landing::before,
+.design-system .site .landing::after {
+  display: none;
+}
+.design-system .site .landing h1 :is(em, .hero-gradient) {
+  background: none;
+  color: var(--ink);
+  -webkit-text-fill-color: currentColor;
+}
+/* 24px internal / 32px external proximity. Control radius: 32 - 24 = 8. */
+.design-system
+  .site
+  :is(.panel, .auth-panel, .workspace-card-switcher-box, .workspace-metrics, .admin-client-card),
+.design-system .ux-dialog {
+  padding: 24px;
+  border-radius: 32px !important;
+  background: var(--brand-surface);
+}
+.design-system .site :is(.workspace-main, .workspace-tab-content, .admin-workspace > main) {
+  gap: 32px;
+}
+.design-system .site :is(.form-grid, .catalog-list-tools, .admin-client-search) {
+  gap: 24px;
+}
+.design-system .site .field {
+  gap: 8px;
+  margin-block-end: 24px;
+}
+.design-system
+  .site
+  .field
+  :is(input, select, textarea):not([type='checkbox']):not([type='radio']):not([type='color']):not(
+    [type='range']
+  ),
+.design-system
+  .ux-dialog
+  .field
+  :is(input, select, textarea):not([type='checkbox']):not([type='radio']) {
+  min-height: 48px !important;
+  border-radius: var(--radius-control) !important;
+  padding: 8px 16px !important;
+  font-size: 1rem !important;
+  line-height: 1.5;
+  border: 1px solid var(--brand-input-border);
+  background: var(--brand-field);
+  color: var(--ink);
+}
+.design-system .site .field textarea {
+  min-height: 144px !important;
+}
+.design-system .site .password-field {
+  position: relative;
+}
+.design-system .site .password-field input {
+  padding-inline-end: 64px !important;
+}
+.design-system .site .password-field button {
+  min-width: 48px;
+  min-height: 48px;
+  inset-block-start: 0;
+}
+.design-system
+  .site
+  :is(.auth-remember, label:has(> input[type='checkbox']), label:has(> input[type='radio'])) {
+  min-block-size: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.design-system .site .auth-steps {
+  gap: 16px;
+  margin-block: 24px 32px;
+}
+.design-system .site .auth-steps li {
+  gap: 8px;
+}
+.design-system .site .auth-steps li > span {
+  inline-size: 32px;
+  block-size: 32px;
+}
+.design-system .site .auth-layout {
+  max-inline-size: var(--container-max);
+  padding: 32px 24px 64px;
+  gap: 32px;
+}
+.design-system .site .auth-panel form {
+  display: grid;
+  gap: 8px;
+}
+.design-system .site .auth-panel .field {
+  margin: 0 0 16px;
+}
+.design-system .site :is(.auth-switch, .auth-panel > .hint) {
+  margin-block: 24px;
+}
+.inline-field-error {
+  display: block;
+  margin-block-start: 8px;
+  color: var(--state-error-text);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.design-system .site .field [aria-invalid='true'] {
+  border: 2px solid var(--state-error-text);
+}
+.design-system .site .offer-details {
+  margin-block: 16px 24px;
+}
+.design-system .site .offer-details summary {
+  min-block-size: 48px;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.design-system .site .offer-details .landing-price-features {
+  margin-block: 16px 0;
+}
+.design-system .site .custom-card .card-action-icons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.design-system .site .custom-card .card-action-icons > button {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 72px !important;
+  padding: 8px !important;
+  gap: 4px;
+}
+.design-system .site .custom-card .card-action-icons > button:not(:first-child) {
+  background: var(--block-bg, var(--brand-surface)) !important;
+  color: var(--block-fg, var(--ink)) !important;
+  border: 1px solid currentColor !important;
+}
+.design-system .site .demo-guidance {
+  margin-block: 24px 32px;
+  gap: 8px;
+}
+.design-system .site .workspace-save-action {
+  padding: 16px;
+  gap: 16px;
+}
+.design-system .site .sr-only {
+  margin: -1px;
+}
+html[data-theme='dark']
+  .design-system
+  .site
+  :is(
+    .panel,
+    .auth-panel,
+    .pricing-card,
+    .testimonial-card,
+    .landing-features article,
+    .landing-steps article,
+    .admin-client-card,
+    .workspace-metrics
+  ) {
+  box-shadow: none !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+@media (max-width: 1024px) {
+  .design-system .site .landing :is(.landing-copy, .landing-brand-visual) {
+    grid-column: 1 / -1;
+  }
+  .design-system
+    .site
+    .landing
+    :is(.landing-features, .landing-steps, .usecase-grid, .landing-price-grid, .testimonials-grid)
+    > * {
+    grid-column: span 6;
+  }
+}
+@media (max-width: 700px) {
+  .design-system .site > header {
+    padding: 16px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .design-system .site > header .header-actions {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .design-system .site > header :is(.language, .theme-toggle, .header-login, .header-start) {
+    padding-inline: 8px !important;
+  }
+  .design-system .site :is(.landing, .auth-layout) {
+    padding: 24px 16px 48px;
+  }
+  .design-system .site .landing > section {
+    margin-block-end: 48px;
+  }
+  .design-system
+    .site
+    .landing
+    :is(
+      .landing-features,
+      .landing-steps,
+      .usecase-grid,
+      .landing-price-grid,
+      .testimonials-grid,
+      .comparison-table
+    )
+    > * {
+    grid-column: 1 / -1;
+  }
+  .design-system .site .landing-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  .design-system .site :is(.panel, .auth-panel, .admin-client-card),
+  .design-system .ux-dialog {
+    padding: 16px !important;
+  }
+  .design-system .site .field {
+    margin-block-end: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .design-system *,
+  .design-system *::before,
+  .design-system *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* Touch targets include icon-only controls; inline prose links retain text flow. */
+.design-system .site button,
+.design-system .site summary,
+.design-system .ux-dialog button {
+  min-block-size: 48px;
+  min-inline-size: 48px;
+}
+.design-system
+  .site
+  :is(
+    .catalog-actions,
+    .card-modal-actions,
+    .image-action-row,
+    .contact-actions,
+    .social-links,
+    .auth-switch
+  ) {
+  gap: 8px;
+}
+.design-system .site .theme-toggle {
+  padding-inline: 16px !important;
+}
+.design-system .site .landing-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 8px;
+}
+.design-system .site .card-modal-actions > :is(button, a) {
+  flex: 1 1 0;
+}
+/* Public profile type and colors remain tied to the customer's design, not the marketing H1. */
+.design-system .site .custom-card :is(h1, h2) {
+  font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.75rem);
+}
+.design-system .site .custom-card h3 {
+  font-size: clamp(1.125rem, 1rem + 0.4vw, 1.25rem);
+}
+.design-system .site .custom-card .primary {
+  background: var(--button-bg, var(--brand-accent)) !important;
+  color: var(--button-text, var(--brand-on-accent)) !important;
+  border-radius: var(--button-radius, 16px) !important;
+}
+@media (max-width: 700px) {
+  .design-system .site .landing-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .design-system .site :is(.panel, .auth-panel, .admin-client-card),
+  .design-system .ux-dialog {
+    border-radius: 24px !important;
+  }
+}
+
+.design-system .site .landing :is(h1, h2, h3, h4) {
+  color: var(--ink) !important;
+}
+.design-system .site .landing .usecase-grid > * {
+  grid-column: span 3;
+}
+@media (max-width: 1024px) {
+  .design-system .site .landing .usecase-grid > * {
+    grid-column: span 6;
+  }
+}
+@media (max-width: 700px) {
+  .design-system .site .landing .usecase-grid > * {
+    grid-column: 1 / -1;
+  }
+}

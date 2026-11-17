@@ -2,7 +2,7 @@
 .admin-workspace .admin-brand-group {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   min-inline-size: 0;
   flex-wrap: wrap;
 }
@@ -17,7 +17,7 @@
 .admin-workspace .admin-tabs button {
   min-inline-size: 0;
   min-block-size: 44px;
-  padding: 10px 8px;
+  padding: 8px 8px;
   white-space: normal;
   overflow-wrap: anywhere;
 }
@@ -25,17 +25,17 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 12px;
-  margin-block: 20px;
+  gap: 16px;
+  margin-block: 24px;
 }
 .admin-client-search .field {
   margin: 0;
 }
 .admin-client-card {
-  padding: 20px;
+  padding: 24px;
   margin-block: 16px;
   border: 1px solid var(--line);
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--brand-surface);
   min-inline-size: 0;
 }
@@ -68,14 +68,14 @@
   color: var(--brand-strong);
 }
 .admin-client-advanced {
-  margin-block: 20px;
+  margin-block: 24px;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 4px 12px;
+  border-radius: 16px;
+  padding: 8px 16px;
 }
 .admin-client-advanced > summary {
   cursor: pointer;
-  padding-block: 12px;
+  padding-block: 16px;
   min-block-size: 44px;
   font-weight: 600;
 }
@@ -107,7 +107,7 @@
     height: auto !important;
     min-height: 80px;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 16px;
     padding-block: 16px;
   }
   .admin-workspace .header-actions {
@@ -121,13 +121,13 @@
   .admin-workspace .admin-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
-    margin-block: 20px;
+    margin-block: 24px;
   }
   .admin-workspace .admin-stats .panel {
     flex-direction: column;
     justify-content: flex-start;
     gap: 8px;
-    padding: 12px 8px;
+    padding: 16px 8px;
     min-inline-size: 0;
     text-align: center;
   }
@@ -168,7 +168,7 @@
     flex: 1 1 100%;
   }
   .admin-access-fieldset {
-    padding: 12px;
+    padding: 16px;
   }
 }
 @media (max-width: 360px) {

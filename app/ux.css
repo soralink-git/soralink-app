@@ -4,9 +4,9 @@
   inset-block-start: 12px;
   inset-inline-start: 12px;
   z-index: 10000;
-  padding: 12px 18px;
+  padding: 16px 16px;
   border: 2px solid var(--brand-orange);
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--brand-surface);
   color: var(--ink);
   font-weight: 700;
@@ -19,14 +19,14 @@
 .landing section[id],
 .field :is(input, select, textarea),
 [tabindex='-1'] {
-  scroll-margin-block: 100px 24px;
+  scroll-margin-block: 104px 24px;
 }
 .sr-only {
   position: absolute;
   inline-size: 1px;
   block-size: 1px;
   padding: 0;
-  margin: -1px;
+  margin: -8px;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
@@ -50,16 +50,16 @@
   list-style: none;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
   padding: 0;
-  margin-block: 20px;
+  margin-block: 24px;
   font-size: 13px;
   color: var(--muted);
 }
 .auth-steps li {
   display: grid;
   justify-items: start;
-  gap: 6px;
+  gap: 8px;
 }
 .auth-steps li > span {
   display: grid;
@@ -83,7 +83,7 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 16px;
   max-inline-size: 960px;
   margin: 16px auto 0;
   padding: 16px;
@@ -96,16 +96,16 @@
   flex: 1 1 240px;
 }
 .demo-guidance p {
-  margin-block: 4px 0;
+  margin-block: 8px 0;
   font-size: 14px;
   color: var(--muted);
 }
 .public-language-toggle {
-  padding-inline: 12px;
+  padding-inline: 16px;
 }
 .custom-card .card-action-icons > button {
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 .card-action-label {
   display: block;
@@ -118,10 +118,10 @@
   pointer-events: auto;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px 16px;
-  padding: 12px;
+  gap: 8px 16px;
+  padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--brand-surface);
   color: var(--ink);
 }
@@ -148,8 +148,8 @@
   border: 1px solid var(--state-success-border);
   background: var(--state-success-bg);
   color: var(--state-success-text);
-  padding: 12px 16px;
-  border-radius: 12px;
+  padding: 16px 16px;
+  border-radius: 16px;
 }
 .catalog-search-feedback {
   display: flex;
@@ -188,10 +188,10 @@
   background: var(--brand-surface);
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 .ux-dialog h2 {
-  padding-inline-end: 52px;
+  padding-inline-end: 56px;
   overflow-wrap: anywhere;
 }
 .ux-dialog :is(form, .field) {
@@ -208,7 +208,7 @@
     padding-block-end: max(16px, env(safe-area-inset-bottom));
   }
   .demo-guidance {
-    margin-inline: 12px;
+    margin-inline: 16px;
   }
   .demo-guidance > a {
     flex: 1 1 auto;
