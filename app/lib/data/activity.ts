@@ -1,3 +1,4 @@
+import { readAccountCard, readCard } from '../card-storage';
 import { env } from 'cloudflare:workers';
 import { mailStatement } from '../notifications';
 import { capabilities } from '../offers';
@@ -6,10 +7,7 @@ import { active, db, json } from '../server';
 import type { Action, DataUser } from './types';
 
 export async function createAppointment(b: Action<'manual'>, user: DataUser) {
-  const p: any = await db()
-    .prepare('SELECT * FROM profiles WHERE owner=?')
-    .bind(user.userId)
-    .first();
+  const p = await readAccountCard(db(), user.userId, b.cardId);
   if (!p || !active(p) || !capabilities(p).appointments)
     return json({ error: 'Option Pro inactive' }, 403);
   const d = normalizeSchedule(JSON.parse(p.data));
@@ -80,18 +78,12 @@ export async function createAppointment(b: Action<'manual'>, user: DataUser) {
 }
 
 export async function updateRequestStatus(b: Action<'status'>, user: DataUser) {
-  const r: any = await db()
-    .prepare(
-      'SELECT requests.* FROM requests JOIN profiles ON profiles.id=requests.profile WHERE requests.id=? AND profiles.owner=?',
-    )
-    .bind(b.id, user.userId)
-    .first();
+  const r: any = await db().prepare('SELECT * FROM requests WHERE id=?').bind(b.id).first();
   if (!r || r.kind === 'contact') return json({ error: 'Accès refusé' }, 403);
+  const profile = await readCard(db(), r.profile, { owner: user.userId });
+  if (!profile || (b.cardId && b.cardId !== profile.id))
+    return json({ error: 'Accès refusé' }, 403);
   if (r.status === b.status) return json({ ok: true });
-  const profile: any = await db()
-    .prepare('SELECT * FROM profiles WHERE id=?')
-    .bind(r.profile)
-    .first();
   const revision = (r.notification_revision || 0) + 1;
   const update = db()
     .prepare(
@@ -104,7 +96,7 @@ export async function updateRequestStatus(b: Action<'status'>, user: DataUser) {
       : [];
   if (b.status === 'confirmed' && r.kind === 'rdv') {
     if (!r.slot) return json({ error: 'Créneau absent' }, 400);
-    const p: any = await db().prepare('SELECT * FROM profiles WHERE id=?').bind(r.profile).first();
+    const p = profile;
     if (!active(p) || !capabilities(p).appointments)
       return json({ error: 'Option Pro inactive' }, 403);
     if (r.status === 'confirmed') return json({ ok: true });
@@ -153,9 +145,9 @@ export async function updateRequestStatus(b: Action<'status'>, user: DataUser) {
 export async function deleteContact(b: Action<'deleteContact'>, user: DataUser) {
   const result = await db()
     .prepare(
-      "DELETE FROM requests WHERE id=? AND kind='contact' AND profile IN (SELECT id FROM profiles WHERE owner=?)",
+      "DELETE FROM requests WHERE id=? AND kind='contact' AND (profile IN (SELECT id FROM profiles WHERE owner=?) OR profile IN (SELECT id FROM secondary_cards WHERE owner=?)) AND (? IS NULL OR profile=?)",
     )
-    .bind(b.id, user.userId)
+    .bind(b.id, user.userId, user.userId, b.cardId ?? null, b.cardId ?? null)
     .run();
   if (!result.meta.changes) return json({ error: 'Contact introuvable' }, 404);
   return json({ ok: true });

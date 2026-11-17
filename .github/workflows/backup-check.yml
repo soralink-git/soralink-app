@@ -1,0 +1,35 @@
+name: Fraîcheur des sauvegardes
+on:
+  schedule:
+    - cron: '20 8 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Vérifier D1 et R2 (8 jours maximum)
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BACKUP_ACCESS_KEY_ID: ${{ secrets.R2_BACKUP_ACCESS_KEY_ID }}
+          R2_BACKUP_SECRET_ACCESS_KEY: ${{ secrets.R2_BACKUP_SECRET_ACCESS_KEY }}
+        run: node scripts/backup-r2.mjs --check
+      - name: Signaler un échec
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title='Incident : sauvegardes absentes ou non vérifiables'
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$title in:title" --json title --jq 'map(select(.title == "Incident : sauvegardes absentes ou non vérifiables")) | length')
+          if [ "$existing" = 0 ]; then
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "Les sauvegardes D1/R2 ne sont pas vérifiables. Consulter les journaux : $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          fi

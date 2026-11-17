@@ -336,6 +336,7 @@ export const dataActionSchema = z
     }),
     z.object({
       action: z.literal('manual'),
+      cardId: id.optional(),
       name: requiredText(120),
       phone: requiredText(40),
       email,
@@ -350,10 +351,11 @@ export const dataActionSchema = z
     }),
     z.object({
       action: z.literal('status'),
+      cardId: id.optional(),
       id,
       status: z.enum(['confirmed', 'cancelled', 'done', 'new']),
     }),
-    z.object({ action: z.literal('deleteContact'), id }),
+    z.object({ action: z.literal('deleteContact'), id, cardId: id.optional() }),
   ])
   .superRefine((b, ctx) => {
     if (b.action === 'request') requestRules(b, ctx);

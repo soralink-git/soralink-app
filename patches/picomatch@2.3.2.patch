@@ -1,0 +1,30 @@
+diff --git a/lib/parse.js b/lib/parse.js
+index caa2b86aa5a567df33cef4bda3c7a97794f439f8..49fec48ef10a42b74a27a0d15413c4c5f0b81c1f 100644
+--- a/lib/parse.js
++++ b/lib/parse.js
+@@ -324,6 +324,12 @@ const analyzeRepeatedExtglob = (body, options) => {
+  */
+ 
+ const parse = (input, options) => {
++  // SoraLink local mitigation for CVE-2026-112366: repeated extglobs are
++  // not needed by this project and must never reach the RegExp compiler.
++  if (typeof input === 'string' && /[+*]\(/.test(input)) {
++    throw new SyntaxError('SORALINK_REPEATED_EXTGLOB_DISABLED');
++  }
++
+   if (typeof input !== 'string') {
+     throw new TypeError('Expected a string');
+   }
+@@ -1303,6 +1309,12 @@ const parse = (input, options) => {
+  */
+ 
+ parse.fastpaths = (input, options) => {
++  // SoraLink local mitigation for CVE-2026-112366: repeated extglobs are
++  // not needed by this project and must never reach the RegExp compiler.
++  if (typeof input === 'string' && /[+*]\(/.test(input)) {
++    throw new SyntaxError('SORALINK_REPEATED_EXTGLOB_DISABLED');
++  }
++
+   const opts = { ...options };
+   const max = typeof opts.maxLength === 'number' ? Math.min(MAX_LENGTH, opts.maxLength) : MAX_LENGTH;
+   const len = input.length;

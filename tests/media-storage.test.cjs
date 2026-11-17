@@ -401,3 +401,16 @@ test('offer gallery and video references enforce ownership and remain indexed th
   assert.equal(await state(A), 'ready');
   assert.equal(await state(B), 'ready');
 });
+
+test('removing a primary reference keeps media used by a secondary card ready and readable', async () => {
+  await asset(A);
+  const old = await profile('card', 'owner', { avatar: url(A) });
+  await secondaryCard('second', 'owner', { avatar: url(A) });
+  assert.equal(await media.saveProfileWithMedia('owner', old, 'card', {}, true, '', 'new'), true);
+  assert.deepEqual(await keys(), []);
+  assert.deepEqual(await secondaryKeys(), [A]);
+  assert.equal(await state(A), 'ready');
+  await media.cleanupMedia('owner');
+  assert.deepEqual(deleted, []);
+  assert.equal(await media.validateMedia('owner', { avatar: url(A) }, {}), true);
+});

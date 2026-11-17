@@ -361,6 +361,7 @@ export default function App({
     setHistoryBusy(true);
     try {
       const query = new URLSearchParams({ history: kind, cursor });
+      if (activeCardId) query.set('cardId', activeCardId);
       const response = await fetch('/api/data?' + query);
       const page: any = await response.json();
       if (epoch !== historyEpoch.current) return;
@@ -528,7 +529,11 @@ export default function App({
       const r = await fetch('/api/data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify(
+          ['manual', 'status', 'deleteContact'].includes(body.action)
+            ? { ...body, cardId: activeCardId || undefined }
+            : body,
+        ),
       });
       const b: any = await r.json();
       if (!r.ok) throw new Error(ar ? b.errorAr || 'ما قدرناش نكمّلو الطلب. عاود جرّب.' : b.error);

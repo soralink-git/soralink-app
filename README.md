@@ -35,12 +35,14 @@ admin reste utilisable. L’interface n’affiche jamais cette adresse.
   fournisseur (401/403/erreur réseau) dans les 24 h. Le workflow `.github/workflows/uptime.yml`
   l’interroge toutes les 15 minutes, vérifie l’accueil, ouvre un ticket « Incident » (santé ou
   e-mail) et le referme au retour à la normale.
-- **Sauvegarde** : `.github/workflows/backup.yml` (lundi 03:00 UTC) exécute
-  `scripts/backup-d1.mjs` — export D1, chiffrement AES-256-GCM, dépôt dans
-  `soralink-backups/backups/soralink-db/`. Secrets requis : `CLOUDFLARE_API_TOKEN`,
-  `CLOUDFLARE_ACCOUNT_ID`, `BACKUP_ENCRYPTION_KEY`. Restauration :
-  `scripts/restore-backup.mjs`, procédure et répétition datée dans
-  [docs/RECOVERY-RUNBOOK.md](docs/RECOVERY-RUNBOOK.md).
+- **Sauvegarde** : `.github/workflows/backup.yml` (lundi 03:00 UTC) exporte D1 avec
+  relecture de la copie chiffrée, puis copie tous les objets R2 avec un manifeste chiffré.
+  Le job échoue si les secrets requis manquent. `backup-check.yml` vérifie quotidiennement
+  la présence de copies D1/R2 de moins de huit jours et ouvre un incident en cas d’échec.
+  Secrets : `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `BACKUP_ENCRYPTION_KEY`,
+  `R2_BACKUP_ACCESS_KEY_ID`, `R2_BACKUP_SECRET_ACCESS_KEY`. Activation, limites de cohérence,
+  migration `0019` et restauration isolée : [corrections du 17 novembre](docs/AUDIT-CORRECTIONS-2026-11-17.md).
+  Le code livré ne prouve pas que ces secrets sont configurés ni que la sauvegarde a été exécutée.
 - **Alerting Cloudflare** (erreurs Workers/Pages) : à créer dans le dashboard
   (Notifications → Add policy → Workers / Pages), le jeton d’automatisation n’ayant pas
   les droits `Alerting`. Le workflow d’uptime couvre la disponibilité.

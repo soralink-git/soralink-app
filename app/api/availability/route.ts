@@ -1,3 +1,4 @@
+import { readCard } from '../../lib/card-storage';
 import { capabilities } from '../../lib/offers';
 import {
   availabilityQuerySchema,
@@ -13,10 +14,7 @@ export async function GET(req: Request) {
       availabilityQuerySchema,
       Object.fromEntries(new URL(req.url).searchParams),
     );
-    const p: any = await db()
-      .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
-      .bind(query.id)
-      .first();
+    const p: any = await readCard(db(), query.id, { published: true });
     if (!p || !active(p) || !capabilities(p).appointments)
       return json({ error: 'Rendez-vous indisponibles' }, 404);
     const saved = JSON.parse(p.data);

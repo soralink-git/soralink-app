@@ -1,3 +1,4 @@
+import { readCard, readAccountCard } from '../../lib/card-storage';
 import { z } from 'zod';
 import { db, identity, active, json } from '../../lib/server';
 import { clientSectionAllowed } from '../../lib/client-access';
@@ -18,10 +19,7 @@ export async function POST(req: Request) {
       )
     )
       return new Response(null, { status: 204 });
-    const profile: any = await db()
-      .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
-      .bind(body.profile)
-      .first();
+    const profile: any = await readCard(db(), body.profile, { published: true });
     if (
       !profile ||
       !active(profile) ||
@@ -59,14 +57,14 @@ export async function POST(req: Request) {
     return inputErrorResponse(error) || new Response(null, { status: 503 });
   }
 }
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const { user } = await identity();
     if (!user) return json({ error: 'Connexion requise' }, 401);
-    const profile: any = await db()
-      .prepare('SELECT * FROM profiles WHERE owner=?')
-      .bind(user.userId)
-      .first();
+    const cardId = new URL(req.url).searchParams.get('cardId');
+    if (cardId !== null && (!cardId || cardId.length > 128))
+      return json({ error: 'Carte invalide' }, 400);
+    const profile = await readAccountCard(db(), user.userId, cardId || undefined);
     if (
       !profile ||
       !active(profile) ||

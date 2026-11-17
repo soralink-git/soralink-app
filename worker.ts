@@ -14,6 +14,8 @@ const SECURITY_HEADERS: Record<string, string> = {
 
 // Report-only first: collecting violations must not break the live site.
 // Promote to Content-Security-Policy once the inline theme/RSC scripts use nonces.
+const CSP_BASELINE =
+  "base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'";
 const CSP_REPORT_ONLY = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://challenges.cloudflare.com",
@@ -34,6 +36,7 @@ function secure(response: Response, status?: number) {
   const headers = new Headers(response.headers);
   for (const [name, value] of Object.entries(SECURITY_HEADERS))
     if (!headers.has(name)) headers.set(name, value);
+  if (!headers.has('Content-Security-Policy')) headers.set('Content-Security-Policy', CSP_BASELINE);
   if (!headers.has('Content-Security-Policy-Report-Only'))
     headers.set('Content-Security-Policy-Report-Only', CSP_REPORT_ONLY);
   if (status && status !== response.status) {

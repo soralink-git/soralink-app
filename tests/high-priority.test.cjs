@@ -484,6 +484,10 @@ test('unknown or inactive public cards are answered with a real 404 while active
     'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
   }))
     assert.equal(live.headers.get(name), value, name);
+  assert.equal(
+    live.headers.get('content-security-policy'),
+    "base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self'",
+  );
   const csp = live.headers.get('content-security-policy-report-only') || '';
   for (const directive of [
     "default-src 'self'",

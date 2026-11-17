@@ -1,3 +1,4 @@
+import { readCard } from '../card-storage';
 import { env } from 'cloudflare:workers';
 import { resolvedRequestSchema, validateInput } from '../api-validation';
 import { catalogCategories, catalogRights, catalogText } from '../catalog-menu';
@@ -13,10 +14,7 @@ import { active, db, json } from '../server';
 import type { Action, DataUser } from './types';
 
 export async function submitPublicRequest(b: Action<'request'>, user: DataUser | null) {
-  const p: any = await db()
-    .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
-    .bind(b.profile)
-    .first();
+  const p: any = await readCard(db(), b.profile, { published: true });
   if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
   if (!capabilities(p).activity)
     return json(

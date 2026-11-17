@@ -9,6 +9,7 @@ import { capabilities } from '../../lib/offers';
 import { active, db, identity, json } from '../../lib/server';
 import { allowRequest, verifyTurnstile } from '../../lib/rate-limit';
 import { env } from 'cloudflare:workers';
+import { readAccountCard, readCard } from '../../lib/card-storage';
 export async function GET(req: Request) {
   try {
     return await readData(req);
@@ -45,11 +46,18 @@ export async function POST(req: Request) {
       return await submitPublicRequest(b, user);
     }
     if (!user) return json({ error: 'Connexion requise' }, 401);
-    if (['manual', 'status', 'deleteContact'].includes(b.action)) {
-      const ownerProfile: any = await db()
-        .prepare('SELECT * FROM profiles WHERE owner=?')
-        .bind(user.userId)
-        .first();
+    if (b.action === 'manual' || b.action === 'status' || b.action === 'deleteContact') {
+      // For record mutations authorize the record's actual card, never a client-supplied owner.
+      const record: any =
+        b.action === 'manual'
+          ? null
+          : await db().prepare('SELECT profile FROM requests WHERE id=?').bind(b.id).first();
+      const ownerProfile =
+        b.action === 'manual'
+          ? await readAccountCard(db(), user.userId, b.cardId)
+          : record && (!b.cardId || b.cardId === record.profile)
+            ? await readCard(db(), record.profile, { owner: user.userId })
+            : null;
       if (
         !ownerProfile ||
         !active(ownerProfile) ||

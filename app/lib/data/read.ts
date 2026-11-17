@@ -1,3 +1,4 @@
+import { readCard } from '../card-storage';
 import { env } from 'cloudflare:workers';
 import { currentPublicName } from '../address-storage';
 import { dataQuerySchema, validateInput } from '../api-validation';
@@ -23,22 +24,7 @@ export async function readData(req: Request) {
   }
   const id = query.id;
   if (id) {
-    let p: any = await db()
-      .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
-      .bind(id)
-      .first();
-    if (!p) {
-      try {
-        p = await db()
-          .prepare(
-            'SELECT s.*, p.plan, p.state, p.expires, p.pro_enabled, p.catalog_rights, p.client_access FROM secondary_cards s JOIN profiles p ON p.owner=s.owner WHERE s.id=? AND s.published=1',
-          )
-          .bind(id)
-          .first();
-      } catch {
-        p = null;
-      }
-    }
+    const p = await readCard(db(), id, { published: true });
     if (!p || !active(p)) return json({ error: 'Page indisponible' }, 404);
     const d = publicCardData(
       JSON.parse(p.data),

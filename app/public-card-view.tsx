@@ -36,6 +36,7 @@ export default function PublicCardView({
   function toggleLanguage() {
     const next = !ar;
     setAr(next);
+    setMsg('');
     history.replaceState(null, '', languagePath(location.href, next));
   }
   useEffect(() => {
