@@ -42,12 +42,6 @@ function context(tab, ar = false) {
     subscription: { plan: 'Digital', state: 'active', pro_enabled: demoCard.pro ? 1 : 0 },
     contacts: [],
     notifications: [],
-    promoToday: '2026-10-12',
-    promoStatusLabels: { active: ['Visible', 'باين'] },
-    socialFields: [],
-    sectionLabels: Object.fromEntries(sectionKeys.map((k) => [k, [k, k]])),
-    photoCaptureRef: { current: null },
-    videoCaptureRef: { current: null },
     t: (fr, da) => (ar ? da : fr),
     field: (key, label) =>
       React.createElement(
@@ -56,14 +50,13 @@ function context(tab, ar = false) {
         label,
         React.createElement('input', { value: data[key] || '', readOnly: true }),
       ),
-    Customization: () => null,
     Card: (props) =>
       React.createElement(CardView, {
         ...props,
         ar,
         view: 'app',
         id: 'public-card',
-        setAr: noop,
+
         onMessage: noop,
         onRequest: noop,
       }),
@@ -77,13 +70,6 @@ function context(tab, ar = false) {
     load: noop,
     logout: noop,
     action: async () => {},
-    upload: noop,
-    uploadPhotos: noop,
-    uploadVideo: noop,
-    uploadCatalogue: noop,
-    uploadPromotion: noop,
-    updateCatalogue: noop,
-    updatePromotion: noop,
     startCrop: noop,
   };
 }

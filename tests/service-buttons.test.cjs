@@ -112,7 +112,7 @@ test('legacy contact and social buttons follow the same backgrounds and omit add
       ),
       ar: false,
       withSections: true,
-      setAr() {},
+
       onMessage() {},
       onRequest() {},
     }),

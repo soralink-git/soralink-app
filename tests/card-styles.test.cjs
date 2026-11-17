@@ -63,7 +63,7 @@ test('social ordering drops unknowns and duplicates, survives save/public projec
     React.createElement(Card, {
       d: out,
       ar: false,
-      setAr: () => {},
+
       onMessage: () => {},
       onRequest: () => {},
       withSections: true,
@@ -100,7 +100,7 @@ test('changing styles keeps the selected ambience, readable foregrounds and the 
             d: data,
             ar,
             withSections: true,
-            setAr: () => {},
+
             onMessage: () => {},
             onRequest: () => {},
           }),

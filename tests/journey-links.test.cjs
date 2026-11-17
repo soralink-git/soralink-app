@@ -144,7 +144,7 @@ test('home footer, sign-in and card brand links preserve the selected language',
     const card = renderToStaticMarkup(
       React.createElement(CardView, {
         ar,
-        setAr() {},
+
         onMessage() {},
         onRequest() {},
         d: { name: 'Example' },

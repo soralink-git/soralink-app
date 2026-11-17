@@ -1,5 +1,3 @@
-/* Hallmark Â· theme: brand (by request) Â· shape: app screen Â· critique: Digital identity and card platform for Moroccan professionals Â· built: the project Â· redesign: polish Â· copy: verbatim Â· posture: committed Â· surface: absolute */
-/* Hallmark Â· waive 47b Â· .phone-notch Â· carte vitrine mobile pour professionnels sur soralink maroc */
 :root {
   --shadow-primary: 0 4px 14px rgba(255, 145, 37, 0.35);
   --shadow-primary-hover: 0 6px 20px rgba(255, 145, 37, 0.45);
@@ -431,8 +429,7 @@ textarea::placeholder {
   pointer-events: none;
   z-index: 0;
 }
-.landing::after,
-.landing-showcase::before {
+.landing::after {
   display: none;
 }
 .landing-hero {
@@ -500,78 +497,11 @@ textarea::placeholder {
   padding: 12px 20px;
   backdrop-filter: none;
 }
-.landing-showcase {
-  padding: 24px 16px;
-  background: linear-gradient(180deg, var(--brand-soft) 0%, var(--brand-tint) 100%);
-  border: 1px solid var(--brand-tint-border);
-  border-radius: 44px;
-}
-html[data-theme='dark'] .landing-showcase {
-  background: var(--brand-tint);
-  border: 0;
-}
-.showcase-caption {
-  color: var(--muted);
-  background: transparent;
-  border: 0;
-  padding: 0;
-  font-size: 9px;
-  letter-spacing: normal;
-}
-.showcase-pulse-tag {
-  background: var(--brand-surface);
-  color: var(--brand-strong);
-  border-color: var(--line);
-  font-size: 9px;
-}
 .pulse-dot,
 .live-dot-pulse {
   background: var(--brand-accent);
   animation: none;
   box-shadow: none;
-}
-.showcase-phone {
-  height: 570px;
-  max-height: none;
-  background: var(--brand-surface);
-  border: 7px solid var(--line);
-  box-shadow: 0 20px 50px -24px var(--overlay-dark);
-  border-radius: 40px;
-}
-.phone-notch {
-  background: var(--line);
-}
-.phone-speaker {
-  background: var(--muted);
-}
-.showcase-nfc {
-  background: var(--brand-accent);
-  color: var(--brand-on-accent);
-  border: 5px solid var(--brand-white);
-  border-radius: 24px;
-  box-shadow: 0 12px 30px -14px var(--overlay-dark);
-  transform: rotate(-6deg);
-}
-.showcase-nfc > span[dir='ltr'],
-.showcase-nfc > span:not(.nfc-pulse-badge),
-.showcase-nfc strong,
-.showcase-nfc .nfc-bottom {
-  color: var(--brand-on-accent);
-}
-.nfc-pulse-badge {
-  color: var(--brand-on-accent);
-  background: var(--brand-orange);
-  border: 0;
-  backdrop-filter: none;
-}
-.nfc-pulse-ring {
-  background: var(--brand-on-accent);
-  box-shadow: none;
-  animation: none;
-}
-.showcase-note {
-  color: var(--muted);
-  font-size: 11px;
 }
 .landing-heading h2,
 .landing-faq h2,
@@ -1480,8 +1410,7 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
   color: var(--brand-strong);
 }
 .style-advanced,
-.contact-action-row,
-.social-editor-row {
+.contact-action-row {
   border-color: var(--line);
 }
 .workspace-save-action {
@@ -1591,9 +1520,6 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
     gap: 28px;
     padding-block: 28px 52px;
   }
-  .landing-showcase {
-    max-width: 440px;
-  }
   .landing-copy {
     align-items: center;
     text-align: center;
@@ -1628,25 +1554,6 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
   }
   .landing-copy > p {
     font-size: 16px;
-  }
-  .landing-showcase {
-    padding: 20px 10px;
-    border-radius: 32px;
-  }
-  .showcase-caption {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .showcase-phone {
-    height: 500px;
-  }
-  .showcase-nfc {
-    width: 150px;
-    inset-inline-end: 0;
-  }
-  [dir='rtl'] .showcase-nfc {
-    inset-inline-start: auto;
-    inset-inline-end: 0;
   }
   .landing-process,
   .landing-final {
@@ -1697,20 +1604,6 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
     transparent 35.5%
   );
 }
-
-html[data-theme='dark'] .showcase-phone {
-  background: var(--brand-surface);
-  border-color: var(--line);
-}
-html[data-theme='dark'] .phone-notch {
-  background: var(--line);
-}
-html[data-theme='dark'] .phone-speaker {
-  background: var(--muted);
-}
-html[data-theme='dark'] .showcase-nfc {
-  border-color: var(--brand-surface);
-}
 html[data-theme='dark'] .auth-error {
   background: var(--state-error-bg);
   color: var(--state-error-text);
@@ -1735,20 +1628,6 @@ html[data-theme='dark'] .header-login {
   }
 }
 /* The landing illustration follows the interface; published cards keep their saved theme. */
-html[data-theme='dark'] .landing-showcase .profile-card {
-  --card-fond: var(--brand-charcoal) !important;
-  --block-bg: var(--brand-slate) !important;
-  --card-bg: var(--brand-slate) !important;
-  --card-fg: var(--ink) !important;
-  --card-muted: var(--muted) !important;
-  --block-fg: var(--ink) !important;
-}
-html[data-theme='dark'] .landing-showcase .card-design .card-cover:not([style]) {
-  background: var(--brand-tint);
-}
-html[data-theme='dark'] .landing-showcase .card-design .card-identity {
-  border-color: var(--line);
-}
 @media (max-width: 680px) {
   header > .header-actions {
     flex-basis: 100%;
@@ -1779,7 +1658,7 @@ html[data-theme='dark'] .landing-showcase .card-design .card-identity {
 [dir='rtl'] .panel p {
   line-height: 1.8;
 }
-[dir='rtl'] :is(.badge, .landing-kicker, .persona-pill, .theme-toggle, .nfc-pulse-badge) {
+[dir='rtl'] :is(.badge, .landing-kicker, .persona-pill, .theme-toggle) {
   letter-spacing: 0 !important;
 }
 [dir='rtl'] .header-actions {
@@ -2033,9 +1912,6 @@ textarea,
 .workspace-head h1 {
   font-weight: 800;
 }
-.landing-showcase {
-  border-radius: 24px;
-}
 .landing-process,
 .landing-final {
   border-radius: 20px;
@@ -2151,9 +2027,7 @@ html[data-theme='dark'] .workspace-welcome-icon {
 .landing-pilot p {
   color: var(--muted);
 }
-.landing-sharing span,
-.nfc-mini-phone,
-.nfc-mini-phone small {
+.landing-sharing span {
   color: var(--ink);
   background: var(--brand-surface);
   border-color: var(--line);
@@ -2161,9 +2035,7 @@ html[data-theme='dark'] .workspace-welcome-icon {
 .landing-proof svg,
 .landing-sharing svg,
 .landing-features article > svg,
-.impact-stat-value,
-.nfc-signal,
-.nfc-mini-phone > span {
+.impact-stat-value {
   color: var(--brand-strong);
 }
 .landing-sharing span:hover,
@@ -2176,18 +2048,10 @@ html[data-theme='dark'] .workspace-welcome-icon {
   color: var(--brand-on-accent);
   background: var(--brand-accent-hover);
 }
-.showcase-dot {
-  background: var(--brand-accent);
-}
 .feature-index {
   color: var(--brand-strong);
   background: var(--brand-tint);
   border-color: var(--brand-tint-border);
-}
-.nfc-mini-card {
-  color: var(--brand-on-accent);
-  background: var(--brand-accent);
-  border-color: var(--brand-accent);
 }
 .landing-pilot h3 {
   color: var(--ink);
@@ -2208,12 +2072,6 @@ html[data-theme='dark'] .workspace-welcome-icon {
 }
 .commercial-whatsapp:hover {
   background: var(--brand-accent-hover);
-}
-html[data-theme='dark'] .landing-showcase {
-  background: var(--brand-soft);
-}
-html[data-theme='dark'] .landing-showcase .card-design .card-cover:not([style]) {
-  background: var(--brand-slate);
 }
 html[data-theme='dark'] .workspace-navigation button.selected {
   border-inline-start: 3px solid var(--brand-accent) !important;

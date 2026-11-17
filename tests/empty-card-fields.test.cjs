@@ -13,7 +13,7 @@ const render = (data, ar, preview) =>
       ar,
       preview,
       withSections: true,
-      setAr() {},
+
       onRequest() {},
       onMessage() {},
     }),

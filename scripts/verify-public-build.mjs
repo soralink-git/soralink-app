@@ -1,9 +1,7 @@
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { readFile } from 'node:fs/promises';
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const { Miniflare } = createRequire(require.resolve('wrangler'))('miniflare');
+import { Miniflare } from 'miniflare';
 const root = path.resolve('dist/pages');
 const manifest = JSON.parse(await readFile('dist/client/.vite/manifest.json', 'utf8'));
 const imports = new Set();

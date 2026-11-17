@@ -14,10 +14,9 @@ import { Nfc, Phone, Mail, MapPin, Download, Globe, Users, Share2, Star } from '
 import { socialLink } from './lib/social-links';
 import { cardStyleId, socialOrder } from './lib/card-styles';
 import { appearance } from './lib/personalization';
-import { normalizeCatalogue, cataloguePrice } from './lib/catalogue';
+import { normalizeCatalogue } from './lib/catalogue';
 import { activePromotions, promotionPrice, todayMorocco } from './lib/promotions';
-import PhotoGallery, { PhotoPreview } from './photo-gallery';
-import PdfCatalogue from './pdf-catalogue';
+import PhotoGallery from './photo-gallery';
 import CardBackground from './card-background';
 import {
   socialFields,
@@ -32,31 +31,25 @@ import { resolveSingleAction } from './lib/single-action';
 import { SingleActionIcon } from './single-action-editor';
 export type CardViewProps = {
   d: any;
-  small?: boolean;
   preview?: boolean;
   publicHeading?: boolean;
-  onChoose?: () => void;
   withSections?: boolean;
 };
 export default function CardView({
   ar,
-  setAr,
   view = 'public',
   id = '',
   publicName = '',
   onMessage,
   onRequest,
-  onDiscover,
   ...props
 }: CardViewProps & {
   ar: boolean;
-  setAr: (value: boolean) => void;
   view?: string;
   id?: string;
   publicName?: string;
   onMessage: (message: string) => void;
   onRequest: (kind: string, item?: any) => void;
-  onDiscover?: (d: any) => void;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr),
     setMsg = onMessage;
@@ -107,17 +100,13 @@ export default function CardView({
   }
   function Card({
     d,
-    small = false,
     preview = false,
     publicHeading = false,
-    onChoose,
     withSections = false,
   }: {
     d: any;
-    small?: boolean;
     preview?: boolean;
     publicHeading?: boolean;
-    onChoose?: () => void;
     withSections?: boolean;
   }) {
     // Trim a display-only copy: whitespace is empty, saved drafts stay untouched.
@@ -135,8 +124,7 @@ export default function CardView({
           : ''
         : d.business;
     const hasIdentity = !!(d.avatar || title || subtitle || d.job || d.bio);
-    const location = mapLinks(d),
-      a = appearance(d);
+    const a = appearance(d);
     const singleAction = resolveSingleAction(d, ar);
     const isDarkBlock = a.blockColor ? accentText(a.blockColor) === '#ffffff' : a.theme === 'dark';
     const defaultTextFg = isDarkBlock ? '#f8fafc' : '#1e293b';
@@ -155,7 +143,6 @@ export default function CardView({
           ' font-' +
           a.font +
           ' ' +
-          (small ? 'compact' : '') +
           (withSections ? ' unified-card' : '') +
           (a.backgroundPhoto ? ' has-photo-background' : '') +
           (!d.cover ? ' without-cover' : '') +
@@ -220,150 +207,131 @@ export default function CardView({
               {d.bio && <p className="bio">{d.bio}</p>}
             </section>
           )}
-          {small && !preview && !withSections && <CardSection d={d} section="coordinates" />}
-          {small && !preview && !withSections && <CardSection d={d} section="social" />}
-          {small && !preview && !withSections ? (
-            <button
-              className="card-button"
-              onClick={() => {
-                if (onChoose) {
-                  onChoose();
-                  return;
-                }
-                onDiscover?.(d);
-              }}
-            >
-              {onChoose
-                ? t('Personnaliser ma carte', 'خصّص الكارط ديالي')
-                : t('Découvrir la carte', 'شوف الكارط')}
-            </button>
-          ) : (
-            <div className="card-actions">
-              {singleAction ? (
-                <div className="card-single-action-wrapper">
-                  <a
-                    href={singleAction.href}
-                    target={singleAction.isExternal ? '_blank' : undefined}
-                    rel={singleAction.isExternal ? 'noopener noreferrer' : undefined}
-                    className="card-button card-single-action"
-                    aria-label={singleAction.label}
-                  >
-                    <SingleActionIcon type={singleAction.type} size={22} colored={true} />
-                    <span>{singleAction.label}</span>
-                  </a>
-                </div>
-              ) : (
-                <>
-                  <div className="card-action-icons">
-                    <button
-                      className="card-button card-save"
-                      aria-label={t('Enregistrer le contact', 'سجّل الكونطاكت')}
-                      onClick={() => {
-                        const blob = new Blob(
-                          [
-                            vcardText({
-                              name: d.name,
-                              profileType: d.profileType,
-                              ...(Array.isArray(d.profileLinks)
-                                ? { entries: visibleProfileLinks(d) }
-                                : {}),
-                              phone: a.hidePhone ? '' : d.phone,
-                              email: a.hideEmail ? '' : d.email,
-                              business: d.business,
-                              job: d.job,
-                              address: a.hideLocation ? '' : d.address,
-                              website: a.hidden.includes('links') ? '' : webLink(d.website),
-                            }),
-                          ],
-                          { type: 'text/vcard' },
+          <div className="card-actions">
+            {singleAction ? (
+              <div className="card-single-action-wrapper">
+                <a
+                  href={singleAction.href}
+                  target={singleAction.isExternal ? '_blank' : undefined}
+                  rel={singleAction.isExternal ? 'noopener noreferrer' : undefined}
+                  className="card-button card-single-action"
+                  aria-label={singleAction.label}
+                >
+                  <SingleActionIcon type={singleAction.type} size={22} colored={true} />
+                  <span>{singleAction.label}</span>
+                </a>
+              </div>
+            ) : (
+              <>
+                <div className="card-action-icons">
+                  <button
+                    className="card-button card-save"
+                    aria-label={t('Enregistrer le contact', 'سجّل الكونطاكت')}
+                    onClick={() => {
+                      const blob = new Blob(
+                        [
+                          vcardText({
+                            name: d.name,
+                            profileType: d.profileType,
+                            ...(Array.isArray(d.profileLinks)
+                              ? { entries: visibleProfileLinks(d) }
+                              : {}),
+                            phone: a.hidePhone ? '' : d.phone,
+                            email: a.hideEmail ? '' : d.email,
+                            business: d.business,
+                            job: d.job,
+                            address: a.hideLocation ? '' : d.address,
+                            website: a.hidden.includes('links') ? '' : webLink(d.website),
+                          }),
+                        ],
+                        { type: 'text/vcard' },
+                      );
+                      download(blob, 'contact.vcf');
+                      if (view === 'public' && !preview && d.activity !== false)
+                        onMessage(
+                          t(
+                            'Pour me laisser vos coordonnées, utilisez le bouton Échanger (facultatif).',
+                            'إلى بغيتي تخلّي معلومات التواصل ديالك استعمل زر التبادل (اختياري).',
+                          ),
                         );
-                        download(blob, 'contact.vcf');
-                        if (view === 'public' && !preview && d.activity !== false)
-                          onMessage(
-                            t(
-                              'Pour me laisser vos coordonnées, utilisez le bouton Échanger (facultatif).',
-                              'إلى بغيتي تخلّي معلومات التواصل ديالك استعمل زر التبادل (اختياري).',
-                            ),
-                          );
-                      }}
-                    >
-                      <Download size={22} />
-                    </button>
+                    }}
+                  >
+                    <Download size={22} />
+                  </button>
+                  <button
+                    className="exchange-button"
+                    aria-label={t('Partager cette carte', 'شارك هاد الكارط')}
+                    onClick={() => void sharePublicCard(d, preview)}
+                  >
+                    <Share2 size={22} />
+                  </button>
+                  {d.activity !== false && (
                     <button
                       className="exchange-button"
-                      aria-label={t('Partager cette carte', 'شارك هاد الكارط')}
-                      onClick={() => void sharePublicCard(d, preview)}
-                    >
-                      <Share2 size={22} />
-                    </button>
-                    {d.activity !== false && (
-                      <button
-                        className="exchange-button"
-                        aria-label={t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
-                        onClick={() => {
-                          if (preview || view === 'demo') {
-                            setMsg(
-                              t(
-                                'Aperçu : le formulaire sera disponible sur votre carte publique.',
-                                'معاينة: الفورميلير غادي يخدم فالصفحة العمومية ديالك.',
-                              ),
-                            );
-                            return;
-                          }
-                          onRequest('contact');
-                        }}
-                      >
-                        <Users size={22} />
-                      </button>
-                    )}
-                  </div>
-                  {d.activity !== false && !d.pro && (
-                    <button
-                      className="card-button card-request"
+                      aria-label={t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')}
                       onClick={() => {
-                        if (preview) {
+                        if (preview || view === 'demo') {
                           setMsg(
                             t(
-                              'Aperçu : ce bouton sera disponible sur votre carte publique.',
-                              'معاينة: هاد الزر غادي يخدم فالصفحة العمومية ديالك.',
+                              'Aperçu : le formulaire sera disponible sur votre carte publique.',
+                              'معاينة: الفورميلير غادي يخدم فالصفحة العمومية ديالك.',
                             ),
                           );
                           return;
                         }
-                        if (view === 'demo') {
-                          setMsg(
-                            t(
-                              'Exemple : créez votre carte pour recevoir des demandes.',
-                              'هادشي مثال، صايب الكارط ديالك باش توصّل بالطلبات.',
-                            ),
-                          );
-                          return;
-                        }
-                        onRequest(d.pro ? 'rdv' : 'devis');
+                        onRequest('contact');
                       }}
                     >
-                      {d.pro
-                        ? t('Demander un rendez-vous', 'طلب موعد')
-                        : t('Demander un devis', 'طلب الثمن')}
+                      <Users size={22} />
                     </button>
                   )}
-                </>
-              )}
-              {manualShareUrl && !preview && view === 'public' && (
-                <label className="field card-share-link">
-                  {t('Lien de cette carte', 'رابط هاد الكارط')}
-                  <input
-                    aria-label={t('Lien à copier', 'الرابط للنسخ')}
-                    dir="ltr"
-                    readOnly
-                    value={manualShareUrl}
-                    onFocus={(e) => e.currentTarget.select()}
-                    onClick={(e) => e.currentTarget.select()}
-                  />
-                </label>
-              )}
-            </div>
-          )}
+                </div>
+                {d.activity !== false && !d.pro && (
+                  <button
+                    className="card-button card-request"
+                    onClick={() => {
+                      if (preview) {
+                        setMsg(
+                          t(
+                            'Aperçu : ce bouton sera disponible sur votre carte publique.',
+                            'معاينة: هاد الزر غادي يخدم فالصفحة العمومية ديالك.',
+                          ),
+                        );
+                        return;
+                      }
+                      if (view === 'demo') {
+                        setMsg(
+                          t(
+                            'Exemple : créez votre carte pour recevoir des demandes.',
+                            'هادشي مثال، صايب الكارط ديالك باش توصّل بالطلبات.',
+                          ),
+                        );
+                        return;
+                      }
+                      onRequest('rdv');
+                    }}
+                  >
+                    {d.pro
+                      ? t('Demander un rendez-vous', 'طلب موعد')
+                      : t('Demander un devis', 'طلب الثمن')}
+                  </button>
+                )}
+              </>
+            )}
+            {manualShareUrl && !preview && view === 'public' && (
+              <label className="field card-share-link">
+                {t('Lien de cette carte', 'رابط هاد الكارط')}
+                <input
+                  aria-label={t('Lien à copier', 'الرابط للنسخ')}
+                  dir="ltr"
+                  readOnly
+                  value={manualShareUrl}
+                  onFocus={(e) => e.currentTarget.select()}
+                  onClick={(e) => e.currentTarget.select()}
+                />
+              </label>
+            )}
+          </div>
           {withSections && <Details d={d} preview={preview} />}
           <div className="card-footer-brand">
             <a
@@ -625,10 +593,10 @@ export default function CardView({
                 );
                 return;
               }
-              onRequest(d.pro ? 'rdv' : 'devis');
+              onRequest('rdv');
             }}
           >
-            {d.pro ? t('Demander un rendez-vous', 'طلب موعد') : t('Demander un devis', 'طلب الثمن')}
+            {t('Demander un rendez-vous', 'طلب موعد')}
           </button>
         </div>
       );

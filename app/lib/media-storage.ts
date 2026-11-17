@@ -1,8 +1,6 @@
 import { env } from 'cloudflare:workers';
 import { db } from './server';
 import { trialExpiry } from './subscription';
-export const STORAGE_BYTES = 400 * 1024 * 1024;
-export const MAX_ASSETS = 80;
 export function mediaKeys(d: any): string[] {
   const values = [
     d?.avatar,

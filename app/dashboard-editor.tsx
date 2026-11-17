@@ -3,7 +3,7 @@ import DashboardOrders from './dashboard-orders';
 import DashboardShare from './dashboard-share';
 
 import type { LucideIcon } from 'lucide-react';
-import type { Dispatch, JSX, RefObject, SetStateAction } from 'react';
+import type { Dispatch, JSX, SetStateAction } from 'react';
 import { useEffect, useState } from 'react';
 import CardQR from './card-qr';
 import CardSetup from './card-setup';
@@ -62,7 +62,6 @@ export type DashboardContext = {
   Card: (props: CardViewProps) => JSX.Element;
   action: (body: any) => Promise<any>;
   ar: boolean;
-  setAr?: (ar: boolean) => void;
   auth: boolean;
   authLoadError: boolean;
   authLoading: boolean;
@@ -70,7 +69,6 @@ export type DashboardContext = {
   canAdmin: boolean;
   contacts: any[];
   data: any;
-  download: (blob: Blob, name: string) => void;
   field: (key: string, label: string, type?: string) => JSX.Element;
   id: string;
   publicName?: string;
@@ -85,11 +83,7 @@ export type DashboardContext = {
   mailConfigured: boolean;
   notifications: any[];
   orders: any[];
-  photoCaptureRef: RefObject<HTMLInputElement | null>;
-  promoStatusLabels: Record<string, [string, string]>;
-  promoToday: string;
   published: boolean;
-  qr: string;
   rawSources?: { avatar?: File | string; cover?: File | string; backgroundPhoto?: File | string };
   save: () => Promise<void>;
   saveState?: SaveState;
@@ -102,21 +96,11 @@ export type DashboardContext = {
   setPublished: Dispatch<SetStateAction<boolean>>;
   setServiceIndex: Dispatch<SetStateAction<number>>;
   setTab: Dispatch<SetStateAction<string>>;
-  socialFields: string[][];
   startCrop: (source: string | File, target: CropTarget) => void;
   storage: any;
   subscription: any;
   t: (fr: string, da: string) => string;
   tab: string;
-  updateCatalogue: (itemId: string, key: string, value: any) => void;
-  updatePromotion: (promoId: string, key: string, value: any) => void;
-  upload: (f: File, field: string) => Promise<boolean>;
-  uploadCatalogue: (file: File, itemId: string) => Promise<void>;
-  uploadPhotos: (files: File[]) => Promise<void>;
-  uploadProgress: { done: number; total: number } | null;
-  uploadPromotion: (file: File, promoId: string) => Promise<void>;
-  uploadVideo: (file: File) => Promise<void>;
-  videoCaptureRef: RefObject<HTMLInputElement | null>;
   cards?: Array<{
     id: string;
     name: string;
@@ -143,11 +127,9 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     canAdmin,
     contacts,
     data,
-    download,
     field,
     id,
     publicName = '',
-    setPublicName = () => {},
     inbox,
     historyPages,
     historyBusy,
@@ -157,9 +139,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     logout,
     mailConfigured,
     notifications,
-    orders,
-    promoStatusLabels,
-    promoToday,
     published,
     rawSources,
     save,
@@ -167,23 +146,16 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     savePaused,
     setCatalogWorking,
     reloadSaved,
-    setAr,
     setData,
     setModal,
     setMsg,
     setPublished,
     setServiceIndex,
     setTab,
-    socialFields,
     startCrop,
     subscription,
     t,
     tab,
-    updateCatalogue,
-    updatePromotion,
-    upload,
-    uploadCatalogue,
-    uploadPromotion,
     cards = [],
     cardLimit = 1,
     cardsCount = 1,

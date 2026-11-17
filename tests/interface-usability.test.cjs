@@ -27,7 +27,7 @@ for (const ar of [false, true]) {
       React.createElement(Card, {
         d: demoCard,
         ar,
-        setAr() {},
+
         onMessage() {},
         onRequest() {},
         withSections: true,

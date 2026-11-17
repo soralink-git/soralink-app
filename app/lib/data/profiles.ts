@@ -11,10 +11,9 @@ import { replaceProfileLinks } from '../profile-links';
 import { normalizePromotions } from '../promotions';
 import { normalizeSchedule } from '../schedule';
 import { active, db, json } from '../server';
-import { trialExpiry } from '../subscription';
 import type { Action, DataUser } from './types';
 
-export async function saveProfile(b: Action<'save'>, user: DataUser, admin: boolean) {
+export async function saveProfile(b: Action<'save'>, user: DataUser) {
   if (b.expectedOwner && b.expectedOwner !== user.userId)
     return json(
       {

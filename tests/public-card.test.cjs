@@ -15,7 +15,7 @@ function card(data, extra = {}) {
   return render(CardView, {
     d: data,
     ar: false,
-    setAr: () => {},
+
     id: 'public-card',
     onMessage: () => {},
     onRequest: () => {},

@@ -339,7 +339,6 @@ export default function ImageCropper({
                   <CardView
                     d={{ ...cardData, ...(livePreviewUrl ? { [target]: livePreviewUrl } : {}) }}
                     ar={ar}
-                    setAr={() => {}}
                     onMessage={() => {}}
                     onRequest={() => {}}
                     preview

@@ -457,12 +457,6 @@ nav button.active {
   font-size: 13px;
   line-height: 1.7;
 }
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-  margin: 38px 0;
-}
 .price-card {
   position: relative;
   background: white;
@@ -1071,9 +1065,6 @@ html[dir='rtl'] .hero-stage .profile-card {
     gap: 20px;
     padding: 25px 20px;
   }
-  .pricing-grid {
-    gap: 12px;
-  }
   .price-card {
     padding: 25px 20px;
   }
@@ -1164,8 +1155,7 @@ html[dir='rtl'] .hero-stage .profile-card {
   .section h2 {
     font-size: 26px;
   }
-  .model-grid,
-  .pricing-grid {
+  .model-grid {
     grid-template-columns: 1fr;
     gap: 25px;
   }
@@ -2172,9 +2162,6 @@ html[lang='ar'] h3 {
 .landing-kicker {
   line-height: 1.6;
 }
-.landing-showcase {
-  padding-top: 18px;
-}
 .landing-faq {
   padding-bottom: 40px;
 }
@@ -2276,24 +2263,6 @@ header {
   font-size: 18px;
   line-height: 1.8;
 }
-[dir='rtl'] .showcase-caption {
-  font-size: 12px;
-  letter-spacing: 0;
-  line-height: 1.8;
-}
-[dir='rtl'] .showcase-note {
-  font-size: 12px;
-  line-height: 1.8;
-  flex-wrap: wrap;
-}
-[dir='rtl'] .showcase-nfc strong {
-  font-size: 15px;
-  line-height: 1.7;
-}
-[dir='rtl'] .landing-showcase .bio {
-  font-size: 16px;
-  line-height: 1.8;
-}
 html[lang='ar'] header nav button {
   font-size: 16px;
 }
@@ -2331,12 +2300,6 @@ html[lang='ar'] header .primary {
   }
   html[lang='ar'] header .primary {
     font-size: 14px;
-  }
-  [dir='rtl'] .showcase-caption {
-    font-size: 11px;
-  }
-  [dir='rtl'] .showcase-note {
-    font-size: 11px;
   }
 }
 
@@ -2385,34 +2348,6 @@ header nav {
   border-radius: 18px;
   background: #171819;
   padding: 24px;
-}
-.nfc-mini-card {
-  width: 160px;
-  height: 100px;
-  border-radius: 10px;
-  background: #28251e;
-  border: 1px solid #d5b66f;
-  align-items: center;
-  justify-content: space-around;
-  color: #dfc382;
-  animation: nfc-tap 5s ease-in-out infinite;
-}
-.nfc-mini-phone {
-  width: 95px;
-  min-height: 180px;
-  border-radius: 18px;
-  border: 2px solid #7c6a48;
-  gap: 18px;
-  color: #dfc382;
-  font-size: 12px;
-  background: #101112;
-}
-.nfc-signal {
-  color: #dfc382;
-  animation: nfc-glow 5s ease-in-out infinite;
-}
-.nfc-mini-phone small {
-  color: #bcb5a7;
 }
 .landing-examples,
 .landing-pricing {
@@ -2991,16 +2926,6 @@ header nav {
 .demo-banner a {
   white-space: nowrap;
 }
-@keyframes nfc-tap {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  40%,
-  65% {
-    transform: translateX(12px);
-  }
-}
 @keyframes nfc-glow {
   0%,
   100% {
@@ -3009,12 +2934,6 @@ header nav {
   40%,
   65% {
     opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .nfc-mini-card,
-  .nfc-signal {
-    animation: none;
   }
 }
 @media (max-width: 1100px) {
@@ -3056,10 +2975,6 @@ header nav {
     min-height: 210px;
     gap: 12px;
     padding: 18px;
-  }
-  .nfc-mini-card {
-    width: 135px;
-    height: 90px;
   }
   .landing-price-grid {
     grid-template-columns: 1fr;

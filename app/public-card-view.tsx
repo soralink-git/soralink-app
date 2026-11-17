@@ -89,7 +89,6 @@ export default function PublicCardView({
           <CardView
             d={d}
             ar={ar}
-            setAr={setAr}
             view={view}
             publicHeading={view === 'public'}
             id={cardId}

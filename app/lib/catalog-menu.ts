@@ -66,11 +66,6 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const text = (value: unknown, max: number) =>
   typeof value === 'string' && value.length <= max ? value : undefined;
 const flag = (value: unknown) => (typeof value === 'boolean' ? value : undefined);
-const integer = (value: unknown, min: number, max: number) =>
-  typeof value === 'number' && Number.isInteger(value) && value >= min && value <= max
-    ? value
-    : undefined;
-
 export function catalogRights(profile?: any): CatalogRights {
   const defaults: CatalogRights = {
     enabled: true,

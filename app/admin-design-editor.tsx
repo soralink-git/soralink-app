@@ -260,7 +260,6 @@ export default function AdminDesignEditor({
             <CardView
               d={{ ...data, pro: !!capabilities(profile).appointments }}
               ar={ar}
-              setAr={() => {}}
               onMessage={() => {}}
               onRequest={() => {}}
               preview
