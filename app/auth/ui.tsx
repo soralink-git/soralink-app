@@ -1,6 +1,6 @@
 'use client';
 import ThemeToggle from '../theme-toggle';
-import { useState, useEffect, useId } from 'react';
+import { useState, useEffect, useId, useRef } from 'react';
 import { REMEMBERED_EMAIL_KEY } from '../lib/idle-policy';
 import { workspacePath, selectedPlan, offerLabel } from '../lib/journey-links';
 import { Nfc, Globe, Eye, EyeOff, CheckCircle } from 'lucide-react';
@@ -24,10 +24,16 @@ export default function Auth({
     [error, setError] = useState(''),
     [visible, setVisible] = useState(false),
     [rememberEmail, setRememberEmail] = useState(false),
-    [savedEmail, setSavedEmail] = useState(''),
+    [email, setEmail] = useState(''),
+    [confirmationError, setConfirmationError] = useState(false),
     [expired, setExpired] = useState(false);
   const offer = selectedPlan(initialOffer);
   const passwordHintId = useId();
+  const errorId = useId();
+  const errorSummary = useRef<HTMLDivElement>(null);
+  const confirmation = useRef<HTMLInputElement>(null);
+  const formHeading = useRef<HTMLHeadingElement>(null);
+  const previousMode = useRef(mode);
   const t = (f: string, a: string) => (ar ? a : f);
   useEffect(() => {
     document.documentElement.lang = ar ? 'ar' : 'fr';
@@ -36,7 +42,7 @@ export default function Auth({
   useEffect(() => {
     try {
       const saved = localStorage.getItem(REMEMBERED_EMAIL_KEY) || '';
-      setSavedEmail(saved);
+      setEmail((current) => current || saved);
       setRememberEmail(!!saved);
     } catch {}
     setExpired(new URLSearchParams(location.search).get('expired') === '1');
@@ -50,6 +56,7 @@ export default function Auth({
     history.replaceState(null, '', url.pathname + url.search);
     setMessage('');
     setError('');
+    setConfirmationError(false);
   }
   useEffect(() => {
     if (!administrator && !reset && new URLSearchParams(location.search).get('mode') === 'signup')
@@ -63,15 +70,28 @@ export default function Auth({
         ),
       );
   }, []);
+  useEffect(() => {
+    if (error) {
+      if (confirmationError) confirmation.current?.focus();
+      else errorSummary.current?.focus();
+    }
+  }, [error, confirmationError]);
+  useEffect(() => {
+    if (previousMode.current !== mode) formHeading.current?.focus();
+    previousMode.current = mode;
+  }, [mode]);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (busy) return;
     const f = new FormData(e.currentTarget);
     const password = String(f.get('password') || '');
     if (['signup', 'password'].includes(mode) && password !== f.get('confirm')) {
+      setConfirmationError(true);
       setError(t('Les mots de passe ne correspondent pas.', 'كلمات السر ماشي بحال بحال.'));
       return;
     }
     setBusy(true);
+    setConfirmationError(false);
     setError('');
     setMessage('');
     try {
@@ -110,6 +130,7 @@ export default function Auth({
   function change(v: string) {
     if (busy) return;
     setMode(v);
+    setConfirmationError(false);
     setError('');
     setMessage('');
     const u = new URL(location.href);
@@ -134,7 +155,7 @@ export default function Auth({
           </button>
         </div>
       </header>
-      <main className="auth-layout">
+      <main id="main-content" tabIndex={-1} className="auth-layout">
         <section className="auth-intro">
           <span className="eyebrow">
             SORALINK /{' '}
@@ -181,7 +202,7 @@ export default function Auth({
           )}
         </section>
         <section className="panel auth-panel">
-          <h2>
+          <h2 ref={formHeading} tabIndex={-1}>
             {mode === 'signup'
               ? t('Créer mon compte', 'صايب الحساب ديالي')
               : mode === 'reset'
@@ -223,7 +244,7 @@ export default function Auth({
             </p>
           )}
           {error && (
-            <div className="auth-error" role="alert">
+            <div id={errorId} ref={errorSummary} tabIndex={-1} className="auth-error" role="alert">
               {error}
             </div>
           )}
@@ -237,6 +258,20 @@ export default function Auth({
                 )}
               </p>
             </div>
+          )}
+          {mode === 'signup' && (
+            <ol className="auth-steps" aria-label={t('Étapes de création', 'مراحل الإنشاء')}>
+              {[
+                t('Créer le compte', 'صايب الحساب'),
+                t('Confirmer l’e-mail', 'أكّد الإيميل'),
+                t('Compléter la carte', 'كمّل الكارط'),
+              ].map((step, index) => (
+                <li key={step} aria-current={index === (message ? 1 : 0) ? 'step' : undefined}>
+                  <span aria-hidden="true">{index + 1}</span>
+                  {step}
+                </li>
+              ))}
+            </ol>
           )}
           {offer && (
             <p className="hint">
@@ -257,8 +292,8 @@ export default function Auth({
                   disabled={busy}
                   name="email"
                   autoComplete={mode === 'login' ? 'username' : 'email'}
-                  defaultValue={mode === 'login' ? savedEmail : undefined}
-                  key={mode === 'login' ? savedEmail : mode}
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
                   required
                   maxLength={254}
                   placeholder="vous@exemple.ma"
@@ -307,8 +342,18 @@ export default function Auth({
                     <input
                       type={visible ? 'text' : 'password'}
                       name="confirm"
+                      ref={confirmation}
+                      aria-invalid={confirmationError || undefined}
+                      onChange={() => {
+                        if (confirmationError) {
+                          setConfirmationError(false);
+                          setError('');
+                        }
+                      }}
                       disabled={busy}
-                      aria-describedby={passwordHintId}
+                      aria-describedby={
+                        confirmationError ? errorId + ' ' + passwordHintId : passwordHintId
+                      }
                       required
                       minLength={10}
                       maxLength={128}

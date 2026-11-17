@@ -189,14 +189,14 @@
   box-sizing: border-box;
 }
 .card-design .card-action-icons > button {
-  width: 54px !important;
-  min-width: 44px !important;
-  max-width: 54px !important;
-  height: 54px !important;
-  min-height: 44px !important;
-  max-height: 54px !important;
-  aspect-ratio: 1 / 1 !important;
-  padding: 0 !important;
+  width: auto !important;
+  min-width: 72px !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 66px !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  padding: 10px 8px !important;
   border-radius: var(--button-radius, 16px);
   display: flex;
   align-items: center;

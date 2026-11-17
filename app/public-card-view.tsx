@@ -1,6 +1,7 @@
 'use client';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { X } from 'lucide-react';
+import { languagePath, signupPath } from './lib/journey-links';
 import { visitSource } from './lib/metric-links';
 import CardView from './card-view';
 const PublicRequestModal = lazy(() => import('./public-request-modal'));
@@ -32,6 +33,11 @@ export default function PublicCardView({
   const t = (fr: string, da: string) => (ar ? da : fr),
     d = demoArabic && ar ? demoArabic : data,
     view = demoArabic ? 'demo' : 'public';
+  function toggleLanguage() {
+    const next = !ar;
+    setAr(next);
+    history.replaceState(null, '', languagePath(location.href, next));
+  }
   useEffect(() => {
     document.documentElement.lang = ar ? 'ar' : 'fr';
     document.documentElement.dir = ar ? 'rtl' : 'ltr';
@@ -76,6 +82,25 @@ export default function PublicCardView({
   }
   return (
     <div className="site public-card-page" data-view={view} dir={ar ? 'rtl' : 'ltr'}>
+      {view === 'demo' && (
+        <nav className="demo-guidance" aria-label={t('Explorer SoraLink', 'اكتشف SoraLink')}>
+          <div>
+            <strong>{t('Démo interactive', 'مثال تفاعلي')}</strong>
+            <p>
+              {t(
+                'Exemple fictif : aucun message ni commande n’est envoyé.',
+                'مثال وهمي: لا رسالة لا طلب كيتسيفط.',
+              )}
+            </p>
+          </div>
+          <a className="secondary small" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
+            {t('Accueil', 'الرئيسية')}
+          </a>
+          <a className="primary small" href={signupPath(ar)}>
+            {t('Créer ma carte', 'صايب الكارط ديالي')}
+          </a>
+        </nav>
+      )}
       {msg && (
         <div className="notice" role="status">
           {msg}
@@ -84,13 +109,13 @@ export default function PublicCardView({
           </button>
         </div>
       )}
-      <main className="public-layout">
+      <main id="main-content" tabIndex={-1} className="public-layout">
         {d ? (
           <CardView
             d={d}
             ar={ar}
             view={view}
-            publicHeading={view === 'public'}
+            publicHeading
             id={cardId}
             publicName={publicName}
             onMessage={setMsg}
@@ -99,11 +124,11 @@ export default function PublicCardView({
           />
         ) : (
           <div className="empty">
-            <h2>
+            <h1>
               {error === 'service'
                 ? t('Service temporairement indisponible', 'الخدمة ما متوفراش دابا')
                 : t('Page indisponible', 'الصفحة ما متوفراش')}
-            </h2>
+            </h1>
             {error === 'service' && (
               <button className="secondary" disabled={busy} onClick={retry}>
                 {busy ? t('Chargement…', 'كنحمّلو…') : t('Réessayer', 'عاود جرّب')}
@@ -116,6 +141,15 @@ export default function PublicCardView({
         className="public-legal"
         style={{ textAlign: 'center', padding: '16px', fontSize: '0.8rem' }}
       >
+        <button
+          type="button"
+          className="text-button public-language-toggle"
+          onClick={toggleLanguage}
+          lang={ar ? 'fr' : 'ar'}
+        >
+          {ar ? 'Français' : 'العربية'}
+        </button>
+        {' · '}
         <a href={'/conditions?lang=' + (ar ? 'ar' : 'fr')}>
           {t('Conditions de service', 'شروط الخدمة')}
         </a>

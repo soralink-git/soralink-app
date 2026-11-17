@@ -1,4 +1,5 @@
 'use client';
+import ModalDialog from './modal-dialog';
 import { profileName } from './lib/profile-identity';
 import { useEffect, useState, useRef } from 'react';
 import { X } from 'lucide-react';
@@ -22,7 +23,6 @@ export default function PublicRequestModal({
   onMessage: (message: string) => void;
 }) {
   const t = (fr: string, da: string) => (ar ? da : fr);
-  const dialog = useRef<HTMLDivElement>(null);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const [turnstileToken, setTurnstileToken] = useState('');
   const turnstileSiteKey =
@@ -58,6 +58,10 @@ export default function PublicRequestModal({
     };
   }, [turnstileSiteKey]);
   const [formError, setFormError] = useState('');
+  const errorSummary = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (formError) errorSummary.current?.focus();
+  }, [formError]);
   const [busy, setBusy] = useState(false),
     [date, setDate] = useState(moroccoNow().slice(0, 10)),
     [serviceIndex, setServiceIndex] = useState(0),
@@ -66,49 +70,6 @@ export default function PublicRequestModal({
   const [myContactCard, setMyContactCard] = useState<any>(null),
     [useMyCard, setUseMyCard] = useState(false),
     [cardCheck, setCardCheck] = useState('');
-  useEffect(() => {
-    const previous = document.activeElement as HTMLElement | null;
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    dialog.current?.focus();
-    return () => {
-      document.body.style.overflow = overflow;
-      previous?.focus();
-    };
-  }, []);
-  function keyboard(e: React.KeyboardEvent<HTMLDivElement>) {
-    if (e.key === 'Escape' && !busy) {
-      e.preventDefault();
-      onClose();
-      return;
-    }
-    if (e.key !== 'Tab') return;
-    const nodes = Array.from(
-      dialog.current?.querySelectorAll<HTMLElement>(
-        'button:not(:disabled),input:not(:disabled),textarea:not(:disabled),select:not(:disabled),a[href],[tabindex="0"]',
-      ) || [],
-    ).filter((node) => node.tabIndex >= 0 && node.getClientRects().length > 0);
-    if (!nodes.length) {
-      e.preventDefault();
-      dialog.current?.focus();
-      return;
-    }
-    const first = nodes[0],
-      last = nodes[nodes.length - 1];
-    if (
-      e.shiftKey &&
-      (document.activeElement === first || document.activeElement === dialog.current)
-    ) {
-      e.preventDefault();
-      last.focus();
-    } else if (
-      !e.shiftKey &&
-      (document.activeElement === last || document.activeElement === dialog.current)
-    ) {
-      e.preventDefault();
-      first.focus();
-    }
-  }
   async function action(body: any) {
     setBusy(true);
     try {
@@ -178,90 +139,84 @@ export default function PublicRequestModal({
     return () => controller.abort();
   }, [modal, id, date, serviceIndex]);
   return (
-    <div className="modal-backdrop">
-      <div
-        ref={dialog}
-        tabIndex={-1}
-        onKeyDown={keyboard}
-        className="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-label={t('Demande', 'الطلب')}
-        dir={ar ? 'rtl' : 'ltr'}
+    <ModalDialog label={t('Demande', 'الطلب')} ar={ar} busy={busy} onClose={onClose}>
+      <button
+        className="close"
+        aria-label={t('Fermer', 'سدّ')}
+        disabled={busy}
+        onClick={() => {
+          onClose();
+        }}
       >
-        <button
-          className="close"
-          aria-label={t('Fermer', 'سدّ')}
-          disabled={busy}
-          onClick={() => {
+        <X />
+      </button>
+      <span className="eyebrow">{profileName(data)}</span>
+      <h2>
+        {modal === 'contact'
+          ? t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')
+          : modal === 'rdv'
+            ? t('Demander un rendez-vous', 'طلب موعد')
+            : modal === 'commande'
+              ? t('Votre demande de commande', 'الطلب ديالك')
+              : t('Demander un devis', 'طلب الثمن')}
+      </h2>
+      {['commande', 'devis'].includes(modal || '') && selectedItem && (
+        <div className="catalogue-selection">
+          <strong>{selectedItem.name}</strong>
+          {selectedItem.category && <span>{selectedItem.category}</span>}
+          {selectedItem.price && <span>{cataloguePrice(selectedItem.price, ar)}</span>}
+        </div>
+      )}
+      <form
+        aria-busy={busy}
+        onSubmit={async (e) => {
+          e.preventDefault();
+          if (busy) return;
+          setFormError('');
+          const f = new FormData(e.currentTarget);
+          try {
+            await action({
+              action: 'request',
+              profile: id,
+              kind: modal,
+              language: ar ? 'ar' : 'fr',
+              name: f.get('name'),
+              phone: f.get('phone'),
+              message: f.get('message'),
+              email: f.get('email'),
+              service: serviceIndex,
+              variantId: selectedItem?.variantId,
+              catalogueId: ['commande', 'devis'].includes(modal || '')
+                ? selectedItem?.id
+                : undefined,
+              slot: f.get('slot'),
+              trap: f.get('company'),
+              turnstileToken: turnstileToken || undefined,
+              shareCard: modal === 'contact' && useMyCard,
+              consent: modal === 'contact' ? f.get('consent') === 'on' : undefined,
+            });
             onClose();
-          }}
-        >
-          <X />
-        </button>
-        <span className="eyebrow">{profileName(data)}</span>
-        <h2>
-          {modal === 'contact'
-            ? t('Échanger nos coordonnées', 'نتبادلو معلومات التواصل')
-            : modal === 'rdv'
-              ? t('Demander un rendez-vous', 'طلب موعد')
-              : modal === 'commande'
-                ? t('Votre demande de commande', 'الطلب ديالك')
-                : t('Demander un devis', 'طلب الثمن')}
-        </h2>
-        {['commande', 'devis'].includes(modal || '') && selectedItem && (
-          <div className="catalogue-selection">
-            <strong>{selectedItem.name}</strong>
-            {selectedItem.category && <span>{selectedItem.category}</span>}
-            {selectedItem.price && <span>{cataloguePrice(selectedItem.price, ar)}</span>}
-          </div>
-        )}
-        <form
-          onSubmit={async (e) => {
-            e.preventDefault();
-            setFormError('');
-            const f = new FormData(e.currentTarget);
-            try {
-              await action({
-                action: 'request',
-                profile: id,
-                kind: modal,
-                language: ar ? 'ar' : 'fr',
-                name: f.get('name'),
-                phone: f.get('phone'),
-                message: f.get('message'),
-                email: f.get('email'),
-                service: serviceIndex,
-                variantId: selectedItem?.variantId,
-                catalogueId: ['commande', 'devis'].includes(modal || '')
-                  ? selectedItem?.id
-                  : undefined,
-                slot: f.get('slot'),
-                trap: f.get('company'),
-                turnstileToken: turnstileToken || undefined,
-                shareCard: modal === 'contact' && useMyCard,
-                consent: modal === 'contact' ? f.get('consent') === 'on' : undefined,
-              });
-              onClose();
-              setMsg(
-                modal === 'contact'
-                  ? t(
-                      'Merci ! Vos coordonnées ont été transmises à ce professionnel.',
-                      'شكراً! معلومات التواصل ديالك تسيفطات لهاد المهني.',
-                    )
-                  : t(
-                      'Demande envoyée. Le professionnel doit la confirmer.',
-                      'تسيفط الطلب. خاص المهني يأكدو.',
-                    ),
-              );
-            } catch (e: any) {
-              setFormError(
-                e.message ||
-                  t('Demande impossible. Réessayez.', 'ما قدرناش نسيفطو الطلب. عاود جرّب.'),
-              );
-            }
-          }}
-        >
+            setMsg(
+              modal === 'contact'
+                ? t(
+                    'Merci ! Vos coordonnées ont été transmises à ce professionnel.',
+                    'شكراً! معلومات التواصل ديالك تسيفطات لهاد المهني.',
+                  )
+                : t(
+                    'Demande envoyée. Le professionnel doit la confirmer.',
+                    'تسيفط الطلب. خاص المهني يأكدو.',
+                  ),
+            );
+          } catch (e: any) {
+            setFormError(
+              e.message ||
+                t('Demande impossible. Réessayez.', 'ما قدرناش نسيفطو الطلب. عاود جرّب.'),
+            );
+          }
+        }}
+      >
+        <fieldset disabled={busy} className="request-fields">
+          <legend className="sr-only">{t('Informations de la demande', 'معلومات الطلب')}</legend>
           {modal === 'contact' && (
             <div className="contact-card-choice">
               {cardCheck === 'loading' ? (
@@ -489,7 +444,7 @@ export default function PublicRequestModal({
             )}
           </p>
           {formError && (
-            <p role="alert" className="crop-error">
+            <p ref={errorSummary} tabIndex={-1} role="alert" className="crop-error">
               {formError}
             </p>
           )}
@@ -508,8 +463,8 @@ export default function PublicRequestModal({
                 ? t('Partager mes coordonnées', 'شارك معلومات التواصل ديالي')
                 : t('Envoyer la demande', 'سيفط الطلب')}
           </button>
-        </form>
-      </div>
-    </div>
+        </fieldset>
+      </form>
+    </ModalDialog>
   );
 }

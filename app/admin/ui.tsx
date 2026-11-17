@@ -29,6 +29,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
     [busy, setBusy] = useState(false),
     [tab, setTab] = useState('clients'),
     [search, setSearch] = useState(''),
+    [success, setSuccess] = useState(''),
     [designId, setDesignId] = useState(''),
     [designDirty, setDesignDirty] = useState(false),
     [ar, setAr] = useState(initialArabic);
@@ -128,6 +129,8 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
   async function save(body: any) {
     if (!leaveDesign()) return;
     setBusy(true);
+    setSuccess('');
+    setError('');
     try {
       const r = await fetch('/api/admin', {
         method: 'POST',
@@ -137,6 +140,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
       const b: any = await r.json();
       if (!r.ok) throw new Error(ar ? b.errorAr || 'الخدمة ما متوفراش. عاود جرّب.' : b.error);
       await load();
+      setSuccess(t('Modification enregistrée.', 'تسجّل التغيير.'));
     } catch (e: any) {
       setError(e.message);
     } finally {
@@ -199,7 +203,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
           </button>
         </div>
       </header>
-      <main className="section">
+      <main id="main-content" tabIndex={-1} className="section">
         <span className="eyebrow">{t('SORALINK / GESTION', 'SoraLink / التسيير')}</span>
         <div className="workspace-head">
           <h1>{t('Administration', 'الإدارة')}</h1>
@@ -220,10 +224,15 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
             'تسيير المنصة · ولوج مستقل على كارطات واشتراكات الزبناء.',
           )}
         </p>
-        {error && data && (
+        {error && (
           <div className="notice" role="alert">
             {error}
           </div>
+        )}
+        {success && (
+          <p className="admin-success" role="status">
+            {success}
+          </p>
         )}
         {!checked ? (
           <div className="empty session-loading" role="status">
@@ -288,6 +297,8 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
               <>
                 <form
                   className="admin-client-search"
+                  role="search"
+                  aria-label={t('Rechercher un client', 'البحث عن زبون')}
                   onSubmit={(event) => {
                     event.preventDefault();
                     if (leaveDesign()) void load({ search });
@@ -296,6 +307,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                   <label className="field">
                     {t('Rechercher', 'قلب')}
                     <input
+                      type="search"
                       value={search}
                       maxLength={120}
                       onChange={(e) => setSearch(e.target.value)}
@@ -305,6 +317,20 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
                   <button className="secondary" disabled={busy} type="submit">
                     {t('Rechercher', 'قلب')}
                   </button>
+                  {(search || data.search) && (
+                    <button
+                      type="button"
+                      className="secondary"
+                      disabled={busy}
+                      onClick={() => {
+                        if (!leaveDesign()) return;
+                        setSearch('');
+                        void load({ search: '' });
+                      }}
+                    >
+                      {t('Effacer la recherche', 'مسح البحث')}
+                    </button>
+                  )}
                 </form>
                 {data.profiles.map((p: any) => (
                   <article className="admin-client-card" key={p.id}>

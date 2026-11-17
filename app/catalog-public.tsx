@@ -429,6 +429,24 @@ export default function CatalogProducts({
           </select>
         </label>
       </div>
+      <div className="catalog-search-feedback">
+        <p className="hint" role="status" aria-live="polite" aria-atomic="true">
+          {t(`${filtered.length} article(s) trouvé(s)`, `${filtered.length} منتج فنتائج البحث`)}
+        </p>
+        {(search || category) && (
+          <button
+            className="text-button"
+            type="button"
+            onClick={() => {
+              setSearch('');
+              setCategory('');
+              setLimit(12);
+            }}
+          >
+            {t('Effacer les filtres', 'مسح الفلاتر')}
+          </button>
+        )}
+      </div>
       <div className="catalogue-grid">
         {filtered.slice(0, limit).map((p) => (
           <article className="catalogue-item" key={p.id}>
@@ -445,13 +463,21 @@ export default function CatalogProducts({
               {price(p)}
               <button className="secondary full" type="button" onClick={() => setDetail(p.id)}>
                 {t('Voir les détails', 'عرض التفاصيل')}
+                <span className="sr-only"> — {name(p)}</span>
               </button>
               {actions(p)}
             </div>
           </article>
         ))}
       </div>
-      {!filtered.length && <p role="status">{t('Aucun article trouvé.', 'ما لقينا حتى منتج.')}</p>}
+      {!filtered.length && (
+        <p role="status">
+          {t(
+            'Aucun article trouvé. Essayez un autre mot ou effacez les filtres.',
+            'ما لقينا حتى منتج. جرّب كلمة أخرى ولا مسح الفلاتر.',
+          )}
+        </p>
+      )}
       {filtered.length > limit && (
         <button type="button" className="secondary full" onClick={() => setLimit((n) => n + 12)}>
           {t('Afficher plus d’articles', 'عرض المزيد من المنتجات')} (

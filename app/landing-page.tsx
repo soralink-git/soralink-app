@@ -19,7 +19,7 @@ import { WhatsAppIcon } from './card-helpers';
 export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }) {
   const t = (fr: string, da: string) => (ar ? da : fr);
   return (
-    <main className="landing landing-simple">
+    <main id="main-content" tabIndex={-1} className="landing landing-simple">
       <section className="landing-hero">
         <div className="landing-copy">
           <span className="landing-kicker">
@@ -60,7 +60,7 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
               {t('Commander sur WhatsApp', 'طلب عبر WhatsApp')}
             </a>
             <a className="secondary" href={'/demo' + (ar ? '?lang=ar' : '')}>
-              {t('Voir un exemple réel', 'شوف مثال حقيقي')}
+              {t('Explorer la démo', 'شوف المثال التجريبي')}
               <ExternalLink size={16} />
             </a>
           </div>
@@ -221,7 +221,10 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
                 <Check size={18} className="icon-good" aria-hidden="true" />
                 <span>
                   <strong>
-                    {t('Modifiable à vie en 10 secondes', 'قابلة للتعديل مدى الحياة فـ 10 ثواني')}
+                    {t(
+                      'Informations modifiables pendant l’abonnement',
+                      'المعلومات قابلة للتعديل طول مدة الاشتراك',
+                    )}
                   </strong>{' '}
                   {t('sans changer de carte.', 'بلا ما تبدل الكارط.')}
                 </span>
@@ -332,8 +335,8 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
           <h2>{t('Les Offres', 'العروض ديالنا')}</h2>
           <p>
             {t(
-              'Choisissez les fonctions utiles à votre activité. Carte NFC physique et page digitale tout-en-un.',
-              'اختار الوظائف اللي محتاجها للنشاط ديالك. كارط NFC مادية وصفحة رقمية كلشي فوحدة.',
+              'Choisissez les fonctions utiles à votre activité. Page digitale selon le pack ; carte NFC incluse dans le Pack 1, en option dans les Packs 2 à 4.',
+              'اختار الوظائف اللي محتاجها للنشاط ديالك. الصفحة الرقمية حسب الباقة؛ كارط NFC داخلة فالباقة 1 واختيارية فالباقات 2 حتى 4.',
             )}
           </p>
         </div>

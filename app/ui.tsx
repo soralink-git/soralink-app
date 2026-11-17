@@ -495,27 +495,29 @@ export default function App({
     await load('login', true, nextCardId);
   }
   async function createCard(name?: string) {
-    if (cardsCount >= cardLimit) {
-      setMsg(
+    if (cardsCount >= cardLimit)
+      throw new Error(
         t(
           `Limite de ${cardLimit} carte(s) atteinte pour votre forfait. Contactez l'administrateur pour en ajouter.`,
           `وصلتي للحد الأقصى ديال ${cardLimit} بطاقة المسموحة فهاد الباقة. تواصل مع الإدارة باش تزيد.`,
         ),
       );
-      return;
-    }
-    if (autosave.queue.isDirty()) {
-      await autosave.queue.flush();
-    }
+    if (autosave.queue.isDirty() && !(await autosave.queue.flush()))
+      throw new Error(
+        t(
+          'Enregistrez la carte actuelle avant d’en créer une autre.',
+          'سجّل الكارط الحالية قبل ما تزيد وحدة أخرى.',
+        ),
+      );
     setBusy(true);
     try {
       const res = await action({ action: 'createCard', name: name?.trim() || undefined });
-      if (res?.ok && res.id) {
-        setMsg(t('Nouvelle carte créée avec succès !', 'تم إنشاء البطاقة الجديدة بنجاح !'));
-        await load('login', true, res.id);
-      }
-    } catch (err: any) {
-      setMsg(err.message || t('Impossible de créer la carte.', 'ما قدرناش نصايبو الكارط.'));
+      if (!res?.ok || !res.id)
+        throw new Error(
+          t('Impossible de créer la carte. Réessayez.', 'ما قدرناش نصايبو الكارط. عاود جرّب.'),
+        );
+      setMsg(t('Nouvelle carte créée avec succès !', 'تم إنشاء البطاقة الجديدة بنجاح !'));
+      await load('login', true, res.id);
     } finally {
       setBusy(false);
     }
@@ -710,7 +712,7 @@ export default function App({
       {view === 'app' && (
         <Suspense
           fallback={
-            <main className="workspace" role="status">
+            <main id="main-content" tabIndex={-1} className="workspace" role="status">
               {t('Chargement de votre espace…', 'كنحمّلو الحساب ديالك…')}
             </main>
           }
@@ -778,23 +780,19 @@ export default function App({
           setServiceIndex={setServiceIndex}
           onClose={() => setModal('')}
           onSubmit={async (form) => {
-            try {
-              await action({
-                action: 'manual',
-                profile: id,
-                name: form.get('name'),
-                phone: form.get('phone'),
-                message: form.get('message'),
-                email: form.get('email'),
-                service: serviceIndex,
-                slot: form.get('slot'),
-              });
-              setModal('');
-              setMsg(t('Rendez-vous enregistré et confirmé.', 'تسجّل الموعد وتأكد.'));
-              await load();
-            } catch (error: any) {
-              setMsg(error.message);
-            }
+            await action({
+              action: 'manual',
+              profile: id,
+              name: form.get('name'),
+              phone: form.get('phone'),
+              message: form.get('message'),
+              email: form.get('email'),
+              service: serviceIndex,
+              slot: form.get('slot'),
+            });
+            setModal('');
+            setMsg(t('Rendez-vous enregistré et confirmé.', 'تسجّل الموعد وتأكد.'));
+            await load();
           }}
         />
       )}
