@@ -65,7 +65,7 @@ test('connected visitor keeps offer selection in the workspace and the same two 
 });
 test('public support addresses consistently use the branded contact email', () => {
   for (const file of [
-    'app/ui.tsx',
+    'app/site-footer.tsx',
     'app/conditions/page.tsx',
     'app/confidentialite/page.tsx',
     'app/dashboard-orders.tsx',
