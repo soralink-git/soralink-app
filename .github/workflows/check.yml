@@ -24,4 +24,4 @@ jobs:
       - run: pnpm verify:public
       - run: pnpm verify:journey
       - run: pnpm verify:recovery
-      - run: pnpm audit --audit-level moderate
+      - run: pnpm security:audit

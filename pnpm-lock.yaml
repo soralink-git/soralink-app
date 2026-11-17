@@ -20,6 +20,10 @@ overrides:
   '@esbuild-kit/core-utils>esbuild': 0.28.1
   wrangler>esbuild: 0.28.1
 
+patchedDependencies:
+  picomatch@2.3.2: 5ff8a22a20968aa7f5690b2144e6b8d42915f08f2ecf17dc9a4dca3eb19715d9
+  picomatch@4.0.7: 48a7a1e54ac437c1ee6669761af8656cb6af9988a7234134b7b3b406ddd85a37
+
 importers:
 
   .:
@@ -5788,9 +5792,9 @@ snapshots:
     dependencies:
       reusify: 1.1.0
 
-  fdir@6.5.0(picomatch@4.0.7):
+  fdir@6.5.0(picomatch@4.0.7(patch_hash=48a7a1e54ac437c1ee6669761af8656cb6af9988a7234134b7b3b406ddd85a37)):
     optionalDependencies:
-      picomatch: 4.0.7
+      picomatch: 4.0.7(patch_hash=48a7a1e54ac437c1ee6669761af8656cb6af9988a7234134b7b3b406ddd85a37)
 
   fflate@0.8.3: {}
 
@@ -6283,7 +6287,7 @@ snapshots:
   micromatch@4.0.8:
     dependencies:
       braces: 3.0.3
-      picomatch: 2.3.2
+      picomatch: 2.3.2(patch_hash=5ff8a22a20968aa7f5690b2144e6b8d42915f08f2ecf17dc9a4dca3eb19715d9)
 
   mime-db@1.54.0: {}
 
@@ -6467,9 +6471,9 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  picomatch@2.3.2: {}
+  picomatch@2.3.2(patch_hash=5ff8a22a20968aa7f5690b2144e6b8d42915f08f2ecf17dc9a4dca3eb19715d9): {}
 
-  picomatch@4.0.7: {}
+  picomatch@4.0.7(patch_hash=48a7a1e54ac437c1ee6669761af8656cb6af9988a7234134b7b3b406ddd85a37): {}
 
   pngjs@5.0.0: {}
 
@@ -6866,8 +6870,8 @@ snapshots:
 
   tinyglobby@0.2.17:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.7)
-      picomatch: 4.0.7
+      fdir: 6.5.0(picomatch@4.0.7(patch_hash=48a7a1e54ac437c1ee6669761af8656cb6af9988a7234134b7b3b406ddd85a37))
+      picomatch: 4.0.7(patch_hash=48a7a1e54ac437c1ee6669761af8656cb6af9988a7234134b7b3b406ddd85a37)
 
   to-regex-range@5.0.1:
     dependencies:
@@ -7040,7 +7044,7 @@ snapshots:
   vite@8.1.6(@types/node@22.19.19)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(tsx@4.23.15):
     dependencies:
       lightningcss: 1.33.0
-      picomatch: 4.0.7
+      picomatch: 4.0.7(patch_hash=48a7a1e54ac437c1ee6669761af8656cb6af9988a7234134b7b3b406ddd85a37)
       postcss: 8.5.29
       rolldown: 1.1.5
       tinyglobby: 0.2.17

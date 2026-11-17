@@ -16,4 +16,4 @@ jobs:
         with:
           node-version: 24
       - run: pnpm install --frozen-lockfile --ignore-scripts
-      - run: pnpm audit --audit-level moderate
+      - run: pnpm security:audit

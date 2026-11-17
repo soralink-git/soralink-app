@@ -31,8 +31,16 @@ La restauration SQL conserve le script `restore-backup.mjs`. La répétition syn
 
 ## Points non résolus automatiquement
 
-- `picomatch` 4.0.7 reste signalé par `GHSA-fc5q-39xc-vjpf` ; au contrôle du 17 novembre, aucune version corrigée n’est disponible. L’audit de production n’en signale pas. Aucun avis n’est ignoré, aucune règle de sécurité n’est désactivée pour rendre la CI verte. La CI peut donc rester bloquée à l’étape d’audit global jusqu’à une résolution amont ou une analyse spécifique.
+- `picomatch` reste signalé en amont par `GHSA-fc5q-39xc-vjpf`, sans version corrigée disponible. Les versions installées 2.3.2 et 4.0.7 ont désormais un patch local PNPM qui refuse tous les extglobs répétés `+(...)` et `*(...)` avant compilation regex, dans les deux chemins du parseur. Ce sous-ensemble de globs n’est pas utilisé par le projet. `pnpm security:audit` vérifie les empreintes SHA-256 des deux parseurs réellement résolus et leurs rejets avant de considérer cet avis précis comme atténué. Toute nouvelle alerte, version inconnue, absence de patch, empreinte différente ou panne du registre reste bloquante. L’audit brut continue de signaler l’avis ; il ne faut pas présenter le paquet amont comme corrigé.
 - Les 85 avertissements ESLint préexistants ne sont pas tous refactorisés dans cette correction fonctionnelle. Leur suppression exige une recette des éditeurs, autosaves et prévisualisations.
 - L’identité légale complète du vendeur/responsable, les durées de conservation décidées, les formalités et les conditions finales ne peuvent pas être inventées. Les mentions provisoires restent visibles en attendant ces informations validées.
 - La politique de scripts CSP exige une prise en charge des nonces dans le rendu Vinext/RSC ; seules les directives compatibles sont appliquées immédiatement.
 - Des médias historiquement passés en état `deleting` peuvent nécessiter une réparation après vérification de leur présence R2 et des références. Aucun changement aveugle d’état de données de production n’est exécuté ici.
+
+## Activation du 17 novembre 2026
+
+- Migration `0019_card_registry.sql` appliquée sur la base D1 de production, avec conservation contrôlée des quatre tables (adresses : 1 ligne ; intentions : 0 ; statistiques : 5 ; empreintes de visite : 1).
+- Copie des quatre tables et de leur schéma conservée dans la même base sous `backup_108_20261117_*`, en complément du point Time Travel pré-migration `0000018d-00000000-00005126-5e7077c2675aef5d4ec7996b49d80dab`.
+- Les cinq objets du bucket applicatif ont été copiés avec chiffrement AES-GCM et relecture des copies dans `soralink-backups/backups/deploy-2026-11-17-108/files/`. Leur clé de récupération est conservée séparément et ne figure pas dans le dépôt.
+- Le téléchargement local de l’export SQL a été refusé par le contrôle automatique. Aucun export SQL brut local n’est utilisé comme sauvegarde validée. La récupération D1 repose ici sur Time Travel et les copies des tables dans Cloudflare ; cela ne remplace pas une sauvegarde SQL indépendante à long terme.
+- Les secrets GitHub Actions des sauvegardes planifiées restent à configurer. Cette intervention ne prétend pas avoir activé le job hebdomadaire. Les contrôles de présence et de fraîcheur signaleront son absence.
