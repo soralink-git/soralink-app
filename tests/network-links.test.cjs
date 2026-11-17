@@ -2,9 +2,8 @@ const test = require('node:test'),
   assert = require('node:assert/strict'),
   path = require('node:path');
 const { load, req } = require('./ts-loader.cjs');
-const { activeNetworkLinks, networkLinkURL, moveActiveSocialLink } = load(
-  path.resolve('app/lib/network-links.ts'),
-);
+const { networkLinkURL } = load(path.resolve('app/lib/network-links.ts'));
+const { profileLinks, moveProfileLink } = load(path.resolve('app/lib/profile-links.ts'));
 const React = req('react'),
   { renderToStaticMarkup } = req('react-dom/server');
 const EditorModule = load(path.resolve('app/network-links-editor.tsx'));
@@ -21,8 +20,8 @@ test('platform-first list restores existing non-empty links without introducing 
     name: 'Owner',
     hideSocial: true,
   };
-  const selected = activeNetworkLinks(data);
-  assert.equal(selected.map((p) => p.key).join(','), 'instagram,website,googleReview');
+  const selected = profileLinks(data);
+  assert.equal(selected.map((p) => p.kind).join(','), 'instagram,website,googleReview');
   assert.equal(data.name, 'Owner');
   assert.equal(data.hideSocial, true);
   const html = renderToStaticMarkup(
@@ -78,7 +77,7 @@ test('URL confirmation normalizes web links and rejects executable schemes, cred
     assert.equal(networkLinkURL('website', value), '');
   assert.equal(networkLinkURL('private', 'https://example.test'), '');
 });
-test('reordering only added social links preserves all saved content and remaining platform positions', () => {
+test('current link ordering preserves content while normalizing saved URLs', () => {
   const original = {
     name: 'Owner',
     hideSocial: true,
@@ -87,16 +86,18 @@ test('reordering only added social links preserves all saved content and remaini
     website: 'https://exemple.ma',
     socialOrder: ['instagram', 'facebook', 'youtube'],
   };
-  const next = moveActiveSocialLink(original, 'youtube', 'instagram');
+  const next = moveProfileLink(original, 'legacy-youtube', 'legacy-instagram');
   assert.equal(
-    activeNetworkLinks(next)
-      .map((p) => p.key)
+    profileLinks(next)
+      .map((p) => p.kind)
       .join(','),
     'youtube,instagram,website',
   );
-  for (const key of ['name', 'hideSocial', 'instagram', 'youtube', 'website'])
-    assert.equal(next[key], original[key]);
-  assert.equal(moveActiveSocialLink(original, 'facebook', 'instagram'), original);
-  assert.equal(moveActiveSocialLink(original, 'website', 'instagram'), original);
-  assert.equal(moveActiveSocialLink(original, 'unknown', 'instagram'), original);
+  for (const key of ['name', 'hideSocial']) assert.equal(next[key], original[key]);
+  for (const key of ['instagram', 'youtube', 'website'])
+    assert.equal(next[key], networkLinkURL(key, original[key]));
+  assert.equal(original.website, 'https://exemple.ma');
+  assert.equal(moveProfileLink(original, 'legacy-facebook', 'legacy-instagram'), original);
+  assert.equal(moveProfileLink(original, 'legacy-instagram', 'legacy-instagram'), original);
+  assert.equal(moveProfileLink(original, 'unknown', 'legacy-instagram'), original);
 });

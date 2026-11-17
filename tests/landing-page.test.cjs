@@ -7,7 +7,7 @@ const React = req('react');
 const { renderToStaticMarkup } = req('react-dom/server');
 const LandingPage = load(path.resolve('app/landing-page.tsx')).default;
 function render(ar, auth = false) {
-  return renderToStaticMarkup(React.createElement(LandingPage, { ar, auth, onPricing: () => {} }));
+  return renderToStaticMarkup(React.createElement(LandingPage, { ar, auth }));
 }
 for (const ar of [false, true])
   test(`short homepage keeps offers and navigation targets without profession blocks (${ar ? 'ar' : 'fr'})`, () => {

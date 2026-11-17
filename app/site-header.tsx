@@ -45,7 +45,7 @@ export default function SiteHeader({
         </span>
         Sora<span>Link</span>
       </a>
-      {(view === 'home' || view === 'pricing') && (
+      {view === 'home' && (
         <nav aria-label={t('Navigation principale', 'التنقل الرئيسي')}>
           {[
             ['fonctionnalites', 'En bref', 'باختصار'],

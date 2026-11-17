@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     if (req.headers.get('origin') !== new URL(req.url).origin)
       return json({ error: 'Accès refusé' }, 403);
     const b = await readValidatedJSON(req, dataActionSchema);
-    const { user, admin } = await identity();
+    const { user } = await identity();
     if (b.action === 'request') {
       const ip = req.headers.get('cf-connecting-ip') || '';
       if (ip && !(await allowRequest(db(), 'request:' + ip, 10, 3600000)))
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
     }
     switch (b.action) {
       case 'save':
-        return await saveProfile(b, user, admin);
+        return await saveProfile(b, user);
       case 'createCard':
         return await createCard(b, user);
       case 'manual':

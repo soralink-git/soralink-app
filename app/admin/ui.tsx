@@ -11,7 +11,7 @@ import { useEffect, useRef, useState } from 'react';
 import LoadMore from '../load-more';
 import { appendUnique } from '../lib/pagination';
 import { offerLabel, adminSignInPath } from '../lib/journey-links';
-import { Nfc, Users, Package, Clock, RefreshCw, Shield, Save, Globe } from 'lucide-react';
+import { Nfc, Users, Package, Clock, RefreshCw, Shield, Globe } from 'lucide-react';
 const statuses: any = {
   pending: 'En attente / فانتظار الأداء',
   paid: 'Paiement confirmé / تخلّص',

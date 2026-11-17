@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { DashboardContext } from './dashboard-editor';
 import { associateLegacyMedia } from './lib/promotions';
 export default function CatalogMediaEditor({ context }: { context: DashboardContext }) {
-  const { data, setData, ar, t, busy, setMsg } = context;
+  const { data, setData, t, busy, setMsg } = context;
   const [offer, setOffer] = useState('');
   const photos: string[] = data.photos || [];
   if (!photos.length && !data.recordedVideo && !data.video) return null;

@@ -1,6 +1,6 @@
 import { readClientAccess, managementRevision } from '../../lib/client-access-config';
 import { clientSections } from '../../lib/client-access';
-import { annualExpiry, capabilities, isPlatformPlan } from '../../lib/offers';
+import { annualExpiry, isPlatformPlan } from '../../lib/offers';
 import { normalizeAppearance } from '../../lib/personalization';
 import {
   adoptLegacy,

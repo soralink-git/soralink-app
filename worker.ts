@@ -106,7 +106,6 @@ export default {
         '/offline.html',
         '/offline',
         '/og-soralink.png',
-        '/demo-design.svg',
       ].includes(url.pathname)
     )
       return secure(await env.ASSETS.fetch(request));

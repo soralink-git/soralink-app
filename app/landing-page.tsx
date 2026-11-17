@@ -16,15 +16,7 @@ import {
 } from 'lucide-react';
 import { WhatsAppIcon } from './card-helpers';
 
-export default function LandingPage({
-  ar,
-  auth,
-  onPricing,
-}: {
-  ar: boolean;
-  auth: boolean;
-  onPricing: () => void;
-}) {
+export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }) {
   const t = (fr: string, da: string) => (ar ? da : fr);
   return (
     <main className="landing landing-simple">

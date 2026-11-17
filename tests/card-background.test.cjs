@@ -58,7 +58,7 @@ test('only the image layer receives opacity and the public card keeps usable act
     React.createElement(CardView, {
       d: { name: 'Test', backgroundPhoto: photo, backgroundOpacity: 48 },
       ar: false,
-      setAr() {},
+
       onMessage() {},
       onRequest() {},
       withSections: true,

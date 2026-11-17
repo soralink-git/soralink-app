@@ -70,12 +70,3 @@ export const catalogCategoriesSchema = z
     }),
   )
   .max(40);
-export const demoDocumentSchema = catalogDocumentSchema.extend({
-  src: z.enum([
-    '/demo/soralink/catalogue-fr.pdf',
-    '/demo/soralink/catalogue-ar.pdf',
-    '/demo/soralink/catalogue-v2-fr.pdf',
-    '/demo/soralink/catalogue-v2-ar.pdf',
-  ]),
-  cover: z.enum(['/soralink-pack-hero.webp', '/demo/soralink/premium/nfc.webp']),
-});

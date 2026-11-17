@@ -3,7 +3,7 @@ import ThemeToggle from '../theme-toggle';
 import { useState, useEffect, useId } from 'react';
 import { REMEMBERED_EMAIL_KEY } from '../lib/idle-policy';
 import { workspacePath, selectedPlan, offerLabel } from '../lib/journey-links';
-import { Nfc, Globe, Mail, Lock, Eye, EyeOff, CheckCircle, ArrowLeft } from 'lucide-react';
+import { Nfc, Globe, Eye, EyeOff, CheckCircle } from 'lucide-react';
 export default function Auth({
   administrator = false,
   reset = false,

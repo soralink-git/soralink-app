@@ -3,9 +3,7 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, readdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const { Miniflare } = createRequire(require.resolve('wrangler'))('miniflare');
+import { Miniflare } from 'miniflare';
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const scratch = await mkdtemp(path.join(tmpdir(), 'soralink-recovery-'));
 const mf = new Miniflare({

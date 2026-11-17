@@ -3,9 +3,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const { createRequire } = require('node:module');
 const ts = require('typescript');
-const { Miniflare } = createRequire(require.resolve('wrangler'))('miniflare');
+const { Miniflare } = require('miniflare');
 const migration = fs.readFileSync(path.resolve('drizzle/0004_profile_media.sql'), 'utf8');
 const statements = migration.split('--> statement-breakpoint').map((s) => s.trim());
 const secondaryMigration = fs.readFileSync(

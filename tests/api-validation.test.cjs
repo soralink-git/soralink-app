@@ -111,7 +111,6 @@ function load(filename) {
             renewAppSession: async () => ({ expires: Date.now() + 900000 }),
           };
         if (resolved.endsWith('/lib/supabase.ts')) return { authClient: async () => provider };
-        if (resolved.endsWith('/chatgpt-auth.ts')) return { getChatGPTUser: async () => null };
         if (resolved.endsWith('/lib/notifications.ts'))
           return { mailStatement: () => [], mailEnabled: () => false, mailReady: () => false };
         if (resolved.endsWith('/lib/media-storage.ts'))

@@ -10,9 +10,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 const appTokens = new Map();
 const tokenHash = (token) => createHash('sha256').update(token).digest('hex');
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-const { Miniflare } = createRequire(require.resolve('wrangler'))('miniflare');
+import { Miniflare } from 'miniflare';
 const root = path.resolve('dist/pages');
 const base = 'https://soralink.link';
 const userId = '11111111-1111-4111-8111-111111111111';
@@ -786,7 +784,7 @@ try {
   assert.equal(clearedOwner.breakStart, '');
   assert.equal(clearedOwner.breakEnd, '');
   // The same serialization queue used by the editor must carry forward each acknowledged revision.
-  const { load: loadTestModule } = require('../tests/ts-loader.cjs');
+  const { load: loadTestModule } = (await import('../tests/ts-loader.cjs')).default;
   const { createSaveQueue } = loadTestModule(path.resolve('app/lib/save-queue.ts'));
   const ownerSnapshot = (await request('/api/data', { auth: true })).json;
   const persistedCard = ownerSnapshot.profile;

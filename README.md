@@ -1,9 +1,14 @@
 # SoraLink — version actuelle
 
-Application React/Vinext adaptée à Cloudflare Pages. Le fichier HTML de démonstration est remplacé par l’application complète.
+Application React/Vinext adaptée à Cloudflare Pages. Les cartes publiques et les démonstrations utilisent leurs propres composants, séparés de l’espace client.
 
 Construction : pnpm install --frozen-lockfile puis pnpm build. Sortie : dist/pages. Node 24.
-Qualité : `pnpm check` (TypeScript), `pnpm lint` (ESLint), `pnpm test` (node:test), `pnpm verify` (les trois plus Prettier).
+Qualité : `pnpm check` (TypeScript, avec détection des variables et paramètres inutilisés), `pnpm lint` (ESLint), `pnpm test` (node:test), `pnpm verify` (les trois plus Prettier).
+
+Les tests et les vérifications de parcours importent directement la version fixée de
+`miniflare` déclarée dans `devDependencies`, indépendamment des dépendances internes de
+Wrangler. Toute évolution de cette version doit être validée avec les trois commandes
+`pnpm verify:public`, `pnpm verify:journey` et `pnpm verify:recovery` après le build.
 
 Variables Cloudflare Pages : SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY (secret), SORATAP_ADMIN_EMAIL, PUBLIC_SITE_URL, EMAIL_FROM, NOTIFICATIONS_ENABLED. Optionnel : TURNSTILE_SITE_KEY (publique) et TURNSTILE_SECRET_KEY (secret) pour activer le contrôle anti-robot du formulaire public. Compatibilité : nodejs_compat.
 

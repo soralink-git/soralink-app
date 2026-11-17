@@ -41,7 +41,7 @@ for (const ar of [false, true])
     );
     assert.equal(data.profileType, 'business');
     const html = renderToStaticMarkup(
-      React.createElement(Card, { d: data, ar, onMessage() {}, onRequest() {}, setAr() {} }),
+      React.createElement(Card, { d: data, ar, onMessage() {}, onRequest() {} }),
     );
     assert.match(html, new RegExp('<h2>' + data.business + '</h2>'));
     assert(!html.includes('<h2>Amine</h2>'));
@@ -58,7 +58,6 @@ for (const ar of [false, true])
         ar,
         onMessage() {},
         onRequest() {},
-        setAr() {},
       }),
     );
     assert.match(legacy, /<h2>Amine<\/h2>/);

@@ -25,5 +25,3 @@ export const clientAccessSchema = z
       .default({}),
   })
   .strict();
-
-export type ClientAccessConfig = z.infer<typeof clientAccessSchema>;
