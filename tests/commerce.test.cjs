@@ -58,7 +58,13 @@ function fixture() {
       objects.set(key, await new Response(value).arrayBuffer());
     },
     async get(key) {
-      return objects.has(key) ? { body: objects.get(key) } : null;
+      return objects.has(key)
+        ? {
+            body: objects.get(key),
+            size: objects.get(key).byteLength,
+            httpMetadata: { contentType: 'application/pdf' },
+          }
+        : null;
     },
     async delete(key) {
       objects.delete(key);
@@ -98,6 +104,7 @@ function fixture() {
         exports: m.exports,
         URL,
         URLSearchParams,
+        Headers,
         Request,
         Response,
         File,
@@ -114,7 +121,7 @@ function fixture() {
         clearTimeout,
         require(n) {
           if (n === 'cloudflare:workers') return { env };
-          if (n.endsWith('/lib/server')) return server;
+          if (n.endsWith('/server')) return server;
           if (n.startsWith('.')) {
             const base = path.resolve(path.dirname(file), n);
             return load(['.ts', '.tsx', '.js'].map((e) => base + e).find(fs.existsSync) || base);
@@ -336,7 +343,8 @@ test('metrics deduplicate by source, filter owner/bots, enforce Activity rights 
     f.actor({ user: { userId: 'owner' }, admin: false });
     await f.post('app/api/metrics/route.ts', { ...event, source: 'direct' });
     assert.equal(f.sqlite.prepare('SELECT SUM(visits) n FROM profile_metrics').get().n, 2);
-    const get = f.load('app/api/metrics/route.ts').GET;
+    const get = () =>
+      f.load('app/api/metrics/route.ts').GET(new Request('https://example.test/api/metrics'));
     const owner = await (await get()).json();
     assert.equal(owner.rows.length, 2);
     f.actor({ user: { userId: 'other' }, admin: false });
@@ -445,6 +453,258 @@ test('tracked QR and NFC links preserve the public alias and never pretend to in
     );
     assert.match(trackedCardURL('https://soralink.link', 'id', '', 'nfc'), /\/c\/id\?src=nfc$/);
     assert.equal(visitSource('spoof'), 'direct');
+  } finally {
+    f.close();
+  }
+});
+
+function secondary(f) {
+  const data = {
+    ...f.data,
+    appointmentServices: [{ name: 'Consultation', duration: 30 }],
+    hours: Object.fromEntries(Array.from({ length: 7 }, (_, i) => [i, ['09:00', '17:00']])),
+    breakStart: '',
+    breakEnd: '',
+  };
+  f.sqlite
+    .prepare(
+      'INSERT INTO secondary_cards(id,owner,data,published,updated,created) VALUES(?,?,?,1,?,?)',
+    )
+    .run('second', 'owner', JSON.stringify(data), 'old', '2026-01-01');
+  return data;
+}
+
+test('secondary cards support addresses, WhatsApp intents and metrics while inheriting owner rights', async () => {
+  const f = fixture();
+  try {
+    secondary(f);
+    const { reservePublicName } = f.load('app/lib/address-storage.ts');
+    assert.equal(await reservePublicName(f.DB, 'owner', 'second', 'second-shop'), true);
+    assert.equal(await reservePublicName(f.DB, 'other', 'second', 'stolen-shop'), false);
+    f.actor({ user: null, admin: false });
+    const b = { ...f.payload(), profile: 'second' };
+    assert.equal((await f.post('app/api/catalog-order/route.ts', b)).status, 200);
+    const intent = f.sqlite
+      .prepare('SELECT * FROM catalog_order_intents WHERE id=?')
+      .get(b.intentId);
+    assert.equal(intent.profile, 'second');
+    assert.equal(
+      f.sqlite.prepare('SELECT recipient FROM notifications WHERE profile=?').get('second')
+        .recipient,
+      'owner@example.test',
+    );
+    assert.equal(
+      (await f.post('app/api/metrics/route.ts', { profile: 'second', source: 'qr' })).status,
+      204,
+    );
+    assert.equal(
+      f.sqlite.prepare('SELECT visits FROM profile_metrics WHERE profile=?').get('second').visits,
+      1,
+    );
+    f.actor({ user: { userId: 'owner', email: 'owner@example.test' }, admin: false });
+    const metrics = f.load('app/api/metrics/route.ts');
+    let r = await metrics.GET(new Request('https://example.test/api/metrics?cardId=second'));
+    assert.equal(r.status, 200);
+    assert.equal((await r.json()).rows.length, 1);
+    f.actor({ user: { userId: 'other', email: 'other@example.test' }, admin: false });
+    assert.equal(
+      (await metrics.GET(new Request('https://example.test/api/metrics?cardId=second'))).status,
+      403,
+    );
+    f.sqlite.prepare("UPDATE profiles SET state='suspended' WHERE owner='owner'").run();
+    assert.equal(
+      (await f.post('app/api/catalog-order/route.ts', { ...b, intentId: crypto.randomUUID() }))
+        .status,
+      404,
+    );
+  } finally {
+    f.close();
+  }
+});
+
+test('secondary card requests, booking status, cancellation and manual appointments preserve ownership', async () => {
+  const f = fixture();
+  try {
+    secondary(f);
+    const date = new Date(Date.now() + 2 * 86400000).toISOString().slice(0, 10);
+    const availability = f.load('app/api/availability/route.ts');
+    let r = await availability.GET(
+      new Request('https://example.test/api/availability?id=second&date=' + date + '&service=0'),
+    );
+    assert.equal(r.status, 200);
+    const slots = (await r.json()).slots;
+    assert(slots.length > 1);
+    f.actor({ user: null, admin: false });
+    r = await f.post('app/api/data/route.ts', {
+      action: 'request',
+      profile: 'second',
+      kind: 'rdv',
+      name: 'Visiteur',
+      phone: '0661446600',
+      email: 'visitor@example.test',
+      message: '',
+      language: 'fr',
+      slot: slots[0],
+      service: 0,
+    });
+    assert.equal(r.status, 200, await r.text());
+    const request = f.sqlite.prepare('SELECT * FROM requests WHERE profile=?').get('second');
+    assert.equal(request.slot, slots[0]);
+    f.actor({ user: { userId: 'other', email: 'other@example.test' }, admin: false });
+    assert.equal(
+      (
+        await f.post('app/api/data/route.ts', {
+          action: 'status',
+          id: request.id,
+          cardId: 'second',
+          status: 'confirmed',
+        })
+      ).status,
+      403,
+    );
+    f.actor({ user: { userId: 'owner', email: 'owner@example.test' }, admin: false });
+    assert.equal(
+      (
+        await f.post('app/api/data/route.ts', {
+          action: 'status',
+          id: request.id,
+          cardId: 'second',
+          status: 'confirmed',
+        })
+      ).status,
+      200,
+    );
+    assert.equal(
+      f.sqlite.prepare('SELECT COUNT(*) n FROM bookings WHERE profile=?').get('second').n,
+      2,
+    );
+    assert.equal(
+      (
+        await f.post('app/api/data/route.ts', {
+          action: 'status',
+          id: request.id,
+          cardId: 'second',
+          status: 'cancelled',
+        })
+      ).status,
+      200,
+    );
+    assert.equal(
+      f.sqlite.prepare('SELECT COUNT(*) n FROM bookings WHERE profile=?').get('second').n,
+      0,
+    );
+    assert.equal(
+      (
+        await f.post('app/api/data/route.ts', {
+          action: 'manual',
+          cardId: 'second',
+          name: 'Client',
+          phone: '0661446601',
+          email: '',
+          message: '',
+          slot: slots[1],
+          service: 0,
+        })
+      ).status,
+      200,
+    );
+    const read = f.load('app/lib/data/read.ts');
+    r = await read.readData(
+      new Request('https://example.test/api/data?cardId=second&history=requests'),
+    );
+    assert.equal(r.status, 200);
+    assert.equal((await r.json()).items.length, 2);
+  } finally {
+    f.close();
+  }
+});
+
+test('secondary card PDFs remain public only when published and allow owner preview without leaking to other accounts', async () => {
+  const f = fixture();
+  try {
+    const data = secondary(f),
+      key = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+      doc = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+    data.catalogDocuments = [
+      {
+        id: doc,
+        src: '/api/upload?key=' + key,
+        titleFr: 'Document',
+        visible: true,
+        allowDownload: false,
+      },
+    ];
+    f.sqlite
+      .prepare('UPDATE secondary_cards SET data=? WHERE id=?')
+      .run(JSON.stringify(data), 'second');
+    f.sqlite
+      .prepare('INSERT INTO media_assets(key,owner,bytes,state,created) VALUES(?,?,?, ?,?)')
+      .run(key, 'owner', 5, 'ready', new Date().toISOString());
+    f.objects.set(key, new TextEncoder().encode('%PDF-').buffer);
+    const route = f.load('app/api/catalog-documents/[profile]/[document]/route.ts');
+    const get = (download = '') =>
+      route.GET(
+        new Request('https://example.test/api/catalog-documents/second/' + doc + download),
+        { params: Promise.resolve({ profile: 'second', document: doc }) },
+      );
+    f.actor({ user: null, admin: false });
+    assert.equal((await get()).status, 200);
+    assert.equal((await get('?download=1')).status, 403);
+    f.sqlite.prepare('UPDATE secondary_cards SET published=0 WHERE id=?').run('second');
+    assert.equal((await get()).status, 404);
+    f.actor({ user: { userId: 'other', email: 'other@example.test' }, admin: false });
+    assert.equal((await get()).status, 404);
+    f.actor({ user: { userId: 'owner', email: 'owner@example.test' }, admin: false });
+    assert.equal((await get()).status, 200);
+  } finally {
+    f.close();
+  }
+});
+
+test('secondary saves advance their own revision and cannot attach media claimed by concurrent cleanup', async () => {
+  const f = fixture();
+  try {
+    const data = secondary(f);
+    const future = new Date(Date.now() + 1000).toISOString();
+    f.sqlite.prepare('UPDATE secondary_cards SET updated=? WHERE id=?').run(future, 'second');
+    let r = await f.post('app/api/data/route.ts', {
+      action: 'save',
+      id: 'second',
+      revision: future,
+      data,
+      published: true,
+    });
+    assert.equal(r.status, 200, await r.clone().text());
+    const revision = (await r.json()).revision;
+    assert(Date.parse(revision) > Date.parse(future));
+    const key = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+    f.sqlite
+      .prepare(
+        "INSERT INTO media_assets(key,owner,bytes,state,created) VALUES(?,'owner',5,'ready','2000-01-01')",
+      )
+      .run(key);
+    const prepare = f.DB.prepare;
+    let cleanupRan = false;
+    f.DB.prepare = (sql) => {
+      if (sql.startsWith('UPDATE secondary_cards SET data=')) {
+        f.sqlite.prepare("UPDATE media_assets SET state='deleting' WHERE key=?").run(key);
+        cleanupRan = true;
+      }
+      return prepare(sql);
+    };
+    r = await f.post('app/api/data/route.ts', {
+      action: 'save',
+      id: 'second',
+      revision,
+      data: { ...data, avatar: '/api/upload?key=' + key },
+      published: true,
+    });
+    assert(cleanupRan);
+    assert.equal(r.status, 409);
+    assert.equal(
+      f.sqlite.prepare('SELECT COUNT(*) n FROM secondary_card_media WHERE media_key=?').get(key).n,
+      0,
+    );
   } finally {
     f.close();
   }

@@ -1,3 +1,4 @@
+import { readCard } from '../../lib/card-storage';
 import { env } from 'cloudflare:workers';
 import { capabilities } from '../../lib/offers';
 import { db, json, active } from '../../lib/server';
@@ -14,10 +15,7 @@ export async function POST(req: Request) {
   try {
     if (!sameOrigin(req)) return json({ error: 'Accès refusé', errorAr: 'الولوج مرفوض' }, 403);
     const body = await readValidatedJSON(req, catalogOrderSchema, 16000);
-    const profile: any = await db()
-      .prepare('SELECT * FROM profiles WHERE id=? AND published=1')
-      .bind(body.profile)
-      .first();
+    const profile: any = await readCard(db(), body.profile, { published: true });
     if (!profile || !active(profile))
       return json({ error: 'Page indisponible', errorAr: 'الصفحة غير متوفرة' }, 404);
     const rights = catalogRights(profile),

@@ -69,3 +69,31 @@ test('multi-card: reservePublicName checks both profiles and secondary_cards', a
   assert.match(executedStatements[0].sql, /secondary_cards/);
   assert.match(executedStatements[1].sql, /secondary_cards/);
 });
+
+test('card registry migration preserves primary history and enables secondary foreign keys without accepting unknown cards', () => {
+  const fs = require('node:fs'),
+    { DatabaseSync } = require('node:sqlite');
+  const sqlite = new DatabaseSync(':memory:');
+  try {
+    for (const name of fs
+      .readdirSync('drizzle')
+      .filter((n) => /^\d{4}.*\.sql$/.test(n) && !n.startsWith('0019'))
+      .sort())
+      sqlite.exec(fs.readFileSync('drizzle/' + name, 'utf8'));
+    sqlite.exec(
+      "INSERT INTO profiles(id,owner,data,published,updated) VALUES('p','owner','{}',1,'old'); INSERT INTO secondary_cards(id,owner,data,published,updated,created) VALUES('s','owner','{}',1,'old','old'); INSERT INTO profile_metrics VALUES('p','2026-11-17','qr',9); INSERT INTO profile_addresses VALUES('primary-name','p',1,'old'); INSERT INTO catalog_order_intents VALUES('intent','p','request','hash','visitor','old');",
+    );
+    sqlite.exec(fs.readFileSync('drizzle/0019_card_registry.sql', 'utf8'));
+    assert.equal(sqlite.prepare('SELECT visits FROM profile_metrics').get().visits, 9);
+    assert.equal(sqlite.prepare('SELECT COUNT(*) n FROM catalog_order_intents').get().n, 1);
+    sqlite.exec(
+      "INSERT INTO profile_addresses VALUES('secondary-name','s',1,'old'); INSERT INTO profile_metrics VALUES('s','2026-11-17','qr',2)",
+    );
+    assert.throws(() =>
+      sqlite.exec("INSERT INTO profile_metrics VALUES('unknown','2026-11-17','qr',1)"),
+    );
+    assert.equal(sqlite.prepare('PRAGMA foreign_key_check').all().length, 0);
+  } finally {
+    sqlite.close();
+  }
+});

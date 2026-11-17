@@ -1,3 +1,4 @@
+import { readCard } from '../../../../lib/card-storage';
 import { capabilities } from '../../../../lib/offers';
 import { db, identity, active, json } from '../../../../lib/server';
 import { catalogDocuments, catalogRights } from '../../../../lib/catalog-menu';
@@ -9,7 +10,7 @@ export async function GET(
 ) {
   try {
     const { profile, document } = await params;
-    const p: any = await db().prepare('SELECT * FROM profiles WHERE id=?').bind(profile).first();
+    const p: any = await readCard(db(), profile);
     if (!p) return new Response(null, { status: 404 });
     const rights = catalogRights(p);
     let doc =

@@ -179,9 +179,9 @@ export async function saveProfileWithMedia(
   const deletions = removed.map((key) =>
     db()
       .prepare(
-        "UPDATE media_assets SET state='deleting' WHERE key=? AND owner=? AND state='ready' AND EXISTS(SELECT 1 FROM profiles WHERE owner=? AND updated=? AND data=?) AND NOT EXISTS(SELECT 1 FROM profile_media WHERE media_key=?)",
+        "UPDATE media_assets SET state='deleting' WHERE key=? AND owner=? AND state='ready' AND EXISTS(SELECT 1 FROM profiles WHERE owner=? AND updated=? AND data=?) AND NOT EXISTS(SELECT 1 FROM profile_media WHERE media_key=?) AND NOT EXISTS(SELECT 1 FROM secondary_card_media WHERE media_key=?)",
       )
-      .bind(key, owner, owner, stamp, data, key),
+      .bind(key, owner, owner, stamp, data, key, key),
   );
   const result = await db().batch([save, ...deletions]);
   // D1 meta.changes includes trigger writes; RETURNING identifies the accepted save.

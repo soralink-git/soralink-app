@@ -4,7 +4,13 @@ import { catalogContentIssue, catalogDocuments, catalogRights } from '../catalog
 import { catalogueError, normalizeCatalogue } from '../catalogue';
 import { clientEditIssue } from '../client-access';
 import { recordedVideoUrl } from '../content-media';
-import { adoptLegacy, cleanupMedia, saveProfileWithMedia, validateMedia } from '../media-storage';
+import {
+  adoptLegacy,
+  cleanupMedia,
+  mediaKeys,
+  saveProfileWithMedia,
+  validateMedia,
+} from '../media-storage';
 import { capabilities } from '../offers';
 import { normalizeAppearance } from '../personalization';
 import { replaceProfileLinks } from '../profile-links';
@@ -118,7 +124,9 @@ export async function saveProfile(b: Action<'save'>, user: DataUser) {
       },
       400,
     );
-  const stamp = new Date(Math.max(Date.now(), (Date.parse(p?.updated) || 0) + 1)).toISOString();
+  const stamp = new Date(
+    Math.max(Date.now(), (Date.parse(targetProfile?.updated) || 0) + 1),
+  ).toISOString();
   const id = p?.id || crypto.randomUUID();
   let d = { ...b.data, ...designSettings({ ...old, ...b.data }) };
   if (Array.isArray(d.profileLinks)) d = replaceProfileLinks(d, d.profileLinks);
@@ -131,7 +139,7 @@ export async function saveProfile(b: Action<'save'>, user: DataUser) {
   d.catalogDocuments = catalogDocuments(d);
   d.pdf = '';
   d.photos = Array.isArray(d.photos) ? d.photos.slice(0, 10) : [];
-  await adoptLegacy(user.userId, p);
+  await adoptLegacy(user.userId, targetProfile);
   for (const doc of d.catalogDocuments) {
     if (!doc.src)
       return json(
@@ -178,7 +186,7 @@ export async function saveProfile(b: Action<'save'>, user: DataUser) {
         400,
       );
   }
-  if (!(await validateMedia(user.userId, d, p ? JSON.parse(p.data) : {})))
+  if (!(await validateMedia(user.userId, d, old)))
     return json(
       {
         error:
@@ -214,11 +222,26 @@ export async function saveProfile(b: Action<'save'>, user: DataUser) {
       );
   }
   if (isSecondary) {
+    const keys = mediaKeys(d);
+    const ready = keys.length
+      ? ' AND NOT EXISTS(SELECT 1 FROM media_assets WHERE key IN (' +
+        keys.map(() => '?').join(',') +
+        ") AND state!='ready')"
+      : '';
     const res = await db()
       .prepare(
-        'UPDATE secondary_cards SET data=?, published=?, updated=? WHERE id=? AND owner=? AND updated=?',
+        'UPDATE secondary_cards SET data=?, published=?, updated=? WHERE id=? AND owner=? AND updated=?' +
+          ready,
       )
-      .bind(JSON.stringify(d), b.published ? 1 : 0, stamp, b.id, user.userId, targetProfile.updated)
+      .bind(
+        JSON.stringify(d),
+        b.published ? 1 : 0,
+        stamp,
+        b.id,
+        user.userId,
+        targetProfile.updated,
+        ...keys,
+      )
       .run();
     if (!res.meta.changes)
       return json({ error: 'Votre carte a changé. Actualisez avant d’enregistrer.' }, 409);

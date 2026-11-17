@@ -1,11 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
-export default function DashboardMetricsChart({ ar }: { ar: boolean }) {
+export default function DashboardMetricsChart({ ar, cardId }: { ar: boolean; cardId?: string }) {
   const [rows, setRows] = useState<{ day: string; source: string; visits: number }[] | null>(null),
     [error, setError] = useState(false);
   useEffect(() => {
     let live = true;
-    fetch('/api/metrics', { cache: 'no-store' })
+    fetch('/api/metrics' + (cardId ? '?cardId=' + encodeURIComponent(cardId) : ''), {
+      cache: 'no-store',
+    })
       .then(async (r) => {
         if (!r.ok) throw Error();
         const b: any = await r.json();
@@ -17,7 +19,7 @@ export default function DashboardMetricsChart({ ar }: { ar: boolean }) {
     return () => {
       live = false;
     };
-  }, []);
+  }, [cardId]);
   const t = (fr: string, a: string) => (ar ? a : fr);
   if (error)
     return (

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import path from 'node:path';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { Miniflare } from 'miniflare';
 const root = path.resolve('dist/pages');
 const manifest = JSON.parse(await readFile('dist/client/.vite/manifest.json', 'utf8'));
@@ -43,25 +43,13 @@ const mf = new Miniflare({
 });
 try {
   const db = await mf.getD1Database('DB');
-  await db
-    .prepare(
-      "CREATE TABLE profiles(id TEXT PRIMARY KEY, owner TEXT, data TEXT, published INTEGER, state TEXT, expires TEXT, pro_enabled INTEGER, plan TEXT DEFAULT 'Digital')",
-    )
-    .run();
-  await db
-    .prepare(
-      'CREATE TABLE notifications(id TEXT PRIMARY KEY, state TEXT, error TEXT, created TEXT)',
-    )
-    .run();
-  for (const sql of (await readFile('drizzle/0006_public_addresses.sql', 'utf8')).split(
-    '--> statement-breakpoint',
-  )) {
-    if (sql.trim()) await db.prepare(sql).run();
-  }
-  for (const sql of (await readFile('drizzle/0014_secondary_cards.sql', 'utf8')).split(
-    '--> statement-breakpoint',
-  )) {
-    if (sql.trim()) await db.prepare(sql).run();
+  for (const file of (await readdir('drizzle'))
+    .filter((name) => /^\d{4}_.*\.sql$/.test(name))
+    .sort()) {
+    const statements = (await readFile('drizzle/' + file, 'utf8'))
+      .split('--> statement-breakpoint')
+      .filter((sql) => sql.trim());
+    await db.batch(statements.map((sql) => db.prepare(sql)));
   }
   const data = {
     name: 'Public rendering test',
@@ -80,7 +68,7 @@ try {
   };
   await db
     .prepare(
-      'INSERT INTO profiles(id,owner,data,published,state,expires,pro_enabled) VALUES(?,?,?,?,?,?,?)',
+      "INSERT INTO profiles(id,owner,data,published,state,expires,pro_enabled,updated,plan) VALUES(?,?,?,?,?,?,?,'2026-11-17','Digital')",
     )
     .bind(
       'public-test',
@@ -137,7 +125,7 @@ try {
   // A provider-level failure must surface in the health probe.
   await db
     .prepare(
-      "INSERT INTO notifications(id,state,error,created) VALUES('health-test','failed','provider_http_401',?)",
+      "INSERT INTO notifications(id,state,error,created,profile,request_id,recipient,subject,body,next_attempt) VALUES('health-test','failed','provider_http_401',?,'public-test','health-request','test@example.test','Test','Test','2000-01-01')",
     )
     .bind(new Date().toISOString())
     .run();

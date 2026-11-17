@@ -137,13 +137,15 @@ export const profileMedia = sqliteTable(
   ],
 );
 
+export const cardRegistry = sqliteTable('card_registry', { id: text('id').primaryKey() });
+
 export const profileAddresses = sqliteTable(
   'profile_addresses',
   {
     name: text('name').primaryKey(),
     profile: text('profile')
       .notNull()
-      .references(() => profiles.id),
+      .references(() => cardRegistry.id),
     isCurrent: integer('is_current').notNull().default(1),
     created: text('created').notNull(),
   },
@@ -171,7 +173,7 @@ export const catalogOrderIntents = sqliteTable(
     id: text('id').primaryKey(),
     profile: text('profile')
       .notNull()
-      .references(() => profiles.id, { onDelete: 'cascade' }),
+      .references(() => cardRegistry.id, { onDelete: 'cascade' }),
     requestId: text('request_id').notNull(),
     payloadHash: text('payload_hash').notNull(),
     visitorHash: text('visitor_hash').notNull(),
@@ -187,7 +189,7 @@ export const profileMetrics = sqliteTable(
   {
     profile: text('profile')
       .notNull()
-      .references(() => profiles.id, { onDelete: 'cascade' }),
+      .references(() => cardRegistry.id, { onDelete: 'cascade' }),
     day: text('day').notNull(),
     source: text('source').notNull(),
     visits: integer('visits').notNull().default(0),
@@ -200,7 +202,7 @@ export const profileMetricSeen = sqliteTable(
     id: text('id').primaryKey(),
     profile: text('profile')
       .notNull()
-      .references(() => profiles.id, { onDelete: 'cascade' }),
+      .references(() => cardRegistry.id, { onDelete: 'cascade' }),
     created: text('created').notNull(),
   },
   (t) => [index('metric_seen_created').on(t.created)],

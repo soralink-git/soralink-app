@@ -1082,7 +1082,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                             <summary>
                               {t('Voir les statistiques de ma carte', 'شوف إحصائيات البطاقة')}
                             </summary>
-                            {metricsOpen && <DashboardMetricsChart ar={ar} />}
+                            {metricsOpen && <DashboardMetricsChart key={id} ar={ar} cardId={id} />}
                           </details>
                           {!inbox.length ? (
                             <div className="empty">

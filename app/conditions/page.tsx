@@ -38,14 +38,15 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ l
           </p>
           <h2>Limites et disponibilité</h2>
           <p>
-            Une carte digitale par compte. E‑Identité comprend le logo, le modèle, les coordonnées,
-            les réseaux et les liens. Le pack Produits et services ajoute jusqu’à 40 articles, les
-            catégories, les promotions et le catalogue PDF : 3 PDF de 25 Mo et 100 pages maximum par
-            document, 400 Mo de stockage et 160 fichiers maximum par défaut, sous réserve des droits
-            attribués. Les commandes et devis passent directement par WhatsApp. Le pack Suivi de mon
-            activité ajoute les demandes et contacts centralisés, les notifications par e-mail et
-            jusqu’à cinq prestations de rendez-vous. La page publique nécessite internet. Le NFC
-            dépend du téléphone ; le QR ou le lien servent d’alternative.
+            Une carte digitale par compte par défaut ; un quota supérieur peut être attribué par
+            SoraLink. E‑Identité comprend le logo, le modèle, les coordonnées, les réseaux et les
+            liens. Le pack Produits et services ajoute jusqu’à 40 articles, les catégories, les
+            promotions et le catalogue PDF : 3 PDF de 25 Mo et 100 pages maximum par document, 400
+            Mo de stockage et 160 fichiers maximum par défaut, sous réserve des droits attribués.
+            Les commandes et devis passent directement par WhatsApp. Le pack Suivi de mon activité
+            ajoute les demandes et contacts centralisés, les notifications par e-mail et jusqu’à
+            cinq prestations de rendez-vous. La page publique nécessite internet. Le NFC dépend du
+            téléphone ; le QR ou le lien servent d’alternative.
           </p>
           <h2>Avant toute commande</h2>
           <p>
@@ -61,7 +62,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ l
       arabic={
         <>
           <section dir="rtl" lang="ar">
-            <h2>شروط الخدمة · نسخة تجريبية</h2>
+            <h1>شروط الخدمة · نسخة تجريبية</h1>
             <p>
               تقدر تجرّب الخدمة 14 يوم. من بعد خاص تفعيل اشتراك مؤدى عنه. المعلومات مؤقتة. الشروط
               النهائية ومعلومات البائع خاصها تتقدّم قبل الإطلاق التجاري. الباقة 1: كارط NFC لإجراء
@@ -75,7 +76,18 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ l
               و160 ملف فالتخزين، حسب الحقوق. الباقة 4 كتزيد الطلبات، معلومات الزبناء، إشعارات
               الإيميل وتدبير المواعيد حتى لخمس خدمات. الاشتراك كيدوم 12 شهر من التفعيل. من بعد الأجل
               كاينة مهلة 15 يوم قبل التوقيف. الاستعمال خاصو الإنترنت. المادة، مدة التوصيل ومصاريفو
-              كيتأكدو قبل الطلب.
+              كيتأكدو قبل الطلب. افتراضياً كارط رقمية وحدة لكل حساب؛ SoraLink يقدر يعيّن عدد أكبر.
+            </p>
+            <h2>المساعدة وقبل تأكيد الطلب</h2>
+            <p>
+              المساعدة من الاثنين للجمعة من 10 حتى 18، وأول جواب فظرف يومين ديال الخدمة. مادة
+              الكارط، التشطيب، التصنيع، التوصيل، المصاريف وشروط التعويض كيتوضّحو قبل تأكيد الطلب.
+              NFC كيعتمد على التلفون؛ QR والرابط كيبقاو بديل. طلب ملخّص مكتوب للعرض، المصاريف،
+              الآجال، شروط الشكاية وهوية البائع. هاد الصفحة ما كتعوّضش الشروط النهائية.
+            </p>
+            <p>
+              <a href="mailto:contact@soralink.link">contact@soralink.link</a> ·{' '}
+              <a href="https://wa.me/212661446664">WhatsApp</a>
             </p>
           </section>
         </>

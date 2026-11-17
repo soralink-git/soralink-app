@@ -1,5 +1,13 @@
 # Sauvegarde et reprise SoraLink
 
+## Mise à jour du 17 novembre 2026
+
+Le code de sauvegarde inclut désormais D1 et les fichiers R2 chiffrés, avec vérification de fraîcheur.
+Les sections datées ci-dessous décrivent les contrôles historiques, pas l’activation de ce nouveau flux.
+Voir [les prérequis, la migration et la restauration isolée](AUDIT-CORRECTIONS-2026-11-17.md).
+La dernière exécution planifiée inspectée, le 16 novembre, avait été ignorée faute de secrets.
+Aucune nouvelle sauvegarde de production n’est attestée par cette mise à jour.
+
 ## État vérifié le 24 octobre 2026
 
 - La base D1 de production répond `ok` à `PRAGMA quick_check`.

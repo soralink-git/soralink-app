@@ -30,11 +30,14 @@ function wrangler(...params) {
   });
   if (result.status !== 0) {
     console.error((result.stderr || '').split('\n').slice(-8).join('\n'));
-    throw new Error('wrangler ' + params.join(' ') + ' a Ã©chouÃ©');
+    throw new Error('wrangler ' + params.join(' ') + ' a échoué');
   }
   return result.stdout;
 }
 
+const encryptionKey = key();
+for (const name of ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID'])
+  if (!process.env[name]) throw new Error(name + ' manquant');
 const dir = await mkdtemp(path.join(tmpdir(), 'soralink-backup-'));
 const sqlFile = path.join(dir, 'dump.sql');
 const encFile = path.join(dir, 'dump.sql.enc');
@@ -45,7 +48,7 @@ try {
   if (!sql.length) throw new Error('Export vide');
 
   const iv = randomBytes(12);
-  const cipher = createCipheriv('aes-256-gcm', key(), iv);
+  const cipher = createCipheriv('aes-256-gcm', encryptionKey, iv);
   const ciphertext = Buffer.concat([cipher.update(sql), cipher.final()]);
   const tag = cipher.getAuthTag();
   // Header: magic + version + iv + tag, then ciphertext.
@@ -57,8 +60,31 @@ try {
   const objectKey = `backups/${db}/${stamp}-${digest}.sql.enc`;
   console.log(`Chiffrement ${(payload.length / 1024).toFixed(1)} Ko -> ${objectKey}`);
   wrangler('r2', 'object', 'put', `${bucket}/${objectKey}`, '--file', encFile, '--remote');
-  console.log(`Sauvegarde envoyÃ©e: r2://${bucket}/${objectKey}`);
+  console.log(`Sauvegarde envoyée: r2://${bucket}/${objectKey}`);
   console.log(`sha256 (payload): ${createHash('sha256').update(payload).digest('hex')}`);
+  const verifiedFile = path.join(dir, 'verified.sql.enc');
+  wrangler('r2', 'object', 'get', `${bucket}/${objectKey}`, '--file', verifiedFile, '--remote');
+  if (!payload.equals(await readFile(verifiedFile))) throw new Error('Copie distante invalide');
+  const marker = path.join(dir, 'latest.json');
+  await import('node:fs/promises').then((fs) =>
+    fs.writeFile(
+      marker,
+      JSON.stringify({
+        completedAt: new Date().toISOString(),
+        objectKey,
+        sha256: createHash('sha256').update(payload).digest('hex'),
+      }),
+    ),
+  );
+  wrangler(
+    'r2',
+    'object',
+    'put',
+    `${bucket}/backups/${db}/latest.json`,
+    '--file',
+    marker,
+    '--remote',
+  );
   const { size } = await stat(encFile);
   console.log(`Taille: ${size} octets`);
 } finally {
