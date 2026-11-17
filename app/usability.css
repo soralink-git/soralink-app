@@ -29,11 +29,11 @@
 .password-field > button {
   display: grid;
   place-items: center;
-  inline-size: 44px;
-  block-size: 44px;
-  inset-inline-end: 4px;
-  top: 50%;
-  transform: translateY(-50%);
+  inline-size: 48px;
+  block-size: 48px;
+  inset-inline-end: 8px;
+  top: 0;
+  transform: none;
 }
 .color-field {
   min-inline-size: 0;
