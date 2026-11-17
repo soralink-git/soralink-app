@@ -600,3 +600,87 @@ html[data-theme='dark']
   color: var(--ink);
   border-color: var(--line);
 }
+
+/* One container for marketing, client tools and administration. */
+.design-system .site .workspace-design.workspace,
+.design-system .site.admin-workspace > main {
+  width: 100% !important;
+  max-width: var(--container-max) !important;
+  max-inline-size: var(--container-max) !important;
+  margin-inline: auto !important;
+  padding-inline: 24px !important;
+}
+.design-system .site.admin-workspace > main {
+  padding-block: 32px;
+}
+.design-system .site .workspace-preview-column {
+  max-inline-size: 100%;
+}
+/* Rounded actions belong to the platform; saved public card shapes remain independent. */
+.design-system .site button:not(.custom-card button),
+.design-system
+  .site
+  :is(
+    a.primary,
+    a.secondary,
+    .header-login,
+    .header-start,
+    .text-button,
+    .commercial-whatsapp,
+    .account-menu > summary
+  ):not(.custom-card *) {
+  border-radius: 999px !important;
+}
+.design-system .site .site-footer {
+  width: calc(100% - 48px) !important;
+  max-width: calc(var(--container-max) - 48px) !important;
+  margin: 32px auto !important;
+  padding: 32px !important;
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  align-items: start;
+  justify-items: center;
+  gap: 32px;
+  border: 1px solid var(--line) !important;
+  border-radius: 32px !important;
+  background: var(--brand-surface) !important;
+  color: var(--ink);
+  box-shadow: none !important;
+  text-align: center;
+}
+.design-system .site .site-footer > div {
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+}
+.design-system .site .site-footer p {
+  margin-inline: auto;
+}
+.design-system .site .site-footer :is(a, summary) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 48px;
+}
+.design-system .site .workspace-design > .workspace-dashboard-footer {
+  grid-column: 1 / -1;
+  width: 100% !important;
+  margin-block: 8px 0 !important;
+}
+@media (max-width: 700px) {
+  .design-system .site .workspace-design.workspace,
+  .design-system .site.admin-workspace > main {
+    padding-inline: 16px !important;
+  }
+  .design-system .site .site-footer {
+    width: calc(100% - 32px) !important;
+    grid-template-columns: 1fr !important;
+    padding: 24px 16px !important;
+    margin-block: 24px !important;
+    border-radius: 24px !important;
+  }
+  .design-system .site .workspace-design > .workspace-dashboard-footer {
+    width: 100% !important;
+    margin-block: 0 !important;
+  }
+}

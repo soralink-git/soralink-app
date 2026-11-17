@@ -28,3 +28,7 @@ Les dimensions des images principales sont réservées. Un CLS nul sur tous les 
 ## Vérification
 
 Build TypeScript/Vinext, lint, tests fonctionnels et calculs de contraste automatisés. Les messages de validation sont localisés FR/AR. Les contrôles de parcours utilisent des données isolées ; aucune demande réelle n’est envoyée pour la revue visuelle.
+
+## Alignement des tableaux de bord
+
+L’accueil, le tableau de bord client et l’administration utilisent le même conteneur de 1344px avec 24px de retrait latéral (16px sur mobile). Les boutons de la plateforme adoptent une forme capsule ; les formes enregistrées dans les cartes clients restent indépendantes. Le composant `SiteFooter` est partagé entre ces trois espaces : surface arrondie, contenu centré et colonnes qui se replient sur mobile. Dans le tableau de bord client, il se place sous toute la grille, aperçu compris.

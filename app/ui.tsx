@@ -12,7 +12,7 @@ import type { CropTarget } from './lib/crop-geometry';
 import { languagePath, offerLabel, selectedPlan, workspacePath } from './lib/journey-links';
 import { appendUnique, type History, type PageInfo } from './lib/pagination';
 import { profileName } from './lib/profile-identity';
-import Pwa from './pwa';
+import SiteFooter from './site-footer';
 import useCardAutosave from './use-card-autosave';
 
 import LandingPage from './landing-page';
@@ -796,47 +796,7 @@ export default function App({
           }}
         />
       )}
-      {view === 'home' && (
-        <footer className="site-footer">
-          <div>
-            <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-              Sora<span>Link</span>
-            </a>
-            <p>{t('Votre activité, à portée de main.', 'النشاط ديالك، قريب ليك.')}</p>
-            <span>{t('Oujda · Maroc', 'وجدة · المغرب')}</span>
-          </div>
-          <div className="footer-contact">
-            <strong>{t('Parlons de votre carte', 'نهضرو على الكارط ديالك')}</strong>
-            <a
-              dir="ltr"
-              href="mailto:contact@soralink.link"
-              className="footer-email-link"
-              title={t('Nous écrire par e-mail', 'مراسلتنا عبر البريد الإلكتروني')}
-            >
-              contact@soralink.link
-            </a>
-            <a dir="ltr" href="tel:+212661446664">
-              +212 661 446 664
-            </a>
-            <a href="https://wa.me/212661446664" target="_blank" rel="noopener noreferrer">
-              <WhatsAppIcon />
-              WhatsApp
-            </a>
-          </div>
-          <div className="footer-links">
-            <a href={'/conditions?lang=' + (ar ? 'ar' : 'fr')}>
-              {t('Conditions de service', 'شروط الخدمة')}
-            </a>
-            <a href={'/confidentialite?lang=' + (ar ? 'ar' : 'fr')}>
-              {t('Confidentialité', 'الخصوصية')}
-            </a>
-            <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#tarifs'}>
-              {t('Offres et renouvellement', 'العروض والتجديد')}
-            </a>
-            <Pwa ar={ar} />
-          </div>
-        </footer>
-      )}
+      {view === 'home' && <SiteFooter ar={ar} />}
       {view === 'home' && (
         <a
           className="commercial-whatsapp"

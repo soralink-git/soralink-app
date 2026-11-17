@@ -5,6 +5,7 @@ import PaymentReceiptUpload from '../payment-receipt-upload';
 import { managementRevision } from '../lib/client-access-config';
 import { isPlatformPlan } from '../lib/offers';
 import ThemeToggle from '../theme-toggle';
+import SiteFooter from '../site-footer';
 import AdminDesignEditor from '../admin-design-editor';
 import CatalogRightsEditor from '../catalog-rights-editor';
 import { useEffect, useRef, useState } from 'react';
@@ -513,6 +514,7 @@ export default function Admin({ initialArabic = false }: { initialArabic?: boole
           </>
         )}
       </main>
+      <SiteFooter ar={ar} />
     </div>
   );
 }
