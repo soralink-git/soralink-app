@@ -37,7 +37,7 @@
   "devDependencies": {
     "@aws-sdk/client-s3": "3.1164.0",
     "@cloudflare/vite-plugin": "1.37.1",
-    "@cloudflare/workers-types": "4.20260515.1",
+    "@cloudflare/workers-types": "4.20260702.1",
     "@tailwindcss/postcss": "4.2.1",
     "@types/node": "22.19.19",
     "@types/qrcode": "^1.5.6",
