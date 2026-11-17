@@ -30,6 +30,14 @@ export default function InlineValidation() {
       if (descriptions.length) entry.field.setAttribute('aria-describedby', descriptions.join(' '));
       else entry.field.removeAttribute('aria-describedby');
     }
+    function messageFor(field: Field) {
+      const password = field.form?.elements.namedItem('password');
+      const confirmationMatches =
+        field.name !== 'confirm' ||
+        !(password instanceof HTMLInputElement) ||
+        field.value === password.value;
+      return fieldFeedback(field, document.documentElement.lang === 'ar', confirmationMatches);
+    }
     function inspect(event: Event) {
       const field = event.target;
       if (
@@ -52,16 +60,7 @@ export default function InlineValidation() {
       if (!host) return;
       if (event.type === 'focusout') touched.add(field);
       if (!touched.has(field)) return;
-      const password = field.form?.elements.namedItem('password');
-      const confirmationMatches =
-        field.name !== 'confirm' ||
-        !(password instanceof HTMLInputElement) ||
-        field.value === password.value;
-      const message = fieldFeedback(
-        field,
-        document.documentElement.lang === 'ar',
-        confirmationMatches,
-      );
+      const message = messageFor(field);
       let entry = tracked.get(field);
       if (!message) {
         if (entry) {
@@ -109,12 +108,21 @@ export default function InlineValidation() {
       if (removed) setEntries([...tracked.values()]);
     });
     observer.observe(document.body, { childList: true, subtree: true });
+    const languageObserver = new MutationObserver(() => {
+      for (const entry of tracked.values()) entry.message = messageFor(entry.field);
+      setEntries([...tracked.values()]);
+    });
+    languageObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['lang'],
+    });
     document.addEventListener('focusout', inspect);
     document.addEventListener('input', inspect);
     document.addEventListener('change', inspect);
     document.addEventListener('reset', reset);
     return () => {
       observer.disconnect();
+      languageObserver.disconnect();
       document.removeEventListener('focusout', inspect);
       document.removeEventListener('input', inspect);
       document.removeEventListener('change', inspect);
