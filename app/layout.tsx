@@ -9,7 +9,11 @@ import './interface.css';
 import './docare.css';
 import './workspace.css';
 import './usability.css';
+import './ux.css';
+import './harmony.css';
+import InlineValidation from './inline-validation';
 import { AppearanceProvider } from './theme-toggle';
+import SkipLink from './skip-link';
 import NavigationProgress from './navigation-progress';
 import IdleSession from './idle-session';
 import { HOME_TITLE, HOME_DESCRIPTION } from './lib/site-seo';
@@ -82,8 +86,10 @@ export default async function RootLayout({
           />
         )}
       </head>
-      <body className="antialiased">
+      <body className="antialiased design-system">
+        <SkipLink ar={arabic} />
         <AppearanceProvider>
+          <InlineValidation />
           <NavigationProgress />
           <IdleSession />
           {children}

@@ -15,7 +15,13 @@ export default function LoadMore({
   if (!page?.nextCursor) return null;
   return (
     <div className="row" style={{ justifyContent: 'center', marginTop: 16 }}>
-      <button className="secondary" type="button" disabled={busy} onClick={onClick}>
+      <button
+        className="secondary load-more-action"
+        type="button"
+        aria-busy={busy}
+        disabled={busy}
+        onClick={onClick}
+      >
         {busy ? (ar ? 'كنحمّلو…' : 'Chargement…') : ar ? 'بيّن المزيد' : 'Afficher plus'}
       </button>
     </div>

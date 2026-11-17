@@ -46,7 +46,7 @@ export default function LegalView({
           </a>
         </div>
       </header>
-      <main className="section legal-page">
+      <main id="main-content" tabIndex={-1} className="section legal-page">
         {ar ? arabic : french}
         <div style={{ marginTop: '32px' }}>
           <a className="secondary small" href={'/?lang=' + (ar ? 'ar' : 'fr')}>

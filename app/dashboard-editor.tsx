@@ -1,10 +1,11 @@
 'use client';
+import ModalDialog from './modal-dialog';
 import DashboardOrders from './dashboard-orders';
 import DashboardShare from './dashboard-share';
 
 import type { LucideIcon } from 'lucide-react';
 import type { Dispatch, JSX, SetStateAction } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import CardQR from './card-qr';
 import CardSetup from './card-setup';
 import CardStylePicker from './card-style-picker';
@@ -21,7 +22,7 @@ import { renewalNotice } from './lib/renewal';
 import type { SaveState } from './lib/save-queue';
 import LoadMore from './load-more';
 import PinnedCardPreview from './pinned-card-preview';
-import Pwa from './pwa';
+import SiteFooter from './site-footer';
 import ProfileIdentityFields from './profile-identity-fields';
 import SaveBar from './save-bar';
 import SingleActionEditor from './single-action-editor';
@@ -165,6 +166,11 @@ export default function DashboardEditor({ context }: { context: DashboardContext
   } = context;
   const [newCardOpen, setNewCardOpen] = useState(false);
   const [newCardName, setNewCardName] = useState('');
+  const [newCardError, setNewCardError] = useState('');
+  const newCardErrorRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (newCardError) newCardErrorRef.current?.focus();
+  }, [newCardError]);
   const [newCardBusy, setNewCardBusy] = useState(false);
   const [quotaOpen, setQuotaOpen] = useState(false);
   const [metricsOpen, setMetricsOpen] = useState(false);
@@ -278,7 +284,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     orders: ['Consultez votre forfait et son renouvellement.', 'شوف العرض ديالك والتجديد ديالو.'],
   };
   return (
-    <main className="workspace workspace-design">
+    <main id="main-content" tabIndex={-1} className="workspace workspace-design">
       <div className="workspace-left-pane">
         <div className="workspace-main-row">
           <aside>
@@ -357,6 +363,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                     disabled={busy || newCardBusy}
                     onClick={() => {
                       setNewCardName('');
+                      setNewCardError('');
                       setNewCardOpen(true);
                     }}
                   >
@@ -570,6 +577,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                         disabled={busy || newCardBusy}
                         onClick={() => {
                           setNewCardName('');
+                          setNewCardError('');
                           setNewCardOpen(true);
                         }}
                       >
@@ -1407,45 +1415,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
             )}
           </div>
         </div>
-        <footer className="workspace-dashboard-footer site-footer">
-          <div>
-            <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-              Sora<span>Link</span>
-            </a>
-            <p>{t('Votre activité, à portée de main.', 'النشاط ديالك، قريب ليك.')}</p>
-            <span>{t('Oujda · Maroc', 'وجدة · المغرب')}</span>
-          </div>
-          <div className="footer-contact">
-            <strong>{t('Parlons de votre carte', 'نهضرو على الكارط ديالك')}</strong>
-            <a
-              dir="ltr"
-              href="mailto:contact@soralink.link"
-              className="footer-email-link"
-              title={t('Nous écrire par e-mail', 'مراسلتنا عبر البريد الإلكتروني')}
-            >
-              contact@soralink.link
-            </a>
-            <a dir="ltr" href="tel:+212661446664">
-              +212 661 446 664
-            </a>
-            <a href="https://wa.me/212661446664" target="_blank" rel="noopener noreferrer">
-              <WhatsAppIcon />
-              WhatsApp
-            </a>
-          </div>
-          <div className="footer-links">
-            <a href={'/conditions?lang=' + (ar ? 'ar' : 'fr')}>
-              {t('Conditions de service', 'شروط الخدمة')}
-            </a>
-            <a href={'/confidentialite?lang=' + (ar ? 'ar' : 'fr')}>
-              {t('Confidentialité', 'الخصوصية')}
-            </a>
-            <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#tarifs'}>
-              {t('Offres et renouvellement', 'العروض والتجديد')}
-            </a>
-            <Pwa ar={ar} />
-          </div>
-        </footer>
       </div>
       <div className="workspace-preview-column">
         {auth && (
@@ -1491,119 +1460,126 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           </PinnedCardPreview>
         )}
       </div>
+      <SiteFooter ar={ar} className="workspace-dashboard-footer" />
       {newCardOpen && (
-        <div className="modal-backdrop" onClick={() => setNewCardOpen(false)}>
-          <div
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('Créer une nouvelle carte', 'إنشاء بطاقة جديدة')}
-            onClick={(e) => e.stopPropagation()}
+        <ModalDialog
+          label={t('Créer une nouvelle carte', 'إنشاء بطاقة جديدة')}
+          ar={ar}
+          busy={newCardBusy}
+          onClose={() => setNewCardOpen(false)}
+        >
+          <button
+            className="close"
+            aria-label={t('Fermer', 'إغلاق')}
+            disabled={newCardBusy}
+            onClick={() => setNewCardOpen(false)}
           >
-            <button
-              className="close"
-              aria-label={t('Fermer', 'إغلاق')}
-              onClick={() => setNewCardOpen(false)}
-            >
-              <X size={20} />
-            </button>
-            <span className="eyebrow">{t('Multi-cartes SoraLink', 'بطاقات متعددة SoraLink')}</span>
-            <h2>{t('Créer une nouvelle carte', 'إنشاء بطاقة جديدة')}</h2>
-            <p className="hint">
-              {t(
-                `Vous utilisez ${cardsCount} sur ${cardLimit} carte(s) autorisée(s). Donnez un nom pour identifier votre nouvelle carte :`,
-                `كتستعمل ${cardsCount} من أصل ${cardLimit} بطاقة مسموحة. سمّي البطاقة الجديدة ديالك:`,
-              )}
-            </p>
-            <form
-              className="card-modal-form"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                if (createCard) {
-                  setNewCardBusy(true);
-                  try {
-                    await createCard(newCardName);
-                    setNewCardOpen(false);
-                    setNewCardName('');
-                  } finally {
-                    setNewCardBusy(false);
-                  }
+            <X size={20} />
+          </button>
+          <span className="eyebrow">{t('Multi-cartes SoraLink', 'بطاقات متعددة SoraLink')}</span>
+          <h2>{t('Créer une nouvelle carte', 'إنشاء بطاقة جديدة')}</h2>
+          <p className="hint">
+            {t(
+              `Vous utilisez ${cardsCount} sur ${cardLimit} carte(s) autorisée(s). Donnez un nom pour identifier votre nouvelle carte :`,
+              `كتستعمل ${cardsCount} من أصل ${cardLimit} بطاقة مسموحة. سمّي البطاقة الجديدة ديالك:`,
+            )}
+          </p>
+          <form
+            className="card-modal-form"
+            aria-busy={newCardBusy}
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (createCard && !newCardBusy) {
+                setNewCardBusy(true);
+                setNewCardError('');
+                try {
+                  await createCard(newCardName);
+                  setNewCardOpen(false);
+                  setNewCardName('');
+                } catch (error: any) {
+                  setNewCardError(
+                    error.message ||
+                      t('Création impossible. Réessayez.', 'تعذّر الإنشاء. عاود جرّب.'),
+                  );
+                } finally {
+                  setNewCardBusy(false);
                 }
-              }}
-            >
-              <label className="field">
-                <span>
-                  {t('Nom ou usage de la carte (optionnel)', 'اسم أو استعمال البطاقة (اختياري)')}
-                </span>
-                <input
-                  type="text"
-                  maxLength={80}
-                  value={newCardName}
-                  onChange={(e) => setNewCardName(e.target.value)}
-                  placeholder={t(
-                    'ex : Commercial, Boutique, Personnel…',
-                    'مثال: مهني، متجر، شخصي...',
-                  )}
-                  autoFocus
-                />
-              </label>
-              <div className="card-modal-actions">
-                <button
-                  type="button"
-                  className="secondary"
-                  disabled={newCardBusy}
-                  onClick={() => setNewCardOpen(false)}
-                >
-                  {t('Annuler', 'إلغاء')}
-                </button>
-                <button type="submit" className="primary" disabled={newCardBusy}>
-                  {newCardBusy ? t('Création…', 'كنصايبو…') : t('Créer la carte', 'صايب الكارط')}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-      {quotaOpen && (
-        <div className="modal-backdrop" onClick={() => setQuotaOpen(false)}>
-          <div
-            className="modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('Limite de cartes atteinte', 'وصلتي للحد الأقصى ديال البطاقات')}
-            onClick={(e) => e.stopPropagation()}
+              }
+            }}
           >
-            <button
-              className="close"
-              aria-label={t('Fermer', 'إغلاق')}
-              onClick={() => setQuotaOpen(false)}
-            >
-              <X size={20} />
-            </button>
-            <span className="eyebrow">{t('Quota du forfait', 'حدود الباقة')}</span>
-            <h2>{t('Limite de cartes atteinte', 'وصلتي للحد الأقصى')}</h2>
-            <p className="hint">
-              {t(
-                `Votre forfait actuel vous permet de gérer jusqu’à ${cardLimit} carte(s) SoraLink (${cardsCount} utilisée(s)). Pour ajouter des cartes supplémentaires, contactez votre administrateur SoraLink pour augmenter votre quota.`,
-                `الباقة الحالية ديالك كتسمح ليك بإدارة حتى لـ ${cardLimit} بطاقة SoraLink (${cardsCount} مستعملة). باش تزيد بطاقات أخرى، تواصل مع إدارة SoraLink باش ترفع الحصة ديالك.`,
-              )}
-            </p>
+            <label className="field">
+              <span>
+                {t('Nom ou usage de la carte (optionnel)', 'اسم أو استعمال البطاقة (اختياري)')}
+              </span>
+              <input
+                type="text"
+                maxLength={80}
+                value={newCardName}
+                onChange={(e) => setNewCardName(e.target.value)}
+                placeholder={t(
+                  'ex : Commercial, Boutique, Personnel…',
+                  'مثال: مهني، متجر، شخصي...',
+                )}
+                disabled={newCardBusy}
+              />
+            </label>
+            {newCardError && (
+              <p ref={newCardErrorRef} tabIndex={-1} role="alert" className="crop-error">
+                {newCardError}
+              </p>
+            )}
             <div className="card-modal-actions">
-              <a
+              <button
+                type="button"
                 className="secondary"
-                href="https://wa.me/212600000000"
-                target="_blank"
-                rel="noreferrer"
+                disabled={newCardBusy}
+                onClick={() => setNewCardOpen(false)}
               >
-                <WhatsAppIcon />
-                <span>{t('Contacter l’assistance', 'تواصل مع الدعم')}</span>
-              </a>
-              <button type="button" className="primary" onClick={() => setQuotaOpen(false)}>
-                {t('Compris', 'مفهوم')}
+                {t('Annuler', 'إلغاء')}
+              </button>
+              <button type="submit" className="primary" disabled={newCardBusy}>
+                {newCardBusy ? t('Création…', 'كنصايبو…') : t('Créer la carte', 'صايب الكارط')}
               </button>
             </div>
+          </form>
+        </ModalDialog>
+      )}
+      {quotaOpen && (
+        <ModalDialog
+          label={t('Limite de cartes atteinte', 'وصلتي للحد الأقصى ديال البطاقات')}
+          ar={ar}
+          onClose={() => setQuotaOpen(false)}
+        >
+          <button
+            className="close"
+            aria-label={t('Fermer', 'إغلاق')}
+            onClick={() => setQuotaOpen(false)}
+          >
+            <X size={20} />
+          </button>
+          <span className="eyebrow">{t('Quota du forfait', 'حدود الباقة')}</span>
+          <h2>{t('Limite de cartes atteinte', 'وصلتي للحد الأقصى')}</h2>
+          <p className="hint">
+            {t(
+              `Votre forfait actuel vous permet de gérer jusqu’à ${cardLimit} carte(s) SoraLink (${cardsCount} utilisée(s)). Pour ajouter des cartes supplémentaires, contactez votre administrateur SoraLink pour augmenter votre quota.`,
+              `الباقة الحالية ديالك كتسمح ليك بإدارة حتى لـ ${cardLimit} بطاقة SoraLink (${cardsCount} مستعملة). باش تزيد بطاقات أخرى، تواصل مع إدارة SoraLink باش ترفع الحصة ديالك.`,
+            )}
+          </p>
+          <div className="card-modal-actions">
+            <a
+              className="secondary"
+              href="https://wa.me/212661446664"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <WhatsAppIcon />
+              <span>{t('Contacter l’assistance', 'تواصل مع الدعم')}</span>
+            </a>
+            <button type="button" className="primary" onClick={() => setQuotaOpen(false)}>
+              {t('Compris', 'مفهوم')}
+            </button>
           </div>
-        </div>
+        </ModalDialog>
       )}
     </main>
   );

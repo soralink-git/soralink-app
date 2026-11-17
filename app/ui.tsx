@@ -12,7 +12,7 @@ import type { CropTarget } from './lib/crop-geometry';
 import { languagePath, offerLabel, selectedPlan, workspacePath } from './lib/journey-links';
 import { appendUnique, type History, type PageInfo } from './lib/pagination';
 import { profileName } from './lib/profile-identity';
-import Pwa from './pwa';
+import SiteFooter from './site-footer';
 import useCardAutosave from './use-card-autosave';
 
 import LandingPage from './landing-page';
@@ -495,27 +495,29 @@ export default function App({
     await load('login', true, nextCardId);
   }
   async function createCard(name?: string) {
-    if (cardsCount >= cardLimit) {
-      setMsg(
+    if (cardsCount >= cardLimit)
+      throw new Error(
         t(
           `Limite de ${cardLimit} carte(s) atteinte pour votre forfait. Contactez l'administrateur pour en ajouter.`,
           `وصلتي للحد الأقصى ديال ${cardLimit} بطاقة المسموحة فهاد الباقة. تواصل مع الإدارة باش تزيد.`,
         ),
       );
-      return;
-    }
-    if (autosave.queue.isDirty()) {
-      await autosave.queue.flush();
-    }
+    if (autosave.queue.isDirty() && !(await autosave.queue.flush()))
+      throw new Error(
+        t(
+          'Enregistrez la carte actuelle avant d’en créer une autre.',
+          'سجّل الكارط الحالية قبل ما تزيد وحدة أخرى.',
+        ),
+      );
     setBusy(true);
     try {
       const res = await action({ action: 'createCard', name: name?.trim() || undefined });
-      if (res?.ok && res.id) {
-        setMsg(t('Nouvelle carte créée avec succès !', 'تم إنشاء البطاقة الجديدة بنجاح !'));
-        await load('login', true, res.id);
-      }
-    } catch (err: any) {
-      setMsg(err.message || t('Impossible de créer la carte.', 'ما قدرناش نصايبو الكارط.'));
+      if (!res?.ok || !res.id)
+        throw new Error(
+          t('Impossible de créer la carte. Réessayez.', 'ما قدرناش نصايبو الكارط. عاود جرّب.'),
+        );
+      setMsg(t('Nouvelle carte créée avec succès !', 'تم إنشاء البطاقة الجديدة بنجاح !'));
+      await load('login', true, res.id);
     } finally {
       setBusy(false);
     }
@@ -710,7 +712,7 @@ export default function App({
       {view === 'app' && (
         <Suspense
           fallback={
-            <main className="workspace" role="status">
+            <main id="main-content" tabIndex={-1} className="workspace" role="status">
               {t('Chargement de votre espace…', 'كنحمّلو الحساب ديالك…')}
             </main>
           }
@@ -778,67 +780,23 @@ export default function App({
           setServiceIndex={setServiceIndex}
           onClose={() => setModal('')}
           onSubmit={async (form) => {
-            try {
-              await action({
-                action: 'manual',
-                profile: id,
-                name: form.get('name'),
-                phone: form.get('phone'),
-                message: form.get('message'),
-                email: form.get('email'),
-                service: serviceIndex,
-                slot: form.get('slot'),
-              });
-              setModal('');
-              setMsg(t('Rendez-vous enregistré et confirmé.', 'تسجّل الموعد وتأكد.'));
-              await load();
-            } catch (error: any) {
-              setMsg(error.message);
-            }
+            await action({
+              action: 'manual',
+              profile: id,
+              name: form.get('name'),
+              phone: form.get('phone'),
+              message: form.get('message'),
+              email: form.get('email'),
+              service: serviceIndex,
+              slot: form.get('slot'),
+            });
+            setModal('');
+            setMsg(t('Rendez-vous enregistré et confirmé.', 'تسجّل الموعد وتأكد.'));
+            await load();
           }}
         />
       )}
-      {view === 'home' && (
-        <footer className="site-footer">
-          <div>
-            <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-              Sora<span>Link</span>
-            </a>
-            <p>{t('Votre activité, à portée de main.', 'النشاط ديالك، قريب ليك.')}</p>
-            <span>{t('Oujda · Maroc', 'وجدة · المغرب')}</span>
-          </div>
-          <div className="footer-contact">
-            <strong>{t('Parlons de votre carte', 'نهضرو على الكارط ديالك')}</strong>
-            <a
-              dir="ltr"
-              href="mailto:contact@soralink.link"
-              className="footer-email-link"
-              title={t('Nous écrire par e-mail', 'مراسلتنا عبر البريد الإلكتروني')}
-            >
-              contact@soralink.link
-            </a>
-            <a dir="ltr" href="tel:+212661446664">
-              +212 661 446 664
-            </a>
-            <a href="https://wa.me/212661446664" target="_blank" rel="noopener noreferrer">
-              <WhatsAppIcon />
-              WhatsApp
-            </a>
-          </div>
-          <div className="footer-links">
-            <a href={'/conditions?lang=' + (ar ? 'ar' : 'fr')}>
-              {t('Conditions de service', 'شروط الخدمة')}
-            </a>
-            <a href={'/confidentialite?lang=' + (ar ? 'ar' : 'fr')}>
-              {t('Confidentialité', 'الخصوصية')}
-            </a>
-            <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#tarifs'}>
-              {t('Offres et renouvellement', 'العروض والتجديد')}
-            </a>
-            <Pwa ar={ar} />
-          </div>
-        </footer>
-      )}
+      {view === 'home' && <SiteFooter ar={ar} />}
       {view === 'home' && (
         <a
           className="commercial-whatsapp"

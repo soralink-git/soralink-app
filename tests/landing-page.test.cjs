@@ -35,7 +35,7 @@ for (const ar of [false, true])
     assert.match(html, /https:\/\/wa.me\/212661446664/);
     const heroActions = html.match(/<div class="landing-actions">([\s\S]*?)<\/div>/)[1];
     assert.equal((heroActions.match(/<a /g) || []).length, 2);
-    assert.match(heroActions, ar ? /شوف مثال/ : /Voir un exemple/);
+    assert.match(heroActions, ar ? /شوف المثال التجريبي/ : /Explorer la démo/);
     assert.match(heroActions, ar ? /طلب عبر WhatsApp/ : /Commander sur WhatsApp/);
     assert.match(heroActions, ar ? /href="\/demo\?lang=ar"/ : /href="\/demo"/);
     const message = decodeURIComponent(heroActions.match(/wa.me\/212661446664\?text=([^"]+)/)[1]);
@@ -65,7 +65,7 @@ test('connected visitor keeps offer selection in the workspace and the same two 
 });
 test('public support addresses consistently use the branded contact email', () => {
   for (const file of [
-    'app/ui.tsx',
+    'app/site-footer.tsx',
     'app/conditions/page.tsx',
     'app/confidentialite/page.tsx',
     'app/dashboard-orders.tsx',

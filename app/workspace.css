@@ -20,9 +20,9 @@
 .workspace-design .catalog-list-tools {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
-  gap: 12px;
+  gap: 16px;
   align-items: start;
-  margin-block: 20px 12px;
+  margin-block: 24px 16px;
   padding-block: 16px;
   border-block: 1px solid var(--line);
 }
@@ -48,7 +48,7 @@
 }
 @media (max-width: 1100px) {
   .workspace-design.workspace {
-    gap: 20px;
+    gap: 24px;
   }
   .workspace-design > aside > :is(.workspace-navigation, .workspace-offer-link) {
     display: none;
@@ -66,9 +66,9 @@
     inline-size: 100%;
     min-inline-size: 0;
     min-block-size: 48px;
-    padding: 10px 12px;
+    padding: 8px 16px;
     border: 1px solid var(--brand-input-border);
-    border-radius: 12px;
+    border-radius: 16px;
     background: var(--brand-field);
     color: var(--ink);
     font-size: 16px;
@@ -105,9 +105,9 @@
     padding: 16px;
   }
   .workspace-design .panel-title {
-    gap: 12px;
+    gap: 16px;
     margin-block-end: 16px;
-    padding-block-end: 12px;
+    padding-block-end: 16px;
   }
   .workspace-design .panel-title h2 {
     font-size: 20px;
@@ -241,17 +241,17 @@ html[dir='rtl'] .workspace-card-switcher-box {
   background: var(--brand-canvas);
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
-  padding: 4px 8px;
+  padding: 8px 8px;
   white-space: nowrap;
 }
 .new-card-trigger {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   white-space: nowrap;
   font-size: 12px;
   min-block-size: 32px;
-  padding-inline: 12px;
+  padding-inline: 16px;
 }
 .new-card-trigger.quota-limit {
   opacity: 0.8;
@@ -264,7 +264,7 @@ html[dir='rtl'] .workspace-card-switcher-box {
   inline-size: 100%;
   max-inline-size: 260px;
   min-block-size: 36px;
-  padding: 4px 12px;
+  padding: 8px 16px;
   font-size: 13px;
   font-weight: 600;
   border: 1px solid var(--brand-input-border);
@@ -288,8 +288,8 @@ html[dir='rtl'] .workspace-card-switcher-box {
 
 /* Sidebar multi-card list */
 .workspace-sidebar-cards {
-  margin-block: 12px 16px;
-  padding: 12px;
+  margin-block: 16px 16px;
+  padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
   background: var(--brand-field);
@@ -309,21 +309,21 @@ html[dir='rtl'] .workspace-card-switcher-box {
 .sidebar-cards-quota {
   background: var(--brand-canvas);
   color: var(--ink);
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 8px 8px;
+  border-radius: 8px;
   font-size: 12px;
   border: 1px solid var(--line);
 }
 .sidebar-cards-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 .sidebar-card-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 8px 16px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
@@ -356,8 +356,8 @@ html[dir='rtl'] .workspace-card-switcher-box {
 }
 .sidebar-card-status {
   font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 8px 8px;
+  border-radius: 8px;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -372,11 +372,11 @@ html[dir='rtl'] .workspace-card-switcher-box {
   border: 1px solid var(--line);
 }
 .sidebar-new-card-btn {
-  margin-top: 4px;
+  margin-top: 8px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 8px;
   min-block-size: 36px;
   font-size: 13px;
 }
@@ -391,14 +391,14 @@ html[dir='rtl'] .workspace-card-switcher-box {
 }
 .card-modal-actions {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   justify-content: flex-end;
   margin-top: 16px;
 }
 
 .workspace-renewal {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;

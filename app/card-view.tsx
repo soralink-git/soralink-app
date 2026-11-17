@@ -257,6 +257,7 @@ export default function CardView({
                     }}
                   >
                     <Download size={22} />
+                    <span className="card-action-label">{t('Enregistrer', 'سجّل')}</span>
                   </button>
                   <button
                     className="exchange-button"
@@ -264,6 +265,7 @@ export default function CardView({
                     onClick={() => void sharePublicCard(d, preview)}
                   >
                     <Share2 size={22} />
+                    <span className="card-action-label">{t('Partager', 'شارك')}</span>
                   </button>
                   {d.activity !== false && (
                     <button
@@ -283,6 +285,7 @@ export default function CardView({
                       }}
                     >
                       <Users size={22} />
+                      <span className="card-action-label">{t('Échanger', 'تبادل')}</span>
                     </button>
                   )}
                 </div>

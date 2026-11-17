@@ -90,13 +90,13 @@ h3 {
 .brand-icon {
   background: var(--brand-accent);
   color: var(--brand-on-accent);
-  border-radius: 13px;
+  border-radius: 16px;
   box-shadow: none;
 }
 .header-actions {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 8px !important;
 }
 .header-actions .account-menu,
 .account-menu {
@@ -117,7 +117,7 @@ header a.header-login,
   min-height: 42px !important;
   height: 42px !important;
   border: 1px solid var(--line) !important;
-  border-radius: 999px !important;
+  border-radius: 1000px !important;
   background: var(--brand-soft) !important;
   color: var(--ink) !important;
   font-size: 13px !important;
@@ -135,11 +135,11 @@ header a.header-login,
 }
 .theme-toggle {
   gap: 8px !important;
-  padding: 0 14px !important;
+  padding: 0 16px !important;
 }
 header .language {
-  gap: 7px !important;
-  padding: 0 14px !important;
+  gap: 8px !important;
+  padding: 0 16px !important;
 }
 .account-menu summary {
   gap: 8px !important;
@@ -168,7 +168,7 @@ html[data-theme='dark'] .header-actions .secondary.small {
 .header-start {
   min-height: 42px !important;
   height: 42px !important;
-  padding: 0 18px !important;
+  padding: 0 16px !important;
   font-size: 13px !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -189,7 +189,7 @@ header nav a:hover {
   background: var(--brand-accent) !important;
   color: var(--brand-on-accent) !important;
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 1000px;
   box-shadow: var(--shadow-primary) !important;
   font-weight: 700;
   min-height: 48px;
@@ -224,7 +224,7 @@ html[data-theme='dark'] .btn-glow-gold {
   background: var(--brand-surface);
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 1000px;
   box-shadow: var(--shadow-subtle);
 }
 .secondary:hover,
@@ -266,8 +266,8 @@ html[data-theme='dark'] .landing-price-grid article a.secondary {
 .empty {
   background: var(--brand-surface) !important;
   border: 1px solid var(--line) !important;
-  border-radius: 20px !important;
-  padding: 44px 28px !important;
+  border-radius: 24px !important;
+  padding: 48px 32px !important;
   text-align: center !important;
   color: var(--muted) !important;
   box-shadow:
@@ -292,20 +292,20 @@ html[data-theme='dark'] .landing-price-grid article a.secondary {
   color: var(--ink) !important;
   font-size: 22px !important;
   font-weight: 700 !important;
-  margin: 12px 0 8px !important;
+  margin: 16px 0 8px !important;
 }
 .empty p {
   font-size: 14px !important;
   color: var(--muted) !important;
   max-width: 440px !important;
-  margin: 0 auto 20px !important;
+  margin: 0 auto 24px !important;
   line-height: 1.5 !important;
 }
 .empty :is(.primary, .secondary, a.primary, a.secondary, button.primary, button.secondary) {
   min-height: 44px !important;
   height: 44px !important;
   padding: 0 24px !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   font-size: 14px !important;
   font-weight: 600 !important;
   display: inline-flex !important;
@@ -328,7 +328,7 @@ textarea {
   background: var(--brand-field);
   color: var(--ink);
   border: 1px solid var(--brand-input-border);
-  border-radius: 22px;
+  border-radius: 24px;
   min-height: 48px;
   transition:
     border-color 160ms ease,
@@ -336,7 +336,7 @@ textarea {
     box-shadow 160ms ease;
 }
 textarea {
-  border-radius: 20px;
+  border-radius: 24px;
 }
 input:focus,
 select:focus,
@@ -403,7 +403,7 @@ textarea::placeholder {
 .auth-input {
   background: var(--brand-field);
   border-color: var(--line);
-  border-radius: 999px;
+  border-radius: 1000px;
 }
 /* Landing: strong editorial titles, warm accents and slate panels. */
 .landing {
@@ -490,11 +490,11 @@ textarea::placeholder {
   box-shadow: none;
 }
 .landing-actions {
-  gap: 14px;
-  margin-top: 28px;
+  gap: 16px;
+  margin-top: 32px;
 }
 .landing-link {
-  padding: 12px 20px;
+  padding: 16px 24px;
   backdrop-filter: none;
 }
 .pulse-dot,
@@ -514,15 +514,15 @@ textarea::placeholder {
   color: var(--muted);
 }
 .landing-bento-grid {
-  gap: 20px;
+  gap: 24px;
 }
 .landing .bento-card,
 .landing-features article {
   background: var(--brand-surface);
   border: 1px solid var(--line);
-  border-radius: 28px;
+  border-radius: 32px;
   box-shadow: var(--shadow-panel);
-  padding: 28px;
+  padding: 32px;
 }
 html[data-theme='dark'] .landing .bento-card,
 html[data-theme='dark'] .landing-features article {
@@ -551,22 +551,22 @@ html[data-theme='dark'] .landing-features article {
   background: var(--brand-tint);
   color: var(--brand-strong);
   border: 0;
-  border-radius: 999px;
+  border-radius: 1000px;
 }
 .bento-preview {
   background: var(--brand-soft);
   border: 0;
-  border-radius: 20px;
+  border-radius: 24px;
 }
 .bento-mini-thumb,
 .bento-slot {
   background: var(--brand-surface);
   color: var(--muted);
   border-color: var(--line);
-  border-radius: 999px;
+  border-radius: 1000px;
 }
 .preview-btn {
-  border-radius: 999px;
+  border-radius: 1000px;
 }
 .preview-btn-primary,
 .preview-btn-whatsapp {
@@ -577,7 +577,7 @@ html[data-theme='dark'] .landing-features article {
   color: var(--brand-on-accent);
   background: var(--brand-orange);
   border: 0;
-  border-radius: 999px;
+  border-radius: 1000px;
 }
 .bento-slot.active,
 .bento-slot.confirm {
@@ -592,7 +592,7 @@ html[data-theme='dark'] .landing-features article {
   background: var(--brand-soft);
   border: 0;
   border-radius: 32px;
-  padding: 36px;
+  padding: 40px;
 }
 .landing-process .landing-heading {
   align-items: start;
@@ -617,14 +617,14 @@ html[data-theme='dark'] .landing-features article {
   color: var(--brand-strong);
   background: var(--brand-tint);
   border: 0;
-  border-radius: 999px;
-  padding: 8px 12px;
+  border-radius: 1000px;
+  padding: 8px 16px;
 }
 .landing .persona-tab-btn {
   color: var(--muted);
   background: var(--brand-soft);
   border: 1px solid transparent;
-  border-radius: 999px;
+  border-radius: 1000px;
   box-shadow: none;
 }
 .landing .persona-tab-btn.active {
@@ -637,7 +637,7 @@ html[data-theme='dark'] .landing-features article {
 .persona-card-active {
   background: var(--brand-soft);
   border-color: var(--line);
-  border-radius: 28px;
+  border-radius: 32px;
   box-shadow: none;
 }
 .persona-card-active h3,
@@ -680,7 +680,7 @@ html[data-theme='dark'] .usecase-grid article {
   background: var(--brand-surface) !important;
   color: var(--ink);
   border: 1px solid var(--line) !important;
-  border-radius: 28px;
+  border-radius: 32px;
   box-shadow: var(--shadow-panel) !important;
   transform: none;
 }
@@ -719,7 +719,7 @@ html[data-theme='dark'] .landing-price-grid article.featured {
   color: var(--brand-on-accent) !important;
   border: 0;
   box-shadow: none;
-  border-radius: 999px;
+  border-radius: 1000px;
 }
 .hardware-pill {
   background: var(--brand-tint);
@@ -729,7 +729,7 @@ html[data-theme='dark'] .landing-price-grid article.featured {
 .landing-special-offer {
   background: linear-gradient(135deg, var(--brand-soft) 0%, var(--brand-tint) 100%);
   border: 1px solid var(--brand-tint-border);
-  border-radius: 28px;
+  border-radius: 32px;
   box-shadow: var(--shadow-panel);
 }
 html[data-theme='dark'] .landing-special-offer {
@@ -778,9 +778,9 @@ html[data-theme='dark'] .landing-special-offer {
 .landing-faq details {
   background: var(--brand-soft);
   border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 20px 24px;
-  margin-bottom: 12px;
+  border-radius: 24px;
+  padding: 24px 24px;
+  margin-bottom: 16px;
 }
 .landing-faq details[open] {
   background: var(--brand-tint);
@@ -799,14 +799,14 @@ html[data-theme='dark'] .landing-special-offer {
   background: var(--brand-tint);
   border: 0;
   box-shadow: none;
-  border-radius: 36px;
+  border-radius: 40px;
 }
 .whatsapp-btn-glow {
   background: var(--brand-surface) !important;
   color: var(--brand-strong) !important;
   border: 1px solid var(--brand-tint-border);
   box-shadow: none !important;
-  border-radius: 999px;
+  border-radius: 1000px;
 }
 .site-footer {
   color: var(--muted);
@@ -831,7 +831,7 @@ html[data-theme='dark'] .site-footer {
   background: transparent !important;
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) 340px !important;
-  gap: 20px !important;
+  gap: 24px !important;
   max-width: 100% !important;
   padding: 24px 24px !important;
   align-items: start !important;
@@ -841,14 +841,14 @@ html[data-theme='dark'] .site-footer {
   .workspace-design.workspace {
     grid-template-columns: minmax(0, 1fr) 320px !important;
     gap: 16px !important;
-    padding: 18px 16px !important;
+    padding: 16px 16px !important;
   }
 }
 
 .workspace-left-pane {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
   min-width: 0;
   width: 100%;
 }
@@ -856,7 +856,7 @@ html[data-theme='dark'] .site-footer {
 .workspace-main-row {
   display: grid;
   grid-template-columns: 240px minmax(0, 1fr);
-  gap: 20px;
+  gap: 24px;
   align-items: start;
   width: 100%;
 }
@@ -897,9 +897,9 @@ html[data-theme='dark'] .site-footer {
 .workspace-design > aside {
   background: var(--brand-surface);
   border: 1px solid var(--line);
-  border-radius: 28px;
+  border-radius: 32px;
   box-shadow: var(--shadow-panel);
-  padding: 24px 18px;
+  padding: 24px 16px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -941,7 +941,7 @@ html[data-theme='dark'] .workspace-design > aside {
   background: #161922 !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 1rem !important; /* rounded-2xl */
-  padding: 28px 32px !important;
+  padding: 32px 32px !important;
   margin-top: 0 !important; /* géré par gap-6 du parent flex */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   display: grid;
@@ -960,7 +960,7 @@ html[data-theme='light'] .workspace-dashboard-footer.site-footer {
   .workspace-design.workspace {
     display: flex !important;
     flex-direction: column !important;
-    gap: 20px !important;
+    gap: 24px !important;
   }
 
   .workspace-left-pane,
@@ -991,7 +991,7 @@ html[data-theme='light'] .workspace-dashboard-footer.site-footer {
     width: 100% !important;
     border-radius: 1rem !important; /* rounded-2xl */
     grid-template-columns: 1fr !important;
-    padding: 24px 20px !important;
+    padding: 24px 24px !important;
   }
 }
 .workspace-design aside h3,
@@ -1005,7 +1005,7 @@ html[data-theme='light'] .workspace-dashboard-footer.site-footer {
   font-weight: 700;
   letter-spacing: normal;
   text-transform: none;
-  margin: 20px 0 8px;
+  margin: 24px 0 8px;
   padding-inline-start: 16px;
   display: block;
 }
@@ -1033,9 +1033,9 @@ html[data-theme='dark'] .workspace-nav-group {
   justify-content: flex-start;
   text-align: start;
   box-sizing: border-box !important;
-  border-radius: 999px !important;
+  border-radius: 1000px !important;
   padding: 0 16px;
-  gap: 12px;
+  gap: 16px;
   font-size: 14px;
   white-space: nowrap;
   transition:
@@ -1167,7 +1167,7 @@ html[data-theme='dark'] .workspace-navigation button.selected > svg {
   background: var(--brand-accent);
   box-shadow: none;
   border-radius: 16px;
-  padding: 2px 7px;
+  padding: 8px 8px;
   font-size: 12px;
   font-weight: 700;
 }
@@ -1176,7 +1176,7 @@ html[data-theme='dark'] .workspace-navigation button.selected > svg {
   background: transparent !important;
   border: 1px solid transparent !important;
   color: var(--state-danger) !important;
-  margin-top: 10px !important;
+  margin-top: 8px !important;
   cursor: pointer !important;
 }
 .sidebar-logout > svg,
@@ -1203,19 +1203,19 @@ html[data-theme='dark'] .workspace-design aside > .text-button:hover {
   border-color: var(--state-danger-border) !important;
 }
 .workspace-design .sidebar-note {
-  margin-top: 22px;
+  margin-top: 24px;
   padding-top: 16px;
   border-top: 1px solid var(--line);
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 8px;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.5;
 }
 .workspace-design .sidebar-note > svg {
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 8px;
   color: var(--muted);
 }
 .workspace-design .sidebar-note p {
@@ -1230,9 +1230,9 @@ html[data-theme='dark'] .workspace-design aside > .text-button:hover {
   background: var(--brand-surface) !important;
   color: var(--ink) !important;
   border: 1px solid var(--line) !important;
-  border-radius: 20px !important;
+  border-radius: 24px !important;
   box-shadow: var(--shadow-popover) !important;
-  padding: 18px !important;
+  padding: 16px !important;
 }
 .account-menu-panel strong {
   color: var(--muted) !important;
@@ -1274,9 +1274,9 @@ html[data-theme='dark'] .account-menu-panel button {
 .workspace-design .workspace-tab-content > section.panel {
   background: var(--brand-surface);
   border: 1px solid var(--line);
-  border-radius: 28px;
+  border-radius: 32px;
   box-shadow: var(--shadow-panel);
-  padding: 28px;
+  padding: 32px;
 }
 html[data-theme='dark'] .workspace-design .workspace-tab-content > .panel,
 html[data-theme='dark'] .workspace-design .workspace-tab-content > section.panel {
@@ -1291,7 +1291,7 @@ html[data-theme='dark'] .workspace-design .workspace-tab-content > section.panel
   background: var(--brand-field);
   border: 1px solid var(--brand-input-border);
   color: var(--ink);
-  border-radius: 22px;
+  border-radius: 24px;
 }
 html[data-theme='dark']
   .workspace-design
@@ -1312,7 +1312,7 @@ html[data-theme='dark'] .workspace-design .workspace-tab-content .field textarea
 /* Stageshow Smartphone Frame for Dashboard Card Preview */
 .workspace-design .workspace-card-preview {
   position: relative;
-  border-radius: 46px;
+  border-radius: 48px;
   border: 8px solid var(--phone-bezel, #272d36);
   background: var(--brand-surface);
   box-shadow:
@@ -1320,7 +1320,7 @@ html[data-theme='dark'] .workspace-design .workspace-tab-content .field textarea
     0 12px 28px -10px rgba(0, 0, 0, 0.3),
     inset 0 0 0 1px rgba(255, 255, 255, 0.12),
     inset 0 2px 10px rgba(0, 0, 0, 0.3);
-  padding: 30px 14px 24px;
+  padding: 32px 16px 24px;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
@@ -1339,9 +1339,9 @@ html[data-theme='dark'] .workspace-design .workspace-tab-content .field textarea
   display: block;
   width: 92px;
   height: 22px;
-  margin: -22px auto 16px;
+  margin: -24px auto 16px;
   background: #000000;
-  border-radius: 14px;
+  border-radius: 16px;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.08),
     0 3px 6px rgba(0, 0, 0, 0.6);
@@ -1357,10 +1357,10 @@ html[data-theme='dark'] .workspace-design .workspace-tab-content .field textarea
   display: block;
   width: 120px;
   height: 4.5px;
-  margin: 16px auto -12px;
+  margin: 16px auto -16px;
   background: currentColor;
   opacity: 0.22;
-  border-radius: 999px;
+  border-radius: 1000px;
   z-index: 30;
   pointer-events: none;
 }
@@ -1426,10 +1426,10 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
 /* Refine geometry without replacing saved card colors or uploaded artwork. */
 .card-design.profile-card {
   border-width: 1px;
-  border-radius: 30px;
+  border-radius: 32px;
   box-shadow: var(--brand-shadow);
-  padding: 14px;
-  gap: 14px;
+  padding: 16px;
+  gap: 16px;
 }
 .card-design.profile-card.theme-light {
   background: var(--card-fond, var(--brand-canvas));
@@ -1443,7 +1443,7 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border-radius: 22px;
+  border-radius: 24px;
   box-shadow: none;
   border-color: var(--card-line, var(--line));
 }
@@ -1457,7 +1457,7 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
 .card-design .avatar {
   width: 100px;
   height: 100px;
-  margin-top: -50px;
+  margin-top: -48px;
   box-shadow: 0 0 0 2px var(--button-bg, var(--accent));
   font-size: 30px;
 }
@@ -1489,7 +1489,7 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
 }
 .card-design .catalogue-item,
 .card-design .promotion-item {
-  border-radius: 20px;
+  border-radius: 24px;
   box-shadow: none;
 }
 .card-design .card-footer-brand .card-brand {
@@ -1517,8 +1517,8 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
 @media (max-width: 1024px) {
   .landing-hero {
     grid-template-columns: 1fr;
-    gap: 28px;
-    padding-block: 28px 52px;
+    gap: 32px;
+    padding-block: 32px 56px;
   }
   .landing-copy {
     align-items: center;
@@ -1534,7 +1534,7 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
     min-height: 76px;
     height: auto;
     padding: 16px;
-    gap: 12px;
+    gap: 16px;
   }
   .brand {
     font-size: 24px;
@@ -1544,10 +1544,10 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
     height: 34px;
   }
   .header-actions {
-    gap: 10px;
+    gap: 8px;
   }
   .landing {
-    padding: 16px 18px 44px;
+    padding: 16px 16px 48px;
   }
   .landing-copy h1 {
     font-size: clamp(34px, 8.2vw, 46px);
@@ -1557,23 +1557,23 @@ html[data-theme='dark'] .workspace-design .workspace-card-preview {
   }
   .landing-process,
   .landing-final {
-    padding: 28px 20px;
-    border-radius: 28px;
+    padding: 32px 24px;
+    border-radius: 32px;
   }
   .landing-process .landing-heading {
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
   }
   .landing .bento-card {
     padding: 24px;
   }
   .workspace-design .workspace-tab-content > .panel,
   .workspace-design .workspace-tab-content > section.panel {
-    padding: 20px;
+    padding: 24px;
   }
   .auth-layout {
     margin-block: 32px;
-    gap: 28px;
+    gap: 32px;
   }
   .auth-panel {
     padding: 24px;
@@ -1620,7 +1620,7 @@ html[data-theme='dark'] .header-login {
 @media (max-width: 680px) {
   .theme-toggle {
     width: 44px;
-    padding: 10px;
+    padding: 8px;
     flex-shrink: 0;
   }
   .theme-toggle-label {
@@ -1674,7 +1674,7 @@ html[data-theme='dark'] .header-login {
   background: var(--brand-surface) !important;
   color: var(--ink) !important;
   border: 1px solid var(--line) !important;
-  border-radius: 28px !important;
+  border-radius: 32px !important;
   box-shadow: var(--brand-shadow) !important;
 }
 .crop-header h2,
@@ -1699,7 +1699,7 @@ html[data-theme='dark'] .header-login {
 .crop-live-preview {
   background: var(--brand-soft) !important;
   border: 1px solid var(--line) !important;
-  border-radius: 20px !important;
+  border-radius: 24px !important;
 }
 .crop-live-badge {
   color: var(--brand-strong) !important;
@@ -1721,7 +1721,7 @@ html[data-theme='dark'] .header-login {
 /* 3. Refined File Inputs */
 input[type='file'] {
   min-height: auto;
-  padding: 8px 12px;
+  padding: 8px 16px;
   border-radius: 16px;
   background: var(--brand-field);
   border: 1px dashed var(--line);
@@ -1740,9 +1740,9 @@ input[type='file']::file-selector-button {
   background: var(--brand-surface);
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 6px 14px;
-  margin-inline-end: 12px;
+  border-radius: 1000px;
+  padding: 8px 16px;
+  margin-inline-end: 16px;
   font-weight: 600;
   font-size: 12px;
   cursor: pointer;
@@ -1781,7 +1781,7 @@ input[type='file']::file-selector-button:hover {
   background: var(--brand-tint) !important;
   border: 1px solid var(--brand-tint-border) !important;
   color: var(--brand-strong) !important;
-  border-radius: 20px !important;
+  border-radius: 24px !important;
 }
 .legal-page [lang='ar'] {
   border-top: 1px solid var(--line) !important;
@@ -1799,11 +1799,11 @@ input[type='file']::file-selector-button:hover {
 
 /* 6. Catalog Tabs & Component Alignment */
 .catalog-tabs button {
-  border-radius: 999px;
+  border-radius: 1000px;
   background: var(--brand-soft);
   color: var(--muted);
   border: 1px solid var(--line);
-  padding: 8px 18px;
+  padding: 8px 16px;
   font-weight: 600;
   transition:
     background-color 160ms ease,
@@ -1855,7 +1855,7 @@ html[data-theme='dark'] .crop-overlay {
 /* Shared controls carry the reference's rectangular, editorial character. */
 .brand-icon {
   color: var(--brand-on-accent);
-  border-radius: 10px;
+  border-radius: 8px;
 }
 .primary,
 .secondary,
@@ -1867,13 +1867,13 @@ html[data-theme='dark'] .crop-overlay {
 .workspace-navigation button,
 .catalog-tabs button,
 .auth-input {
-  border-radius: 12px;
+  border-radius: 16px;
 }
 .header-actions :is(.theme-toggle, .language, .header-login),
 .account-menu summary,
 .workspace-navigation button,
 .workspace-design .setup-launch {
-  border-radius: 12px !important;
+  border-radius: 16px !important;
 }
 .panel,
 .modal,
@@ -1884,7 +1884,7 @@ html[data-theme='dark'] .crop-overlay {
 .landing .bento-card,
 .landing .usecase-card,
 .landing-price-grid article {
-  border-radius: 18px;
+  border-radius: 16px;
 }
 input:not([type='checkbox']):not([type='radio']):not([type='color']):not([type='range']),
 select,
@@ -1892,7 +1892,7 @@ textarea,
 .workspace-design .workspace-tab-content .field input:not([type='checkbox']):not([type='radio']),
 .workspace-design .workspace-tab-content .field select,
 .workspace-design .workspace-tab-content .field textarea {
-  border-radius: 12px;
+  border-radius: 16px;
 }
 .workspace-design .workspace-head .eyebrow,
 .workspace-head .eyebrow,
@@ -1914,11 +1914,11 @@ textarea,
 }
 .landing-process,
 .landing-final {
-  border-radius: 20px;
+  border-radius: 24px;
   border-block-start: 3px solid var(--brand-vermilion);
 }
 .landing-price-grid article a.primary {
-  border-radius: 12px;
+  border-radius: 16px;
 }
 .pill span,
 .session-loading-dot {
@@ -1941,14 +1941,14 @@ textarea,
 .workspace-welcome {
   display: flex !important;
   align-items: center;
-  gap: 14px;
-  padding: 12px 18px !important;
-  border-radius: 12px !important;
+  gap: 16px;
+  padding: 16px 16px !important;
+  border-radius: 16px !important;
   background: var(--brand-surface) !important;
   border: 1px solid var(--line) !important;
   border-inline-start: 3px solid var(--brand-orange) !important;
   box-shadow: var(--shadow-subtle) !important;
-  margin: 0 0 20px !important;
+  margin: 0 0 24px !important;
   max-width: 100%;
   box-sizing: border-box;
 }
@@ -1997,7 +1997,7 @@ html[data-theme='dark'] .workspace-welcome-icon {
 .workspace-design .workspace-head .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   color: var(--brand-strong) !important;
   font-size: 12px !important;
   font-weight: 600 !important;
@@ -2011,7 +2011,7 @@ html[data-theme='dark'] .workspace-welcome-icon {
   letter-spacing: -0.03em !important;
   line-height: 1.25 !important;
   color: var(--ink) !important;
-  margin: 0 0 6px !important;
+  margin: 0 0 8px !important;
 }
 .workspace-design .workspace-intro {
   font-size: 14.5px !important;
@@ -2061,13 +2061,13 @@ html[data-theme='dark'] .workspace-welcome-icon {
 .landing .primary,
 .workspace-design .primary,
 .workspace-save-action .primary {
-  border-radius: 12px;
+  border-radius: 16px;
 }
 .commercial-whatsapp {
   background: var(--brand-accent);
   color: var(--brand-on-accent);
   border: 1px solid var(--brand-orange);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: var(--brand-shadow);
 }
 .commercial-whatsapp:hover {
@@ -2079,8 +2079,8 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 
 /* Three primary client actions and secondary activity tools. */
 .workspace-secondary-nav {
-  margin-top: 18px;
-  padding-top: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
 }
 .workspace-secondary-nav > summary {
@@ -2104,14 +2104,14 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 .card-edit-navigation button {
   min-height: 44px;
   flex: 1 1 auto;
 }
 .admin-design-editor {
-  margin-block: 20px;
+  margin-block: 24px;
   min-width: 0;
 }
 .admin-design-layout {
@@ -2131,12 +2131,12 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   overflow: auto;
   min-width: 0;
   background: var(--brand-soft);
-  padding: 12px;
-  border-radius: 18px;
+  padding: 16px;
+  border-radius: 16px;
 }
 .admin-design-preview > strong {
   display: block;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 .admin-design-preview .profile-card {
   max-width: 100%;
@@ -2145,11 +2145,11 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   position: sticky;
   bottom: 12px;
   z-index: 4;
-  padding: 12px;
+  padding: 16px;
   margin-top: 16px;
   background: var(--brand-surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
 }
 @media (max-width: 850px) {
   .admin-design-layout {
@@ -2174,9 +2174,9 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 /* Product management: compact rows, one short editing form at a time. */
 .catalog-product-editor,
 .catalog-promotions-editor .promotion-editor {
-  margin-block: 12px;
+  margin-block: 16px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--brand-soft);
   padding: 0;
   min-width: 0;
@@ -2185,12 +2185,12 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   display: flex;
   align-items: flex-start;
   gap: 8px;
-  padding: 10px;
+  padding: 8px;
 }
 .catalog-product-open {
   display: flex;
   flex: 1;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
   min-width: 0;
   text-align: start;
@@ -2221,7 +2221,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 .catalog-product-open small {
   display: block;
   color: var(--muted);
-  margin-block-start: 4px;
+  margin-block-start: 8px;
 }
 .catalog-edit-label {
   margin-inline-start: auto;
@@ -2239,7 +2239,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 .catalog-item-menu > summary {
   cursor: pointer;
   list-style: none;
-  padding: 4px 12px;
+  padding: 8px 16px;
   font-size: 24px;
   line-height: 1;
 }
@@ -2249,7 +2249,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 .catalog-item-menu button {
   display: block;
   width: 100%;
-  margin-block: 6px;
+  margin-block: 8px;
   padding: 8px;
 }
 .catalog-item-menu .catalog-actions {
@@ -2259,7 +2259,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   width: auto;
 }
 .catalog-language {
-  margin-block: 12px;
+  margin-block: 16px;
   color: var(--muted);
 }
 .catalog-language > summary {
@@ -2284,10 +2284,10 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     display: none;
   }
   .catalog-product-row {
-    gap: 4px;
+    gap: 8px;
   }
   .catalog-product-form {
-    padding: 12px;
+    padding: 16px;
   }
   .catalog-product-open > img,
   .catalog-product-placeholder {
@@ -2301,7 +2301,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: 48px;
   align-items: center;
-  padding-block: 36px 56px;
+  padding-block: 40px 56px;
   position: relative;
   z-index: 1;
 }
@@ -2315,10 +2315,10 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 }
 .landing-quick-benefits article {
   position: relative;
-  padding: 28px 24px;
+  padding: 32px 24px;
   background: var(--brand-surface);
   border: 1px solid var(--line);
-  border-radius: 20px;
+  border-radius: 24px;
   box-shadow: var(--shadow-subtle);
   transition:
     transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
@@ -2335,8 +2335,8 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 .landing-quick-benefits svg {
   width: 46px;
   height: 46px;
-  padding: 10px;
-  border-radius: 12px;
+  padding: 8px;
+  border-radius: 16px;
   background: var(--brand-tint);
   border: 1px solid var(--brand-tint-border);
   color: var(--brand-strong);
@@ -2362,7 +2362,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   z-index: 1;
 }
 .landing-simple .landing-heading {
-  margin-block-end: 36px;
+  margin-block-end: 40px;
   text-align: center;
 }
 .landing-simple .landing-heading h2 {
@@ -2370,7 +2370,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   font-weight: 850;
   letter-spacing: -0.025em;
   color: var(--ink);
-  margin: 0 0 12px;
+  margin: 0 0 16px;
 }
 .landing-simple .landing-heading > p {
   font-size: 17px;
@@ -2407,8 +2407,8 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   position: relative;
   z-index: 1;
   margin-block-start: 40px;
-  padding: 48px 44px;
-  border-radius: 28px;
+  padding: 48px 48px;
+  border-radius: 32px;
   background:
     radial-gradient(circle 500px at 85% 50%, var(--brand-glow-subtle), transparent 70%),
     var(--brand-surface);
@@ -2418,7 +2418,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 28px;
+  gap: 32px;
   overflow: hidden;
 }
 .landing-simple .landing-final h2 {
@@ -2426,7 +2426,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   font-weight: 850;
   letter-spacing: -0.025em;
   color: var(--ink);
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   line-height: 1.2;
 }
 .landing-simple .landing-final p {
@@ -2439,13 +2439,13 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 @media (max-width: 700px) {
   .landing-quick-benefits {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 16px;
   }
   .landing-quick-benefits article {
-    padding: 20px;
+    padding: 24px;
     display: grid;
     grid-template-columns: 46px 1fr;
-    gap: 0 14px;
+    gap: 0 16px;
     align-items: start;
   }
   .landing-quick-benefits svg {
@@ -2457,7 +2457,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   }
   .landing-simple .landing-faq {
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 32px;
   }
   .landing-simple .landing-final {
     padding: 32px 24px;
@@ -2499,7 +2499,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 28px;
+  border-radius: 32px;
   border: 1px solid var(--line);
   box-shadow:
     0 24px 60px -15px rgba(0, 0, 0, 0.4),
@@ -2536,7 +2536,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   .public-card-page[data-view='demo'] .public-layout {
     position: relative;
     max-width: 440px;
-    margin: 36px auto 60px;
+    margin: 40px auto 64px;
     border-radius: 48px;
     border: 8px solid var(--phone-bezel, #272d36);
     background: var(--brand-surface);
@@ -2544,7 +2544,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
       0 36px 90px -20px rgba(0, 0, 0, 0.55),
       0 14px 32px -10px rgba(0, 0, 0, 0.35),
       inset 0 0 0 1px rgba(255, 255, 255, 0.12);
-    padding: 32px 16px 28px;
+    padding: 32px 16px 32px;
     isolation: isolate;
   }
   .public-card-page[data-view='demo'] .public-layout::before {
@@ -2554,9 +2554,9 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     display: block;
     width: 96px;
     height: 22px;
-    margin: -24px auto 18px;
+    margin: -24px auto 16px;
     background: #000000;
-    border-radius: 14px;
+    border-radius: 16px;
     box-shadow:
       0 0 0 1px rgba(255, 255, 255, 0.08),
       0 3px 6px rgba(0, 0, 0, 0.6);
@@ -2570,10 +2570,10 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     display: block;
     width: 124px;
     height: 4.5px;
-    margin: 18px auto -14px;
+    margin: 16px auto -16px;
     background: currentColor;
     opacity: 0.22;
-    border-radius: 999px;
+    border-radius: 1000px;
     z-index: 30;
     pointer-events: none;
   }
@@ -2593,7 +2593,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   }
 }
 .landing-simple .landing-actions {
-  gap: 14px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 @media (max-width: 800px) {
@@ -2602,7 +2602,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     gap: 32px;
   }
   .landing-brand-visual > img {
-    border-radius: 18px;
+    border-radius: 16px;
   }
 }
 
@@ -2615,7 +2615,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
-    gap: 10px;
+    gap: 8px;
     overflow: visible;
     height: auto;
     min-height: 0;
@@ -2646,7 +2646,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     min-width: 0;
     overflow: visible;
     padding: 0;
-    gap: 6px;
+    gap: 8px;
   }
   .workspace-design .workspace-navigation > button {
     height: auto;
@@ -2657,8 +2657,8 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     justify-content: center;
     text-align: center;
     white-space: normal;
-    padding: 10px 6px;
-    gap: 6px;
+    padding: 8px 8px;
+    gap: 8px;
     font-size: 12px;
     line-height: 1.4;
   }
@@ -2686,7 +2686,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     grid-column: 1 / -1;
     min-width: 0;
     margin: 0;
-    padding-top: 4px;
+    padding-top: 8px;
   }
   .workspace-design .workspace-secondary-nav button {
     display: inline-flex;
@@ -2719,7 +2719,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     position: static;
     max-height: 65vh;
     max-height: 65dvh;
-    margin-top: 10px;
+    margin-top: 8px;
     z-index: auto;
   }
   .workspace-preview-rail:not(.preview-open) > .workspace-card-preview {
@@ -2729,7 +2729,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     position: static;
     top: auto;
     z-index: auto;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
   .workspace-design .workspace-save-action > button {
     width: 100%;
@@ -2741,7 +2741,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 .single-action-offer {
   background: var(--brand-surface);
   border: 1px solid var(--line);
-  border-radius: 22px;
+  border-radius: 24px;
   color: var(--ink);
   box-shadow: var(--shadow-subtle);
   position: relative;
@@ -2767,7 +2767,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 }
 .landing-price-grid {
   align-items: stretch;
-  gap: 28px;
+  gap: 32px;
 }
 .landing-price-grid .pricing-card {
   background: var(--brand-surface);
@@ -2817,13 +2817,13 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 
 /* Client administration: subscription, functional rights and workspace sections. */
 .admin-client-management {
-  margin-block: 18px 10px;
+  margin-block: 16px 8px;
 }
 .admin-client-summary {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   min-height: 52px;
   cursor: pointer;
 }
@@ -2833,7 +2833,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 }
 .admin-client-summary small {
   display: block;
-  margin-top: 5px;
+  margin-top: 8px;
   overflow-wrap: anywhere;
   color: var(--muted);
 }
@@ -2842,10 +2842,10 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 }
 .admin-access-fieldset {
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 16px;
   min-width: 0;
-  padding: 18px;
-  margin-block: 20px;
+  padding: 16px;
+  margin-block: 24px;
 }
 .admin-access-fieldset legend {
   font-weight: 700;
@@ -2854,7 +2854,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 .admin-access-fieldset .toggle {
   align-items: center;
   min-height: 44px;
-  gap: 12px;
+  gap: 16px;
 }
 .admin-access-fieldset input[type='checkbox'] {
   flex-shrink: 0;
@@ -2873,8 +2873,8 @@ html[data-theme='dark'] .workspace-navigation button.selected {
 }
 .admin-client-preview {
   border-inline-start: 3px solid var(--brand-orange);
-  padding: 12px 16px;
-  margin-block: 18px;
+  padding: 16px 16px;
+  margin-block: 16px;
   background: var(--brand-tint);
   border-radius: 8px;
 }
@@ -2887,7 +2887,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   gap: 8px;
   flex-wrap: wrap;
   margin-inline-end: 8px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 @media (max-width: 700px) {
   .admin-access-grid {
@@ -2898,52 +2898,13 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     align-items: stretch;
   }
   .admin-client-summary {
-    gap: 10px;
+    gap: 8px;
   }
 }
 
 /* ==========================================================================
    Dashboard UI Polish: Button Unification & Block Spacing Harmonization
    ========================================================================== */
-
-/* 1. Unified button sizing across the dashboard & admin */
-.workspace-design
-  :is(.primary, .secondary, a.primary, a.secondary, button.primary, button.secondary):not(
-    .small
-  ):not(.card-palette):not(.sidebar-logout),
-.admin-client-management
-  :is(.primary, .secondary, a.primary, a.secondary, button.primary, button.secondary):not(.small),
-.admin-design-editor
-  :is(.primary, .secondary, a.primary, a.secondary, button.primary, button.secondary):not(.small) {
-  min-height: 44px !important;
-  height: 44px !important;
-  padding: 0 18px !important;
-  border-radius: 12px !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-sizing: border-box !important;
-  line-height: normal !important;
-}
-
-.workspace-design :is(.primary.small, .secondary.small, a.small, button.small),
-.admin-client-management :is(.primary.small, .secondary.small, a.small, button.small) {
-  min-height: 36px !important;
-  height: 36px !important;
-  padding: 0 14px !important;
-  border-radius: 10px !important;
-  font-size: 13px !important;
-}
-
-.workspace-save-action > button {
-  min-height: 44px !important;
-  height: 44px !important;
-  border-radius: 12px !important;
-  font-size: 14.5px !important;
-  font-weight: 700 !important;
-}
 
 /* 2. Address Editor: single seamless input (removes nested box-in-a-box) */
 .workspace-design .field .address-input,
@@ -2954,8 +2915,8 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   height: 44px !important;
   background: var(--brand-field) !important;
   border: 1px solid var(--brand-input-border, var(--line)) !important;
-  border-radius: 12px !important;
-  padding: 0 0 0 14px !important;
+  border-radius: 16px !important;
+  padding: 0 0 0 16px !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
   transition:
@@ -2977,7 +2938,7 @@ html[data-theme='dark'] .workspace-navigation button.selected {
   font-size: 14px !important;
   font-weight: 500 !important;
   user-select: none !important;
-  padding-inline-end: 2px !important;
+  padding-inline-end: 8px !important;
 }
 
 html[data-theme='dark'] .workspace-design .workspace-tab-content .field .address-input input,
@@ -3000,7 +2961,7 @@ html .address-editor .address-input input,
   background: transparent !important;
   background-color: transparent !important;
   border-radius: 0 !important;
-  padding: 0 10px !important;
+  padding: 0 8px !important;
   margin: 0 !important;
   font-size: 14.5px !important;
   font-weight: 600 !important;
@@ -3013,8 +2974,8 @@ html .address-editor .address-input input,
   max-width: 260px !important;
   min-height: 44px !important;
   height: 44px !important;
-  border-radius: 12px !important;
-  margin-top: 14px !important;
+  border-radius: 16px !important;
+  margin-top: 16px !important;
 }
 
 /* 3. Card QR Panel: button & input harmonization */
@@ -3024,14 +2985,14 @@ html .address-editor .address-input input,
   align-items: stretch !important;
   max-width: 440px !important;
   margin: 16px auto 24px !important;
-  gap: 14px !important;
+  gap: 16px !important;
 }
 
 .card-qr-panel img {
   align-self: center !important;
   border-radius: 16px !important;
   border: 1px solid var(--line) !important;
-  padding: 12px !important;
+  padding: 16px !important;
   background: #ffffff !important;
   box-shadow: var(--shadow-subtle) !important;
 }
@@ -3041,16 +3002,16 @@ html .address-editor .address-input input,
   width: 100% !important;
   min-height: 44px !important;
   height: 44px !important;
-  padding: 0 18px !important;
-  border-radius: 12px !important;
+  padding: 0 16px !important;
+  border-radius: 16px !important;
   font-size: 14px !important;
   font-weight: 600 !important;
 }
 
 .card-qr-panel .field {
   width: 100% !important;
-  margin-top: 6px !important;
-  margin-bottom: 2px !important;
+  margin-top: 8px !important;
+  margin-bottom: 8px !important;
   display: flex !important;
   flex-direction: column !important;
   gap: 8px !important;
@@ -3062,7 +3023,7 @@ html .address-editor .address-input input,
 .card-qr-panel .field input {
   min-height: 44px !important;
   height: 44px !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   font-size: 13.5px !important;
   text-align: center !important;
   background: var(--brand-field) !important;
@@ -3075,7 +3036,7 @@ html .address-editor .address-input input,
   font-size: 13px !important;
   color: var(--muted) !important;
   line-height: 1.5 !important;
-  margin-top: 4px !important;
+  margin-top: 8px !important;
   margin-bottom: 0 !important;
   text-align: center !important;
 }
@@ -3084,8 +3045,8 @@ html .address-editor .address-input input,
 .card-palette-list {
   display: flex !important;
   flex-wrap: wrap !important;
-  gap: 10px !important;
-  margin-block: 10px 18px !important;
+  gap: 8px !important;
+  margin-block: 8px 16px !important;
 }
 
 .workspace-design .card-palette {
@@ -3094,8 +3055,8 @@ html .address-editor .address-input input,
   gap: 8px !important;
   min-height: 40px !important;
   height: 40px !important;
-  padding: 0 14px !important;
-  border-radius: 12px !important;
+  padding: 0 16px !important;
+  border-radius: 16px !important;
   font-size: 13.5px !important;
   font-weight: 500 !important;
   border: 1px solid var(--line) !important;
@@ -3127,9 +3088,9 @@ html .address-editor .address-input input,
 }
 
 .card-style-picker .custom-main-color {
-  margin-block: 14px 28px !important;
+  margin-block: 16px 32px !important;
   border: 1px solid var(--line) !important;
-  border-radius: 14px !important;
+  border-radius: 16px !important;
   background: var(--brand-surface) !important;
   overflow: hidden !important;
   box-shadow: var(--shadow-subtle) !important;
@@ -3165,7 +3126,7 @@ html .address-editor .address-input input,
 
 .card-style-picker .custom-main-color > .hint {
   padding-bottom: 16px !important;
-  margin-top: 6px !important;
+  margin-top: 8px !important;
   margin-bottom: 0 !important;
   font-size: 13px !important;
   color: var(--muted) !important;
@@ -3175,7 +3136,7 @@ html .address-editor .address-input input,
   display: flex !important;
   align-items: flex-end !important;
   gap: 16px !important;
-  margin-block: 16px 10px !important;
+  margin-block: 16px 8px !important;
   padding-inline: 16px !important;
 }
 
@@ -3185,7 +3146,7 @@ html .address-editor .address-input input,
   font-weight: 600 !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
+  gap: 8px !important;
 }
 
 .card-style-picker .main-color-inputs .field:first-child {
@@ -3201,9 +3162,9 @@ html .address-editor .address-input input,
   min-width: 64px !important;
   height: 44px !important;
   min-height: 44px !important;
-  padding: 4px !important;
+  padding: 8px !important;
   border: 1px solid var(--brand-input-border, var(--line)) !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   background: var(--brand-field) !important;
   cursor: pointer !important;
   box-sizing: border-box !important;
@@ -3213,9 +3174,9 @@ html .address-editor .address-input input,
   width: 100% !important;
   height: 44px !important;
   min-height: 44px !important;
-  padding: 0 14px !important;
+  padding: 0 16px !important;
   border: 1px solid var(--brand-input-border, var(--line)) !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   background: var(--brand-field) !important;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   font-size: 14.5px !important;
@@ -3230,7 +3191,7 @@ html .address-editor .address-input input,
   align-items: center !important;
   gap: 8px !important;
   width: 100% !important;
-  margin-top: 4px !important;
+  margin-top: 8px !important;
 }
 
 .nfc-link-input {
@@ -3248,12 +3209,12 @@ html .address-editor .address-input input,
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 6px !important;
+  gap: 8px !important;
   min-height: 44px !important;
   height: 44px !important;
   padding: 0 16px !important;
   white-space: nowrap !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   font-weight: 600 !important;
   font-size: 13.5px !important;
 }
@@ -3262,7 +3223,7 @@ html .address-editor .address-input input,
 .auth-error-actions {
   display: flex !important;
   align-items: center !important;
-  gap: 12px !important;
+  gap: 16px !important;
   margin-top: 8px !important;
 }
 
@@ -3270,7 +3231,7 @@ html .address-editor .address-input input,
   min-height: 38px !important;
   height: 38px !important;
   width: 76px !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   background: transparent !important;
   border: 1px solid transparent !important;
   visibility: hidden !important;
@@ -3282,8 +3243,8 @@ html .address-editor .address-input input,
   align-items: center !important;
   justify-content: center !important;
   min-height: 44px !important;
-  padding: 0 20px !important;
-  border-radius: 12px !important;
+  padding: 0 24px !important;
+  border-radius: 16px !important;
   text-decoration: none !important;
   font-weight: 600 !important;
   font-size: 14px !important;
@@ -3301,14 +3262,14 @@ html .address-editor .address-input input,
   width: 100% !important;
   max-width: 420px !important;
   min-height: 52px !important;
-  padding: 14px 24px !important;
+  padding: 16px 24px !important;
   font-size: 16px !important;
   font-weight: 700 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 10px !important;
-  border-radius: var(--button-radius, 14px) !important;
+  gap: 8px !important;
+  border-radius: var(--button-radius, 16px) !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12) !important;
   transition:
     transform 0.15s ease,
@@ -3326,7 +3287,7 @@ html .address-editor .address-input input,
 .single-action-panel {
   display: flex !important;
   flex-direction: column !important;
-  gap: 20px !important;
+  gap: 24px !important;
 }
 
 .single-action-toggle-card {
@@ -3334,7 +3295,7 @@ html .address-editor .address-input input,
   align-items: center !important;
   justify-content: space-between !important;
   padding: 16px !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   background: var(--brand-soft) !important;
   border: 1px solid var(--line) !important;
 }
@@ -3342,7 +3303,7 @@ html .address-editor .address-input input,
 .single-action-grid {
   display: grid !important;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
-  gap: 10px !important;
+  gap: 8px !important;
 }
 
 .single-action-choice {
@@ -3351,10 +3312,10 @@ html .address-editor .address-input input,
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
-  padding: 14px 10px !important;
+  padding: 16px 8px !important;
   min-height: 78px !important;
   border: 1px solid var(--line) !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   background: var(--brand-field) !important;
   color: var(--ink) !important;
   cursor: pointer !important;
@@ -3380,18 +3341,18 @@ html .address-editor .address-input input,
 .single-action-form-section {
   display: flex !important;
   flex-direction: column !important;
-  gap: 14px !important;
-  padding: 18px !important;
+  gap: 16px !important;
+  padding: 16px !important;
   background: var(--brand-soft) !important;
   border: 1px solid var(--line) !important;
-  border-radius: 14px !important;
+  border-radius: 16px !important;
 }
 
 .single-action-error-badge {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  padding: 8px 12px !important;
+  gap: 8px !important;
+  padding: 8px 16px !important;
   border-radius: 8px !important;
   background: rgba(220, 38, 38, 0.1) !important;
   color: #dc2626 !important;
@@ -3403,8 +3364,8 @@ html .address-editor .address-input input,
 .single-action-success-badge {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  padding: 8px 12px !important;
+  gap: 8px !important;
+  padding: 8px 16px !important;
   border-radius: 8px !important;
   background: rgba(16, 185, 129, 0.1) !important;
   color: #059669 !important;
@@ -3416,9 +3377,9 @@ html .address-editor .address-input input,
 .single-action-preview-section {
   display: flex !important;
   flex-direction: column !important;
-  gap: 12px !important;
+  gap: 16px !important;
   padding: 16px !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   background: var(--brand-field) !important;
   border: 1px dashed var(--line) !important;
 }
@@ -3498,12 +3459,12 @@ html .address-editor .address-input input,
 .landing-testimonials,
 .landing-section-offers,
 .landing-faq {
-  padding-block: clamp(52px, 6.5vw, 88px) !important;
+  padding-block: clamp(56px, 6.5vw, 88px) !important;
 }
 
 /* Hero Above-the-fold Enhancements */
 .landing-hero {
-  padding: clamp(32px, 5vw, 60px) 0 clamp(48px, 6vw, 76px) !important;
+  padding: clamp(32px, 5vw, 64px) 0 clamp(48px, 6vw, 80px) !important;
 }
 
 .landing-kicker {
@@ -3519,20 +3480,20 @@ html .address-editor .address-input input,
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 10px !important;
-  border-radius: 14px !important;
+  gap: 8px !important;
+  border-radius: 16px !important;
 }
 
 .landing-actions .secondary {
   min-height: 50px !important;
-  padding: 0 20px !important;
+  padding: 0 24px !important;
   font-size: 15px !important;
   font-weight: 600 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 8px !important;
-  border-radius: 14px !important;
+  border-radius: 16px !important;
 }
 
 /* Comparison Section: Asymmetric High-Craft Bento */
@@ -3541,8 +3502,8 @@ html .address-editor .address-input input,
 }
 
 .comparison-col {
-  border-radius: 20px !important;
-  padding: clamp(24px, 3.5vw, 36px) !important;
+  border-radius: 24px !important;
+  padding: clamp(24px, 3.5vw, 40px) !important;
   box-sizing: border-box !important;
 }
 
@@ -3589,18 +3550,18 @@ html[data-theme='light'] .comparison-col.paper-col {
 .usecase-grid {
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 255px), 1fr)) !important;
-  gap: 20px !important;
+  gap: 24px !important;
 }
 
 .usecase-grid article {
-  border-radius: 18px !important;
+  border-radius: 16px !important;
   padding: 24px !important;
   background: var(--brand-surface) !important;
   border: 1px solid var(--line) !important;
   box-shadow: var(--shadow-subtle) !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 12px !important;
+  gap: 16px !important;
   min-height: 220px !important;
   box-sizing: border-box !important;
 }
@@ -3608,7 +3569,7 @@ html[data-theme='light'] .comparison-col.paper-col {
 .usecase-icon {
   width: 48px !important;
   height: 48px !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   background: rgba(255, 145, 37, 0.12) !important;
   color: var(--brand-accent) !important;
   display: flex !important;
@@ -3620,11 +3581,11 @@ html[data-theme='light'] .comparison-col.paper-col {
 .testimonials-grid {
   display: grid !important;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)) !important;
-  gap: 22px !important;
+  gap: 24px !important;
 }
 
 .testimonial-card {
-  border-radius: 18px !important;
+  border-radius: 16px !important;
   padding: 24px !important;
   background: var(--brand-surface) !important;
   border: 1px solid var(--line) !important;
@@ -3637,7 +3598,7 @@ html[data-theme='light'] .comparison-col.paper-col {
 
 .testimonial-stars {
   display: flex !important;
-  gap: 3px !important;
+  gap: 8px !important;
   color: #f59e0b !important;
 }
 
@@ -3651,8 +3612,8 @@ html[data-theme='light'] .comparison-col.paper-col {
 .testimonial-author {
   display: flex !important;
   align-items: center !important;
-  gap: 12px !important;
-  padding-top: 12px !important;
+  gap: 16px !important;
+  padding-top: 16px !important;
   border-top: 1px solid var(--line) !important;
 }
 
@@ -3672,8 +3633,8 @@ html[data-theme='light'] .comparison-col.paper-col {
 
 /* Pricing Grid Refinements */
 .single-action-offer {
-  border-radius: 20px !important;
-  padding: clamp(24px, 3.5vw, 36px) !important;
+  border-radius: 24px !important;
+  padding: clamp(24px, 3.5vw, 40px) !important;
 }
 
 .single-action-offer .offer-wa-btn {
@@ -3686,16 +3647,16 @@ html[data-theme='light'] .comparison-col.paper-col {
 }
 
 .landing-price-grid .pricing-card {
-  border-radius: 20px !important;
-  padding: clamp(24px, 3.5vw, 36px) !important;
+  border-radius: 24px !important;
+  padding: clamp(24px, 3.5vw, 40px) !important;
 }
 
 .pricing-badge {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  padding: 6px 14px !important;
-  border-radius: 12px !important;
+  gap: 8px !important;
+  padding: 8px 16px !important;
+  border-radius: 16px !important;
   background: linear-gradient(135deg, #ff9125, #ef552c) !important;
   color: #ffffff !important;
   font-size: 12px !important;
@@ -3713,15 +3674,15 @@ html[data-theme='light'] .comparison-col.paper-col {
   background: var(--brand-soft) !important;
   border: 1px solid var(--line) !important;
   border-radius: 16px !important;
-  padding: 14px !important;
-  margin-block: 10px 16px !important;
+  padding: 16px !important;
+  margin-block: 8px 16px !important;
 }
 
 .sidebar-cards-header {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  margin-bottom: 10px !important;
+  margin-bottom: 8px !important;
   padding-bottom: 8px !important;
   border-bottom: 1px solid var(--line) !important;
 }
@@ -3735,7 +3696,7 @@ html[data-theme='light'] .comparison-col.paper-col {
 .sidebar-cards-quota {
   font-size: 12px !important;
   font-weight: 700 !important;
-  padding: 2px 8px !important;
+  padding: 8px 8px !important;
   border-radius: 8px !important;
   background: var(--brand-surface) !important;
   color: var(--muted) !important;
@@ -3745,17 +3706,17 @@ html[data-theme='light'] .comparison-col.paper-col {
 .sidebar-cards-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 6px !important;
+  gap: 8px !important;
   margin-bottom: 8px !important;
 }
 
 .sidebar-card-item {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 8px !important;
   min-height: 44px !important;
-  padding: 8px 12px !important;
-  border-radius: 10px !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
   border: 1px solid transparent !important;
   background: var(--brand-surface) !important;
   color: var(--ink) !important;
@@ -3789,8 +3750,8 @@ html[data-theme='light'] .comparison-col.paper-col {
 .sidebar-card-status {
   font-size: 11px !important;
   font-weight: 700 !important;
-  padding: 2px 7px !important;
-  border-radius: 6px !important;
+  padding: 8px 8px !important;
+  border-radius: 8px !important;
   flex-shrink: 0 !important;
 }
 
@@ -3810,10 +3771,10 @@ html[data-theme='light'] .comparison-col.paper-col {
   justify-content: center !important;
   gap: 8px !important;
   min-height: 44px !important;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   font-size: 13px !important;
   font-weight: 600 !important;
-  margin-block: 4px 6px !important;
+  margin-block: 8px 8px !important;
 }
 
 .sidebar-single-action-btn.active {
@@ -3829,7 +3790,7 @@ html[data-theme='light'] .comparison-col.paper-col {
   justify-content: center !important;
   gap: 8px !important;
   min-height: 44px !important;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   font-size: 13px !important;
   font-weight: 600 !important;
 }
@@ -3837,7 +3798,7 @@ html[data-theme='light'] .comparison-col.paper-col {
 /* Touch Ergonomics on Inputs & Fields */
 .workspace-design .field :is(input, select, textarea) {
   min-height: 44px !important;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   font-size: 15px !important;
   box-sizing: border-box !important;
 }
@@ -3850,7 +3811,7 @@ html[data-theme='light'] .comparison-col.paper-col {
 @media (max-width: 1100px) {
   .workspace-mobile-location select {
     min-height: 48px !important;
-    border-radius: 12px !important;
+    border-radius: 16px !important;
     font-size: 16px !important;
     border: 1.5px solid var(--brand-input-border) !important;
     background-color: var(--brand-field) !important;
@@ -3872,21 +3833,21 @@ html[data-theme='light'] .comparison-col.paper-col {
 
 /* Prominent Single Action Button */
 .card-single-action-wrapper {
-  margin-block: 16px 12px !important;
-  padding-inline: 4px !important;
+  margin-block: 16px 16px !important;
+  padding-inline: 8px !important;
   box-sizing: border-box !important;
 }
 
 .card-button.card-single-action {
   min-height: 52px !important;
-  padding: 12px 22px !important;
+  padding: 16px 24px !important;
   font-size: 15.5px !important;
   font-weight: 700 !important;
-  border-radius: 14px !important;
+  border-radius: 16px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 10px !important;
+  gap: 8px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
   border: 1px solid rgba(255, 255, 255, 0.18) !important;
 }
@@ -3895,7 +3856,7 @@ html[data-theme='light'] .comparison-col.paper-col {
 .card-actions .card-action-icons {
   display: flex !important;
   align-items: center !important;
-  gap: 10px !important;
+  gap: 8px !important;
   width: 100% !important;
   box-sizing: border-box !important;
 }
@@ -3903,10 +3864,10 @@ html[data-theme='light'] .comparison-col.paper-col {
 .card-button.card-save {
   flex: 1 !important;
   min-height: 48px !important;
-  padding: 10px 18px !important;
+  padding: 8px 16px !important;
   font-size: 14.5px !important;
   font-weight: 700 !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -3916,7 +3877,7 @@ html[data-theme='light'] .comparison-col.paper-col {
 .card-button.card-share {
   min-width: 48px !important;
   min-height: 48px !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -3930,7 +3891,7 @@ html[data-theme='light'] .comparison-col.paper-col {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  border-radius: 12px !important;
+  border-radius: 16px !important;
 }
 
 /* Product & Services Catalog Layout */
@@ -4011,7 +3972,7 @@ html[data-theme='light'] .comparison-col.paper-col {
   .landing-actions {
     flex-direction: column !important;
     width: 100% !important;
-    gap: 12px !important;
+    gap: 16px !important;
   }
 
   .landing-actions .primary,
@@ -4041,11 +4002,11 @@ html[data-theme='light'] .comparison-col.paper-col {
   }
 
   .comparison-col {
-    padding: 20px 16px !important;
+    padding: 24px 16px !important;
   }
 
   .usecase-grid article,
   .testimonial-card {
-    padding: 18px 16px !important;
+    padding: 16px 16px !important;
   }
 }

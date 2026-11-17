@@ -3,8 +3,8 @@
   "short_name": "SoraLink",
   "start_url": "/?app=1&lang=fr",
   "display": "standalone",
-  "background_color": "#111111",
-  "theme_color": "#111111",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
   "icons": [
     {
       "src": "/icons/icon-192.png",

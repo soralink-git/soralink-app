@@ -22,7 +22,7 @@ for (const ar of [false, true]) {
       ar ? /Or premium|Bleu nuit|Arabe \/ darija/ : /ذهبي راقي|أزرق ليلي|العربية \/ الدارجة/,
     );
   });
-  test(`main card actions show icons only and retain explicit accessible names (${ar ? 'ar' : 'fr'})`, () => {
+  test(`main card actions have visible labels and explicit accessible names (${ar ? 'ar' : 'fr'})`, () => {
     const html = renderToStaticMarkup(
       React.createElement(Card, {
         d: demoCard,
@@ -35,6 +35,6 @@ for (const ar of [false, true]) {
     );
     assert.match(html, ar ? /aria-label="سجّل الكونطاكت"/ : /aria-label="Enregistrer le contact"/);
     assert.match(html, ar ? /aria-label="شارك هاد الكارط"/ : /aria-label="Partager cette carte"/);
-    assert.doesNotMatch(html, /class="action-label"/);
+    assert.equal((html.match(/class="card-action-label"/g) || []).length, 3);
   });
 }

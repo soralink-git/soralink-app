@@ -10,11 +10,20 @@ export default function NotFound() {
     document.documentElement.dir = ar ? 'rtl' : 'ltr';
   }, [ar]);
   return (
-    <main className="section legal-page" dir={ar ? 'rtl' : 'ltr'}>
-      <a className="brand" href="/" dir="ltr">
+    <main id="main-content" tabIndex={-1} className="section legal-page" dir={ar ? 'rtl' : 'ltr'}>
+      <a className="brand" href={'/?lang=' + (ar ? 'ar' : 'fr')} dir="ltr">
         SoraLink
       </a>
-      <button className="language" onClick={() => setAr(!ar)}>
+      <button
+        className="language"
+        onClick={() => {
+          const next = !ar;
+          setAr(next);
+          const url = new URL(location.href);
+          url.searchParams.set('lang', next ? 'ar' : 'fr');
+          history.replaceState(null, '', url.pathname + url.search);
+        }}
+      >
         {ar ? 'Français' : 'العربية'}
       </button>
       <h1>{ar ? 'الصفحة ما متوفراش' : 'Page indisponible'}</h1>

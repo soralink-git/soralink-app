@@ -16,7 +16,7 @@
   white-space: normal;
 }
 .workspace-design .share-visibility {
-  padding: 12px 16px;
+  padding: 16px 16px;
   margin-block: 16px;
   border-inline-start: 3px solid var(--brand-strong);
   background: var(--brand-soft);
@@ -24,16 +24,16 @@
   line-height: 1.6;
 }
 .password-field > input {
-  padding-inline-end: 52px;
+  padding-inline-end: 56px;
 }
 .password-field > button {
   display: grid;
   place-items: center;
-  inline-size: 44px;
-  block-size: 44px;
-  inset-inline-end: 4px;
-  top: 50%;
-  transform: translateY(-50%);
+  inline-size: 48px;
+  block-size: 48px;
+  inset-inline-end: 8px;
+  top: 0;
+  transform: none;
 }
 .color-field {
   min-inline-size: 0;
@@ -47,8 +47,8 @@
     height: auto !important;
     min-height: 80px;
     flex-wrap: wrap;
-    gap: 12px;
-    padding-block: 12px;
+    gap: 16px;
+    padding-block: 16px;
   }
   .site > header .header-actions {
     flex-wrap: wrap;
@@ -75,7 +75,7 @@
   }
   .auth-layout {
     margin-block: 24px;
-    gap: 20px;
+    gap: 24px;
   }
   .auth-intro h1 {
     font-size: 28px;
@@ -85,25 +85,25 @@
 /* Commerce controls keep forms readable and floating actions clear of overlays. */
 .payment-receipts {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   min-width: 0;
-  padding-block: 12px;
+  padding-block: 16px;
 }
 .payment-receipts input[type='file'] {
   max-width: 100%;
 }
 .visit-metrics {
   margin-block: 0 24px;
-  padding-block-end: 18px;
+  padding-block-end: 16px;
   border-block-end: 1px solid var(--line);
 }
 .metric-row {
   display: grid;
   grid-template-columns: 85px minmax(0, 1fr) 45px;
   align-items: center;
-  gap: 12px;
-  margin-block: 14px;
+  gap: 16px;
+  margin-block: 16px;
 }
 .metric-track {
   height: 12px;
@@ -119,18 +119,18 @@
 }
 .catalog-variant-row {
   display: grid;
-  gap: 12px;
+  gap: 16px;
   min-width: 0;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px;
-  margin-block: 14px;
+  margin-block: 16px;
 }
 .catalog-total {
   font-weight: 700;
 }
 .catalog-cart {
-  scroll-margin-block: 100px;
+  scroll-margin-block: 104px;
 }
 .sticky-card-bar,
 .catalog-mobile-spacer {
@@ -147,11 +147,11 @@
     inset-inline: 12px;
     bottom: calc(10px + env(safe-area-inset-bottom));
     z-index: 45;
-    gap: 12px;
+    gap: 16px;
     align-items: center;
     justify-content: space-between;
-    padding: 12px;
-    border-radius: 18px;
+    padding: 16px;
+    border-radius: 16px;
     background: var(--brand-slate);
     color: white;
     box-shadow: 0 6px 28px #0005;
@@ -163,7 +163,7 @@
   }
   .sticky-card-bar div {
     display: grid;
-    gap: 4px;
+    gap: 8px;
     min-width: 0;
   }
   .sticky-card-bar small {
@@ -175,9 +175,9 @@
     background: var(--sticky-accent);
     color: var(--sticky-foreground);
     border: 0;
-    border-radius: 12px;
+    border-radius: 16px;
     min-height: 44px;
-    padding: 10px 14px;
+    padding: 8px 16px;
     font-weight: 700;
   }
   body:has(dialog[open], [aria-modal='true']) .sticky-card-bar {

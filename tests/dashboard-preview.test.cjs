@@ -304,7 +304,7 @@ test('YouTube link and agenda additions have explicit removal and save controls'
   }
 });
 
-test('a single manual save action remains across editor sections without a saved notice', () => {
+test('a single manual save action and persistent saved feedback remain across editor sections', () => {
   for (const ar of [false, true])
     for (const tab of ['coordinates', 'interface', 'content', 'links', 'actions', 'schedule']) {
       const c = context(tab, ar);
@@ -314,7 +314,10 @@ test('a single manual save action remains across editor sections without a saved
         (html.match(ar ? /سجّل التغييرات/g : /Enregistrer les modifications/g) || []).length,
         1,
       );
-      assert.doesNotMatch(html, ar ? /تسجلات التغييرات/ : /Modifications enregistrées/);
+      assert.match(
+        html,
+        ar ? /تسجلو جميع التغييرات/ : /Toutes les modifications sont enregistrées/,
+      );
       assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
     }
 });
@@ -341,8 +344,13 @@ test('save controls contain only one button, including offline and conflict stat
         }),
       );
       assert.equal((html.match(/<button /g) || []).length, 1);
-      assert.match(html, ar ? /سجّل التغييرات/ : /Enregistrer les modifications/);
-      assert.doesNotMatch(html, /role="status"|workspace-savebar|class="secondary"/);
+      assert.match(html, /role="status"/);
+      if (status === 'conflict')
+        assert.match(html, ar ? /عاود حمّل النسخة المسجّلة/ : /Recharger la version enregistrée/);
+      else if (['error', 'offline', 'invalid'].includes(status))
+        assert.match(html, ar ? /عاود جرّب التسجيل/ : /Réessayer l’enregistrement/);
+      else if (status === 'saving') assert.match(html, ar ? /كيتسجّل/ : /Enregistrement…/);
+      else assert.match(html, ar ? /سجّل التغييرات/ : /Enregistrer les modifications/);
       assert.equal(html.includes('disabled=""'), status === 'saving');
     }
   }
