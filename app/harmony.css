@@ -581,3 +581,22 @@ html[data-theme='dark']
     grid-column: 1 / -1;
   }
 }
+/* The hero owns the primary action; header and persistent assistance stay secondary. */
+.design-system .site > header .header-start,
+.design-system .site .commercial-whatsapp {
+  min-block-size: 48px !important;
+  padding: 8px 16px !important;
+  border-radius: var(--radius-control) !important;
+  background: var(--brand-surface) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--brand-input-border) !important;
+  box-shadow: none !important;
+}
+.design-system
+  .site
+  .landing
+  :is(.usecase-icon-box, .landing-features article > svg, .landing-reassurance .check-badge) {
+  background: var(--brand-soft);
+  color: var(--ink);
+  border-color: var(--line);
+}

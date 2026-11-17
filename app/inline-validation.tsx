@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { fieldFeedback } from './lib/field-feedback';
 
@@ -122,13 +122,18 @@ export default function InlineValidation() {
       for (const entry of tracked.values()) restore(entry);
     };
   }, []);
-  return entries.map((entry) =>
-    createPortal(
-      <span key={entry.id} id={entry.id} className="inline-field-error" role="status">
+  return entries.map((entry) => (
+    <Fragment key={entry.id}>
+      {createPortal(
+        <span id={entry.id} className="inline-field-error" aria-hidden="true">
+          {entry.message}
+        </span>,
+        entry.host,
+        entry.id,
+      )}
+      <span className="sr-only" role="status">
         {entry.message}
-      </span>,
-      entry.host,
-      entry.id,
-    ),
-  );
+      </span>
+    </Fragment>
+  ));
 }
