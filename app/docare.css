@@ -2906,45 +2906,6 @@ html[data-theme='dark'] .workspace-navigation button.selected {
    Dashboard UI Polish: Button Unification & Block Spacing Harmonization
    ========================================================================== */
 
-/* 1. Unified button sizing across the dashboard & admin */
-.workspace-design
-  :is(.primary, .secondary, a.primary, a.secondary, button.primary, button.secondary):not(
-    .small
-  ):not(.card-palette):not(.sidebar-logout),
-.admin-client-management
-  :is(.primary, .secondary, a.primary, a.secondary, button.primary, button.secondary):not(.small),
-.admin-design-editor
-  :is(.primary, .secondary, a.primary, a.secondary, button.primary, button.secondary):not(.small) {
-  min-height: 44px !important;
-  height: 44px !important;
-  padding: 0 16px !important;
-  border-radius: 16px !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  box-sizing: border-box !important;
-  line-height: normal !important;
-}
-
-.workspace-design :is(.primary.small, .secondary.small, a.small, button.small),
-.admin-client-management :is(.primary.small, .secondary.small, a.small, button.small) {
-  min-height: 36px !important;
-  height: 36px !important;
-  padding: 0 16px !important;
-  border-radius: 8px !important;
-  font-size: 13px !important;
-}
-
-.workspace-save-action > button {
-  min-height: 44px !important;
-  height: 44px !important;
-  border-radius: 16px !important;
-  font-size: 14.5px !important;
-  font-weight: 700 !important;
-}
-
 /* 2. Address Editor: single seamless input (removes nested box-in-a-box) */
 .workspace-design .field .address-input,
 .address-input {
