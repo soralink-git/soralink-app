@@ -36,9 +36,6 @@ test('application paths cannot be reserved by a customer', () => {
     'demo',
     'conditions',
     'confidentialite',
-    'groupe',
-    'soraprint',
-    'soraconnect',
     'offline',
     'assets',
     'icons',
@@ -49,7 +46,7 @@ test('application paths cannot be reserved by a customer', () => {
     assert.equal(publicNameError(name), 'reserved');
 });
 test('new shares use the chosen name while legacy cards retain their permanent identifier link', () => {
-  assert.equal(publicCardPath('card-id', 'atelier-test'), '/atelier-test');
+  assert.equal(publicCardPath('card-id', 'soraprint'), '/soraprint');
   assert.equal(publicCardPath('card-id'), '/c/card-id');
   assert.equal(publicCardPath('card-id', '../admin'), '/c/card-id');
 });

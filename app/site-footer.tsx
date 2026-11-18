@@ -1,6 +1,5 @@
 'use client';
 import Pwa from './pwa';
-import GroupBrand from './group-brand';
 import { WhatsAppIcon } from './card-helpers';
 
 export default function SiteFooter({ ar, className = '' }: { ar: boolean; className?: string }) {
@@ -9,7 +8,7 @@ export default function SiteFooter({ ar, className = '' }: { ar: boolean; classN
     <footer className={['site-footer', className].filter(Boolean).join(' ')}>
       <div>
         <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-          <GroupBrand division="Connect" />
+          Sora<span>Link</span>
         </a>
         <p>{t('Votre activité, à portée de main.', 'النشاط ديالك، قريب ليك.')}</p>
         <span>{t('Oujda · Maroc', 'وجدة · المغرب')}</span>
@@ -39,7 +38,7 @@ export default function SiteFooter({ ar, className = '' }: { ar: boolean; classN
         <a href={'/confidentialite?lang=' + (ar ? 'ar' : 'fr')}>
           {t('Confidentialité', 'الخصوصية')}
         </a>
-        <a href={'/?offre=1&lang=' + (ar ? 'ar' : 'fr') + '#tarifs'}>
+        <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#tarifs'}>
           {t('Offres et renouvellement', 'العروض والتجديد')}
         </a>
         <Pwa ar={ar} />

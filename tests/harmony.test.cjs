@@ -47,7 +47,7 @@ function contrast(a, b) {
   const [hi, lo] = [luminance(a), luminance(b)].sort((a, b) => b - a);
   return (hi + 0.05) / (lo + 0.05);
 }
-test('platform body tokens exceed AAA text and controls meet AA contrast', () => {
+test('platform foreground tokens exceed AAA text and AA input boundary contrast', () => {
   const css = fs.readFileSync('app/tokens.css', 'utf8');
   const [light, dark] = css.split("html[data-theme='dark']");
   const token = (source, name) => source.match(new RegExp(`--${name}: (#[0-9a-f]{6})`))[1];
@@ -56,7 +56,7 @@ test('platform body tokens exceed AAA text and controls meet AA contrast', () =>
     assert(contrast(token(light, fg), lightSurface) >= 7, fg);
   const darkSurface = token(light, 'brand-slate');
   for (const fg of ['ink', 'muted']) assert(contrast(token(dark, fg), darkSurface) >= 7, fg);
-  assert(contrast(token(light, 'brand-on-accent'), token(light, 'brand-accent')) >= 4.5);
+  assert(contrast(token(light, 'brand-charcoal'), token(light, 'brand-orange')) >= 7);
   assert(contrast(token(light, 'brand-input-border'), lightSurface) >= 3);
   assert(contrast(token(dark, 'brand-input-border'), darkSurface) >= 3);
 });

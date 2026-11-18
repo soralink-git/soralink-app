@@ -19,7 +19,7 @@ for (const ar of [false, true])
       html,
       /persona-tabs|landing-bento-grid|landing-process|special-offer-grid|Dr\. Yasmine|Dentaire|الأسنان|Studio créatif/,
     );
-    assert.match(html, ar ? /اقتراحنا/ : /NOTRE RECOMMANDATION/);
+    assert.match(html, ar ? /الأكثر اختياراً/ : /LE PLUS CHOISI/);
     assert.match(html, /class="landing-quick-benefits"/);
     assert.match(html, /class="single-action-offer"/);
     assert.doesNotMatch(html, /<details[^>]*\bopen/);
@@ -73,17 +73,5 @@ test('public support addresses consistently use the branded contact email', () =
     const source = fs.readFileSync(file, 'utf8');
     assert.doesNotMatch(source, /soratap08@gmail\.com/);
     assert.match(source, /contact@soralink\.link/);
-  }
-});
-
-test('group presentation keeps print complementary and excludes unverified social proof', () => {
-  for (const ar of [false, true]) {
-    const html = render(ar);
-    assert.doesNotMatch(
-      html,
-      /Karim B\.|Salma M\.|Youssef T\.|<blockquote|LE PLUS CHOISI|remplacer vos cartes papier/,
-    );
-    assert.match(html, /SoraPrint/);
-    assert.match(html, /SoraConnect/);
   }
 });

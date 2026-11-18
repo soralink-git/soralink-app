@@ -2,7 +2,6 @@
 import { Globe, Users } from 'lucide-react';
 import { accountPath } from './lib/journey-links';
 import ThemeToggle from './theme-toggle';
-import GroupBrand from './group-brand';
 
 export default function SiteHeader({
   ar,
@@ -34,7 +33,17 @@ export default function SiteHeader({
   return (
     <header>
       <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-        <GroupBrand division="Connect" />
+        <span className="brand-icon">
+          <svg width="25" height="25" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path
+              d="M23 17h-5a10 10 0 0 0-10 10v10a10 10 0 0 0 10 10h11M41 17h5a10 10 0 0 1 10 10v10a10 10 0 0 1-10 10H35M24 38l16-12"
+              stroke="currentColor"
+              strokeWidth="6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+        Sora<span>Link</span>
       </a>
       {view === 'home' && (
         <nav aria-label={t('Navigation principale', 'التنقل الرئيسي')}>
@@ -48,7 +57,7 @@ export default function SiteHeader({
               href={
                 anchor === 'exemples'
                   ? '/demo' + (ar ? '?lang=ar' : '')
-                  : '/?offre=1&lang=' + (ar ? 'ar' : 'fr') + '#' + anchor
+                  : '/?lang=' + (ar ? 'ar' : 'fr') + '#' + anchor
               }
               key={anchor}
             >

@@ -1,9 +1,6 @@
 // Keep root application paths unavailable to customer profiles, including future essentials.
 const reserved = new Set([
   'admin',
-  'groupe',
-  'soraprint',
-  'soraconnect',
   'api',
   'auth',
   'c',
