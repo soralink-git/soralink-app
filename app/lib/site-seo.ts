@@ -4,9 +4,9 @@ export const SITE_URL = 'https://soralink.link';
 export const HOME_FR = SITE_URL + '/';
 export const HOME_AR = SITE_URL + '/?lang=ar';
 export const HOME_LANGUAGES = { fr: HOME_FR, ar: HOME_AR, 'x-default': HOME_FR };
-export const HOME_TITLE = 'SoraLink — Carte de visite digitale NFC au Maroc';
+export const HOME_TITLE = 'Groupe SoraLink — Impression et solutions numériques au Maroc';
 export const HOME_DESCRIPTION =
-  'Créez votre carte de visite digitale au Maroc : coordonnées, catalogue, photos et rendez-vous dans un seul lien. Partagez par carte NFC, QR code ou WhatsApp.';
+  'SoraLink réunit SoraPrint et SoraConnect à Oujda : impression, personnalisation, cartes digitales et solutions numériques au Maroc.';
 
 export function homeMetadata(params: Record<string, string | string[] | undefined>): Metadata {
   const ar = params.lang === 'ar';
@@ -15,9 +15,9 @@ export function homeMetadata(params: Record<string, string | string[] | undefine
       title: ar ? 'الحساب ديالي — SoraLink' : 'Mon espace — SoraLink',
       robots: { index: false, follow: false },
     };
-  const title = ar ? 'SoraLink — كارط ڤيزيت رقمية NFC فالمغرب' : HOME_TITLE;
+  const title = ar ? 'مجموعة SoraLink — الطباعة والحلول الرقمية فالمغرب' : HOME_TITLE;
   const description = ar
-    ? 'صايب الكارط الرقمية ديالك فالمغرب: معلومات التواصل، الكاتالوگ، التصاور والمواعيد فرابط واحد. شاركها بكارط NFC، كود QR ولا واتساب.'
+    ? 'مجموعة SoraLink كتجمع SoraPrint وSoraConnect فوجدة: الطباعة، المنتوجات الشخصية والبطاقات والحلول الرقمية فالمغرب.'
     : HOME_DESCRIPTION;
   const url = ar ? HOME_AR : HOME_FR;
   return {
@@ -35,12 +35,12 @@ export function homeMetadata(params: Record<string, string | string[] | undefine
       alternateLocale: [ar ? 'fr_MA' : 'ar_MA'],
       images: [
         {
-          url: SITE_URL + '/og-soralink.png',
+          url: SITE_URL + '/brand/soralink-social.png',
           width: 1200,
           height: 630,
           alt: ar
-            ? 'SoraLink — الكارط الرقمية ديالك'
-            : 'SoraLink — carte de visite digitale NFC et QR',
+            ? 'مجموعة SoraLink — SoraPrint وSoraConnect'
+            : 'Groupe SoraLink — SoraPrint et SoraConnect',
         },
       ],
     },
@@ -48,7 +48,7 @@ export function homeMetadata(params: Record<string, string | string[] | undefine
       card: 'summary_large_image',
       title,
       description,
-      images: [SITE_URL + '/og-soralink.png'],
+      images: [SITE_URL + '/brand/soralink-social.png'],
     },
   };
 }

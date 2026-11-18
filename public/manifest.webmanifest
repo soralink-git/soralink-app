@@ -1,10 +1,10 @@
 {
-  "name": "SoraLink",
-  "short_name": "SoraLink",
+  "name": "SoraConnect",
+  "short_name": "SoraConnect",
   "start_url": "/?app=1&lang=fr",
   "display": "standalone",
-  "background_color": "#09090b",
-  "theme_color": "#09090b",
+  "background_color": "#171717",
+  "theme_color": "#171717",
   "icons": [
     {
       "src": "/icons/icon-192.png",
@@ -28,6 +28,6 @@
   "id": "/",
   "scope": "/",
   "lang": "fr",
-  "description": "Votre carte digitale, catalogue et rendez-vous SoraLink.",
+  "description": "Votre carte digitale, catalogue et rendez-vous SoraConnect.",
   "dir": "ltr"
 }

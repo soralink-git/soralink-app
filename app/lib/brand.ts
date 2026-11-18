@@ -1,8 +1,8 @@
 // Platform identity. Customer-selected card colors are stored separately.
 export const BRAND = {
-  orange: '#ff9125',
-  vermilion: '#ef552c',
-  charcoal: '#09090b',
+  orange: '#f47721',
+  vermilion: '#d93636',
+  charcoal: '#171717',
   slate: '#18181b',
-  white: '#fafafa',
+  white: '#ffffff',
 } as const;

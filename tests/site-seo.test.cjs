@@ -9,7 +9,7 @@ test('public landing canonical strips tracking and offer parameters and links bo
   assert.equal(metadata.alternates.canonical, 'https://soralink.link/');
   assert.equal(metadata.alternates.languages.ar, 'https://soralink.link/?lang=ar');
   assert.equal(metadata.robots.index, true);
-  assert.match(metadata.title, /NFC au Maroc/);
+  assert.match(metadata.title, /solutions numériques au Maroc/);
   assert.equal(metadata.openGraph.url, metadata.alternates.canonical);
   assert.equal(metadata.openGraph.locale, 'fr_MA');
 });

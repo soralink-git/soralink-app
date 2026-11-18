@@ -1,9 +1,10 @@
 'use client';
 import ThemeToggle from '../theme-toggle';
+import GroupBrand from '../group-brand';
 import { useState, useEffect, useId, useRef } from 'react';
 import { REMEMBERED_EMAIL_KEY } from '../lib/idle-policy';
 import { workspacePath, selectedPlan, offerLabel } from '../lib/journey-links';
-import { Nfc, Globe, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { Globe, Eye, EyeOff, CheckCircle } from 'lucide-react';
 export default function Auth({
   administrator = false,
   reset = false,
@@ -142,10 +143,7 @@ export default function Auth({
     <div className="site" dir={ar ? 'rtl' : 'ltr'}>
       <header>
         <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-          <span className="brand-icon">
-            <Nfc size={23} />
-          </span>
-          Sora<span>Link</span>
+          <GroupBrand division="Connect" />
         </a>
         <div className="header-actions">
           <ThemeToggle ar={ar} />
