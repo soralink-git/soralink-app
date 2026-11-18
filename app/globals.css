@@ -4724,3 +4724,21 @@ header nav {
     font-size: 13px;
   }
 }
+
+/* Shared group mark in existing platform chrome. */
+.group-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: Roboto, Cairo, sans-serif;
+  font-weight: 800;
+  letter-spacing: -1px;
+  white-space: nowrap;
+}
+.group-brand svg {
+  flex: none;
+}
+
+.brand .group-brand > span {
+  color: inherit;
+}

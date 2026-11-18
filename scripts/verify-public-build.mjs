@@ -114,8 +114,27 @@ try {
     '/?app=1',
     '/conditions?lang=ar',
     '/confidentialite?lang=fr',
+    '/soraprint',
+    '/soraconnect',
+    '/soraprint?lang=ar',
+    '/soraconnect?lang=ar',
   ])
     assert.equal((await mf.dispatchFetch('https://soralink.link' + page)).status, 200, page);
+  for (const [route, name] of [
+    ['/', 'SoraPrint'],
+    ['/soraprint', 'SoraPrint'],
+    ['/soraconnect', 'SoraConnect'],
+  ]) {
+    const response = await mf.dispatchFetch('https://soralink.link' + route);
+    const html = await response.text();
+    assert.equal(response.status, 200);
+    assert(html.includes(name));
+    assert(html.includes('id="main-content"'));
+    assert(html.includes('/?app=1'));
+  }
+  const oldOffers = await mf.dispatchFetch('https://soralink.link/?offre=1');
+  assert.equal(oldOffers.status, 200);
+  assert((await oldOffers.text()).includes('tarifs'));
   const health = await mf.dispatchFetch('https://soralink.link/api/health');
   assert.equal(health.status, 200);
   const healthBody = await health.json();
@@ -153,8 +172,12 @@ try {
   }
   // Test the emitted HTML and metadata routes through the packaged Worker, not just TS objects.
   for (const [query, canonical, title] of [
-    ['?lang=fr&offer=pack', 'https://soralink.link/', 'Carte de visite digitale NFC au Maroc'],
-    ['?lang=ar', 'https://soralink.link/?lang=ar', 'كارط ڤيزيت رقمية NFC فالمغرب'],
+    [
+      '?lang=fr&offer=pack',
+      'https://soralink.link/',
+      'Impression et solutions numériques au Maroc',
+    ],
+    ['?lang=ar', 'https://soralink.link/?lang=ar', 'الطباعة والحلول الرقمية فالمغرب'],
   ]) {
     const result = await mf.dispatchFetch('https://soralink.link/' + query);
     assert.equal(result.status, 200);
@@ -221,7 +244,7 @@ try {
   assert.equal(sitemap.status, 200);
   assert.match(sitemap.headers.get('Content-Type'), /xml/);
   const xml = await sitemap.text();
-  assert.equal((xml.match(/<loc>/g) || []).length, 4);
+  assert.equal((xml.match(/<loc>/g) || []).length, 8);
   assert(xml.includes('<loc>https://soralink.link/</loc>'));
   assert(xml.includes('<loc>https://soralink.link/?lang=ar</loc>'));
   assert(xml.includes('<loc>https://soralink.link/conditions</loc>'));

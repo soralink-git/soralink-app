@@ -31,22 +31,22 @@ export async function generateMetadata(): Promise<Metadata> {
       description: HOME_DESCRIPTION,
       images: [
         {
-          url: new URL('/og-soralink.png', base).href,
+          url: new URL('/brand/soralink-social.png', base).href,
           width: 1200,
           height: 630,
-          alt: 'SoraLink — carte digitale NFC et QR',
+          alt: 'Groupe SoraLink — SoraPrint et SoraConnect',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
       title: 'SoraLink',
-      images: [new URL('/og-soralink.png', base).href],
+      images: [new URL('/brand/soralink-social.png', base).href],
     },
     manifest: '/manifest.webmanifest',
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
-    appleWebApp: { capable: true, title: 'SoraLink', statusBarStyle: 'black-translucent' },
+    appleWebApp: { capable: true, title: 'SoraConnect', statusBarStyle: 'black-translucent' },
     icons: {
       apple: '/icons/apple-touch-icon.png',
       icon: '/favicon.svg',

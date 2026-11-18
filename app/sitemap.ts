@@ -6,6 +6,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: HOME_FR },
     { url: HOME_AR },
+    { url: SITE_URL + '/soraprint' },
+    { url: SITE_URL + '/soraprint?lang=ar' },
+    { url: SITE_URL + '/soraconnect' },
+    { url: SITE_URL + '/soraconnect?lang=ar' },
     { url: SITE_URL + '/conditions' },
     { url: SITE_URL + '/confidentialite' },
   ];

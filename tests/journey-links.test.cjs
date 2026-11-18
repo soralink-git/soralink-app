@@ -101,7 +101,14 @@ test('home and workspace have separate state identities while editor tab and lan
       .Children.toArray(root.props.children)
       .find((child) => child.props && 'workspaceMode' in child.props);
   };
-  const home = await page({ lang: 'fr' });
+  const home = await page({ lang: 'fr', offre: '1' });
+  const group = await Page({ searchParams: Promise.resolve({ lang: 'fr' }) });
+  assert.equal(
+    req('react')
+      .Children.toArray(group.props.children)
+      .filter((child) => child.props && 'workspaceMode' in child.props).length,
+    0,
+  );
   const workspace = await page({ app: '1', tab: 'photos', lang: 'fr' });
   assert.notEqual(home.key, workspace.key);
   assert.equal(workspace.key, (await page({ app: '1', tab: 'services', lang: 'ar' })).key);
@@ -138,7 +145,7 @@ test('home footer, sign-in and card brand links preserve the selected language',
     const home = renderToStaticMarkup(React.createElement(App, { initialArabic: ar }));
     assert.match(home, new RegExp('href="/conditions\\?lang=' + lang + '"'));
     assert.match(home, new RegExp('href="/confidentialite\\?lang=' + lang + '"'));
-    assert.match(home, new RegExp('href="/\\?lang=' + lang + '#tarifs"'));
+    assert.match(home, new RegExp('href="/\\?offre=1&amp;lang=' + lang + '#tarifs"'));
     const auth = renderToStaticMarkup(React.createElement(Auth, { initialArabic: ar }));
     assert.match(auth, new RegExp('href="/\\?lang=' + lang + '"'));
     const card = renderToStaticMarkup(

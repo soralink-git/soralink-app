@@ -1,4 +1,6 @@
 import App from './ui';
+import GroupSite from './group-site';
+import GroupLegacyLinks from './group-legacy-links';
 import { selectedPlan } from './lib/journey-links';
 import { manifestPath } from './lib/pwa-manifest';
 import { homeMetadata, websiteStructuredData } from './lib/site-seo';
@@ -16,6 +18,22 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const params = await searchParams;
+  if (
+    params.app === undefined &&
+    params.tab === undefined &&
+    params.offer === undefined &&
+    params.offre === undefined
+  )
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }}
+        />
+        <GroupLegacyLinks />
+        <GroupSite ar={params.lang === 'ar'} />
+      </>
+    );
   const initialTab = typeof params.tab === 'string' ? params.tab : undefined;
   const workspaceMode = params.app !== undefined || params.tab !== undefined;
   return (
