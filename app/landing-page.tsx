@@ -7,10 +7,12 @@ import {
   ShoppingBag,
   RefreshCw,
   Check,
+  X,
   UtensilsCrossed,
   Store,
   Briefcase,
   TrendingUp,
+  Star,
 } from 'lucide-react';
 import { WhatsAppIcon } from './card-helpers';
 
@@ -27,7 +29,12 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
               'بطاقة NFC + صفحة رقمية · بدون اشتراك إجباري',
             )}
           </span>
-          <h1>{t('Votre activité, facile à partager.', 'النشاط ديالك، ساهل المشاركة.')}</h1>
+          <h1>
+            {t(
+              'Ne perdez plus jamais un client après un premier contact.',
+              'ما تفلت حتى زبون من بعد أول تواصل.',
+            )}
+          </h1>
           <p>
             {t(
               'Votre activité, à portée de main : partagez vos coordonnées, votre catalogue et votre localisation en 1 seconde par NFC ou QR code. Vos clients enregistrent votre contact et commandent sur WhatsApp sans installer d’application.',
@@ -60,7 +67,7 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
           <div className="landing-reassurance" role="note" aria-label="Garanties SoraLink">
             <span className="reassurance-item">
               <span className="check-badge">✓</span>
-              {t('Préparation selon votre projet', 'التحضير حسب المشروع ديالكم')}
+              {t('Prêt en 24h', 'جاهزة فـ 24 ساعة')}
             </span>
             <span className="sep" aria-hidden="true">
               ·
@@ -74,7 +81,7 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
             </span>
             <span className="reassurance-item">
               <span className="check-badge">✓</span>
-              {t('Livraison à confirmer à la commande', 'التوصيل كيتأكد وقت الطلب')}
+              {t('Livraison partout au Maroc', 'توصيل لجميع مدن المغرب')}
             </span>
           </div>
         </div>
@@ -131,61 +138,120 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
         })}
       </section>
 
+      {/* Section B: Comparatif Carte Papier vs SoraLink */}
       <section className="landing-comparison" id="comparatif">
         <div className="landing-heading">
-          <span className="landing-kicker">{t('MIEUX ENSEMBLE', 'أحسن مجموعين')}</span>
+          <span className="landing-kicker">
+            <span aria-hidden="true" />
+            {t('LE COMPARATIF', 'مقارنة مباشرة')}
+          </span>
           <h2>
             {t(
-              'Votre carte papier et votre profil digital se complètent.',
-              'الكارط الورقية والصفحة الرقمية كيكملو بعضياتهم.',
+              'Pourquoi remplacer vos cartes papier dès aujourd’hui ?',
+              'علاش تبدّل الكارط الورقية من اليوم؟',
             )}
           </h2>
           <p>
             {t(
-              'SoraPrint crée le support que vous remettez. SoraConnect prolonge le contact avec une page accessible par QR code ou NFC.',
-              'SoraPrint كيصايب المطبوع اللي كتعطيو. SoraConnect كيكمل التواصل بصفحة كتتحل عبر QR أو NFC.',
+              'La carte de visite papier finit trop souvent oubliée. Découvrez l’impact immédiat du digital pour votre activité.',
+              'الكارط الورقية كتمشي بزاف دالمرات فالقمامة ولا كتنسى. شوف الفرق الحقيقي اللي كيديرو الرقمي للنشاط ديالك.',
             )}
           </p>
         </div>
         <div className="comparison-table">
-          {[
-            [
-              'SoraPrint',
-              'Un support à remettre en main propre.',
-              'مطبوع كتعطيوه مباشرة.',
-              'Une présence physique sur votre comptoir ou lors d’une rencontre.',
-              'حضور ملموس فوق الكونطوار ولا فشي لقاء.',
-              'Une création à préparer selon votre projet et votre quantité.',
-              'تصميم كيتوجد حسب المشروع والكمية ديالكم.',
-            ],
-            [
-              'SoraConnect',
-              'Des coordonnées et des liens dans une page.',
-              'معلومات التواصل والروابط فصفحة وحدة.',
-              'Un contenu modifiable pendant votre abonnement.',
-              'محتوى قابل للتعديل خلال الاشتراك.',
-              'Un catalogue et des demandes selon les fonctions de votre pack.',
-              'كاتالوغ وطلبات حسب وظائف الباقة ديالكم.',
-            ],
-          ].map(([name, f, a, g, b, h, c]) => (
-            <div className="comparison-col" key={name}>
-              <div className="col-header">
-                <h3>{name}</h3>
-              </div>
-              <ul>
-                {[
-                  [f, a],
-                  [g, b],
-                  [h, c],
-                ].map(([fr, ar]) => (
-                  <li key={fr}>
-                    <Check size={18} aria-hidden="true" />
-                    <span>{t(fr, ar)}</span>
-                  </li>
-                ))}
-              </ul>
+          <div className="comparison-col paper-col">
+            <div className="col-header">
+              <span className="col-badge bad" aria-hidden="true">
+                ✕
+              </span>
+              <h3>{t('Carte papier traditionnelle', 'الكارط الورقية التقليدية')}</h3>
             </div>
-          ))}
+            <ul>
+              <li>
+                <X size={18} className="icon-bad" aria-hidden="true" />
+                <span>
+                  {t(
+                    'Finie au fond d’une poche ou à la poubelle.',
+                    'كتنسى فالجيب ولا كتلاح فالقمامة.',
+                  )}
+                </span>
+              </li>
+              <li>
+                <X size={18} className="icon-bad" aria-hidden="true" />
+                <span>
+                  {t(
+                    'Numéro ou adresse modifiés = tout réimprimer.',
+                    'تبدلات النمرة ولا العنوان = خاص تعاود تطبع كلشي.',
+                  )}
+                </span>
+              </li>
+              <li>
+                <X size={18} className="icon-bad" aria-hidden="true" />
+                <span>
+                  {t(
+                    'Aucun aperçu de vos prix ou réalisations.',
+                    'حتى فكرة على الأثمنة، التصاور ولا الخدمات ديالك.',
+                  )}
+                </span>
+              </li>
+              <li>
+                <X size={18} className="icon-bad" aria-hidden="true" />
+                <span>
+                  {t('Aucun suivi de vos prospects.', 'حتى متابعة للزبناء المهتمين ولا فرص البيع.')}
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div className="comparison-col soralink-col">
+            <div className="col-header">
+              <span className="col-badge good" aria-hidden="true">
+                ✓
+              </span>
+              <h3>{t('SoraLink NFC & Digitale', 'SoraLink الذكية والرقمية')}</h3>
+            </div>
+            <ul>
+              <li>
+                <Check size={18} className="icon-good" aria-hidden="true" />
+                <span>
+                  <strong>{t('Enregistrée en 1 clic', 'كتسجل فكليك واحد')}</strong>{' '}
+                  {t('dans le répertoire du client (vCard).', 'فدليل الهاتف ديال الزبون (vCard).')}
+                </span>
+              </li>
+              <li>
+                <Check size={18} className="icon-good" aria-hidden="true" />
+                <span>
+                  <strong>
+                    {t(
+                      'Informations modifiables pendant l’abonnement',
+                      'المعلومات قابلة للتعديل طول مدة الاشتراك',
+                    )}
+                  </strong>{' '}
+                  {t('sans changer de carte.', 'بلا ما تبدل الكارط.')}
+                </span>
+              </li>
+              <li>
+                <Check size={18} className="icon-good" aria-hidden="true" />
+                <span>
+                  <strong>
+                    {t(
+                      'Catalogue produits, PDF et bouton WhatsApp',
+                      'كاتالوج منتجات، PDF وزر WhatsApp',
+                    )}
+                  </strong>{' '}
+                  {t('intégrés.', 'مدمجين.')}
+                </span>
+              </li>
+              <li>
+                <Check size={18} className="icon-good" aria-hidden="true" />
+                <span>
+                  <strong>
+                    {t('Demandes de devis et rendez-vous', 'طلبات الأثمنة وحجز المواعيد')}
+                  </strong>{' '}
+                  {t('centralisés.', 'مجموعة فمكان واحد.')}
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -212,8 +278,8 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
             <h3>{t('Restauration & Cafés', 'المطاعم والمقاهي')}</h3>
             <p>
               {t(
-                'Menu digital sur table et lien vers votre page d’avis Google.',
-                'مينيو رقمي فوق الطابلة ورابط لصفحة التقييمات ديالكم فـ Google.',
+                'Menu digital instantané sur table + lien direct vers vos avis Google 5 étoiles.',
+                'مينيو رقمي فوري فوق الطابلة + رابط مباشر لتقييمات Google 5 نجوم.',
               )}
             </p>
           </article>
@@ -276,6 +342,80 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
         </div>
 
         <OfferGrid ar={ar} auth={auth} />
+      </section>
+
+      {/* Section E: Preuve Sociale & Réassurance Maroc */}
+      <section className="landing-testimonials" id="temoignages">
+        <div className="landing-heading">
+          <span className="landing-kicker">
+            <span aria-hidden="true" />
+            {t('ILS TÉMOIGNENT', 'آراء زبنائنا')}
+          </span>
+          <h2>{t('Ils font confiance à SoraLink au Maroc', 'كيثيقو فـ SoraLink فالمغرب')}</h2>
+          <p>
+            {t(
+              'Des professionnels à Oujda, Casablanca, Fès et partout au Royaume boostent leur visibilité.',
+              'محترفون من وجدة، الدار البيضاء، فاس وجميع مدن المغرب كيطورو نشاطهم مع SoraLink.',
+            )}
+          </p>
+        </div>
+        <div className="testimonials-grid">
+          <article className="testimonial-card">
+            <div className="stars" aria-label="5 étoiles">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={16} fill="currentColor" />
+              ))}
+            </div>
+            <blockquote>
+              {t(
+                '« Nos clients scannent le chevalet sur table pour voir le menu du jour et nous laissent un avis Google 5 étoiles en 3 secondes. Notre note Google a explosé. »',
+                '« الزبناء كيمسحو الكود فوق الطابلة كيشوفو المينيو وكيخليو لينا تقييم 5 نجوم فـ Google فـ 3 ثواني. التقييم ديالنا طلع بزاف. »',
+              )}
+            </blockquote>
+            <div className="testimonial-author">
+              <strong>{t('Karim B.', 'كريم ب.')}</strong>
+              <span>{t('Gérant de café & restaurant · Oujda', 'مسير مقهى ومطعم · وجدة')}</span>
+            </div>
+          </article>
+
+          <article className="testimonial-card">
+            <div className="stars" aria-label="5 étoiles">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={16} fill="currentColor" />
+              ))}
+            </div>
+            <blockquote>
+              {t(
+                '« Fini les cartes papier qui se perdent. Mes patients enregistrent directement le numéro du cabinet, la localisation Maps et demandent un rendez-vous sans friction. »',
+                '« تهنيت من الكارط الورقية اللي كتضيع. المرضى كيسجلو نمرة الكابيني مباشرة، كيشوفو الموقع فـ Maps وكيحجزو مواعيدهم بكل سهولة. »',
+              )}
+            </blockquote>
+            <div className="testimonial-author">
+              <strong>{t('Dr. Salma M.', 'د. سلمى م.')}</strong>
+              <span>{t('Cabinet médical · Casablanca', 'عيادة طبية · الدار البيضاء')}</span>
+            </div>
+          </article>
+
+          <article className="testimonial-card">
+            <div className="stars" aria-label="5 étoiles">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} size={16} fill="currentColor" />
+              ))}
+            </div>
+            <blockquote>
+              {t(
+                '« Le catalogue sur WhatsApp avec les prix et photos a transformé mes ventes. Les clients choisissent le modèle et m’écrivent directement pour commander. »',
+                '« الكاتالوج فـ WhatsApp بالصور والأثمنة بدّل ليا طريقة البيع. الزبون كيختار الموديل وكيصيفط ليا ميساج نيشان باش يطلب. »',
+              )}
+            </blockquote>
+            <div className="testimonial-author">
+              <strong>{t('Youssef T.', 'يوسف ت.')}</strong>
+              <span>
+                {t('Boutique prêt-à-porter & Maroquinerie · Fès', 'محل ملابس وأحذية · فاس')}
+              </span>
+            </div>
+          </article>
+        </div>
       </section>
 
       <section className="landing-faq" id="faq">
