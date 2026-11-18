@@ -20,7 +20,7 @@ export async function generateMetadata({
       description: ar
         ? 'طباعة ومنتوجات شخصية فوجدة، المغرب. عرض ثمن حسب المشروع.'
         : 'Impression et personnalisation à Oujda, Maroc. Votre projet sur devis.',
-      images: ['/brand/soraprint-social.png'],
+      images: ['/brand/soraprint-social.png?v=reference-02'],
     },
   };
 }

@@ -4742,3 +4742,25 @@ header nav {
 .brand .group-brand > span {
   color: inherit;
 }
+
+/* Artwork comes from the user-selected board; CSS must not redraw the wordmark. */
+.group-brand .group-logo {
+  width: auto;
+  height: 49px;
+  max-width: 230px;
+  object-fit: contain;
+}
+.group-logo-dark {
+  display: none;
+}
+html[data-theme='dark'] .group-logo-light {
+  display: none;
+}
+html[data-theme='dark'] .group-logo-dark {
+  display: block;
+}
+@media (max-width: 640px) {
+  .group-brand .group-logo {
+    height: 36px;
+  }
+}

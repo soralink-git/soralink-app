@@ -31,7 +31,7 @@ for (const [file, width] of [
 for (const name of ['soralink', 'soraprint', 'soraconnect']) {
   const master = await readFile('public/brand/' + name + '-color.svg', 'utf8');
   const logo = master
-    .replace(/<svg[^>]*>/, '<g transform="translate(80 190) scale(2.3)">')
+    .replace(/<svg[^>]*>/, '<g transform="translate(80 190) scale(1.6)">')
     .replace('</svg>', '</g>');
   const accent = { soralink: BRAND.orange, soraprint: '#f5c928', soraconnect: BRAND.vermilion }[
     name

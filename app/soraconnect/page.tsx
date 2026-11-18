@@ -20,7 +20,7 @@ export async function generateMetadata({
       description: ar
         ? 'بطاقات رقمية، QR، NFC وحلول رقمية فالمغرب.'
         : 'Cartes digitales, QR, NFC et solutions numériques au Maroc.',
-      images: ['/brand/soraconnect-social.png'],
+      images: ['/brand/soraconnect-social.png?v=reference-02'],
     },
   };
 }
