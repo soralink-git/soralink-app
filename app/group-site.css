@@ -409,3 +409,9 @@
     flex-direction: column;
   }
 }
+
+.group-site h1,
+.group-site h2,
+.group-site h3 {
+  font-family: Roboto, Cairo, sans-serif;
+}

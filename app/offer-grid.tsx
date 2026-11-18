@@ -75,9 +75,7 @@ export default function OfferGrid({ ar, auth }: { ar: boolean; auth: boolean }) 
               {isFeatured && (
                 <div className="pricing-badge" aria-label="Pack recommandé">
                   <Sparkles size={14} aria-hidden="true" />
-                  <span>
-                    {t('★ LE PLUS CHOISI PAR LES PROS', '★ الأكثر اختياراً من المحترفين')}
-                  </span>
+                  <span>{t('★ NOTRE RECOMMANDATION', '★ اقتراحنا')}</span>
                 </div>
               )}
               <span className="eyebrow">

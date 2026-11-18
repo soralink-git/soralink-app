@@ -15,3 +15,7 @@ Pour restaurer : insérer d’abord la ligne profiles (le trigger réinsère car
 ## Retour arrière de la vitrine
 
 Revenir au commit de production précédent dbc6f4bdf91e1385aaf346709fc018ab5543ffd7 remet l’ancienne présentation. La suppression de carte est une opération distincte de la publication et ne s’annule pas par rollback du code.
+
+## Cohérence éditoriale
+
+La présentation historique de la plateforme a été révisée : suppression des témoignages non vérifiés, remplacement du comparatif dévalorisant le papier par la complémentarité des deux divisions, retrait de la promesse de préparation en 24 h et du badge de popularité sans preuve. Les fonctions, tarifs et liens de commande sont conservés.
