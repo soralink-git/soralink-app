@@ -1,0 +1,199 @@
+.group-print .print-hero-media {
+  position: absolute;
+  inset-inline-end: 5%;
+  top: 145px;
+  width: 35%;
+  margin: 0;
+}
+.print-hero-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 18px;
+}
+.print-hero-media figcaption {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #555;
+  line-height: 1.6;
+}
+.print-catalogue h2,
+.print-quote-process h2 {
+  margin: 22px 0;
+}
+.print-section-intro {
+  max-width: 720px;
+  font-size: 18px;
+  line-height: 1.8;
+}
+.print-reference-notice {
+  max-width: 900px;
+  padding: 18px 22px;
+  margin: 26px 0 34px !important;
+  background: #fff9df;
+  border-inline-start: 4px solid #f5c928;
+  border-radius: 0 12px 12px 0;
+  color: #444;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.print-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+}
+.print-product-card {
+  border: 1px solid #e1ded7;
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  scroll-margin-top: 24px;
+}
+.print-product-card figure {
+  position: relative;
+  margin: 0;
+  background: #f4f3ef;
+}
+.print-product-card figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3/2;
+  object-fit: cover;
+}
+.print-product-card figcaption {
+  position: absolute;
+  inset-inline-start: 16px;
+  bottom: 16px;
+  padding: 7px 12px;
+  background: #ffffffed;
+  border-radius: 100px;
+  font-size: 11px;
+  color: #333;
+}
+.print-product-copy {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+.print-product-reference {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+.print-product-reference span:last-child {
+  padding: 6px 10px;
+  border-radius: 100px;
+  background: #fff9df;
+}
+.print-product-card h3 {
+  margin: 22px 0 14px;
+  font-size: 30px;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+}
+.print-product-card p,
+.print-product-card li {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #444;
+}
+.print-product-card ul {
+  margin: 20px 0 26px;
+  padding-inline-start: 20px;
+}
+.print-product-card .group-button {
+  margin-top: auto;
+}
+.print-process-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 36px;
+  margin-top: 36px;
+}
+.print-process-grid article > span {
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 4px solid #f5c928;
+  padding-bottom: 7px;
+}
+.print-process-grid h3 {
+  margin: 27px 0 16px;
+  font-size: 24px;
+  line-height: 1.3;
+}
+.print-process-grid p {
+  color: #444;
+  line-height: 1.8;
+}
+.print-digital-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  background: #f4f3ef;
+}
+.print-digital-link h2 {
+  margin: 24px 0;
+  max-width: 750px;
+}
+.print-digital-link p {
+  max-width: 720px;
+  line-height: 1.8;
+}
+.print-digital-link .group-button {
+  flex-shrink: 0;
+}
+.group-print[dir='rtl'] .print-product-card h3 {
+  letter-spacing: 0;
+  line-height: 1.5;
+}
+@media (max-width: 1000px) {
+  .group-print .print-hero-media {
+    position: static;
+    width: 100%;
+    max-width: 720px;
+    margin: 34px 0 0;
+  }
+  .print-digital-link {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (max-width: 640px) {
+  .print-product-grid,
+  .print-process-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .print-product-copy {
+    padding: 23px;
+  }
+  .print-product-card h3 {
+    font-size: 27px;
+  }
+  .print-section-intro {
+    font-size: 16px;
+  }
+  .print-reference-notice {
+    padding: 16px;
+    font-size: 13px;
+  }
+  .print-process-grid article {
+    padding-bottom: 20px;
+  }
+  .group-print .print-hero-media {
+    margin-top: 30px;
+  }
+  .print-product-card figcaption {
+    inset-inline-start: 12px;
+    bottom: 12px;
+  }
+}
