@@ -1,6 +1,6 @@
 # Groupe SoraLink — charte et cadre d’exploitation
 
-Version 1.0 — 18 novembre 2026. Direction choisie par le porteur du projet : piste 02, « Le S continu ».
+Version 1.1 — 18 novembre 2026. Direction choisie par le porteur du projet : piste 02, « Le S continu ».
 
 ## 1. Architecture de marque
 
@@ -14,9 +14,9 @@ Signature de rattachement des divisions : « Une division du Groupe SoraLink ».
 
 Un seul symbole, un S continu à terminaisons arrondies. Un seul dessin pour les trois marques. Ne pas le retourner, l’étirer, modifier sa courbe selon la division ou ajouter une ombre, un volume ou un dégradé.
 
-Les fichiers SVG sont les masters de travail : texte converti en tracés pour les logos horizontaux, couleurs RGB en aplats, fond transparent sauf variante dark. Ils représentent la construction vectorielle du concept choisi ; la planche générée antérieure est une référence d’intention, pas le master de production.
+Les fichiers SVG sont les masters de travail : texte converti en tracés pour les logos horizontaux, couleurs RGB en aplats, fond transparent sauf variante dark. Ils reprennent les contours du symbole et du lettrage de la planche choisie par le porteur du projet. Le premier redessin a été retiré : ne pas le réutiliser. La partie « Sora » et le symbole sont identiques dans les trois marques. Les couleurs sont les aplats de la palette officielle.
 
-Construction : symbole de 64 × 68 unités ; épaisseur 13 unités ; espace symbole/nom 18 unités dans les exports ; même typographie et même taille nominale pour les trois noms. La largeur varie avec la longueur du nom, jamais par étirement. Respecter une zone libre d’au moins 13 unités autour du dessin.
+Construction : le symbole est conservé dans un cadre de 131 × 149 unités. Il comprend les deux contours et les espaces intérieurs visibles dans la planche choisie ; ne pas le remplacer par un trait à épaisseur constante. Le lettrage est en tracés, sans police de substitution. La largeur varie avec le suffixe, jamais par étirement. Respecter une zone libre d’au moins 26 unités autour du dessin.
 
 Usage : version horizontale en priorité. Symbole seul pour favicon et avatar. Ne pas utiliser le logo horizontal à une taille où le nom devient illisible ; passer au symbole seul. Seuil de travail : logo horizontal à partir de 140 px à l’écran ou 30 mm imprimés, à confirmer sur une épreuve réelle. Symbole seul à partir de 24 px ; à 16 px, contrôler le rendu dans le navigateur et simplifier l’icône dédiée si nécessaire.
 
@@ -36,7 +36,7 @@ Les valeurs RGB sont la référence numérique. Ne pas présenter une conversion
 
 ## 4. Typographie et langues
 
-Roboto est la famille commune latine : 400 pour les textes, 600–700 pour les actions et titres, 800 pour les noms de marque. Cairo accompagne les contenus arabes. Les marques latines restent composées de gauche à droite dans les pages arabes. Garder des hauteurs de ligne généreuses et ne pas appliquer un espacement latin négatif aux caractères arabes.
+Le lettrage des logos est celui de la planche choisie, conservé en tracés ; il ne doit pas être recomposé avec Roboto. Roboto reste la famille commune des interfaces et des textes : 400 pour les textes, 600–700 pour les actions et titres. Cairo accompagne les contenus arabes. Les marques latines restent composées de gauche à droite dans les pages arabes. Garder des hauteurs de ligne généreuses et ne pas appliquer un espacement latin négatif aux caractères arabes.
 
 Les polices ne sont pas incluses dans ce kit. Les logos exportés en tracés ne nécessitent aucune installation de police. Vérifier les licences à la source avant toute redistribution des fichiers de police.
 

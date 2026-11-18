@@ -415,3 +415,11 @@
 .group-site h3 {
   font-family: Roboto, Cairo, sans-serif;
 }
+
+/* Corporate pages have a light canvas even when the application uses dark mode. */
+html[data-theme] .group-site .group-logo-light {
+  display: block;
+}
+html[data-theme] .group-site .group-logo-dark {
+  display: none;
+}

@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: HOME_DESCRIPTION,
       images: [
         {
-          url: new URL('/brand/soralink-social.png', base).href,
+          url: new URL('/brand/soralink-social.png?v=reference-02', base).href,
           width: 1200,
           height: 630,
           alt: 'Groupe SoraLink — SoraPrint et SoraConnect',
@@ -41,16 +41,16 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: 'SoraLink',
-      images: [new URL('/brand/soralink-social.png', base).href],
+      images: [new URL('/brand/soralink-social.png?v=reference-02', base).href],
     },
     manifest: '/manifest.webmanifest',
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
     appleWebApp: { capable: true, title: 'SoraConnect', statusBarStyle: 'black-translucent' },
     icons: {
-      apple: '/icons/apple-touch-icon.png',
-      icon: '/favicon.svg',
-      shortcut: '/favicon.svg',
+      apple: '/icons/apple-touch-icon.png?v=reference-02',
+      icon: '/favicon.svg?v=reference-02',
+      shortcut: '/favicon.svg?v=reference-02',
     },
   };
 }

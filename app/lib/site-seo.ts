@@ -35,7 +35,7 @@ export function homeMetadata(params: Record<string, string | string[] | undefine
       alternateLocale: [ar ? 'fr_MA' : 'ar_MA'],
       images: [
         {
-          url: SITE_URL + '/brand/soralink-social.png',
+          url: SITE_URL + '/brand/soralink-social.png?v=reference-02',
           width: 1200,
           height: 630,
           alt: ar
@@ -48,7 +48,7 @@ export function homeMetadata(params: Record<string, string | string[] | undefine
       card: 'summary_large_image',
       title,
       description,
-      images: [SITE_URL + '/brand/soralink-social.png'],
+      images: [SITE_URL + '/brand/soralink-social.png?v=reference-02'],
     },
   };
 }
