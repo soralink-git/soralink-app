@@ -1,4 +1,5 @@
 import GroupBrand from './group-brand';
+import PrintProducts from './print-products';
 import Image from 'next/image';
 import './group-site.css';
 
@@ -23,53 +24,29 @@ export default function GroupSite({
         'السلام عليكم، بغيت نتواصل مع Sora' + division + ' على المشروع ديالي.',
       ),
     );
-  const categories = print
-    ? [
-        [
-          '01',
-          'Votre image, sur papier.',
-          'صورتكم على الورق.',
-          'Cartes de visite, flyers, papeterie et supports de communication : parlons du format et de la quantité adaptés à votre projet.',
-          'بطاقات الزيارة، المنشورات والمطبوعات: نتفاهمو على الشكل والكمية المناسبة للمشروع ديالكم.',
-        ],
-        [
-          '02',
-          'Des attentions personnelles.',
-          'هدايا بلمستكم.',
-          'Cadeaux personnalisés et créations événementielles. Chaque demande fait l’objet d’une vérification de faisabilité avant devis.',
-          'هدايا شخصية وإبداعات للمناسبات. كنراجعو إمكانية الإنجاز قبل ما نقدمو عرض الثمن.',
-        ],
-        [
-          '03',
-          'De la matière au lien.',
-          'من المنتوج للرابط.',
-          'Étiquettes, stickers et petites séries. Ajoutez un QR code pour relier votre support à votre présence numérique.',
-          'ملصقات وكميات صغيرة. زيدو رمز QR باش تربطو المطبوع بالحضور الرقمي ديالكم.',
-        ],
-      ]
-    : [
-        [
-          '01',
-          'Une carte. Tous vos liens.',
-          'بطاقة واحدة، جميع الروابط.',
-          'Une page professionnelle pour partager vos coordonnées, votre activité et vos liens par QR code ou NFC.',
-          'صفحة مهنية لمشاركة معلومات التواصل والنشاط والروابط عبر QR أو NFC.',
-        ],
-        [
-          '02',
-          'Votre offre à découvrir.',
-          'خليو الناس يكتاشفو العرض ديالكم.',
-          'Présentez votre catalogue, vos photos et vos documents. Les possibilités dépendent de l’offre activée sur votre compte.',
-          'قدمو الكاتالوغ، الصور والوثائق. الإمكانيات كتختلف حسب العرض المفعل فالحساب.',
-        ],
-        [
-          '03',
-          'Des outils à votre mesure.',
-          'حلول على قياسكم.',
-          'Vous avez besoin d’un site, d’une automatisation ou d’un outil métier ? Nous étudions votre besoin avant de proposer une solution.',
-          'محتاجين موقع، أتمتة ولا أداة للخدمة؟ كندرسو الاحتياج قبل اقتراح الحل.',
-        ],
-      ];
+  const categories = [
+    [
+      '01',
+      'Une carte. Tous vos liens.',
+      'بطاقة واحدة، جميع الروابط.',
+      'Une page professionnelle pour partager vos coordonnées, votre activité et vos liens par QR code ou NFC.',
+      'صفحة مهنية لمشاركة معلومات التواصل والنشاط والروابط عبر QR أو NFC.',
+    ],
+    [
+      '02',
+      'Votre offre à découvrir.',
+      'خليو الناس يكتاشفو العرض ديالكم.',
+      'Présentez votre catalogue, vos photos et vos documents. Les possibilités dépendent de l’offre activée sur votre compte.',
+      'قدمو الكاتالوغ، الصور والوثائق. الإمكانيات كتختلف حسب العرض المفعل فالحساب.',
+    ],
+    [
+      '03',
+      'Des outils à votre mesure.',
+      'حلول على قياسكم.',
+      'Vous avez besoin d’un site, d’une automatisation ou d’un outil métier ? Nous étudions votre besoin avant de proposer une solution.',
+      'محتاجين موقع، أتمتة ولا أداة للخدمة؟ كندرسو الاحتياج قبل اقتراح الحل.',
+    ],
+  ];
   return (
     <div className={'group-site group-' + division.toLowerCase()} dir={ar ? 'rtl' : 'ltr'}>
       <header className="group-header">
@@ -132,32 +109,54 @@ export default function GroupSite({
                   )}
           </p>
           <div className="group-actions">
-            <a className="group-button" href={root ? '#divisions' : print ? wa : '/demo' + suffix}>
+            <a
+              className="group-button"
+              href={root ? '#divisions' : print ? '#offre' : '/demo' + suffix}
+            >
               {root
                 ? t('Découvrir nos deux univers ↓', 'اكتاشفو المجالين ↓')
                 : print
-                  ? t('Parlons de votre projet ↗', 'نهضرو على المشروع ديالكم ↗')
+                  ? t('Voir les produits ↓', 'شوفو المنتوجات ↓')
                   : t('Explorer la démo ↗', 'شوفو المثال التجريبي ↗')}
             </a>
-            <a href={root ? wa : print ? '#offre' : '/?app=1' + (ar ? '&lang=ar' : '')}>
+            <a href={root ? wa : print ? wa : '/?app=1' + (ar ? '&lang=ar' : '')}>
               {root
                 ? t('Parlons de votre projet ↗', 'نهضرو على المشروع ديالكم ↗')
                 : print
-                  ? t('Explorer les possibilités ↓', 'شوفو الإمكانيات ↓')
+                  ? t('Demander un devis ↗', 'طلب عرض ثمن ↗')
                   : t('Accéder à mon espace ↗', 'دخلو للحساب ↗')}
             </a>
           </div>
-          <div className="group-art" aria-hidden="true">
-            <span className="group-paper">
-              SoraPrint<span>↗</span>
-            </span>
-            <span className="group-pixel">
-              SoraConnect<span>↗</span>
-            </span>
-            <span className="group-art-caption">
-              {t('DU PHYSIQUE AU NUMÉRIQUE', 'من الملموس للرقمي')}
-            </span>
-          </div>
+          {print ? (
+            <figure className="print-hero-media">
+              <Image
+                unoptimized
+                src="/soraprint/references/cartes-reference-v1.webp"
+                alt={t(
+                  'Illustration conceptuelle de cartes de visite en papier, blanches et jaunes.',
+                  'صورة توضيحية لبطاقات زيارة ورقية بيضاء وصفراء.',
+                )}
+                width={1200}
+                height={800}
+                priority
+              />
+              <figcaption>
+                {t('Illustration conceptuelle · référence produit', 'صورة توضيحية · مرجع للمنتوج')}
+              </figcaption>
+            </figure>
+          ) : (
+            <div className="group-art" aria-hidden="true">
+              <span className="group-paper">
+                SoraPrint<span>↗</span>
+              </span>
+              <span className="group-pixel">
+                SoraConnect<span>↗</span>
+              </span>
+              <span className="group-art-caption">
+                {t('DU PHYSIQUE AU NUMÉRIQUE', 'من الملموس للرقمي')}
+              </span>
+            </div>
+          )}
         </section>
         {root ? (
           <>
@@ -211,6 +210,8 @@ export default function GroupSite({
               </small>
             </section>
           </>
+        ) : print ? (
+          <PrintProducts ar={ar} />
         ) : (
           <>
             <section className="group-section" id="offre">
@@ -224,14 +225,6 @@ export default function GroupSite({
                   </article>
                 ))}
               </div>
-              {print && (
-                <p className="group-note">
-                  {t(
-                    'Formats, matières, quantités, prix et délais sont confirmés sur devis avant toute commande. Les prestations nécessitant un équipement non validé ne sont pas proposées comme disponibles.',
-                    'الأشكال، المواد، الكميات، الأثمنة والآجال كتتأكد فعرض الثمن قبل الطلب.',
-                  )}
-                </p>
-              )}
             </section>
             {!print && (
               <section className="group-section group-product">
