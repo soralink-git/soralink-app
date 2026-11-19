@@ -86,7 +86,7 @@ export default function PublicCardView({
       {view === 'demo' && (
         <nav className="demo-guidance" aria-label={t('Explorer SoraLink', 'اكتشف SoraLink')}>
           <div>
-            <strong>{t('Démo interactive', 'مثال تفاعلي')}</strong>
+            <strong>{t('Exemple — Démo interactive', 'مثال — تجربة تفاعلية')}</strong>
             <p>
               {t(
                 'Exemple fictif : aucun message ni commande n’est envoyé.',
@@ -95,7 +95,7 @@ export default function PublicCardView({
             </p>
           </div>
           <a className="secondary small" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-            {t('Accueil', 'الرئيسية')}
+            {t('Retour à l’accueil', 'الرجوع للرئيسية')}
           </a>
           <a className="primary small" href={signupPath(ar)}>
             {t('Créer ma carte', 'صايب الكارط ديالي')}

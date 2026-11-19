@@ -90,6 +90,11 @@ test('public demo offers an exit and signup path, a single primary heading and a
     assert.equal((html.match(/<h1\b/g) || []).length, 1);
     assert.match(html, /id="main-content"/);
     assert.match(html, /class="demo-guidance"/);
+    assert.match(html, ar ? /مثال — تجربة تفاعلية/ : /Exemple — Démo interactive/);
+    assert.match(
+      html,
+      ar ? /href="\/\?lang=ar">الرجوع للرئيسية<\/a>/ : /href="\/\?lang=fr">Retour à l’accueil<\/a>/,
+    );
     assert.match(html, /href="\/auth\?mode=signup/);
     assert.match(html, ar ? /لا رسالة لا طلب كيتسيفط/ : /aucun message ni commande n’est envoyé/);
     assert.match(html, /class="text-button public-language-toggle"/);
