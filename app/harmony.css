@@ -712,9 +712,15 @@ html[data-theme='dark']
   font-size: 0.875rem;
   letter-spacing: 0;
   text-transform: none;
-  border: 0;
-  padding-inline: 0;
+  border: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
   background: transparent !important;
+}
+.design-system .site .landing .landing-kicker::before,
+.design-system .site .landing .landing-kicker > span:first-child {
+  display: none !important;
 }
 .design-system .site .landing .landing-copy h1 {
   line-height: 1.08;
@@ -759,7 +765,7 @@ html[data-theme='dark']
 }
 @media (max-width: 1100px) {
   .design-system .site > header {
-    display: grid;
+    display: grid !important;
     grid-template-columns: auto minmax(0, 1fr);
     min-height: 0;
     gap: 8px 16px;
@@ -773,7 +779,8 @@ html[data-theme='dark']
     grid-row: 1;
     justify-self: end;
     flex-wrap: nowrap;
-    width: auto;
+    width: auto !important;
+    margin: 0;
   }
   .design-system .site > header > nav {
     grid-column: 1 / -1;
@@ -781,6 +788,7 @@ html[data-theme='dark']
     width: 100%;
     justify-content: space-between;
     overflow: visible;
+    padding: 0;
   }
   .design-system .site > header :is(.theme-toggle-label, .language-label) {
     display: none;
@@ -809,10 +817,10 @@ html[data-theme='dark']
     display: block;
   }
   .design-system .site > header .header-actions {
-    gap: 4px;
+    gap: 4px !important;
   }
   .design-system .site > header > nav {
-    gap: 0;
+    gap: 0 !important;
   }
   .design-system .site > header > nav a {
     padding-inline: 4px;
