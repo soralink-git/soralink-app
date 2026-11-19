@@ -11,6 +11,7 @@ function visit(key) {
   for (const item of manifest[key].imports || []) visit(item);
 }
 visit('app/public-card-view.tsx');
+let authAvailable = true;
 for (const forbidden of [
   'app/ui.tsx',
   'app/dashboard-editor.tsx',
@@ -31,6 +32,18 @@ const mf = new Miniflare({
   compatibilityDate: '2026-05-15',
   compatibilityFlags: ['nodejs_compat'],
   d1Databases: { DB: 'public-card-build-test' },
+  r2Buckets: ['BUCKET'],
+  bindings: {
+    SUPABASE_URL: 'https://health.supabase.test',
+    SUPABASE_PUBLISHABLE_KEY: 'isolated-test-key',
+  },
+  outboundService: async (request) => {
+    assert.equal(request.url, 'https://health.supabase.test/auth/v1/settings');
+    assert.equal(request.headers.get('apikey'), 'isolated-test-key');
+    return authAvailable
+      ? Response.json({ external: { email: true } })
+      : Response.json({ error: 'Invalid API key' }, { status: 401 });
+  },
   serviceBindings: {
     ASSETS: async (request) => {
       try {
@@ -117,11 +130,18 @@ try {
   ])
     assert.equal((await mf.dispatchFetch('https://soralink.link' + page)).status, 200, page);
   const health = await mf.dispatchFetch('https://soralink.link/api/health');
-  assert.equal(health.status, 200);
   const healthBody = await health.json();
+  assert.equal(health.status, 200, JSON.stringify(healthBody));
   assert.equal(healthBody.status, 'ok');
   assert.equal(healthBody.database, 'ok');
+  assert.equal(healthBody.auth, 'ok');
+  assert.equal(healthBody.storage, 'ok');
   assert.equal(healthBody.email, 'ok');
+  authAvailable = false;
+  const brokenAuth = await mf.dispatchFetch('https://soralink.link/api/health');
+  assert.equal(brokenAuth.status, 503);
+  assert.equal((await brokenAuth.json()).auth, 'failing');
+  authAvailable = true;
   // A provider-level failure must surface in the health probe.
   await db
     .prepare(

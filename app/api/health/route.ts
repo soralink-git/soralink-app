@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import { authHealth, storageHealth } from '../../lib/integration-health';
 
 // Provider-level failures only: a mistyped recipient (4xx on one address) must
 // not raise an infrastructure alert.
@@ -6,6 +7,7 @@ const PROVIDER_ERRORS = "('provider_http_401','provider_http_403','network_error
 
 export async function GET() {
   const started = Date.now();
+  const dependencies = Promise.all([authHealth(env), storageHealth(env.BUCKET)]);
   const dayAgo = new Date(Date.now() - 86400000).toISOString();
   let database = 'ok';
   let email = 'ok';
@@ -31,11 +33,14 @@ export async function GET() {
   } catch {
     database = 'error';
   }
-  const healthy = database === 'ok';
+  const [auth, storage] = await dependencies;
+  const healthy = database === 'ok' && auth === 'ok' && storage === 'ok';
   return Response.json(
     {
       status: healthy ? 'ok' : 'degraded',
       database,
+      auth,
+      storage,
       email,
       failedEmails24h,
       ms: Date.now() - started,
