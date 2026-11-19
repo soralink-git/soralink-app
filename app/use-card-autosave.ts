@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import { profileIdentityError } from './lib/profile-identity';
 import {
   createSaveQueue,
   type CardSnapshot,
@@ -38,6 +39,7 @@ export default function useCardAutosave({
   if (!queueRef.current)
     queueRef.current = createSaveQueue({
       onState: setState,
+      identityError: (snapshot) => profileIdentityError(snapshot.data, language.current),
       onSaved: (result) => callback.current(result),
       send: async (snapshot, revision) => {
         const expectedOwner = ownerRef.current;

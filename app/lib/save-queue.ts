@@ -1,4 +1,4 @@
-import { profileName } from './profile-identity';
+import { profileIdentityError, profileName } from './profile-identity';
 export type SaveStatus =
   | 'ready'
   | 'pending'
@@ -14,6 +14,7 @@ export type SaveResult = { id: string; revision: string; cleanupPending?: boolea
 export function createSaveQueue(options: {
   send: (snapshot: CardSnapshot, revision: string | null) => Promise<SaveResult>;
   onState: (state: SaveState) => void;
+  identityError?: (snapshot: CardSnapshot) => string;
   onSaved?: (result: SaveResult) => void;
   delay?: number;
   schedule?: (fn: () => void, delay: number) => any;
@@ -97,7 +98,7 @@ export function createSaveQueue(options: {
       const snapshot: CardSnapshot = JSON.parse(latest!);
       if (!profileName(snapshot.data)) {
         blocked = latest;
-        emit('invalid');
+        emit('invalid', options.identityError?.(snapshot) || profileIdentityError(snapshot.data));
         return false;
       }
       if (force) blocked = null;
