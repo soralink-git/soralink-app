@@ -826,6 +826,26 @@ html[data-theme='dark']
     padding-inline: 4px;
     font-size: 0.875rem;
   }
+  .design-system .site > header .account-menu > summary {
+    inline-size: 48px;
+    min-inline-size: 48px;
+    padding-inline: 0 !important;
+    justify-content: center;
+  }
+  .design-system .site > header .account-menu > summary > span {
+    display: none;
+  }
+  /* Administration keeps its named destination on a separate, full-width row. */
+  .design-system .site > header:has(.account-menu):has(.header-login) > .header-actions {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-inline-size: 100%;
+  }
+  .design-system .site > header:has(.account-menu):has(.header-login) > nav {
+    grid-row: 3;
+  }
   .design-system .site .landing {
     padding-block-start: 8px;
   }
