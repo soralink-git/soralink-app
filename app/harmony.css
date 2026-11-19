@@ -461,7 +461,7 @@ html[data-theme='dark']
     flex-wrap: wrap;
   }
   .design-system .site > header .header-actions {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 8px;
   }
   .design-system .site > header :is(.language, .theme-toggle, .header-login, .header-start) {
@@ -483,9 +483,28 @@ html[data-theme='dark']
       .landing-price-grid,
       .testimonials-grid,
       .comparison-table
+    ) {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 24px !important;
+  }
+  .design-system .site .landing .landing-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .design-system
+    .site
+    .landing
+    :is(
+      .landing-features,
+      .landing-steps,
+      .usecase-grid,
+      .landing-price-grid,
+      .testimonials-grid,
+      .comparison-table
     )
     > * {
     grid-column: 1 / -1;
+    min-inline-size: 0;
+    max-inline-size: 100%;
   }
   .design-system .site .landing-actions {
     display: grid;
@@ -682,5 +701,146 @@ html[data-theme='dark']
   .design-system .site .workspace-design > .workspace-dashboard-footer {
     width: 100% !important;
     margin-block: 0 !important;
+  }
+}
+
+/* Marketing hierarchy and compact navigation, shared by French and Arabic. */
+.design-system .site .header-login-icon {
+  display: none;
+}
+.design-system .site .landing .landing-kicker {
+  font-size: 0.875rem;
+  letter-spacing: 0;
+  text-transform: none;
+  border: 0;
+  padding-inline: 0;
+  background: transparent !important;
+}
+.design-system .site .landing .landing-copy h1 {
+  line-height: 1.08;
+  max-inline-size: 18ch;
+}
+.design-system .site .landing .pricing-badge {
+  position: static;
+  transform: none;
+  align-self: flex-start;
+  max-inline-size: 100%;
+  margin-block: 0 16px;
+  white-space: normal;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+  box-shadow: none;
+  text-align: start;
+}
+.design-system .site .landing .pricing-badge svg {
+  flex: 0 0 auto;
+}
+.design-system .site .landing .pricing-card.featured {
+  border-color: var(--brand-accent) !important;
+}
+.design-system .site .landing .pricing-monthly-anchor {
+  font-size: 0.875rem;
+}
+.design-system .site .landing .offer-signup-link {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  min-block-size: 48px !important;
+  padding: 8px;
+  font-size: 0.875rem !important;
+  color: var(--ink) !important;
+  text-decoration: underline !important;
+  text-underline-offset: 4px;
+}
+.design-system .site .commercial-whatsapp {
+  bottom: max(16px, env(safe-area-inset-bottom));
+  inset-inline-end: max(16px, env(safe-area-inset-right));
+}
+@media (max-width: 1100px) {
+  .design-system .site > header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 0;
+    gap: 8px 16px;
+  }
+  .design-system .site > header > .brand {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .design-system .site > header > .header-actions {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    flex-wrap: nowrap;
+    width: auto;
+  }
+  .design-system .site > header > nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    justify-content: space-between;
+    overflow: visible;
+  }
+  .design-system .site > header :is(.theme-toggle-label, .language-label) {
+    display: none;
+  }
+  .design-system .site > header :is(.theme-toggle, .language) {
+    padding-inline: 0 !important;
+    inline-size: 48px;
+  }
+}
+@media (max-width: 700px) {
+  .design-system .site > header {
+    padding: 8px 16px;
+    gap: 0 8px;
+  }
+  .design-system .site > header .header-start {
+    display: none !important;
+  }
+  .design-system .site > header .header-login-entry {
+    inline-size: 48px;
+    padding-inline: 0 !important;
+  }
+  .design-system .site > header .header-login-entry > span {
+    display: none;
+  }
+  .design-system .site > header .header-login-icon {
+    display: block;
+  }
+  .design-system .site > header .header-actions {
+    gap: 4px;
+  }
+  .design-system .site > header > nav {
+    gap: 0;
+  }
+  .design-system .site > header > nav a {
+    padding-inline: 4px;
+    font-size: 0.875rem;
+  }
+  .design-system .site .landing {
+    padding-block-start: 8px;
+  }
+  .design-system .site .landing .landing-hero {
+    padding-block: 24px !important;
+  }
+  .design-system .site .landing .landing-brand-visual {
+    padding: 8px !important;
+    border-radius: 24px !important;
+  }
+  .design-system .site .landing .pricing-card {
+    padding: 24px 16px !important;
+  }
+  .design-system .site .auth-layout {
+    gap: 24px;
+  }
+  .design-system .site .auth-intro {
+    display: none;
+  }
+  .design-system .site .auth-panel input {
+    font-size: 1rem;
+  }
+  .design-system .site .site-footer {
+    margin-block-end: calc(88px + env(safe-area-inset-bottom)) !important;
   }
 }

@@ -73,11 +73,9 @@ export default function OfferGrid({ ar, auth }: { ar: boolean; auth: boolean }) 
           return (
             <article key={offer.id} className={'pricing-card' + (isFeatured ? ' featured' : '')}>
               {isFeatured && (
-                <div className="pricing-badge" aria-label="Pack recommandé">
+                <div className="pricing-badge" aria-label={t('Pack recommandé', 'الباقة المقترحة')}>
                   <Sparkles size={14} aria-hidden="true" />
-                  <span>
-                    {t('★ LE PLUS CHOISI PAR LES PROS', '★ الأكثر اختياراً من المحترفين')}
-                  </span>
+                  <span>{t('Le plus choisi par les pros', 'الأكثر اختياراً من المحترفين')}</span>
                 </div>
               )}
               <span className="eyebrow">
@@ -162,7 +160,7 @@ export default function OfferGrid({ ar, auth }: { ar: boolean; auth: boolean }) 
                 <span>{t('Commander sur WhatsApp', 'طلب عبر WhatsApp')}</span>
               </a>
               <a className="offer-signup-link" href={signupPath(ar, offer.id, auth)}>
-                {t('Ou configurer directement en ligne →', 'أو إعداد الحساب أونلاين ←')}
+                {t('Configurer ma carte en ligne', 'نوجد الكارط ديالي أونلاين')}
               </a>
               <small>
                 {t(
