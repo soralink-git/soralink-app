@@ -1,4 +1,5 @@
 'use client';
+import { Check } from 'lucide-react';
 import {
   cardStyles,
   cardPalettes,
@@ -65,6 +66,7 @@ export default function CardStylePicker({
                   {
                     background: custom?.fondColor || sample.fondColor,
                     color: custom?.textColor || sample.textColor,
+                    '--sample-surface': custom?.blockColor || sample.blockColor,
                     '--sample-accent':
                       custom?.buttonColor || (selected && data.color) || sample.buttonColor,
                   } as any
@@ -72,18 +74,32 @@ export default function CardStylePicker({
                 aria-hidden="true"
               >
                 <span className="sample-banner" />
-                <span className="sample-avatar" />
-                <span className="sample-name" />
-                <span className="sample-description" />
+                <span className="sample-avatar">SL</span>
+                <span className="sample-name">{t('Votre nom', 'الاسم ديالك')}</span>
+                <span className="sample-description">{t('Votre activité', 'النشاط ديالك')}</span>
+                {style.id === 'creative' && (
+                  <span className="sample-gallery">
+                    <i />
+                    <i />
+                  </span>
+                )}
                 <span className="sample-actions">
                   <i />
                   <i />
                   <i />
                 </span>
               </span>
-              <strong>{ar ? style.ar : style.fr}</strong>
-              <span>{ar ? style.descriptionAr : style.descriptionFr}</span>
-              {data.template === style.id && <small>{t('Sélectionné', 'مختار')}</small>}
+              <span className="style-choice-copy">
+                <span className="style-choice-heading">
+                  <strong>{ar ? style.ar : style.fr}</strong>
+                  <span className="style-choice-check" aria-hidden="true">
+                    {selected && <Check size={14} strokeWidth={3} />}
+                  </span>
+                </span>
+                <span className="style-choice-description">
+                  {ar ? style.descriptionAr : style.descriptionFr}
+                </span>
+              </span>
             </button>
           );
         })}

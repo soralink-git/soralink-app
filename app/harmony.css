@@ -636,7 +636,7 @@ html[data-theme='dark']
   max-inline-size: 100%;
 }
 /* Rounded actions belong to the platform; saved public card shapes remain independent. */
-.design-system .site button:not(.custom-card button),
+.design-system .site button:not(.custom-card button):not(.card-style-choice),
 .design-system
   .site
   :is(
