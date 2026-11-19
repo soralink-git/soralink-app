@@ -41,6 +41,7 @@ function load(f) {
       Blob,
       Response,
       Request,
+      AbortSignal,
       crypto: globalThis.crypto,
     },
     { filename: f },

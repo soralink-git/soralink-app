@@ -15,33 +15,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Santé applicative
-        id: health
-        run: |
-          set +e
-          body=$(curl -sS --max-time 20 -w '\n%{http_code}' https://soralink.link/api/health)
-          code=$(printf '%s' "$body" | tail -n1)
-          payload=$(printf '%s' "$body" | sed '$d')
-          echo "code=$code"
-          printf '%s\n' "$payload"
-          email=$(printf '%s' "$payload" | jq -r '.email // "unknown"' 2>/dev/null || echo unknown)
-          echo "email=$email"
-          if [ "$code" != "200" ]; then echo "failure=1" >> "$GITHUB_OUTPUT"; fi
-          if [ "$email" = "failing" ]; then echo "email_failure=1" >> "$GITHUB_OUTPUT"; fi
-      - name: Page d'accueil
-        id: home
-        if: steps.health.outputs.failure != '1'
-        run: |
-          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 https://soralink.link/)
-          echo "code=$code"
-          if [ "$code" != "200" ]; then echo "failure=1" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Vérifier le site, Supabase et R2
+        id: probe
+        run: node scripts/check-uptime.mjs
       - name: Ouvrir ou mettre à jour l'incident
-        if: steps.health.outputs.failure == '1' || steps.home.outputs.failure == '1' || steps.health.outputs.email_failure == '1'
+        if: steps.probe.outputs.failure == '1' || steps.probe.outputs.email_failure == '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           stamp=$(date -u +%FT%TZ)
-          reason="santé=${{ steps.health.outputs.code || 'n/a' }}, accueil=${{ steps.home.outputs.failure || 'ok' }}, e-mail=${{ steps.health.outputs.email || 'n/a' }}"
+          reason="santé=${{ steps.probe.outputs.code }}, accueil=${{ steps.probe.outputs.home }}, auth=${{ steps.probe.outputs.auth }}, stockage=${{ steps.probe.outputs.storage }}, e-mail=${{ steps.probe.outputs.email }}"
           existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search 'Incident soralink.link in:title' --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
             gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Nouvel échec détecté le $stamp ($reason)."
@@ -51,7 +38,7 @@ jobs:
               --body "La vérification automatique a échoué le $stamp ($reason). Vérifier /api/health, la clé Resend si l'e-mail est en cause, les logs Pages et le dernier déploiement."
           fi
       - name: Clore l'incident après rétablissement
-        if: steps.health.outputs.failure != '1' && steps.home.outputs.failure != '1' && steps.health.outputs.email_failure != '1'
+        if: steps.probe.outputs.failure == '0' && steps.probe.outputs.email_failure == '0'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -60,3 +47,6 @@ jobs:
             gh issue comment "$existing" --repo "$GITHUB_REPOSITORY" --body "Service rétabli le $(date -u +%FT%TZ)."
             gh issue close "$existing" --repo "$GITHUB_REPOSITORY"
           fi
+      - name: Marquer la vérification en échec
+        if: steps.probe.outputs.failure == '1' || steps.probe.outputs.email_failure == '1'
+        run: exit 1
