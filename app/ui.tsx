@@ -152,13 +152,21 @@ export default function App({
       void loadStorage();
     },
   });
+  const saveErrorNotice = useRef('');
   useEffect(() => {
     const status = autosave.state.status;
+    if (status === 'saved' && saveErrorNotice.current) {
+      const previous = saveErrorNotice.current;
+      saveErrorNotice.current = '';
+      setMsg((current) => (current === previous ? '' : current));
+      return;
+    }
     if (!['invalid', 'offline', 'error', 'conflict'].includes(status)) return;
     const fallback = ar
       ? 'ما قدرناش نسجّلو التغييرات. تحقق من المعلومات والاتصال وعاود جرّب.'
       : 'Les modifications ne sont pas enregistrées. Vérifiez les champs et la connexion puis réessayez.';
-    setMsg(autosave.state.error || fallback);
+    saveErrorNotice.current = autosave.state.error || fallback;
+    setMsg(saveErrorNotice.current);
   }, [autosave.state.status, autosave.state.error, ar]);
 
   useEffect(() => {

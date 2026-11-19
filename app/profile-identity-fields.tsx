@@ -1,6 +1,6 @@
 'use client';
-import type { Dispatch, SetStateAction } from 'react';
-import { profileKind } from './lib/profile-identity';
+import { useId, type Dispatch, type SetStateAction } from 'react';
+import { profileIdentityError, profileKind } from './lib/profile-identity';
 export default function ProfileIdentityFields({
   data,
   setData,
@@ -14,6 +14,8 @@ export default function ProfileIdentityFields({
 }) {
   const t = (fr: string, a: string) => (ar ? a : fr);
   const business = profileKind(data) === 'business';
+  const errorId = useId();
+  const identityError = profileIdentityError(data, ar);
   const input = (key: string, label: string, required = false) => (
     <label className="field" key={key}>
       {label}
@@ -21,6 +23,8 @@ export default function ProfileIdentityFields({
         value={data[key] || ''}
         disabled={busy}
         required={required}
+        aria-invalid={required && !!identityError ? true : undefined}
+        aria-describedby={required && identityError ? errorId : undefined}
         maxLength={key === 'business' && !business ? 4000 : 120}
         autoComplete={
           key === 'name' ? 'name' : key === 'business' ? 'organization' : 'organization-title'
@@ -30,6 +34,11 @@ export default function ProfileIdentityFields({
           setData((d: any) => ({ ...d, [key]: value }));
         }}
       />
+      {required && identityError && (
+        <span id={errorId} className="inline-field-error">
+          {identityError}
+        </span>
+      )}
     </label>
   );
   return (
