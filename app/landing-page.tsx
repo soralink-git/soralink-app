@@ -24,10 +24,7 @@ export default function LandingPage({ ar, auth }: { ar: boolean; auth: boolean }
         <div className="landing-copy">
           <span className="landing-kicker">
             <span aria-hidden="true" />
-            {t(
-              'CARTE NFC + PAGE DIGITALE · SANS ABONNEMENT OBLIGATOIRE',
-              'بطاقة NFC + صفحة رقمية · بدون اشتراك إجباري',
-            )}
+            {t('Carte NFC, QR code et page digitale', 'كارط NFC، كود QR وصفحة رقمية')}
           </span>
           <h1>
             {t(

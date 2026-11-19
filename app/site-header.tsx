@@ -1,5 +1,6 @@
 'use client';
-import { Globe, Users } from 'lucide-react';
+import { Globe, Users, UserRound } from 'lucide-react';
+import BrandLink from './brand-link';
 import { accountPath } from './lib/journey-links';
 import ThemeToggle from './theme-toggle';
 
@@ -31,20 +32,8 @@ export default function SiteHeader({
   logout: () => Promise<void>;
 }) {
   return (
-    <header>
-      <a className="brand" dir="ltr" href={'/?lang=' + (ar ? 'ar' : 'fr')}>
-        <span className="brand-icon">
-          <svg width="25" height="25" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-            <path
-              d="M23 17h-5a10 10 0 0 0-10 10v10a10 10 0 0 0 10 10h11M41 17h5a10 10 0 0 1 10 10v10a10 10 0 0 1-10 10H35M24 38l16-12"
-              stroke="currentColor"
-              strokeWidth="6"
-              strokeLinecap="round"
-            />
-          </svg>
-        </span>
-        Sora<span>Link</span>
-      </a>
+    <header className="site-header">
+      <BrandLink ar={ar} />
       {view === 'home' && (
         <nav aria-label={t('Navigation principale', 'التنقل الرئيسي')}>
           {[
@@ -118,8 +107,14 @@ export default function SiteHeader({
             </details>
           </>
         ) : (
-          <a className="header-login" href={'/auth?mode=login' + (ar ? '&lang=ar' : '')}>
-            {t('Connexion', 'الدخول')}
+          <a
+            className="header-login header-login-entry"
+            href={'/auth?mode=login' + (ar ? '&lang=ar' : '')}
+            aria-label={t('Se connecter à mon espace', 'الدخول للحساب ديالي')}
+            title={t('Connexion', 'الدخول')}
+          >
+            <UserRound size={18} className="header-login-icon" aria-hidden="true" />
+            <span>{t('Connexion', 'الدخول')}</span>
           </a>
         )}
         {view === 'home' && sessionChecked && !canAdmin && !auth && (
