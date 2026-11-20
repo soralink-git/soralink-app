@@ -287,7 +287,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
     <main id="main-content" tabIndex={-1} className="workspace workspace-design">
       <div className="workspace-left-pane">
         <div className="workspace-main-row">
-          <aside>
+          <aside className="workspace-sidebar">
             <h3>{t('Mon espace', 'الحساب ديالي')}</h3>
             {auth && (
               <div className="workspace-sidebar-cards">
@@ -341,7 +341,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
                       'Configurer l’action unique pour cette carte',
                       'إعداد الإجراء الموحد لهذه البطاقة',
                     )}
-                    style={{ marginBlock: '4px 6px' }}
                   >
                     <Zap
                       size={14}
