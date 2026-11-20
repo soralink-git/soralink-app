@@ -1414,6 +1414,7 @@ export default function DashboardEditor({ context }: { context: DashboardContext
             )}
           </div>
         </div>
+        <SiteFooter ar={ar} className="workspace-dashboard-footer" />
       </div>
       <div className="workspace-preview-column">
         {auth && (
@@ -1459,7 +1460,6 @@ export default function DashboardEditor({ context }: { context: DashboardContext
           </PinnedCardPreview>
         )}
       </div>
-      <SiteFooter ar={ar} className="workspace-dashboard-footer" />
       {newCardOpen && (
         <ModalDialog
           label={t('Créer une nouvelle carte', 'إنشاء بطاقة جديدة')}
