@@ -172,6 +172,11 @@ export default function App({
   useEffect(() => {
     if (!msg) return;
     if (autosave.state.status === 'conflict') return;
+    if (
+      msg === saveErrorNotice.current &&
+      ['invalid', 'offline', 'error'].includes(autosave.state.status)
+    )
+      return;
     const isProgress =
       msg.includes('Enregistrement automatique') ||
       msg.includes('التسجيل التلقائي') ||
@@ -193,7 +198,7 @@ export default function App({
       msg &&
       (msg.includes('Enregistrement automatique') || msg.includes('التسجيل التلقائي'))
     ) {
-      const timer = setTimeout(() => setMsg(''), 1000);
+      const timer = setTimeout(() => setMsg(''), 2000);
       return () => clearTimeout(timer);
     }
   }, [autosave.state.status, msg]);
@@ -392,8 +397,8 @@ export default function App({
     if (!discard && autosave.queue.isDirty() && !(await autosave.queue.flush())) {
       setMsg(
         t(
-          'Enregistrez les modifications ou rechargez la version enregistrée.',
-          'سجّل التغييرات ولا عاود حمّل النسخة المسجّلة.',
+          'L’enregistrement automatique a échoué. Corrigez les informations ou réessayez avant de continuer.',
+          'ما تسجلاتش التغييرات تلقائياً. صحّح المعلومات ولا عاود جرّب قبل ما تكمل.',
         ),
       );
       return;

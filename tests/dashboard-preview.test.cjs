@@ -300,19 +300,19 @@ test('YouTube link and agenda additions have explicit removal and save controls'
     assert.match(agenda, ar ? /حذف الاستراحة/ : /Supprimer la pause/);
     assert.match(agenda, ar ? /حذف يوم الإغلاق/ : /Supprimer la date de fermeture/);
     assert.match(agenda, ar ? /حذف الخدمة/ : /Supprimer la prestation/);
-    assert.match(agenda, ar ? /سجّل التغييرات/ : /Enregistrer les modifications/);
+    assert.doesNotMatch(agenda, ar ? /سجّل التغييرات/ : /Enregistrer les modifications/);
   }
 });
 
-test('a single manual save action and persistent saved feedback remain across editor sections', () => {
+test('editor sections use autosave feedback without a manual save action', () => {
   for (const ar of [false, true])
     for (const tab of ['coordinates', 'interface', 'content', 'links', 'actions', 'schedule']) {
       const c = context(tab, ar);
-      c.saveState = { status: 'saved', dirty: false };
+      c.saveState = { status: 'saved', dirty: false, savedAt: 1 };
       const html = renderToStaticMarkup(React.createElement(DashboardEditor, { context: c }));
       assert.equal(
         (html.match(ar ? /سجّل التغييرات/g : /Enregistrer les modifications/g) || []).length,
-        1,
+        0,
       );
       assert.match(
         html,
@@ -321,7 +321,7 @@ test('a single manual save action and persistent saved feedback remain across ed
       assert.equal((html.match(/workspace-card-preview/g) || []).length, 1);
     }
 });
-test('save controls contain only one button, including offline and conflict states', () => {
+test('autosave only offers recovery actions for failures, in both languages', () => {
   const SaveBar = load(path.resolve('app/save-bar.tsx')).default;
   for (const ar of [false, true]) {
     for (const status of [
@@ -336,22 +336,26 @@ test('save controls contain only one button, including offline and conflict stat
     ]) {
       const html = renderToStaticMarkup(
         React.createElement(SaveBar, {
-          state: { status, dirty: status !== 'saved' },
+          state: { status, dirty: status !== 'saved', savedAt: status === 'saved' ? 1 : undefined },
           ar,
           disabled: false,
           save: noop,
           reload: noop,
         }),
       );
-      assert.equal((html.match(/<button /g) || []).length, 1);
+      const failed = ['offline', 'invalid', 'error', 'conflict'].includes(status);
+      assert.equal((html.match(/<button /g) || []).length, failed ? 1 : 0);
+      if (status === 'ready') {
+        assert.equal(html, '');
+        continue;
+      }
       assert.match(html, /role="status"/);
       if (status === 'conflict')
         assert.match(html, ar ? /عاود حمّل النسخة المسجّلة/ : /Recharger la version enregistrée/);
       else if (['error', 'offline', 'invalid'].includes(status))
         assert.match(html, ar ? /عاود جرّب التسجيل/ : /Réessayer l’enregistrement/);
-      else if (status === 'saving') assert.match(html, ar ? /كيتسجّل/ : /Enregistrement…/);
-      else assert.match(html, ar ? /سجّل التغييرات/ : /Enregistrer les modifications/);
-      assert.equal(html.includes('disabled=""'), status === 'saving');
+      else assert.doesNotMatch(html, /Enregistrer les modifications|سجّل التغييرات/);
+      assert.equal(html.includes('disabled=""'), false);
     }
   }
 });
