@@ -966,7 +966,7 @@ html[data-theme='dark']
   .site
   .workspace-design
   .workspace-sidebar
-  :is(.selected, .active, [aria-pressed='true']) {
+  :is(button.selected, button.active, button[aria-pressed='true']) {
   background: var(--brand-soft) !important;
   border-color: var(--brand-accent) !important;
 }
