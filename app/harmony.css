@@ -192,7 +192,7 @@
   grid-column: span 6;
   min-inline-size: 0;
   padding: 16px !important;
-  border-radius: 32px !important;
+  border-radius: var(--radius-panel) !important;
 }
 .design-system .site .landing-brand-visual img {
   inline-size: 100%;
@@ -239,7 +239,7 @@
     .single-action-offer
   ) {
   padding: 24px !important;
-  border-radius: 32px !important;
+  border-radius: var(--radius-panel) !important;
   background: var(--brand-surface) !important;
   border: 1px solid var(--line) !important;
   color: var(--ink);
@@ -277,7 +277,7 @@
 .design-system .site .landing :is(.landing-final, .landing-pilot, .nfc-explainer, .pricing-notes) {
   background: var(--brand-surface) !important;
   border: 1px solid var(--line);
-  border-radius: 32px !important;
+  border-radius: var(--radius-panel) !important;
   padding: 24px !important;
   color: var(--ink);
 }
@@ -290,13 +290,13 @@
   color: var(--ink);
   -webkit-text-fill-color: currentColor;
 }
-/* 24px internal / 32px external proximity. Control radius: 32 - 24 = 8. */
+/* Shared panel and control geometry across platform surfaces. */
 .design-system
   .site
   :is(.panel, .auth-panel, .workspace-card-switcher-box, .workspace-metrics, .admin-client-card),
 .design-system .ux-dialog {
   padding: 24px;
-  border-radius: 32px !important;
+  border-radius: var(--radius-panel) !important;
   background: var(--brand-surface);
 }
 .design-system .site :is(.workspace-main, .workspace-tab-content, .admin-workspace > main) {
@@ -648,7 +648,7 @@ html[data-theme='dark']
     .commercial-whatsapp,
     .account-menu > summary
   ):not(.custom-card *) {
-  border-radius: 999px !important;
+  border-radius: var(--radius-control) !important;
 }
 .design-system .site .site-footer {
   width: calc(100% - 48px) !important;
@@ -661,7 +661,7 @@ html[data-theme='dark']
   justify-items: center;
   gap: 32px;
   border: 1px solid var(--line) !important;
-  border-radius: 32px !important;
+  border-radius: var(--radius-panel) !important;
   background: var(--brand-surface) !important;
   color: var(--ink);
   box-shadow: none !important;
@@ -1078,4 +1078,29 @@ html[data-theme='dark']
     grid-template-columns: 1fr !important;
     padding: 24px 16px !important;
   }
+}
+
+/* One family of rounded controls and enclosing surfaces. */
+.design-system
+  .site
+  :is(
+    input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+    select,
+    textarea
+  ),
+.design-system
+  .ux-dialog
+  :is(
+    input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='color']),
+    select,
+    textarea
+  ) {
+  border-radius: var(--radius-control) !important;
+}
+.design-system .site .workspace-design :is(.workspace-sidebar, .workspace-card-preview),
+.design-system .site :is(.custom-card, .custom-card .panel, .auth-panel, .ux-dialog) {
+  border-radius: var(--radius-panel) !important;
+}
+.design-system .site .custom-card :is(button, a.card-button, a.primary, a.secondary) {
+  border-radius: var(--button-radius, var(--radius-control)) !important;
 }

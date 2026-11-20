@@ -2722,8 +2722,8 @@ html[data-theme='dark'] .workspace-navigation button.selected {
     margin-top: 8px;
     z-index: auto;
   }
-  .workspace-preview-rail:not(.preview-open) > .workspace-card-preview {
-    display: none;
+  .workspace-preview-rail > .workspace-card-preview {
+    display: block;
   }
   .workspace-design .workspace-save-action {
     position: static;

@@ -476,3 +476,14 @@ for (const ar of [false, true]) {
     assert.doesNotMatch(html, /Vos coordonnées et identité|Portrait, logo et couverture/);
   });
 }
+
+test('the preview stays available in both languages without an open or close button', () => {
+  const Preview = load(path.resolve('app/pinned-card-preview.tsx')).default;
+  for (const ar of [false, true]) {
+    const html = renderToStaticMarkup(React.createElement(Preview, { ar }, 'Card preview content'));
+    assert.match(html, /Card preview content/);
+    assert.match(html, /role="region"/);
+    assert.match(html, ar ? /معاينة الكارط ديالك/ : /Aperçu de votre carte/);
+    assert.doesNotMatch(html, /<button|aria-expanded|workspace-preview-toggle/);
+  }
+});
