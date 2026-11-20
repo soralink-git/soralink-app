@@ -681,7 +681,7 @@ html[data-theme='dark']
   justify-content: center;
   min-block-size: 48px;
 }
-.design-system .site .workspace-design > .workspace-dashboard-footer {
+.design-system .site .workspace-design .workspace-dashboard-footer {
   grid-column: 1 / -1;
   width: 100% !important;
   margin-block: 8px 0 !important;
@@ -698,7 +698,7 @@ html[data-theme='dark']
     margin-block: 24px !important;
     border-radius: 24px !important;
   }
-  .design-system .site .workspace-design > .workspace-dashboard-footer {
+  .design-system .site .workspace-design .workspace-dashboard-footer {
     width: 100% !important;
     margin-block: 0 !important;
   }
@@ -1026,5 +1026,56 @@ html[data-theme='dark']
     position: static;
     max-block-size: none;
     overflow: visible;
+  }
+}
+
+/* Client footer belongs to the editor column, independently of the card preview. */
+.design-system .site .workspace-design .workspace-dashboard-footer.site-footer {
+  inline-size: 100%;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 24px !important;
+  gap: 24px;
+  justify-items: stretch;
+  text-align: start;
+}
+.design-system .site .workspace-dashboard-footer.site-footer > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-inline-size: 0;
+  gap: 8px;
+}
+.design-system .site .workspace-dashboard-footer.site-footer :is(p, strong, div > span) {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.design-system .site .workspace-dashboard-footer.site-footer :is(a, summary, .text-button) {
+  justify-content: flex-start !important;
+  text-align: start;
+  max-inline-size: 100%;
+  min-block-size: 48px;
+  overflow-wrap: anywhere;
+}
+.design-system .site .workspace-dashboard-footer.site-footer .footer-contact > strong {
+  display: flex;
+  align-items: center;
+  min-block-size: 48px;
+}
+.design-system .site .workspace-dashboard-footer.site-footer .text-button {
+  padding-inline: 0 !important;
+}
+.design-system
+  .site
+  .workspace-dashboard-footer.site-footer
+  :is(a:not(.brand), summary, .text-button) {
+  font-size: 14px !important;
+  line-height: 1.5;
+}
+@media (max-width: 700px) {
+  .design-system .site .workspace-design .workspace-dashboard-footer.site-footer {
+    grid-template-columns: 1fr !important;
+    padding: 24px 16px !important;
   }
 }
