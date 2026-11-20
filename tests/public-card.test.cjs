@@ -110,7 +110,7 @@ test('shared renderer preserves theme, sizing, color and shape customization', (
   assert.match(html, /--card-fg:#123456/);
   assert.match(html, /--accent:#654321/);
   assert.match(html, /--button-bg:#654321/);
-  assert.match(html, /--button-radius:30px/);
+  assert.match(html, /--button-radius:24px/);
 });
 test('shared renderer supports Docare teal theme with pill buttons and color presets', () => {
   const html = card({
@@ -120,7 +120,7 @@ test('shared renderer supports Docare teal theme with pill buttons and color pre
     color: '#00b5ad',
   });
   assert.match(html, /theme-teal/);
-  assert.match(html, /--button-radius:30px/);
+  assert.match(html, /--button-radius:24px/);
   assert.match(html, /--card-color:#00b5ad/);
 });
 test('contact exchange still requires explicit consent', () => {

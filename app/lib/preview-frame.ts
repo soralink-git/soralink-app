@@ -18,7 +18,7 @@ export function previewFrame(
     viewport.height <= 0
   )
     return null;
-  // Compact screens use a collapsible preview in document flow, never a fixed overlay.
+  // Compact screens use an always-visible preview in document flow, never a fixed overlay.
   if (viewport.width <= 1100) return null;
   const gap = 16;
   const top = Math.max((viewport.offsetTop || 0) + gap, viewport.minTop || 0, rail.top);

@@ -176,7 +176,7 @@ export default function CardView({
                     '--block-fg': defaultTextFg,
                   }
                 : {}),
-            '--button-radius': a.shape === 'pill' ? '30px' : a.shape === 'square' ? '0px' : '8px',
+            '--button-radius': a.shape === 'pill' ? '24px' : a.shape === 'square' ? '8px' : '16px',
             '--avatar-radius': a.avatarShape === 'square' ? '12px' : '50%',
           } as any
         }
@@ -652,7 +652,7 @@ export default function CardView({
                     '--block-fg': defaultTextFg,
                   }
                 : {}),
-            '--button-radius': a.shape === 'pill' ? '30px' : a.shape === 'square' ? '0px' : '8px',
+            '--button-radius': a.shape === 'pill' ? '24px' : a.shape === 'square' ? '8px' : '16px',
           } as any
         }
       >

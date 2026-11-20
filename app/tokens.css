@@ -5,8 +5,8 @@
   color-scheme: light;
   --font-body: 'Roboto', 'Cairo', sans-serif;
   --font-arabic: 'Cairo', system-ui, -apple-system, sans-serif;
-  --radius-control: 8px;
-  --radius-panel: 32px;
+  --radius-control: 16px;
+  --radius-panel: 24px;
   --control-min: 48px;
   --brand-orange: #ff9125;
   --brand-vermilion: #ef552c;
