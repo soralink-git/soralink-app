@@ -901,10 +901,11 @@ html[data-theme='dark']
   flex-direction: column;
   gap: 8px;
   padding: 0;
-  margin: 0;
+  margin: 0 !important;
 }
 .design-system
   .site
+  .workspace-design
   .workspace-sidebar
   :is(button, a.secondary, .workspace-secondary-nav > summary) {
   display: flex !important;
@@ -940,6 +941,7 @@ html[data-theme='dark']
 }
 .design-system
   .site
+  .workspace-design
   .workspace-sidebar
   :is(button, a.secondary)
   > span:not(.sidebar-card-status):not(.nav-count) {
@@ -951,7 +953,7 @@ html[data-theme='dark']
 }
 .design-system .site .workspace-design .workspace-sidebar .sidebar-card-status {
   flex: 0 0 auto;
-  padding: 4px 8px;
+  padding: 4px 8px !important;
   line-height: 1.5;
 }
 .design-system
