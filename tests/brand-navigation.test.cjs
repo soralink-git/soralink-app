@@ -34,8 +34,8 @@ for (const ar of [false, true]) {
       html,
       ar ? /href="\/auth\?mode=signup&amp;lang=ar"/ : /href="\/auth\?mode=signup"/,
     );
-    for (const anchor of ['fonctionnalites', 'tarifs', 'faq']) assert(html.includes('#' + anchor));
-    assert.match(html, ar ? /href="\/demo\?lang=ar"/ : /href="\/demo"/);
+    for (const anchor of ['fonctionnalites', 'exemples', 'tarifs', 'faq'])
+      assert(html.includes('#' + anchor));
   });
   test(`marketing and authentication share the same home link and symbol (${ar ? 'ar' : 'fr'})`, () => {
     const auth = renderToStaticMarkup(React.createElement(Auth, { initialArabic: ar }));
