@@ -43,7 +43,7 @@
   padding: 40px 32px;
 }
 .design-system .site .landing-visual h1 {
-  color: #fafafa;
+  color: #fafafa !important;
   font-size: clamp(40px, 4.6vw, 64px);
   line-height: 1.08;
   letter-spacing: -0.045em;
@@ -52,7 +52,7 @@
   text-wrap: initial;
 }
 .design-system .site .landing-visual h1 em {
-  color: #ff9125;
+  color: #ff9125 !important;
   font-style: normal;
 }
 .design-system .site .landing-visual .visual-hero-copy > p {
@@ -204,7 +204,7 @@
 .design-system .site .landing-visual .visual-phone h3 {
   font-size: 18px;
   text-align: center;
-  color: #161619;
+  color: #161619 !important;
   margin: 0 0 16px;
 }
 .design-system .site .landing-visual .visual-phone-actions {
