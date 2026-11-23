@@ -6,62 +6,66 @@ const { load, req } = require('./ts-loader.cjs');
 const React = req('react');
 const { renderToStaticMarkup } = req('react-dom/server');
 const LandingPage = load(path.resolve('app/landing-page.tsx')).default;
-function render(ar, auth = false) {
-  return renderToStaticMarkup(React.createElement(LandingPage, { ar, auth }));
-}
-for (const ar of [false, true])
-  test(`short homepage keeps offers and navigation targets without profession blocks (${ar ? 'ar' : 'fr'})`, () => {
+const render = (ar, auth = false) =>
+  renderToStaticMarkup(React.createElement(LandingPage, { ar, auth }));
+for (const ar of [false, true]) {
+  test(`visual homepage retains real offers, renewal conditions and ordering paths (${ar ? 'ar' : 'fr'})`, () => {
     const html = render(ar);
-    assert.match(html, ar ? /النشاط ديالك/ : /Votre activité/);
+    assert.equal((html.match(/<h1\b/g) || []).length, 1);
     for (const id of ['fonctionnalites', 'exemples', 'tarifs', 'faq'])
       assert.match(html, new RegExp('id="' + id + '"'));
-    assert.doesNotMatch(
-      html,
-      /persona-tabs|landing-bento-grid|landing-process|special-offer-grid|Dr\. Yasmine|Dentaire|الأسنان|Studio créatif/,
-    );
-    assert.match(html, ar ? /الأكثر اختياراً/ : /Le plus choisi/);
-    assert.match(html, /class="landing-quick-benefits"/);
-    assert.match(html, /class="single-action-offer"/);
-    assert.doesNotMatch(html, /<details[^>]*\bopen/);
-    for (const price of ['99', '149', '249', '499'])
-      assert.match(html, new RegExp(price + '<small>'));
+    for (const price of [99, 149, 249, 499]) assert.match(html, new RegExp(price + '<small>'));
     assert.match(html, ar ? /من بعد 149 درهم فالعام/ : /Puis 149 DH\/an/);
+    assert.match(html, ar ? /بلا اقتطاع تلقائي/ : /sans prélèvement automatique/);
+    assert.match(
+      html,
+      ar ? /الكارط المادية داخلة فالباقة 1/ : /Carte physique incluse dans le pack 1/,
+    );
     assert.match(
       html,
       ar
-        ? /\/auth\?mode=signup&amp;lang=ar&amp;offer=Identite/
-        : /\/auth\?mode=signup&amp;offer=Identite/,
+        ? /href="\/auth\?mode=signup&amp;lang=ar&amp;offer=Identite"/
+        : /href="\/auth\?mode=signup&amp;offer=Identite"/,
     );
-    assert.match(html, /https:\/\/wa.me\/212661446664/);
-    const heroActions = html.match(/<div class="landing-actions">([\s\S]*?)<\/div>/)[1];
-    assert.equal((heroActions.match(/<a /g) || []).length, 2);
-    assert.match(heroActions, ar ? /شوف المثال التجريبي/ : /Explorer la démo/);
-    assert.match(heroActions, ar ? /طلب عبر WhatsApp/ : /Commander sur WhatsApp/);
-    assert.match(heroActions, ar ? /href="\/demo\?lang=ar"/ : /href="\/demo"/);
-    const message = decodeURIComponent(heroActions.match(/wa.me\/212661446664\?text=([^"]+)/)[1]);
+    assert.doesNotMatch(
+      html,
+      /<details[^>]*\bopen|Le plus choisi|Karim B\.|Salma M\.|Youssef T\.|\+33/,
+    );
+    const hero = html.match(/<div class="landing-actions">([\s\S]*?)<\/div>/)[1];
+    assert.equal((hero.match(/<a /g) || []).length, 2);
+    assert.match(hero, ar ? /href="\/demo\?lang=ar"/ : /href="\/demo"/);
+    assert.match(hero, ar ? /طلب عبر WhatsApp/ : /Commander sur WhatsApp/);
+    assert.match(hero, /wa.me\/212661446664/);
+    const message = decodeURIComponent(hero.match(/wa.me\/212661446664\?text=([^"]+)/)[1]);
     assert.match(message, ar ? /بغيت نطلب كارط SoraLink NFC/ : /commander une carte SoraLink NFC/);
   });
-test('Arabic homepage and demo copy do not leak French UI or French product names', () => {
-  const html = render(true);
-  assert.doesNotMatch(
-    html,
-    /Votre service|Votre produit|Profil de démonstration|Un besoin sur mesure|Option Pro|NFC EN DIRECT|Prise de rendez-vous/,
-  );
-  assert.match(html, /كارطات SoraLink بتقنية NFC/);
-});
-test('home shows the supplied brand visual without embedding the interactive card', () => {
-  for (const ar of [false, true]) {
+  test(`profession examples are explicitly fictional, localized and selectable (${ar ? 'ar' : 'fr'})`, () => {
     const html = render(ar);
-    assert.match(html, /src="\/soralink-pack-hero.webp"/);
-    assert.match(html, /fetchPriority="high"/);
-    assert.doesNotMatch(html, /showcase-phone|profile-card|catalog-interactive|showcase-nfc/);
-    assert(fs.statSync('public/soralink-pack-hero.webp').size < 300000);
+    assert.match(html, ar ? /أمثلة للتوضيح/ : /Exemples fictifs/);
+    assert.equal((html.match(/aria-pressed="true"/g) || []).length, 1);
+    assert.equal((html.match(/aria-pressed="false"/g) || []).length, 2);
+    for (const label of ar ? ['مهني', 'متجر', 'مطعم'] : ['Professionnel', 'Boutique', 'Restaurant'])
+      assert(html.includes(label));
+    assert.doesNotMatch(html, /<iframe|class="custom-card/);
+    if (ar)
+      assert.doesNotMatch(html, /Votre activité|Nos produits|Notre menu|Professionnel|Restaurant/);
+  });
+}
+test('product visuals are local, optimized and only the hero loads eagerly', () => {
+  const html = render(false);
+  let bytes = 0;
+  for (const name of ['hero', 'gestures', 'activities']) {
+    assert.match(html, new RegExp('/landing/' + name + '.webp'));
+    const size = fs.statSync('public/landing/' + name + '.webp').size;
+    assert(size < 350000);
+    bytes += size;
   }
+  assert(bytes < 600000);
+  assert.equal((html.match(/<img\b[^>]*fetchPriority="high"/g) || []).length, 1);
+  assert.match(html, /loading="lazy"/);
 });
-test('connected visitor keeps offer selection in the workspace and the same two hero actions', () => {
-  const html = render(false, true);
-  assert.match(html, /href="\/\?app=1&amp;offer=Identite&amp;tab=orders"/);
-  assert.match(html, /Commander sur WhatsApp/);
+test('connected visitors configure the selected real offer in their workspace', () => {
+  assert.match(render(false, true), /href="\/\?app=1&amp;offer=Identite&amp;tab=orders"/);
 });
 test('public support addresses consistently use the branded contact email', () => {
   for (const file of [

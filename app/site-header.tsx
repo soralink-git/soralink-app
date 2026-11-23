@@ -37,19 +37,12 @@ export default function SiteHeader({
       {view === 'home' && (
         <nav aria-label={t('Navigation principale', 'التنقل الرئيسي')}>
           {[
-            ['fonctionnalites', 'En bref', 'باختصار'],
-            ['tarifs', 'Tarifs', 'الأثمنة'],
-            ['exemples', 'Démo', 'مثال'],
+            ['fonctionnalites', 'Comment ça marche', 'كيفاش كيخدم'],
+            ['exemples', 'Exemples', 'أمثلة'],
+            ['tarifs', 'Offres', 'العروض'],
             ['faq', 'FAQ', 'أسئلة'],
           ].map(([anchor, f, a]) => (
-            <a
-              href={
-                anchor === 'exemples'
-                  ? '/demo' + (ar ? '?lang=ar' : '')
-                  : '/?lang=' + (ar ? 'ar' : 'fr') + '#' + anchor
-              }
-              key={anchor}
-            >
+            <a href={'/?lang=' + (ar ? 'ar' : 'fr') + '#' + anchor} key={anchor}>
               {t(f, a)}
             </a>
           ))}
